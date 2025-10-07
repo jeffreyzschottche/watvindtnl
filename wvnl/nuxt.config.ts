@@ -7,9 +7,9 @@ export default defineNuxtConfig({
   },
   ssr: false,
   app: {
-    baseURL: "./",
+    baseURL: "/",
   },
-  modules: ["@pinia/nuxt"],
+  modules: ["@pinia/nuxt", "@nuxt/devtools"],
   css: ["../assets/css/main.css"],
   devtools: { enabled: true },
 });
