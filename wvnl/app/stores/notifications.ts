@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 
 export type NotificationType = "info" | "success" | "error";
 
+export type NotificationPayload = Omit<Notification, "id"> & { id?: number };
+
 export interface Notification {
   id: number;
   message: string;
@@ -15,9 +17,7 @@ let nextId = 1;
 export const useNotificationStore = defineStore("notifications", () => {
   const notifications = ref<Notification[]>([]);
 
-  function addNotification(
-    notification: Omit<Notification, "id"> & { id?: number }
-  ): number {
+  function addNotification(notification: NotificationPayload): number {
     const id = notification.id ?? nextId++;
     const entry: Notification = {
       timeout: 4000,
