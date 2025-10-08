@@ -17,6 +17,8 @@ export interface User {
   name: string;
   username?: string | null;
   email: string;
+  language?: "nl" | "en";
+  age?: number | null;
   voted_issue_ids?: number[]; // ID van de kwesties gestemd
   requests?: string[]; // Requests
   age_category?: string | null; // leeftijdscategorie

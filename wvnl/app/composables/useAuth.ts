@@ -42,5 +42,6 @@ export function useAuth() {
     login,
     logout: store.logout,
     restore: store.restore,
+    updateUser: store.updateUser,
   };
 }

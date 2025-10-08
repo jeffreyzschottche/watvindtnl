@@ -39,5 +39,18 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  return { token, user, isLoggedIn, isPremium, setSession, logout, restore };
+  function updateUser(newUser: User) {
+    user.value = newUser;
+  }
+
+  return {
+    token,
+    user,
+    isLoggedIn,
+    isPremium,
+    setSession,
+    logout,
+    restore,
+    updateUser,
+  };
 });

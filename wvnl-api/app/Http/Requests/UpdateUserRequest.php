@@ -3,33 +3,35 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        /** @var \App\Models\User|null $user */
+        $user = $this->route('user');
+
+        return $user !== null && $this->user()?->id === $user->id;
     }
 
     public function rules(): array
     {
         return [
             'name' => ['sometimes', 'string', 'max:60'],
-            'email' => ['sometimes', 'email', 'unique:users,email,' . $this->route('user')->id],
-            'password' => ['nullable', 'string', 'min:8'],
-            'username' => ['sometimes', 'string', 'max:40', 'nullable'],
-            'voted_issue_ids' => ['sometimes', 'array'],
-            'voted_issue_ids.*' => ['integer'],
-            'requests' => ['sometimes', 'array'],
-            'requests.*' => ['string'],
-            'age_category' => ['sometimes', 'string', 'nullable'],
-            'province' => ['sometimes', 'string', 'nullable'],
+            'email' => [
+                'sometimes',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($this->route('user')?->id),
+            ],
+            'language' => ['sometimes', 'string', 'in:nl,en'],
+            'age' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:120'],
+            'province' => ['sometimes', 'nullable', 'string', 'max:120'],
             'gender' => ['sometimes', 'in:male,female,unspecified'],
-            'education_level' => ['sometimes', 'string', 'nullable'],
-            'political_preference' => ['sometimes', 'string', 'nullable'],
-            'notification_prefs' => ['sometimes', 'array'],
-            'cookie_prefs' => ['sometimes', 'array'],
-            'language' => ['sometimes', 'in:nl,en'],
+            'education_level' => ['sometimes', 'nullable', 'in:mbo,hbo,universiteit,overig'],
+            'political_preference' => ['sometimes', 'nullable', 'in:links,midden,rechts,geen'],
+            'premium' => ['sometimes', 'boolean'],
         ];
     }
 }
