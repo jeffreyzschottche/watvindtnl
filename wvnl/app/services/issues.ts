@@ -25,6 +25,17 @@ export function fetchPendingIssues(
   });
 }
 
+export function fetchIssueById(
+  issueId: number,
+  token?: string,
+  init?: RequestInit
+): Promise<IssueWithArguments> {
+  return apiFetch<IssueWithArguments>(`/issues/${issueId}`, {
+    ...init,
+    headers: buildHeaders(token, init?.headers ?? undefined),
+  });
+}
+
 export function voteOnIssue(
   issueId: number,
   vote: IssueVoteOption,

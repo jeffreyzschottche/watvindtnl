@@ -90,12 +90,21 @@
         Tegen
       </button>
       <button
+        v-if="showSkip"
         type="button"
         class="issue-card__button issue-card__button--skip"
         :disabled="disabled"
         @click="emit('skip')"
       >
         Overslaan
+      </button>
+      <button
+        v-if="showShare"
+        type="button"
+        class="issue-card__button issue-card__button--share"
+        @click="emit('share')"
+      >
+        Deel
       </button>
     </footer>
   </article>
@@ -107,15 +116,24 @@ import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
 import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
-const props = defineProps<{
-  issue: IssueWithArguments;
-  remaining: number;
-  disabled?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    issue: IssueWithArguments;
+    remaining: number;
+    disabled?: boolean;
+    showSkip?: boolean;
+    showShare?: boolean;
+  }>(),
+  {
+    showSkip: true,
+    showShare: true,
+  }
+);
 
 const emit = defineEmits<{
   (e: "vote", vote: IssueVoteOption): void;
   (e: "skip"): void;
+  (e: "share"): void;
 }>();
 
 const voteCounts = computed(() => {
@@ -317,5 +335,10 @@ function emitVote(vote: IssueVoteOption) {
 .issue-card__button--skip {
   background: linear-gradient(135deg, #93c5fd, #60a5fa);
   color: #1e3a8a;
+}
+
+.issue-card__button--share {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #78350f;
 }
 </style>

@@ -2,7 +2,11 @@ import { computed, ref } from "vue";
 import { useApi } from "~/composables/useApi";
 import { useAuthStore } from "~/stores/auth";
 import { fetchPendingIssues } from "~/services/issues";
-import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
+import type {
+  IssueVoteOption,
+  IssueVoteResponse,
+  IssueWithArguments,
+} from "~/types/issues";
 
 export function useIssues() {
   const api = useApi();
@@ -39,7 +43,16 @@ export function useIssues() {
     actionPending.value = true;
     error.value = null;
     try {
-      await api.post(`/issues/${issue.id}/vote`, { vote });
+      const response = await api.post<IssueVoteResponse>(
+        `/issues/${issue.id}/vote`,
+        { vote }
+      );
+      if (auth.user.value) {
+        auth.updateUser({
+          ...auth.user.value,
+          voted_issue_ids: response.voted_issue_ids,
+        });
+      }
       issues.value.splice(activeIndex.value, 1);
       if (activeIndex.value >= issues.value.length) {
         activeIndex.value = Math.max(issues.value.length - 1, 0);

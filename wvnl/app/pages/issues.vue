@@ -30,6 +30,7 @@
         :disabled="actionPending"
         @vote="handleVote"
         @skip="handleSkip"
+        @share="activeIssue && handleShare(activeIssue)"
       />
 
       <p v-if="error && activeIssue" class="issues-page__inline-error">
@@ -44,28 +45,301 @@
         </button>
       </div>
     </div>
+    <IssueDetailModal
+      v-if="isModalOpen"
+      :issue="modalIssue"
+      :loading="modalLoading"
+      :error="modalError"
+      :action-pending="modalActionPending"
+      :can-retry="modalIssueId !== null"
+      @close="closeModal"
+      @retry="retryModal"
+      @vote="handleModalVote"
+      @share="modalIssue && handleShare(modalIssue)"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
+import IssueDetailModal from "~/components/issues/IssueDetailModal.vue";
 import IssueVoteCard from "~/components/issues/IssueVoteCard.vue";
 import { useIssues } from "~/composables/useIssues";
-import type { IssueVoteOption } from "~/types/issues";
+import { useAuthStore } from "~/stores/auth";
+import { useNotificationStore } from "~/stores/notifications";
+import { fetchIssueById, voteOnIssue } from "~/services/issues";
+import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
-const { activeIssue, remaining, loading, actionPending, error, loadPending, vote, skip } =
-  useIssues();
+const route = useRoute();
+const router = useRouter();
+
+const issuesState = useIssues();
+const {
+  issues,
+  activeIssue,
+  remaining,
+  loading,
+  actionPending,
+  error,
+  loadPending,
+  vote,
+  skip,
+} = issuesState;
+
+const auth = useAuthStore();
+const { isLoggedIn, user, token } = storeToRefs(auth);
+
+const notifications = useNotificationStore();
+
+const modalIssue = ref<IssueWithArguments | null>(null);
+const modalLoading = ref(false);
+const modalError = ref<string | null>(null);
+const modalActionPending = ref(false);
+const modalIssueId = ref<number | null>(null);
+
+const isModalOpen = computed(() => route.query.issue_id !== undefined);
+
+watch(
+  () => route.query.issue_id,
+  (raw) => {
+    if (raw === undefined) {
+      modalIssueId.value = null;
+      modalIssue.value = null;
+      modalError.value = null;
+      modalLoading.value = false;
+      modalActionPending.value = false;
+      return;
+    }
+
+    const value = Array.isArray(raw) ? raw[0] : raw;
+    const parsed = Number(value);
+    if (!value || Number.isNaN(parsed)) {
+      modalIssueId.value = null;
+      modalIssue.value = null;
+      modalError.value = "Deze kwestie kon niet worden gevonden.";
+      modalLoading.value = false;
+      return;
+    }
+
+    modalIssueId.value = parsed;
+    void loadIssueForModal(parsed);
+  },
+  { immediate: true }
+);
 
 onMounted(() => {
   loadPending();
 });
 
+function notifyLoginRequired() {
+  notifications.addNotification({
+    message: "Registreer of log in om je mening te geven.",
+    type: "info",
+  });
+}
+
 function handleVote(choice: IssueVoteOption) {
+  if (!isLoggedIn.value) {
+    notifyLoginRequired();
+    return;
+  }
   void vote(choice);
 }
 
 function handleSkip() {
   skip();
+}
+
+async function handleModalVote(choice: IssueVoteOption) {
+  if (!isLoggedIn.value) {
+    notifyLoginRequired();
+    return;
+  }
+
+  const issue = modalIssue.value;
+  if (!issue) return;
+
+  modalActionPending.value = true;
+  modalError.value = null;
+
+  try {
+    const inPending = issues.value.some((item) => item.id === issue.id);
+    if (inPending) {
+      await vote(choice);
+      closeModal();
+      return;
+    }
+
+    const response = await voteOnIssue(
+      issue.id,
+      choice,
+      token.value ?? undefined
+    );
+    if (user.value) {
+      auth.updateUser({
+        ...user.value,
+        voted_issue_ids: response.voted_issue_ids,
+      });
+    }
+    const updated = applyUserVote(issue, user.value?.id ?? null, choice);
+    modalIssue.value = updated;
+  } catch (err: unknown) {
+    modalError.value =
+      err instanceof Error ? err.message : "Stemmen is niet gelukt.";
+  } finally {
+    modalActionPending.value = false;
+  }
+}
+
+async function loadIssueForModal(id: number) {
+  if (modalIssue.value?.id === id && !modalError.value) {
+    return;
+  }
+
+  modalLoading.value = true;
+  modalError.value = null;
+
+  const existing = issues.value.find((issue) => issue.id === id);
+  if (existing) {
+    modalIssue.value = existing;
+    modalLoading.value = false;
+    return;
+  }
+
+  try {
+    const issue = await fetchIssueById(id, token.value ?? undefined);
+    modalIssue.value = issue;
+  } catch (err: unknown) {
+    modalIssue.value = null;
+    modalError.value =
+      err instanceof Error ? err.message : "De kwestie kon niet geladen worden.";
+  } finally {
+    modalLoading.value = false;
+  }
+}
+
+function closeModal() {
+  modalIssue.value = null;
+  modalError.value = null;
+  modalActionPending.value = false;
+  modalIssueId.value = null;
+  const newQuery = { ...route.query } as Record<string, any>;
+  delete newQuery.issue_id;
+  router.replace({ query: newQuery });
+}
+
+function retryModal() {
+  if (modalIssueId.value) {
+    void loadIssueForModal(modalIssueId.value);
+  }
+}
+
+async function handleShare(issue: IssueWithArguments) {
+  const link = buildShareLink(issue.id);
+  const vote = getUserVote(issue);
+  const message = composeShareMessage(issue, vote, link);
+
+  try {
+    await copyToClipboard(message);
+    notifications.addNotification({
+      message: "Gekopieerd naar klembord.",
+      type: "success",
+    });
+  } catch {
+    notifications.addNotification({
+      message: "Kopiëren is niet gelukt.",
+      type: "error",
+    });
+  }
+}
+
+function buildShareLink(issueId: number) {
+  const resolved = router.resolve({
+    path: route.path,
+    query: { issue_id: issueId },
+  });
+
+  if (typeof window !== "undefined") {
+    return new URL(resolved.href, window.location.origin).toString();
+  }
+
+  return resolved.href;
+}
+
+function getUserVote(issue: IssueWithArguments): IssueVoteOption | null {
+  const currentUserId = user.value?.id;
+  if (!currentUserId) return null;
+
+  if (issue.votes?.agree?.includes(currentUserId)) return "agree";
+  if (issue.votes?.disagree?.includes(currentUserId)) return "disagree";
+  if (issue.votes?.neutral?.includes(currentUserId)) return "neutral";
+  return null;
+}
+
+function composeShareMessage(
+  issue: IssueWithArguments,
+  vote: IssueVoteOption | null,
+  link: string
+) {
+  const title = `"${issue.title}"`;
+  if (!isLoggedIn.value || !vote) {
+    return `Deel je mening over ${title}: ${link}`;
+  }
+
+  if (vote === "agree") {
+    return `Ik ben het eens met ${title}. Wat vind jij? ${link}`;
+  }
+  if (vote === "disagree") {
+    return `Ik ben het oneens met ${title}. Wat vind jij? ${link}`;
+  }
+  return `Ik ben neutraal over ${title}. Wat vind jij? ${link}`;
+}
+
+async function copyToClipboard(text: string) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  if (typeof document === "undefined") {
+    throw new Error("Clipboard niet beschikbaar");
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "absolute";
+  textarea.style.left = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+}
+
+function applyUserVote(
+  issue: IssueWithArguments,
+  userId: number | null,
+  vote: IssueVoteOption
+): IssueWithArguments {
+  if (!userId) return issue;
+
+  const updatedVotes = {
+    agree: [...(issue.votes?.agree ?? [])],
+    disagree: [...(issue.votes?.disagree ?? [])],
+    neutral: [...(issue.votes?.neutral ?? [])],
+  };
+
+  updatedVotes.agree = updatedVotes.agree.filter((id) => id !== userId);
+  updatedVotes.disagree = updatedVotes.disagree.filter((id) => id !== userId);
+  updatedVotes.neutral = updatedVotes.neutral.filter((id) => id !== userId);
+
+  updatedVotes[vote].push(userId);
+
+  return {
+    ...issue,
+    votes: updatedVotes,
+  };
 }
 </script>
 
