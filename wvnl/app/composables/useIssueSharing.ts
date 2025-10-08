@@ -1,6 +1,5 @@
 import { storeToRefs } from "pinia";
-import { useRoute, useRouter } from "#imports";
-import { useNotificationStore } from "~/stores/notifications";
+import { useRoute, useRouter, useNuxtApp } from "#imports";
 import { useAuthStore } from "~/stores/auth";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
@@ -16,7 +15,7 @@ export interface ShareIssueOptions {
 export function useIssueSharing() {
   const router = useRouter();
   const route = useRoute();
-  const notifications = useNotificationStore();
+  const { $notify } = useNuxtApp();
   const auth = useAuthStore();
   const { isLoggedIn, user } = storeToRefs(auth);
 
@@ -30,13 +29,13 @@ export function useIssueSharing() {
 
     try {
       await copyToClipboard(message);
-      notifications.addNotification({
+      $notify({
         message: "Gekopieerd naar klembord.",
         type: "success",
       });
       return true;
     } catch (error) {
-      notifications.addNotification({
+      $notify({
         message: "Kopiëren is niet gelukt.",
         type: "error",
       });
