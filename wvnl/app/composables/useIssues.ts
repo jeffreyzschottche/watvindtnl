@@ -1,7 +1,8 @@
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+import { storeToRefs } from "pinia";
 import { useApi } from "~/composables/useApi";
 import { useAuthStore } from "~/stores/auth";
-import { fetchPendingIssues } from "~/services/issues";
+import { fetchIssuesWithArguments, fetchPendingIssues } from "~/services/issues";
 import type {
   IssueVoteOption,
   IssueVoteResponse,
@@ -11,6 +12,7 @@ import type {
 export function useIssues() {
   const api = useApi();
   const auth = useAuthStore();
+  const { token, isLoggedIn } = storeToRefs(auth);
 
   const issues = ref<IssueWithArguments[]>([]);
   const loading = ref(false);
@@ -18,20 +20,33 @@ export function useIssues() {
   const error = ref<string | null>(null);
 
   const activeIndex = ref(0);
+  let requestToken = 0;
 
   const activeIssue = computed(() => issues.value[activeIndex.value] ?? null);
   const remaining = computed(() => issues.value.length);
 
   async function loadPending() {
+    const tokenId = ++requestToken;
     loading.value = true;
     error.value = null;
     try {
-      const data = await fetchPendingIssues(auth.token ?? undefined);
+      const data = isLoggedIn.value
+        ? await fetchPendingIssues(token.value ?? undefined)
+        : await fetchIssuesWithArguments();
+      if (tokenId !== requestToken) {
+        return;
+      }
       issues.value = data;
       activeIndex.value = 0;
     } catch (err: unknown) {
+      if (tokenId !== requestToken) {
+        return;
+      }
       error.value = err instanceof Error ? err.message : "Er is iets misgegaan.";
     } finally {
+      if (tokenId !== requestToken) {
+        return;
+      }
       loading.value = false;
     }
   }
@@ -72,6 +87,13 @@ export function useIssues() {
     error.value = null;
     activeIndex.value = (activeIndex.value + 1) % issues.value.length;
   }
+
+  watch(
+    isLoggedIn,
+    () => {
+      void loadPending();
+    }
+  );
 
   return {
     issues,

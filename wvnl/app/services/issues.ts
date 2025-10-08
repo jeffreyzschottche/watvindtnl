@@ -25,12 +25,18 @@ export function fetchPendingIssues(
   });
 }
 
-export function fetchIssueById(
+export function fetchIssuesWithArguments(
+  init?: RequestInit
+): Promise<IssueWithArguments[]> {
+  return apiFetch<IssueWithArguments[]>("/issues-args", init);
+}
+
+export function fetchIssueWithArguments(
   issueId: number,
   token?: string,
   init?: RequestInit
 ): Promise<IssueWithArguments> {
-  return apiFetch<IssueWithArguments>(`/issues/${issueId}`, {
+  return apiFetch<IssueWithArguments>(`/issues-args/${issueId}`, {
     ...init,
     headers: buildHeaders(token, init?.headers ?? undefined),
   });

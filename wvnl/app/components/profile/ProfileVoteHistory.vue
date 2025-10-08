@@ -23,12 +23,21 @@
             {{ item.description }}
           </p>
         </div>
-        <span
-          class="inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-semibold"
-          :class="voteClass(item.vote)"
-        >
-          {{ voteLabel(item.vote) }}
-        </span>
+        <div class="flex flex-col items-start gap-2 md:flex-row md:items-center">
+          <span
+            class="inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-semibold"
+            :class="voteClass(item.vote)"
+          >
+            {{ voteLabel(item.vote) }}
+          </span>
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900"
+            @click="share(item)"
+          >
+            Deel
+          </button>
+        </div>
       </li>
     </ul>
   </section>
@@ -38,10 +47,12 @@
 import { storeToRefs } from "pinia";
 import type { IssueVoteOption, UserVoteHistoryItem } from "~/types/issues";
 import { useAuthStore } from "~/stores/auth";
+import { useIssueSharing } from "~/composables/useIssueSharing";
 
 const api = useApi();
 const auth = useAuthStore();
 const { isLoggedIn } = storeToRefs(auth);
+const { shareIssue } = useIssueSharing();
 
 const loading = ref(false);
 const error = ref<string | null>(null);
@@ -97,6 +108,13 @@ function voteClass(vote: IssueVoteOption) {
     default:
       return "bg-yellow-100 text-yellow-800";
   }
+}
+
+async function share(item: UserVoteHistoryItem) {
+  await shareIssue(
+    { id: item.id, title: item.title },
+    { vote: item.vote, path: "/issues" }
+  );
 }
 
 defineExpose({ refresh: loadHistory });

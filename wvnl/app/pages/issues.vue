@@ -30,7 +30,7 @@
         :disabled="actionPending"
         @vote="handleVote"
         @skip="handleSkip"
-        @share="activeIssue && handleShare(activeIssue)"
+        @share="handleShare(activeIssue)"
       />
 
       <p v-if="error && activeIssue" class="issues-page__inline-error">
@@ -55,7 +55,7 @@
       @close="closeModal"
       @retry="retryModal"
       @vote="handleModalVote"
-      @share="modalIssue && handleShare(modalIssue)"
+      @share="handleShare(modalIssue)"
     />
   </section>
 </template>
@@ -68,7 +68,8 @@ import IssueVoteCard from "~/components/issues/IssueVoteCard.vue";
 import { useIssues } from "~/composables/useIssues";
 import { useAuthStore } from "~/stores/auth";
 import { useNotificationStore } from "~/stores/notifications";
-import { fetchIssueById, voteOnIssue } from "~/services/issues";
+import { useIssueSharing } from "~/composables/useIssueSharing";
+import { fetchIssueWithArguments, voteOnIssue } from "~/services/issues";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
 const route = useRoute();
@@ -91,6 +92,7 @@ const auth = useAuthStore();
 const { isLoggedIn, user, token } = storeToRefs(auth);
 
 const notifications = useNotificationStore();
+const { shareIssue } = useIssueSharing();
 
 const modalIssue = ref<IssueWithArguments | null>(null);
 const modalLoading = ref(false);
@@ -208,7 +210,7 @@ async function loadIssueForModal(id: number) {
   }
 
   try {
-    const issue = await fetchIssueById(id, token.value ?? undefined);
+    const issue = await fetchIssueWithArguments(id, token.value ?? undefined);
     modalIssue.value = issue;
   } catch (err: unknown) {
     modalIssue.value = null;
@@ -235,86 +237,10 @@ function retryModal() {
   }
 }
 
-async function handleShare(issue: IssueWithArguments) {
-  const link = buildShareLink(issue.id);
-  const vote = getUserVote(issue);
-  const message = composeShareMessage(issue, vote, link);
+async function handleShare(issue: IssueWithArguments | null) {
+  if (!issue) return;
 
-  try {
-    await copyToClipboard(message);
-    notifications.addNotification({
-      message: "Gekopieerd naar klembord.",
-      type: "success",
-    });
-  } catch {
-    notifications.addNotification({
-      message: "Kopiëren is niet gelukt.",
-      type: "error",
-    });
-  }
-}
-
-function buildShareLink(issueId: number) {
-  const resolved = router.resolve({
-    path: route.path,
-    query: { issue_id: issueId },
-  });
-
-  if (typeof window !== "undefined") {
-    return new URL(resolved.href, window.location.origin).toString();
-  }
-
-  return resolved.href;
-}
-
-function getUserVote(issue: IssueWithArguments): IssueVoteOption | null {
-  const currentUserId = user.value?.id;
-  if (!currentUserId) return null;
-
-  if (issue.votes?.agree?.includes(currentUserId)) return "agree";
-  if (issue.votes?.disagree?.includes(currentUserId)) return "disagree";
-  if (issue.votes?.neutral?.includes(currentUserId)) return "neutral";
-  return null;
-}
-
-function composeShareMessage(
-  issue: IssueWithArguments,
-  vote: IssueVoteOption | null,
-  link: string
-) {
-  const title = `"${issue.title}"`;
-  if (!isLoggedIn.value || !vote) {
-    return `Deel je mening over ${title}: ${link}`;
-  }
-
-  if (vote === "agree") {
-    return `Ik ben het eens met ${title}. Wat vind jij? ${link}`;
-  }
-  if (vote === "disagree") {
-    return `Ik ben het oneens met ${title}. Wat vind jij? ${link}`;
-  }
-  return `Ik ben neutraal over ${title}. Wat vind jij? ${link}`;
-}
-
-async function copyToClipboard(text: string) {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-
-  if (typeof document === "undefined") {
-    throw new Error("Clipboard niet beschikbaar");
-  }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "absolute";
-  textarea.style.left = "-9999px";
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand("copy");
-  document.body.removeChild(textarea);
+  await shareIssue(issue, { path: route.path });
 }
 
 function applyUserVote(
