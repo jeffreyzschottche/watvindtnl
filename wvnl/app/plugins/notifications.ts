@@ -23,5 +23,4 @@ export default defineNuxtPlugin((nuxtApp) => {
     store.addNotification(notification);
 
   nuxtApp.provide("notify", notify);
-  nuxtApp.vueApp.config.globalProperties.$notify = notify;
 });
