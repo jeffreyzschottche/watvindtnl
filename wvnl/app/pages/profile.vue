@@ -123,30 +123,7 @@
       </form>
     </section>
 
-    <section class="space-y-4">
-      <header>
-        <h2 class="text-2xl font-semibold">Stemoverzicht</h2>
-        <p class="text-gray-600">Bekijk op welke issues je hebt gestemd.</p>
-      </header>
-
-      <p v-if="loadingIssues" class="text-gray-500">Bezig met laden...</p>
-      <p v-else-if="issuesError" class="text-red-600">{{ issuesError }}</p>
-      <p v-else-if="votedIssues.length === 0" class="text-gray-500">
-        Je hebt nog niet gestemd op issues.
-      </p>
-      <ul v-else class="space-y-3">
-        <li
-          v-for="issue in votedIssues"
-          :key="issue.id"
-          class="rounded border border-gray-200 p-4 shadow-sm"
-        >
-          <p class="font-medium">{{ issue.title }}</p>
-          <p v-if="issue.description" class="mt-1 text-sm text-gray-600">
-            {{ issue.description }}
-          </p>
-        </li>
-      </ul>
-    </section>
+    <ProfileVoteHistory />
 
     <section class="space-y-6">
       <header>
@@ -194,7 +171,6 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import type { Issue } from "~/types/Issue";
 import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";
 
 const auth = useAuthStore();
@@ -228,19 +204,6 @@ const premiumMessage = ref<string | null>(null);
 const premiumError = ref<string | null>(null);
 const savingPremium = ref(false);
 
-const issues = ref<Issue[]>([]);
-const issuesError = ref<string | null>(null);
-const loadingIssues = ref(false);
-const issuesLoaded = ref(false);
-
-const votedIssues = computed(() => {
-  const ids = user.value?.voted_issue_ids;
-  if (!ids || ids.length === 0) return [] as Issue[];
-
-  const idSet = new Set(ids.map(Number));
-  return issues.value.filter((issue) => idSet.has(issue.id));
-});
-
 function handleAuthFailure(message: string) {
   if (message.toLowerCase().includes("unauth")) {
     auth.logout();
@@ -260,16 +223,6 @@ watch(
     loadingProfile.value = false;
   },
   { immediate: true }
-);
-
-watch(
-  () => user.value?.voted_issue_ids,
-  (ids) => {
-    if (ids && ids.length > 0 && isLoggedIn.value) {
-      loadIssues();
-    }
-  },
-  { immediate: true, deep: true }
 );
 
 watch(
@@ -370,19 +323,4 @@ async function savePremium() {
   }
 }
 
-async function loadIssues() {
-  if (issuesLoaded.value) return;
-
-  loadingIssues.value = true;
-  issuesError.value = null;
-
-  try {
-    issues.value = await api.get<Issue[]>("/issues-args");
-    issuesLoaded.value = true;
-  } catch (error: any) {
-    issuesError.value = error?.message || "Kon issues niet laden.";
-  } finally {
-    loadingIssues.value = false;
-  }
-}
 </script>

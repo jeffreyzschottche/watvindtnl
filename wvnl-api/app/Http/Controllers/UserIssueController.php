@@ -34,6 +34,53 @@ class UserIssueController extends Controller
         return response()->json($data);
     }
 
+    public function history(Request $request)
+    {
+        $userId = (int) $request->user()->id;
+
+        $issues = Issue::query()
+            ->select(['id', 'title', 'slug', 'description', 'votes', 'created_at', 'updated_at'])
+            ->where(function ($query) use ($userId) {
+                $query->whereJsonContains('votes->agree', $userId)
+                    ->orWhereJsonContains('votes->disagree', $userId)
+                    ->orWhereJsonContains('votes->neutral', $userId);
+            })
+            ->orderByDesc('updated_at')
+            ->get();
+
+        $history = $issues
+            ->map(function (Issue $issue) use ($userId) {
+                $votes = $issue->votes ?? ['agree' => [], 'disagree' => [], 'neutral' => []];
+                $choice = null;
+
+                foreach (['agree', 'disagree', 'neutral'] as $bucket) {
+                    $ids = array_map('intval', (array) ($votes[$bucket] ?? []));
+                    if (in_array($userId, $ids, true)) {
+                        $choice = $bucket;
+                        break;
+                    }
+                }
+
+                if (!$choice) {
+                    return null;
+                }
+
+                return [
+                    'id' => $issue->id,
+                    'title' => $issue->title,
+                    'slug' => $issue->slug,
+                    'description' => $issue->description,
+                    'vote' => $choice,
+                    'created_at' => $issue->created_at?->toIso8601String(),
+                    'updated_at' => $issue->updated_at?->toIso8601String(),
+                ];
+            })
+            ->filter()
+            ->values();
+
+        return response()->json($history);
+    }
+
     public function vote(Request $request, Issue $issue)
     {
         $validated = $request->validate([

@@ -52,3 +52,13 @@ export interface IssueVoteResponse {
   vote: IssueVoteOption;
   voted_issue_ids: number[];
 }
+
+export interface UserVoteHistoryItem {
+  id: number;
+  title: string;
+  slug: string;
+  description: string | null;
+  vote: IssueVoteOption;
+  created_at: string | null;
+  updated_at: string | null;
+}
