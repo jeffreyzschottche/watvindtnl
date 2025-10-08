@@ -24,11 +24,10 @@ return new class extends Migration {
             $table->longText('more_info')->nullable();
 
             // Relatie met Politieke partij eens/oneens (JSON):
-            // { "agree": [partyId, ...], "disagree": [partyId, ...] }
+            // { "agree": [partyId, ...], "disagree": [partyId, ...], "neutral": [] }
             $table->json('party_stances')->nullable();
 
-            // Rapported (JSON): bijv.
-            // { "count": 2, "items": [ { "user_id": 1, "reason": "spam", "message": "…", "created_at": "…" }, ... ] }
+            // Rapported (JSON)
             $table->json('reports')->nullable();
 
             $table->timestamps();

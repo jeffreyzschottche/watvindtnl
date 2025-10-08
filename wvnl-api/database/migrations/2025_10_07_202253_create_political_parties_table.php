@@ -10,8 +10,8 @@ return new class extends Migration {
     {
         Schema::create('political_parties', function (Blueprint $table) {
             $table->id();
-            $table->string('name');             // officiële/gebruikte naam (NL oké)
-            $table->string('abbreviation', 20)->nullable(); // VVD, NSC, ...
+            $table->string('name');
+            $table->string('abbreviation', 20)->nullable();
             $table->string('slug')->unique();
             $table->string('logo_url')->nullable();
             $table->string('website_url')->nullable();

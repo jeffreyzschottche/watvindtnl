@@ -1,0 +1,70 @@
+{
+    "issues": [
+        {
+            "title": "De hypotheekrenteaftrek moet worden afgeschaft",
+            "slug": "de-hypotheekrenteaftrek-moet-worden-afgeschaft",
+            "description": "Afschaffing van de hypotheekrenteaftrek.",
+            "more_info": "Als je een huis koopt met een hypotheek, dan moet je rente betalen aan de bank. In Nederland mag je deze rente aftrekken van je inkomen bij de belastingaangifte. Daardoor betaal je minder belasting. Dat heet hypotheekrenteaftrek. De hypotheekrenteaftrek is hoger als je een hogere hypotheek hebt of een hoger inkomen en lager als je een lagere hypotheek hebt of een lager inkomen.",
+            "stances": {
+                "agree": ["GL-PvdA", "D66", "CDA", "SP", "PvdD", "CU", "Volt"],
+                "neutral": [],
+                "disagree": [
+                    "PVV",
+                    "VVD",
+                    "NSC",
+                    "BBB",
+                    "DENK",
+                    "FvD",
+                    "SGP",
+                    "JA21"
+                ]
+            },
+            "arguments": {
+                "pro": [
+                    {
+                        "body": "Eerlijker belastingstelsel: de aftrek bevoordeelt vooral hogere inkomens en grote hypotheken.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Minder prijsopdrijving: fiscale voordelen worden ingecalculeerd in huizenprijzen.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Lager financieel risico: minder prikkel om hoge schulden aan te gaan, dus stabielere huishoudfinanciën.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Betere overheidsfinanciën: vrijgespeelde middelen kunnen naar betaalbare woningbouw of lastenverlichting voor lage/middeninkomens.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Neutralere woningmarkt: minder scheefgroei tussen kopen en huren.",
+                        "sources": []
+                    }
+                ],
+                "con": [
+                    {
+                        "body": "Betaalbaarheid voor huiseigenaren neemt af: netto maandlasten kunnen aanzienlijk stijgen.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Risico op waardedruk: abrupte afschaffing kan huizenprijzen drukken en restschulden veroorzaken.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Beleidszekerheid: spelregels vaak wijzigen tast vertrouwen aan van starters en doorstromers.",
+                        "sources": []
+                    },
+                    {
+                        "body": "Middeninkomens geraakt: extra lasten komen bovenop eerdere kostenstijgingen (energie/inflatie).",
+                        "sources": []
+                    },
+                    {
+                        "body": "Positieve externe effecten van eigenwoningbezit (stabiliteit, spaardiscipline) kunnen afnemen.",
+                        "sources": []
+                    }
+                ]
+            }
+        }
+    ]
+}
