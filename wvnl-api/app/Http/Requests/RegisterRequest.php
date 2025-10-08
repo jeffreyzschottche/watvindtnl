@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RegisterRequest extends FormRequest
 {
@@ -19,7 +20,10 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
             'language' => ['required', 'in:nl,en'],
-            'age_category' => ['required', 'string'],
+            'age_category' => [
+                'required',
+                Rule::in(['16-17', '18-24', '25-34', '35-44', '45-54', '55-64', '65+']),
+            ],
             'province' => ['required', 'string'],
             'gender' => ['required', 'in:male,female,unspecified'],
             'education_level' => ['required', 'in:mbo,hbo,universiteit,overig'],

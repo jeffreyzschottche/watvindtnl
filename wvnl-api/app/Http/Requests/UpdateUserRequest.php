@@ -26,7 +26,11 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($this->route('user')?->id),
             ],
             'language' => ['sometimes', 'string', 'in:nl,en'],
-            'age' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:120'],
+            'age_category' => [
+                'sometimes',
+                'nullable',
+                Rule::in(['16-17', '18-24', '25-34', '35-44', '45-54', '55-64', '65+']),
+            ],
             'province' => ['sometimes', 'nullable', 'string', 'max:120'],
             'gender' => ['sometimes', 'in:male,female,unspecified'],
             'education_level' => ['sometimes', 'nullable', 'in:mbo,hbo,universiteit,overig'],

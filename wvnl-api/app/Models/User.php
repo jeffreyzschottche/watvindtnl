@@ -17,7 +17,6 @@ class User extends Authenticatable
         'email',
         'password',
         'language',
-        'age',
         'voted_issue_ids',
         'requests',
         'age_category',
@@ -33,7 +32,6 @@ class User extends Authenticatable
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
-        'age' => 'integer',
         'voted_issue_ids' => 'array',
         'requests' => 'array',
         'notification_prefs' => 'array',

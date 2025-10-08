@@ -47,15 +47,18 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700">Leeftijd</label>
-          <input
-            v-model.number="profileForm.age"
-            type="number"
-            min="0"
-            max="120"
+          <label class="block text-sm font-medium text-gray-700"
+            >Leeftijdscategorie</label
+          >
+          <select
+            v-model="profileForm.age_category"
             class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-            placeholder="Bijv. 28"
-          />
+          >
+            <option value="">Selecteer</option>
+            <option v-for="age in ageCategories" :key="age" :value="age">
+              {{ age }}
+            </option>
+          </select>
         </div>
 
         <div>
@@ -192,18 +195,20 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import type { Issue } from "~/types/Issue";
-import type { User } from "~/types/User";
+import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";
 
 const auth = useAuthStore();
 const api = useApi();
 const router = useRouter();
 const { user, isLoggedIn } = storeToRefs(auth);
 
+const ageCategories = AGE_CATEGORIES;
+
 const profileForm = reactive({
   name: "",
   email: "",
   language: "nl" as "nl" | "en",
-  age: null as number | null,
+  age_category: "" as AgeCategory | "",
   province: "",
   gender: "unspecified" as User["gender"],
   education_level: "",
@@ -302,7 +307,7 @@ function hydrateFromUser(value: User) {
   profileForm.name = value.name ?? "";
   profileForm.email = value.email ?? "";
   profileForm.language = (value.language as "nl" | "en") ?? "nl";
-  profileForm.age = value.age ?? null;
+  profileForm.age_category = (value.age_category as AgeCategory | null) ?? "";
   profileForm.province = value.province ?? "";
   profileForm.gender = (value.gender ?? "unspecified") as User["gender"];
   profileForm.education_level = value.education_level ?? "";
@@ -321,7 +326,7 @@ async function saveProfile() {
     name: profileForm.name.trim(),
     email: profileForm.email.trim(),
     language: profileForm.language,
-    age: profileForm.age ?? null,
+    age_category: profileForm.age_category || null,
     province: profileForm.province ? profileForm.province.trim() : null,
     gender: profileForm.gender,
     education_level: profileForm.education_level || null,
