@@ -9,6 +9,7 @@
     <p v-if="issue.description" class="issue-card__description">
       {{ issue.description }}
     </p>
+    <IssuePartyStances :stances="issue.party_stances" />
     <IssueArgumentsList :groups="issue.arguments" />
     <footer class="issue-card__footer">
       <button
@@ -49,6 +50,7 @@
 
 <script setup lang="ts">
 import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
+import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
 const props = defineProps<{

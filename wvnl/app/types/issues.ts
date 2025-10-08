@@ -12,6 +12,21 @@ export interface IssueArgumentsGroup {
   con: IssueArgument[];
 }
 
+export interface IssuePartyStanceParty {
+  id: number;
+  name: string;
+  abbreviation: string;
+  slug: string;
+  logo_url: string | null;
+  website_url: string | null;
+}
+
+export interface IssuePartyStances {
+  agree: IssuePartyStanceParty[];
+  disagree: IssuePartyStanceParty[];
+  neutral: IssuePartyStanceParty[];
+}
+
 export interface IssueWithArguments {
   id: number;
   title: string;
@@ -19,11 +34,7 @@ export interface IssueWithArguments {
   url: string | null;
   description: string | null;
   more_info: string | null;
-  party_stances: {
-    agree: number[];
-    disagree: number[];
-    neutral: number[];
-  };
+  party_stances: IssuePartyStances;
   votes: {
     agree: number[];
     disagree: number[];

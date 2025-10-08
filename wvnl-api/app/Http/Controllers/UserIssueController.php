@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Issue;
+use App\Models\PoliticalParty;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class UserIssueController extends Controller
@@ -22,7 +24,11 @@ class UserIssueController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $data = $issues->map(fn($issue) => $this->serializeIssue($issue))->values();
+        $partyMap = $this->loadPartyMap($issues);
+
+        $data = $issues
+            ->map(fn($issue) => $this->serializeIssue($issue, $partyMap))
+            ->values();
 
         return response()->json($data);
     }
@@ -49,7 +55,7 @@ class UserIssueController extends Controller
         ]);
     }
 
-    protected function serializeIssue(Issue $issue): array
+    protected function serializeIssue(Issue $issue, Collection $partyMap): array
     {
         $votes = $issue->votes ?? ['agree' => [], 'disagree' => [], 'neutral' => []];
 
@@ -60,7 +66,7 @@ class UserIssueController extends Controller
             'url' => $issue->url,
             'description' => $issue->description,
             'more_info' => $issue->more_info,
-            'party_stances' => $issue->party_stances ?? ['agree' => [], 'disagree' => [], 'neutral' => []],
+            'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),
             'votes' => [
                 'agree' => array_values(array_map('intval', $votes['agree'] ?? [])),
                 'disagree' => array_values(array_map('intval', $votes['disagree'] ?? [])),
@@ -92,6 +98,60 @@ class UserIssueController extends Controller
             ],
             'created_at' => $issue->created_at?->toIso8601String(),
             'updated_at' => $issue->updated_at?->toIso8601String(),
+        ];
+    }
+
+    protected function loadPartyMap(Collection $issues): Collection
+    {
+        $ids = $issues
+            ->flatMap(function (Issue $issue) {
+                $stances = $issue->party_stances ?? [];
+
+                return collect($stances)
+                    ->flatMap(fn($list) => array_map('intval', (array) $list))
+                    ->filter();
+            })
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        return PoliticalParty::whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+    }
+
+    protected function serializePartyStances(?array $stances, Collection $partyMap): array
+    {
+        $keys = ['agree', 'neutral', 'disagree'];
+        $stances = $stances ?? [];
+
+        $result = [];
+        foreach ($keys as $key) {
+            $ids = array_map('intval', (array) ($stances[$key] ?? []));
+            $result[$key] = array_values(array_filter(array_map(
+                function ($id) use ($partyMap) {
+                    $party = $partyMap->get($id);
+                    return $party ? $this->serializeParty($party) : null;
+                },
+                $ids
+            )));
+        }
+
+        return $result + ['agree' => [], 'neutral' => [], 'disagree' => []];
+    }
+
+    protected function serializeParty(PoliticalParty $party): array
+    {
+        return [
+            'id' => $party->id,
+            'name' => $party->name,
+            'abbreviation' => $party->abbreviation,
+            'slug' => $party->slug,
+            'logo_url' => $party->logo_url,
+            'website_url' => $party->website_url,
         ];
     }
 }
