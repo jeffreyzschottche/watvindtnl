@@ -105,14 +105,9 @@
       >
         Overslaan
       </button>
-      <button
-        v-if="showShare"
-        type="button"
-        class="issue-card__button issue-card__button--share"
-        @click="emit('share')"
-      >
-        Deel
-      </button>
+      <div v-if="showShare" class="issue-card__share">
+        <ShareDropdown class="issue-card__share-trigger" @select="handleShare" />
+      </div>
     </footer>
   </article>
 </template>
@@ -121,12 +116,14 @@
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import ReportMenu from "~/components/common/ReportMenu.vue";
+import ShareDropdown from "~/components/common/ShareDropdown.vue";
 import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
 import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 import type { ReportReason } from "~/types/reports";
 import { reportIssue } from "~/services/issues";
 import { useAuthStore } from "~/stores/auth";
+import type { SharePlatform } from "~/composables/useIssueSharing";
 
 const props = withDefaults(
   defineProps<{
@@ -145,7 +142,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "vote", vote: IssueVoteOption): void;
   (e: "skip"): void;
-  (e: "share"): void;
+  (e: "share", platform: SharePlatform): void;
 }>();
 
 const auth = useAuthStore();
@@ -187,6 +184,10 @@ const votePercentages = computed(() => {
 
 function emitVote(vote: IssueVoteOption) {
   emit("vote", vote);
+}
+
+function handleShare(platform: SharePlatform) {
+  emit("share", platform);
 }
 
 async function handleIssueReport(reason: ReportReason) {
@@ -348,6 +349,19 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__button:not(:disabled):hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+}
+
+.issue-card__share {
+  flex: 1 1 160px;
+  display: flex;
+}
+
+.issue-card__share :deep(.share-dropdown) {
+  flex: 1 1 auto;
+}
+
+.issue-card__share :deep(.issue-card__button) {
+  width: 100%;
 }
 
 .issue-card__button--agree {

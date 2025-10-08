@@ -4,6 +4,13 @@ import { useNotificationStore } from "~/stores/notifications";
 import { useAuthStore } from "~/stores/auth";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
+export type SharePlatform =
+  | "instagram"
+  | "facebook"
+  | "twitter"
+  | "whatsapp"
+  | "clipboard";
+
 export type ShareableIssue = Pick<IssueWithArguments, "id" | "title"> & {
   votes?: IssueWithArguments["votes"];
 };
@@ -11,7 +18,11 @@ export type ShareableIssue = Pick<IssueWithArguments, "id" | "title"> & {
 export interface ShareIssueOptions {
   vote?: IssueVoteOption | null;
   path?: string;
+  platform?: SharePlatform;
 }
+
+const SHARE_IMAGE_URL =
+  "https://via.placeholder.com/1200x630.png?text=Wat+vind+jij%3F";
 
 export function useIssueSharing() {
   const router = useRouter();
@@ -27,21 +38,42 @@ export function useIssueSharing() {
     const link = buildShareLink(issue.id, options.path);
     const vote = resolveVote(issue, options.vote);
     const message = composeShareMessage(issue.title, vote, link);
+    const platform = options.platform ?? "clipboard";
 
-    try {
-      await copyToClipboard(message);
-      notifications.addNotification({
-        message: "Gekopieerd naar klembord.",
-        type: "success",
+    if (platform !== "clipboard") {
+      const messageWithImage = `${message}\n${SHARE_IMAGE_URL}`;
+      const opened = openShareTarget(platform, {
+        message: messageWithImage,
+        link,
       });
-      return true;
-    } catch (error) {
+
+      if (opened) {
+        notifications.addNotification({
+          message: shareSuccessMessage(platform),
+          type: "success",
+        });
+        return true;
+      }
+
+      const fallbackCopied = await copyWithFeedback(
+        messageWithImage,
+        "We konden geen directe deling openen. De tekst is naar het klembord gekopieerd.",
+        notifications,
+        "info"
+      );
+
+      if (fallbackCopied) {
+        return true;
+      }
+
       notifications.addNotification({
-        message: "Kopiëren is niet gelukt.",
+        message: "Delen is niet gelukt.",
         type: "error",
       });
       return false;
     }
+
+    return copyWithFeedback(message, "Gekopieerd naar klembord.", notifications);
   }
 
   function buildShareLink(issueId: number, path?: string) {
@@ -122,6 +154,83 @@ export function useIssueSharing() {
 
     if (!successful) {
       throw new Error("Clipboard niet beschikbaar");
+    }
+  }
+
+  function openShareTarget(
+    platform: SharePlatform,
+    data: { message: string; link: string }
+  ): boolean {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    const url = buildShareUrl(platform, data);
+    if (!url) {
+      return false;
+    }
+
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    return opened !== null;
+  }
+
+  function buildShareUrl(
+    platform: SharePlatform,
+    data: { message: string; link: string }
+  ): string | null {
+    const encodedMessage = encodeURIComponent(data.message);
+    const encodedLink = encodeURIComponent(data.link);
+
+    switch (platform) {
+      case "facebook":
+        return `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${encodedMessage}&picture=${encodeURIComponent(
+          SHARE_IMAGE_URL
+        )}`;
+      case "twitter":
+        return `https://twitter.com/intent/tweet?text=${encodedMessage}`;
+      case "whatsapp":
+        return `https://api.whatsapp.com/send?text=${encodedMessage}`;
+      case "instagram":
+        return `https://www.instagram.com/?url=${encodedLink}`;
+      default:
+        return null;
+    }
+  }
+
+  async function copyWithFeedback(
+    text: string,
+    successMessage: string,
+    notificationsStore: ReturnType<typeof useNotificationStore>,
+    type: "success" | "info" = "success"
+  ): Promise<boolean> {
+    try {
+      await copyToClipboard(text);
+      notificationsStore.addNotification({
+        message: successMessage,
+        type,
+      });
+      return true;
+    } catch (error) {
+      notificationsStore.addNotification({
+        message: "Kopiëren is niet gelukt.",
+        type: "error",
+      });
+      return false;
+    }
+  }
+
+  function shareSuccessMessage(platform: SharePlatform) {
+    switch (platform) {
+      case "facebook":
+        return "Facebook is geopend om je bericht te delen.";
+      case "instagram":
+        return "Instagram is geopend om je bericht te delen.";
+      case "twitter":
+        return "Twitter is geopend om je bericht te delen.";
+      case "whatsapp":
+        return "WhatsApp is geopend om je bericht te delen.";
+      default:
+        return "Deelvenster geopend.";
     }
   }
 

@@ -30,13 +30,10 @@
           >
             {{ voteLabel(item.vote) }}
           </span>
-          <button
-            type="button"
-            class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900"
-            @click="share(item)"
-          >
-            Deel
-          </button>
+          <ShareDropdown
+            trigger-class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900"
+            @select="(platform) => share(item, platform)"
+          />
         </div>
       </li>
     </ul>
@@ -45,9 +42,11 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
+import ShareDropdown from "~/components/common/ShareDropdown.vue";
+import { useIssueSharing } from "~/composables/useIssueSharing";
+import type { SharePlatform } from "~/composables/useIssueSharing";
 import type { IssueVoteOption, UserVoteHistoryItem } from "~/types/issues";
 import { useAuthStore } from "~/stores/auth";
-import { useIssueSharing } from "~/composables/useIssueSharing";
 
 const api = useApi();
 const auth = useAuthStore();
@@ -110,10 +109,10 @@ function voteClass(vote: IssueVoteOption) {
   }
 }
 
-async function share(item: UserVoteHistoryItem) {
+async function share(item: UserVoteHistoryItem, platform: SharePlatform) {
   await shareIssue(
     { id: item.id, title: item.title },
-    { vote: item.vote, path: "/issues" }
+    { vote: item.vote, path: "/issues", platform }
   );
 }
 

@@ -30,7 +30,7 @@
         :disabled="actionPending"
         @vote="handleVote"
         @skip="handleSkip"
-        @share="handleShare(activeIssue)"
+        @share="(platform) => handleShare(activeIssue, platform)"
       />
 
       <p v-if="error && activeIssue" class="issues-page__inline-error">
@@ -55,7 +55,7 @@
       @close="closeModal"
       @retry="retryModal"
       @vote="handleModalVote"
-      @share="handleShare(modalIssue)"
+      @share="(platform) => handleShare(modalIssue, platform)"
     />
   </section>
 </template>
@@ -69,6 +69,7 @@ import { useIssues } from "~/composables/useIssues";
 import { useAuthStore } from "~/stores/auth";
 import { useNotificationStore } from "~/stores/notifications";
 import { useIssueSharing } from "~/composables/useIssueSharing";
+import type { SharePlatform } from "~/composables/useIssueSharing";
 import { fetchIssueWithArguments, voteOnIssue } from "~/services/issues";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
@@ -237,10 +238,10 @@ function retryModal() {
   }
 }
 
-async function handleShare(issue: IssueWithArguments | null) {
+async function handleShare(issue: IssueWithArguments | null, platform: SharePlatform) {
   if (!issue) return;
 
-  await shareIssue(issue, { path: route.path });
+  await shareIssue(issue, { path: route.path, platform });
 }
 
 function applyUserVote(

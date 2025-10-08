@@ -36,7 +36,7 @@
           :show-skip="false"
           @vote="emit('vote', $event)"
           @skip="emit('close')"
-          @share="emit('share')"
+          @share="emit('share', $event)"
         />
       </div>
     </div>
@@ -45,7 +45,8 @@
 
 <script setup lang="ts">
 import IssueVoteCard from "~/components/issues/IssueVoteCard.vue";
-import type { IssueWithArguments } from "~/types/issues";
+import type { SharePlatform } from "~/composables/useIssueSharing";
+import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
 withDefaults(
   defineProps<{
@@ -67,8 +68,8 @@ withDefaults(
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "retry"): void;
-  (e: "vote", vote: "agree" | "neutral" | "disagree"): void;
-  (e: "share"): void;
+  (e: "vote", vote: IssueVoteOption): void;
+  (e: "share", platform: SharePlatform): void;
 }>();
 </script>
 
