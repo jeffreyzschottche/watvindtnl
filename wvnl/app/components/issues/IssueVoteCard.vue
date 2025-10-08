@@ -9,6 +9,59 @@
     <p v-if="issue.description" class="issue-card__description">
       {{ issue.description }}
     </p>
+    <section class="issue-card__results">
+      <header class="issue-card__results-header">
+        <h3 class="issue-card__results-title">Wat anderen vinden</h3>
+        <span class="issue-card__results-total">
+          {{ totalVotes }} stem{{ totalVotes === 1 ? "" : "men" }}
+        </span>
+      </header>
+      <p v-if="totalVotes === 0" class="issue-card__results-empty">
+        Nog geen stemmen uitgebracht.
+      </p>
+      <template v-else>
+        <div class="issue-card__results-bar">
+          <span
+            class="issue-card__results-segment issue-card__results-segment--agree"
+            :style="{ width: `${votePercentages.agree}%` }"
+          />
+          <span
+            class="issue-card__results-segment issue-card__results-segment--neutral"
+            :style="{ width: `${votePercentages.neutral}%` }"
+          />
+          <span
+            class="issue-card__results-segment issue-card__results-segment--disagree"
+            :style="{ width: `${votePercentages.disagree}%` }"
+          />
+        </div>
+        <ul class="issue-card__results-list">
+          <li class="issue-card__results-item">
+            <span class="issue-card__results-label">Voor</span>
+            <span class="issue-card__results-value">
+              {{ votePercentages.agree }}%
+              ·
+              {{ voteCounts.agree }} stem{{ voteCounts.agree === 1 ? "" : "men" }}
+            </span>
+          </li>
+          <li class="issue-card__results-item">
+            <span class="issue-card__results-label">Neutraal</span>
+            <span class="issue-card__results-value">
+              {{ votePercentages.neutral }}%
+              ·
+              {{ voteCounts.neutral }} stem{{ voteCounts.neutral === 1 ? "" : "men" }}
+            </span>
+          </li>
+          <li class="issue-card__results-item">
+            <span class="issue-card__results-label">Tegen</span>
+            <span class="issue-card__results-value">
+              {{ votePercentages.disagree }}%
+              ·
+              {{ voteCounts.disagree }} stem{{ voteCounts.disagree === 1 ? "" : "men" }}
+            </span>
+          </li>
+        </ul>
+      </template>
+    </section>
     <IssuePartyStances :stances="issue.party_stances" />
     <IssueArgumentsList :groups="issue.arguments" />
     <footer class="issue-card__footer">
@@ -49,6 +102,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
 import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
@@ -63,6 +117,40 @@ const emit = defineEmits<{
   (e: "vote", vote: IssueVoteOption): void;
   (e: "skip"): void;
 }>();
+
+const voteCounts = computed(() => {
+  const votes = props.issue.votes ?? { agree: [], neutral: [], disagree: [] };
+
+  return {
+    agree: votes.agree?.length ?? 0,
+    neutral: votes.neutral?.length ?? 0,
+    disagree: votes.disagree?.length ?? 0,
+  };
+});
+
+const totalVotes = computed(
+  () => voteCounts.value.agree + voteCounts.value.neutral + voteCounts.value.disagree,
+);
+
+const votePercentages = computed(() => {
+  const total = totalVotes.value;
+
+  if (!total) {
+    return {
+      agree: 0,
+      neutral: 0,
+      disagree: 0,
+    };
+  }
+
+  const toPercentage = (count: number) => Math.round((count / total) * 100);
+
+  return {
+    agree: toPercentage(voteCounts.value.agree),
+    neutral: toPercentage(voteCounts.value.neutral),
+    disagree: toPercentage(voteCounts.value.disagree),
+  };
+});
 
 function emitVote(vote: IssueVoteOption) {
   emit("vote", vote);
@@ -101,6 +189,88 @@ function emitVote(vote: IssueVoteOption) {
   margin: 0;
   line-height: 1.6;
   color: #374151;
+}
+
+.issue-card__results {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+}
+
+.issue-card__results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.issue-card__results-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.issue-card__results-total {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.issue-card__results-empty {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.issue-card__results-bar {
+  display: flex;
+  width: 100%;
+  height: 0.75rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+.issue-card__results-segment {
+  display: inline-block;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.issue-card__results-segment--agree {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.issue-card__results-segment--neutral {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+.issue-card__results-segment--disagree {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.issue-card__results-list {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.issue-card__results-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.issue-card__results-label {
+  font-weight: 600;
+}
+
+.issue-card__results-value {
+  color: #475569;
 }
 
 .issue-card__footer {
