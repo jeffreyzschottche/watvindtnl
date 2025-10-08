@@ -24,6 +24,4 @@ const { data, error, pending } = await useFetch(
   </main>
 </template>
 
-<script>
-alert("hi");
-</script>
+<script></script>
