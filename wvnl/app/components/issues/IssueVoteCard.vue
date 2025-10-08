@@ -1,10 +1,17 @@
 <template>
   <article class="issue-card">
     <header class="issue-card__header">
-      <p v-if="remaining" class="issue-card__counter">
-        Nog {{ remaining }} vraag{{ remaining === 1 ? "" : "en" }} te gaan
-      </p>
-      <h2 class="issue-card__title">{{ issue.title }}</h2>
+      <div class="issue-card__title-group">
+        <p v-if="remaining" class="issue-card__counter">
+          Nog {{ remaining }} vraag{{ remaining === 1 ? "" : "en" }} te gaan
+        </p>
+        <h2 class="issue-card__title">{{ issue.title }}</h2>
+      </div>
+      <ReportMenu
+        class="issue-card__report"
+        :submit="handleIssueReport"
+        success-message="Bedankt voor je melding over deze kwestie."
+      />
     </header>
     <p v-if="issue.description" class="issue-card__description">
       {{ issue.description }}
@@ -112,9 +119,14 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { storeToRefs } from "pinia";
+import ReportMenu from "~/components/common/ReportMenu.vue";
 import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
 import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
+import type { ReportReason } from "~/types/reports";
+import { reportIssue } from "~/services/issues";
+import { useAuthStore } from "~/stores/auth";
 
 const props = withDefaults(
   defineProps<{
@@ -135,6 +147,9 @@ const emit = defineEmits<{
   (e: "skip"): void;
   (e: "share"): void;
 }>();
+
+const auth = useAuthStore();
+const { token } = storeToRefs(auth);
 
 const voteCounts = computed(() => {
   const votes = props.issue.votes ?? { agree: [], neutral: [], disagree: [] };
@@ -173,6 +188,10 @@ const votePercentages = computed(() => {
 function emitVote(vote: IssueVoteOption) {
   emit("vote", vote);
 }
+
+async function handleIssueReport(reason: ReportReason) {
+  await reportIssue(props.issue.id, reason, token.value ?? undefined);
+}
 </script>
 
 <style scoped>
@@ -186,6 +205,13 @@ function emitVote(vote: IssueVoteOption) {
 }
 
 .issue-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.issue-card__title-group {
   display: grid;
   gap: 0.5rem;
 }
@@ -201,6 +227,10 @@ function emitVote(vote: IssueVoteOption) {
 .issue-card__title {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.issue-card__report {
+  flex-shrink: 0;
 }
 
 .issue-card__description {

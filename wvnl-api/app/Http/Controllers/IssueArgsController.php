@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Issue;
+use App\Support\ReportReasons;
 
 class IssueArgsController extends Controller
 {
@@ -71,6 +72,7 @@ class IssueArgsController extends Controller
             'description' => $issue->description,
             'more_info' => $issue->more_info,
             'party_stances' => $issue->party_stances ?? ['agree' => [], 'disagree' => [], 'neutral' => []],
+            'reports' => ReportReasons::normalize($issue->reports ?? []),
             'votes' => [
                 'agree' => array_values(array_map('intval', $votes['agree'] ?? [])),
                 'disagree' => array_values(array_map('intval', $votes['disagree'] ?? [])),
@@ -84,7 +86,7 @@ class IssueArgsController extends Controller
                         'id' => $a->id,
                         'body' => $a->body,
                         'sources' => $a->sources ?? [],
-                        'source_reports' => $a->source_reports ?? [],
+                        'source_reports' => ReportReasons::normalize($a->source_reports ?? []),
                         'created_at' => $a->created_at?->toIso8601String(),
                         'updated_at' => $a->updated_at?->toIso8601String(),
                     ]),
@@ -95,7 +97,7 @@ class IssueArgsController extends Controller
                         'id' => $a->id,
                         'body' => $a->body,
                         'sources' => $a->sources ?? [],
-                        'source_reports' => $a->source_reports ?? [],
+                        'source_reports' => ReportReasons::normalize($a->source_reports ?? []),
                         'created_at' => $a->created_at?->toIso8601String(),
                         'updated_at' => $a->updated_at?->toIso8601String(),
                     ]),

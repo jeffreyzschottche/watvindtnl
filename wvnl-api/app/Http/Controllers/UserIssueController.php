@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
+use App\Support\ReportReasons;
 
 class UserIssueController extends Controller
 {
@@ -140,6 +141,7 @@ class UserIssueController extends Controller
             'description' => $issue->description,
             'more_info' => $issue->more_info,
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),
+            'reports' => ReportReasons::normalize($issue->reports ?? []),
             'votes' => [
                 'agree' => array_values(array_map('intval', $votes['agree'] ?? [])),
                 'disagree' => array_values(array_map('intval', $votes['disagree'] ?? [])),
@@ -153,7 +155,7 @@ class UserIssueController extends Controller
                         'id' => $a->id,
                         'body' => $a->body,
                         'sources' => $a->sources ?? [],
-                        'source_reports' => $a->source_reports ?? [],
+                        'source_reports' => ReportReasons::normalize($a->source_reports ?? []),
                         'created_at' => $a->created_at?->toIso8601String(),
                         'updated_at' => $a->updated_at?->toIso8601String(),
                     ]),
@@ -164,7 +166,7 @@ class UserIssueController extends Controller
                         'id' => $a->id,
                         'body' => $a->body,
                         'sources' => $a->sources ?? [],
-                        'source_reports' => $a->source_reports ?? [],
+                        'source_reports' => ReportReasons::normalize($a->source_reports ?? []),
                         'created_at' => $a->created_at?->toIso8601String(),
                         'updated_at' => $a->updated_at?->toIso8601String(),
                     ]),

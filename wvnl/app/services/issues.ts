@@ -4,6 +4,17 @@ import type {
   IssueVoteResponse,
   IssueWithArguments,
 } from "~/types/issues";
+import type { ReportCounts, ReportReason } from "~/types/reports";
+
+interface IssueReportResponse {
+  status: string;
+  reports: ReportCounts;
+}
+
+interface ArgumentReportResponse {
+  status: string;
+  source_reports: ReportCounts;
+}
 
 function buildHeaders(token?: string, extra?: HeadersInit): Headers {
   const headers = new Headers(extra ?? {});
@@ -57,5 +68,41 @@ export function voteOnIssue(
     ...init,
     headers,
     body: JSON.stringify({ vote }),
+  });
+}
+
+export function reportIssue(
+  issueId: number,
+  reason: ReportReason,
+  token?: string,
+  init?: RequestInit
+): Promise<IssueReportResponse> {
+  const headers = buildHeaders(token, init?.headers ?? undefined);
+  if (!headers.has("Content-Type"))
+    headers.set("Content-Type", "application/json");
+
+  return apiFetch<IssueReportResponse>(`/issues/${issueId}/report`, {
+    method: "POST",
+    ...init,
+    headers,
+    body: JSON.stringify({ reason }),
+  });
+}
+
+export function reportArgument(
+  argumentId: number,
+  reason: ReportReason,
+  token?: string,
+  init?: RequestInit
+): Promise<ArgumentReportResponse> {
+  const headers = buildHeaders(token, init?.headers ?? undefined);
+  if (!headers.has("Content-Type"))
+    headers.set("Content-Type", "application/json");
+
+  return apiFetch<ArgumentReportResponse>(`/arguments/${argumentId}/report`, {
+    method: "POST",
+    ...init,
+    headers,
+    body: JSON.stringify({ reason }),
   });
 }

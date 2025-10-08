@@ -1,8 +1,10 @@
+import type { ReportCounts } from "~/types/reports";
+
 export interface IssueArgument {
   id: number;
   body: string;
   sources: string[];
-  source_reports: unknown[];
+  source_reports: ReportCounts;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -35,6 +37,7 @@ export interface IssueWithArguments {
   description: string | null;
   more_info: string | null;
   party_stances: IssuePartyStances;
+  reports: ReportCounts;
   votes: {
     agree: number[];
     disagree: number[];
