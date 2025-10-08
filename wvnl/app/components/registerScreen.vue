@@ -34,13 +34,9 @@
       <label class="block text-sm mb-1">Leeftijdscategorie</label>
       <select v-model="form.age_category" class="input" required>
         <option disabled value="">Maak een keuze</option>
-        <option value="16-17">16–17</option>
-        <option value="18-24">18–24</option>
-        <option value="25-34">25–34</option>
-        <option value="35-44">35–44</option>
-        <option value="45-54">45–54</option>
-        <option value="55-64">55–64</option>
-        <option value="65+">65+</option>
+        <option v-for="age in ageCategories" :key="age" :value="age">
+          {{ age }}
+        </option>
       </select>
     </div>
 
@@ -119,6 +115,7 @@
 
 <script setup lang="ts">
 import { useAuth } from "~/composables/useAuth";
+import { AGE_CATEGORIES, type AgeCategory } from "~/types/User";
 
 const { register } = useAuth();
 const router = useRouter();
@@ -138,6 +135,8 @@ const provinces = [
   "Zuid-Holland",
 ];
 
+const ageCategories = AGE_CATEGORIES;
+
 const form = reactive({
   name: "",
   username: "",
@@ -145,7 +144,7 @@ const form = reactive({
   password: "",
   language: "nl" as "nl" | "en",
   // Wat-vindt-NL velden
-  age_category: "" as string,
+  age_category: "" as AgeCategory | "",
   province: "" as string,
   gender: "unspecified" as "male" | "female" | "unspecified",
   education_level: "" as "mbo" | "hbo" | "universiteit" | "overig" | "",

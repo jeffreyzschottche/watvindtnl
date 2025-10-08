@@ -16,6 +16,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'language',
         'voted_issue_ids',
         'requests',
         'age_category',
@@ -25,7 +26,6 @@ class User extends Authenticatable
         'political_preference',
         'notification_prefs',
         'cookie_prefs',
-        'language',
         'premium',
     ];
 

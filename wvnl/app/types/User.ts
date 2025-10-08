@@ -12,14 +12,27 @@ export interface CookiePrefs {
   functional?: boolean;
 }
 
+export const AGE_CATEGORIES = [
+  "16-17",
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55-64",
+  "65+",
+] as const;
+
+export type AgeCategory = (typeof AGE_CATEGORIES)[number];
+
 export interface User {
   id: number;
   name: string;
   username?: string | null;
   email: string;
+  language?: "nl" | "en";
   voted_issue_ids?: number[]; // ID van de kwesties gestemd
   requests?: string[]; // Requests
-  age_category?: string | null; // leeftijdscategorie
+  age_category?: AgeCategory | null; // leeftijdscategorie
   province?: string | null; // provincie
   gender?: Gender;
   education_level?: string | null; // opleidingsniveau

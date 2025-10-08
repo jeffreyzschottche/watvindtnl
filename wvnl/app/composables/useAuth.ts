@@ -2,7 +2,7 @@
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "~/stores/auth";
 import { useApi } from "~/composables/useApi";
-import type { User } from "~/types/User";
+import type { AgeCategory, User } from "~/types/User";
 
 export function useAuth() {
   const store = useAuthStore();
@@ -14,7 +14,7 @@ export function useAuth() {
     email: string;
     password: string;
     language: "nl" | "en";
-    age_category: string;
+    age_category: AgeCategory;
     province: string;
     gender: "male" | "female" | "unspecified";
     education_level: "mbo" | "hbo" | "universiteit" | "overig";
@@ -42,5 +42,6 @@ export function useAuth() {
     login,
     logout: store.logout,
     restore: store.restore,
+    updateUser: store.updateUser,
   };
 }
