@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Issue;
 use App\Models\PoliticalParty;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -40,19 +41,44 @@ class UserIssueController extends Controller
         ]);
 
         $user = $request->user();
-        $voted = array_map('intval', (array) ($user->voted_issue_ids ?? []));
+        $vote = $validated['vote'];
 
-        if (!in_array($issue->id, $voted, true)) {
-            $voted[] = (int) $issue->id;
-            $user->voted_issue_ids = array_values(array_unique($voted));
-            $user->save();
-        }
+        $this->recordVote($issue, (int) $user->id, $vote);
+        $this->rememberUserVote($user, (int) $issue->id);
 
         return response()->json([
             'status' => 'ok',
-            'vote' => $validated['vote'],
+            'vote' => $vote,
             'voted_issue_ids' => $user->voted_issue_ids ?? [],
         ]);
+    }
+
+    protected function recordVote(Issue $issue, int $userId, string $bucket): void
+    {
+        $votes = $issue->votes ?? ['agree' => [], 'disagree' => [], 'neutral' => []];
+
+        foreach (['agree', 'disagree', 'neutral'] as $key) {
+            $votes[$key] = array_values(array_filter(
+                array_map('intval', $votes[$key] ?? []),
+                fn ($id) => $id !== $userId
+            ));
+        }
+
+        $votes[$bucket] = array_values(array_unique(array_merge($votes[$bucket] ?? [], [$userId])));
+
+        $issue->votes = $votes;
+        $issue->save();
+    }
+
+    protected function rememberUserVote(User $user, int $issueId): void
+    {
+        $voted = array_map('intval', (array) ($user->voted_issue_ids ?? []));
+
+        if (!in_array($issueId, $voted, true)) {
+            $voted[] = $issueId;
+            $user->voted_issue_ids = array_values(array_unique($voted));
+            $user->save();
+        }
     }
 
     protected function serializeIssue(Issue $issue, Collection $partyMap): array
