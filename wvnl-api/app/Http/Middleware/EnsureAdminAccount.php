@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureAdminAccount
 {
-    private const ADMIN_EMAIL = 'jeffreyjeffreyzschot@gmail.com';
+    private const ADMIN_EMAIL = 'jeffreyzschot@gmail.com';
     private const ADMIN_USERNAME = 'jeffreyzschot';
 
     /**

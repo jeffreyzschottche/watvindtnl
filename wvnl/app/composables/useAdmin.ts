@@ -10,7 +10,7 @@ import type {
   AdminPoliticalPartyPayload,
 } from "~/types/admin";
 
-const ADMIN_EMAIL = "jeffreyjeffreyzschot@gmail.com";
+const ADMIN_EMAIL = "jeffreyzschot@gmail.com";
 const ADMIN_USERNAME = "jeffreyzschot";
 
 export function useAdmin() {
@@ -36,7 +36,9 @@ export function useAdmin() {
     error.value = message;
   }
 
-  async function withErrorHandling<T>(callback: () => Promise<T>): Promise<T | null> {
+  async function withErrorHandling<T>(
+    callback: () => Promise<T>
+  ): Promise<T | null> {
     try {
       setError(null);
       loading.value = true;
@@ -120,7 +122,8 @@ export function useAdmin() {
   function updateIssueArguments(argument: AdminArgument) {
     for (const issue of [...issues.value, ...reports.value]) {
       if (issue.id !== argument.issue_id) continue;
-      const target = argument.side === "pro" ? issue.arguments.pro : issue.arguments.con;
+      const target =
+        argument.side === "pro" ? issue.arguments.pro : issue.arguments.con;
       const existingIndex = target.findIndex((item) => item.id === argument.id);
       if (existingIndex >= 0) {
         target.splice(existingIndex, 1, argument);
