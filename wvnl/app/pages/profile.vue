@@ -167,7 +167,8 @@
       <header class="space-y-2">
         <h2 class="text-2xl font-semibold">Wachtwoord wijzigen</h2>
         <p class="text-gray-600">
-          Kies een nieuw wachtwoord en bevestig het om je wijzigingen op te slaan.
+          Verifieer je huidige wachtwoord en kies vervolgens een nieuw wachtwoord om je
+          wijzigingen op te slaan.
         </p>
       </header>
 
@@ -182,6 +183,17 @@
       </div>
 
       <form class="grid gap-6 md:grid-cols-2" @submit.prevent="updatePassword">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Huidig wachtwoord</label>
+          <input
+            v-model="passwordForm.current_password"
+            type="password"
+            minlength="8"
+            class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+            required
+          />
+        </div>
+
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700">Nieuw wachtwoord</label>
           <input
@@ -251,6 +263,7 @@ const premiumForm = reactive({
 });
 
 const passwordForm = reactive({
+  current_password: "",
   password: "",
   password_confirmation: "",
 });
@@ -393,6 +406,11 @@ async function updatePassword() {
   passwordMessage.value = null;
   passwordError.value = null;
 
+  if (!passwordForm.current_password || passwordForm.current_password.length < 8) {
+    passwordError.value = "Vul je huidige wachtwoord (minimaal 8 tekens) in.";
+    return;
+  }
+
   if (!passwordForm.password || passwordForm.password.length < 8) {
     passwordError.value = "Het wachtwoord moet minimaal 8 tekens bevatten.";
     return;
@@ -407,10 +425,12 @@ async function updatePassword() {
 
   try {
     await api.patch(`/users/${user.value.id}/password`, {
+      current_password: passwordForm.current_password,
       password: passwordForm.password,
       password_confirmation: passwordForm.password_confirmation,
     });
     passwordMessage.value = "Wachtwoord succesvol bijgewerkt.";
+    passwordForm.current_password = "";
     passwordForm.password = "";
     passwordForm.password_confirmation = "";
   } catch (error: any) {
