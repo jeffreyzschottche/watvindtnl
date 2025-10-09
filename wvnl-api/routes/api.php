@@ -35,9 +35,13 @@ Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(fun
     Route::get('/issues', [AdminIssueController::class, 'index']);
     Route::get('/reports', [AdminIssueController::class, 'reports']);
     Route::post('/issues', [AdminIssueController::class, 'store']);
+    Route::patch('/issues/{issue}', [AdminIssueController::class, 'update']);
+    Route::post('/issues/import', [AdminIssueController::class, 'bulkStore']);
     Route::delete('/issues/{issue}', [AdminIssueController::class, 'destroy']);
 
     Route::post('/issues/{issue}/arguments', [AdminArgumentController::class, 'store']);
+    Route::patch('/arguments/{argument}', [AdminArgumentController::class, 'update']);
+    Route::post('/arguments/bulk', [AdminArgumentController::class, 'bulkStore']);
     Route::delete('/arguments/{argument}', [AdminArgumentController::class, 'destroy']);
 
     Route::get('/political-parties', [AdminPoliticalPartyController::class, 'index']);

@@ -4,8 +4,11 @@ import { createAdminService } from "~/services/admin";
 import type {
   AdminArgument,
   AdminArgumentPayload,
+  AdminArgumentImportPayload,
+  AdminArgumentUpsertPayload,
   AdminIssue,
   AdminIssuePayload,
+  AdminIssueImportPayload,
   AdminPoliticalParty,
   AdminPoliticalPartyPayload,
 } from "~/types/admin";
@@ -22,6 +25,32 @@ export function useAdmin() {
   const parties = ref<AdminPoliticalParty[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+
+  function sortIssues(list: AdminIssue[]): AdminIssue[] {
+    return [...list].sort((a, b) => {
+      const aDate = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const bDate = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return bDate - aDate;
+    });
+  }
+
+  function sortArguments(list: AdminArgument[]): AdminArgument[] {
+    return [...list].sort((a, b) => {
+      const aDate = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const bDate = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return aDate - bDate;
+    });
+  }
+
+  function upsertIssue(issue: AdminIssue) {
+    const updateList = (collection: AdminIssue[]) => {
+      const filtered = collection.filter((item) => item.id !== issue.id);
+      return sortIssues([issue, ...filtered]);
+    };
+
+    issues.value = updateList(issues.value);
+    reports.value = updateList(reports.value);
+  }
 
   const isAdmin = computed(() => {
     const current = auth.user.value;
@@ -77,11 +106,28 @@ export function useAdmin() {
   async function createIssue(payload: AdminIssuePayload) {
     const issue = await withErrorHandling(async () => {
       const created = await service.createIssue(payload);
-      issues.value = [created, ...issues.value];
-      reports.value = [created, ...reports.value];
+      upsertIssue(created);
       return created;
     });
     return issue;
+  }
+
+  async function updateIssue(issueId: number, payload: AdminIssuePayload) {
+    const issue = await withErrorHandling(async () => {
+      const updated = await service.updateIssue(issueId, payload);
+      upsertIssue(updated);
+      return updated;
+    });
+    return issue;
+  }
+
+  async function importIssues(payload: AdminIssueImportPayload) {
+    const imported = await withErrorHandling(async () => {
+      const response = await service.importIssues(payload);
+      response.forEach((issue) => upsertIssue(issue));
+      return response;
+    });
+    return imported;
   }
 
   async function deleteIssue(issueId: number) {
@@ -99,6 +145,27 @@ export function useAdmin() {
       return created;
     });
     return argument;
+  }
+
+  async function updateArgument(
+    argumentId: number,
+    payload: AdminArgumentUpsertPayload
+  ) {
+    const argument = await withErrorHandling(async () => {
+      const updated = await service.updateArgument(argumentId, payload);
+      updateIssueArguments(updated);
+      return updated;
+    });
+    return argument;
+  }
+
+  async function importArguments(payload: AdminArgumentImportPayload) {
+    const argumentsList = await withErrorHandling(async () => {
+      const response = await service.importArguments(payload);
+      response.forEach((argument) => updateIssueArguments(argument));
+      return response;
+    });
+    return argumentsList;
   }
 
   async function removeArgument(argumentId: number) {
@@ -120,13 +187,16 @@ export function useAdmin() {
   function updateIssueArguments(argument: AdminArgument) {
     for (const issue of [...issues.value, ...reports.value]) {
       if (issue.id !== argument.issue_id) continue;
+      issue.arguments.pro = issue.arguments.pro.filter(
+        (item) => item.id !== argument.id
+      );
+      issue.arguments.con = issue.arguments.con.filter(
+        (item) => item.id !== argument.id
+      );
       const target = argument.side === "pro" ? issue.arguments.pro : issue.arguments.con;
-      const existingIndex = target.findIndex((item) => item.id === argument.id);
-      if (existingIndex >= 0) {
-        target.splice(existingIndex, 1, argument);
-      } else {
-        target.push(argument);
-      }
+      target.push(argument);
+      issue.arguments.pro = sortArguments(issue.arguments.pro);
+      issue.arguments.con = sortArguments(issue.arguments.con);
     }
   }
 
@@ -164,8 +234,12 @@ export function useAdmin() {
     loadReports,
     loadParties,
     createIssue,
+    updateIssue,
+    importIssues,
     deleteIssue,
     addArgument,
+    updateArgument,
+    importArguments,
     removeArgument,
     createParty,
     updateParty,

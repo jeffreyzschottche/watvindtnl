@@ -64,6 +64,12 @@ export interface AdminArgumentPayload {
   sources?: string[];
 }
 
+export interface AdminArgumentUpsertPayload extends AdminArgumentPayload {
+  id?: number;
+  issue_id?: number;
+  issue_slug?: string;
+}
+
 export interface AdminPoliticalParty {
   id: number;
   name: string;
@@ -81,4 +87,18 @@ export interface AdminPoliticalPartyPayload {
   slug?: string;
   logo_url?: string | null;
   website_url?: string | null;
+}
+
+export interface AdminIssueImportItem extends AdminIssuePayload {
+  id?: number;
+  reports?: ReportCounts;
+  votes?: AdminVotes;
+}
+
+export interface AdminIssueImportPayload {
+  issues: AdminIssueImportItem[];
+}
+
+export interface AdminArgumentImportPayload {
+  arguments: AdminArgumentUpsertPayload[];
 }
