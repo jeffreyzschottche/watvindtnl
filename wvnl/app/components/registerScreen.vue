@@ -138,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from "~/composables/useAuth";
+import { useAuth, type RegisterPayload } from "~/composables/useAuth";
 import { AGE_CATEGORIES, type AgeCategory } from "~/types/User";
 
 const { register } = useAuth();
@@ -193,7 +193,7 @@ async function onSubmit() {
       throw new Error("Je moet akkoord gaan met het cookiegebruik.");
     }
     // payload normaliseren; voorkom nulls door lege strings te vermijden
-    const payload = {
+    const payload: RegisterPayload = {
       ...form,
       password_confirmation: confirmPassword.value,
       notification_prefs: { email: !!wantsNotifications.value },
@@ -202,8 +202,11 @@ async function onSubmit() {
         accepted_at: new Date().toISOString(),
       },
     };
-    await register(payload as any);
-    router.push("/");
+    await register(payload);
+    router.push({
+      path: "/login",
+      query: { verify: "1", email: form.email },
+    });
   } catch (e: any) {
     error.value = e?.message || "Registratie mislukt";
   } finally {

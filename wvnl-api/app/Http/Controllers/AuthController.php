@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\{RegisterRequest, LoginRequest};
+use App\Http\Requests\{LoginRequest, RegisterRequest, ResendVerificationEmailRequest};
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -26,12 +26,11 @@ class AuthController extends Controller
 
         $user = User::create($data);
 
-        // refresh voor casts
-        $user->refresh();
+        // verstuur verificatie-mail
+        $user->sendEmailVerificationNotification();
 
         return response()->json([
-            'token' => $user->createToken('mobile')->plainTextToken,
-            'user' => $user,
+            'message' => 'Account aangemaakt. Controleer je e-mail om je registratie te voltooien.',
         ], 201);
     }
 
@@ -43,6 +42,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 422);
         }
 
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'verifieer eerst je emailadress'], 403);
+        }
+
         return response()->json([
             'token' => $user->createToken('mobile')->plainTextToken,
             'user' => $user,
@@ -52,5 +55,20 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         return response()->json(auth()->user());
+    }
+
+    public function resendVerification(ResendVerificationEmailRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+        }
+
+        return response()->json([
+            'message' => 'Als het e-mailadres bekend is, hebben we een nieuwe verificatiemail gestuurd.',
+        ]);
     }
 }

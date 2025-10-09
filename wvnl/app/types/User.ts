@@ -31,6 +31,7 @@ export interface User {
   name: string;
   username?: string | null;
   email: string;
+  email_verified_at?: string | null;
   language?: "nl" | "en";
   voted_issue_ids?: number[]; // ID van de kwesties gestemd
   requests?: string[]; // Requests

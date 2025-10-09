@@ -2,16 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\IssueArgsController;
-use App\Http\Controllers\UserIssueController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserIssueController;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/email/resend', [AuthController::class, 'resendVerification']);
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
