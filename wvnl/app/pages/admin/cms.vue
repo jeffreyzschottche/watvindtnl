@@ -74,6 +74,69 @@
 
         <div v-if="activeTab === 'issues'" class="space-y-6">
           <section class="rounded-xl bg-white p-6 shadow-sm">
+            <header class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 class="text-lg font-semibold text-slate-800">Importeer issues</h2>
+                <p class="text-sm text-slate-500">
+                  Upload een JSON-bestand in hetzelfde formaat als de seeder om meerdere issues
+                  en bijbehorende argumenten tegelijk toe te voegen of te updaten.
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <input
+                  ref="issueUploadInput"
+                  type="file"
+                  accept="application/json"
+                  class="hidden"
+                  @change="handleIssueFileUpload"
+                />
+                <button
+                  type="button"
+                  class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  @click="triggerIssueUpload"
+                >
+                  JSON kiezen
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                  :disabled="loading || !hasIssueImport"
+                  @click="saveIssueImport"
+                >
+                  Opslaan
+                </button>
+              </div>
+            </header>
+            <div class="space-y-3 text-sm text-slate-600">
+              <p>
+                Ondersteunt een object met <code class="rounded bg-slate-100 px-1">issues</code>
+                en optioneel <code class="rounded bg-slate-100 px-1">arguments</code>, of een array met issue-items.
+              </p>
+              <pre class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"><code>{{ issueImportExample }}</code></pre>
+              <div
+                v-if="issueImportState.fileName"
+                class="rounded-lg border border-slate-200 bg-slate-50 p-4"
+              >
+                <p class="text-sm font-semibold text-slate-700">Geselecteerd bestand</p>
+                <p class="text-sm text-slate-600">{{ issueImportState.fileName }}</p>
+                <p class="mt-2 text-xs text-slate-500">
+                  Issues: {{ issueImportState.issues.length }} • Argumenten: {{ issueImportState.arguments.length }}
+                </p>
+                <p v-if="issueImportState.error" class="mt-2 text-sm font-semibold text-red-600">
+                  {{ issueImportState.error }}
+                </p>
+                <button
+                  type="button"
+                  class="mt-3 inline-flex items-center rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  @click="resetIssueImportState"
+                >
+                  Verwijderen
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4 flex items-center justify-between">
               <div>
                 <h2 class="text-lg font-semibold text-slate-800">Nieuwe kwestie toevoegen</h2>
@@ -235,39 +298,151 @@
                 :key="issue.id"
                 class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
               >
-                <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h3 class="text-lg font-semibold text-slate-900">{{ issue.title }}</h3>
-                    <p class="text-xs uppercase tracking-wide text-slate-400">Slug: {{ issue.slug }}</p>
-                    <p v-if="issue.url" class="mt-1 text-sm text-slate-500">Bron: {{ issue.url }}</p>
-                    <p v-if="issue.description" class="mt-2 text-sm text-slate-600">{{ issue.description }}</p>
+                <div v-if="editingIssueId === issue.id" class="space-y-4">
+                  <div class="grid gap-3 md:grid-cols-2 md:gap-4">
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Titel</label>
+                      <input
+                        v-model="issueDraft.title"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      />
+                    </div>
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Slug</label>
+                      <input
+                        v-model="issueDraft.slug"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      />
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    class="self-start rounded-md border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                    @click="confirmDeleteIssue(issue.id, issue.title)"
-                  >
-                    Verwijderen
-                  </button>
+                  <div class="grid gap-3 md:grid-cols-2 md:gap-4">
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Bron URL</label>
+                      <input
+                        v-model="issueDraft.url"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      />
+                    </div>
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Meer info</label>
+                      <textarea
+                        v-model="issueDraft.more_info"
+                        rows="3"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="grid gap-2">
+                    <label class="text-xs font-semibold text-slate-600">Beschrijving</label>
+                    <textarea
+                      v-model="issueDraft.description"
+                      rows="3"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    ></textarea>
+                  </div>
+                  <div class="grid gap-4 md:grid-cols-3">
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Voor (agree)</label>
+                      <select
+                        v-model="issueDraft.stances.agree"
+                        multiple
+                        class="h-28 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      >
+                        <option v-for="party in parties" :key="party.id" :value="party.id">
+                          {{ party.abbreviation || party.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Neutraal</label>
+                      <select
+                        v-model="issueDraft.stances.neutral"
+                        multiple
+                        class="h-28 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      >
+                        <option v-for="party in parties" :key="`neutral-${party.id}`" :value="party.id">
+                          {{ party.abbreviation || party.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <div class="grid gap-2">
+                      <label class="text-xs font-semibold text-slate-600">Tegen (disagree)</label>
+                      <select
+                        v-model="issueDraft.stances.disagree"
+                        multiple
+                        class="h-28 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      >
+                        <option v-for="party in parties" :key="`disagree-${party.id}`" :value="party.id">
+                          {{ party.abbreviation || party.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                      :disabled="loading"
+                      @click="saveIssueEdit(issue.id)"
+                    >
+                      Opslaan
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                      @click="cancelIssueEdit"
+                    >
+                      Annuleren
+                    </button>
+                  </div>
                 </div>
-                <div class="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-3">
-                  <div>
-                    <p class="font-semibold text-slate-700">Argumenten</p>
-                    <p>Voor: {{ issue.arguments.pro.length }}</p>
-                    <p>Tegen: {{ issue.arguments.con.length }}</p>
+                <div v-else class="space-y-4">
+                  <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                    <div>
+                      <h3 class="text-lg font-semibold text-slate-900">{{ issue.title }}</h3>
+                      <p class="text-xs uppercase tracking-wide text-slate-400">Slug: {{ issue.slug }}</p>
+                      <p v-if="issue.url" class="mt-1 text-sm text-slate-500">Bron: {{ issue.url }}</p>
+                      <p v-if="issue.description" class="mt-2 text-sm text-slate-600">{{ issue.description }}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        class="self-start rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                        @click="startIssueEdit(issue)"
+                      >
+                        Bewerken
+                      </button>
+                      <button
+                        type="button"
+                        class="self-start rounded-md border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                        @click="confirmDeleteIssue(issue.id, issue.title)"
+                      >
+                        Verwijderen
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <p class="font-semibold text-slate-700">Partijen</p>
-                    <p class="text-xs text-slate-500">Voor: {{ resolvePartyList(issue.party_stances.agree) }}</p>
-                    <p class="text-xs text-slate-500">Neutraal: {{ resolvePartyList(issue.party_stances.neutral) }}</p>
-                    <p class="text-xs text-slate-500">Tegen: {{ resolvePartyList(issue.party_stances.disagree) }}</p>
-                  </div>
-                  <div>
-                    <p class="font-semibold text-slate-700">Meldingen</p>
-                    <p>Onjuist: {{ issue.reports.incorrect_information }}</p>
-                    <p>Aanstootgevend: {{ issue.reports.offensive_information }}</p>
-                    <p>Kwestie verkeerd: {{ issue.reports.issue_misworded }}</p>
-                    <p>Argument verkeerd: {{ issue.reports.argument_misworded }}</p>
+                  <div class="grid gap-3 text-sm text-slate-600 md:grid-cols-3">
+                    <div>
+                      <p class="font-semibold text-slate-700">Argumenten</p>
+                      <p>Voor: {{ issue.arguments.pro.length }}</p>
+                      <p>Tegen: {{ issue.arguments.con.length }}</p>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-slate-700">Partijen</p>
+                      <p class="text-xs text-slate-500">Voor: {{ resolvePartyList(issue.party_stances.agree) }}</p>
+                      <p class="text-xs text-slate-500">Neutraal: {{ resolvePartyList(issue.party_stances.neutral) }}</p>
+                      <p class="text-xs text-slate-500">Tegen: {{ resolvePartyList(issue.party_stances.disagree) }}</p>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-slate-700">Meldingen</p>
+                      <p>Onjuist: {{ issue.reports.incorrect_information }}</p>
+                      <p>Aanstootgevend: {{ issue.reports.offensive_information }}</p>
+                      <p>Kwestie verkeerd: {{ issue.reports.issue_misworded }}</p>
+                      <p>Argument verkeerd: {{ issue.reports.argument_misworded }}</p>
+                    </div>
                   </div>
                 </div>
               </li>
@@ -276,6 +451,66 @@
         </div>
 
         <div v-if="activeTab === 'arguments'" class="space-y-6">
+          <section class="rounded-xl bg-white p-6 shadow-sm">
+            <header class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 class="text-lg font-semibold text-slate-800">Importeer argumenten</h2>
+                <p class="text-sm text-slate-500">
+                  Upload een JSON-bestand met argumenten gekoppeld via <code class="rounded bg-slate-100 px-1">issue_id</code>
+                  of <code class="rounded bg-slate-100 px-1">issue_slug</code>.
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <input
+                  ref="argumentUploadInput"
+                  type="file"
+                  accept="application/json"
+                  class="hidden"
+                  @change="handleArgumentFileUpload"
+                />
+                <button
+                  type="button"
+                  class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                  @click="triggerArgumentUpload"
+                >
+                  JSON kiezen
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                  :disabled="loading || !hasArgumentImport"
+                  @click="saveArgumentImport"
+                >
+                  Opslaan
+                </button>
+              </div>
+            </header>
+            <div class="space-y-3 text-sm text-slate-600">
+              <p>
+                Ondersteunt een object met <code class="rounded bg-slate-100 px-1">arguments</code> of een array met argumentitems.
+              </p>
+              <pre class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"><code>{{ argumentImportExample }}</code></pre>
+              <div
+                v-if="argumentImportState.fileName"
+                class="rounded-lg border border-slate-200 bg-slate-50 p-4"
+              >
+                <p class="text-sm font-semibold text-slate-700">Geselecteerd bestand</p>
+                <p class="text-sm text-slate-600">{{ argumentImportState.fileName }}</p>
+                <p class="mt-2 text-xs text-slate-500">Argumenten: {{ argumentImportState.arguments.length }}</p>
+                <p v-if="argumentImportState.error" class="mt-2 text-sm font-semibold text-red-600">
+                  {{ argumentImportState.error }}
+                </p>
+                <button
+                  type="button"
+                  class="mt-3 inline-flex items-center rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                  @click="resetArgumentImportState"
+                >
+                  Verwijderen
+                </button>
+              </div>
+            </div>
+          </section>
+
           <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
@@ -342,17 +577,73 @@
                       :key="argument.id"
                       class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700"
                     >
-                      <p class="whitespace-pre-line">{{ argument.body }}</p>
-                      <ul v-if="argument.sources.length" class="mt-2 list-disc pl-5 text-xs text-slate-500">
-                        <li v-for="(source, index) in argument.sources" :key="index">{{ source }}</li>
-                      </ul>
-                      <button
-                        type="button"
-                        class="mt-3 inline-flex items-center rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
-                        @click="removeArgument(argument.id)"
-                      >
-                        Verwijderen
-                      </button>
+                      <div v-if="editingArgumentId === argument.id" class="space-y-3">
+                        <div class="grid gap-2">
+                          <label class="text-xs font-semibold text-slate-600">Zijde</label>
+                          <select
+                            v-model="argumentEditDraft.side"
+                            class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                          >
+                            <option value="pro">Voor</option>
+                            <option value="con">Tegen</option>
+                          </select>
+                        </div>
+                        <div class="grid gap-2">
+                          <label class="text-xs font-semibold text-slate-600">Argumenttekst</label>
+                          <textarea
+                            v-model="argumentEditDraft.body"
+                            rows="4"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                          ></textarea>
+                        </div>
+                        <div class="grid gap-2">
+                          <label class="text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
+                          <textarea
+                            v-model="argumentEditDraft.sources"
+                            rows="3"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                          ></textarea>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                            :disabled="loading"
+                            @click="saveArgumentEdit(argument.id)"
+                          >
+                            Opslaan
+                          </button>
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                            @click="cancelArgumentEdit"
+                          >
+                            Annuleren
+                          </button>
+                        </div>
+                      </div>
+                      <div v-else>
+                        <p class="whitespace-pre-line">{{ argument.body }}</p>
+                        <ul v-if="argument.sources.length" class="mt-2 list-disc pl-5 text-xs text-slate-500">
+                          <li v-for="(source, index) in argument.sources" :key="index">{{ source }}</li>
+                        </ul>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                            @click="startEditArgument(argument)"
+                          >
+                            Bewerken
+                          </button>
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                            @click="removeArgument(argument.id)"
+                          >
+                            Verwijderen
+                          </button>
+                        </div>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -367,17 +658,73 @@
                       :key="argument.id"
                       class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700"
                     >
-                      <p class="whitespace-pre-line">{{ argument.body }}</p>
-                      <ul v-if="argument.sources.length" class="mt-2 list-disc pl-5 text-xs text-slate-500">
-                        <li v-for="(source, index) in argument.sources" :key="index">{{ source }}</li>
-                      </ul>
-                      <button
-                        type="button"
-                        class="mt-3 inline-flex items-center rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
-                        @click="removeArgument(argument.id)"
-                      >
-                        Verwijderen
-                      </button>
+                      <div v-if="editingArgumentId === argument.id" class="space-y-3">
+                        <div class="grid gap-2">
+                          <label class="text-xs font-semibold text-slate-600">Zijde</label>
+                          <select
+                            v-model="argumentEditDraft.side"
+                            class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                          >
+                            <option value="pro">Voor</option>
+                            <option value="con">Tegen</option>
+                          </select>
+                        </div>
+                        <div class="grid gap-2">
+                          <label class="text-xs font-semibold text-slate-600">Argumenttekst</label>
+                          <textarea
+                            v-model="argumentEditDraft.body"
+                            rows="4"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                          ></textarea>
+                        </div>
+                        <div class="grid gap-2">
+                          <label class="text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
+                          <textarea
+                            v-model="argumentEditDraft.sources"
+                            rows="3"
+                            class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                          ></textarea>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                            :disabled="loading"
+                            @click="saveArgumentEdit(argument.id)"
+                          >
+                            Opslaan
+                          </button>
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-lg border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                            @click="cancelArgumentEdit"
+                          >
+                            Annuleren
+                          </button>
+                        </div>
+                      </div>
+                      <div v-else>
+                        <p class="whitespace-pre-line">{{ argument.body }}</p>
+                        <ul v-if="argument.sources.length" class="mt-2 list-disc pl-5 text-xs text-slate-500">
+                          <li v-for="(source, index) in argument.sources" :key="index">{{ source }}</li>
+                        </ul>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                            @click="startEditArgument(argument)"
+                          >
+                            Bewerken
+                          </button>
+                          <button
+                            type="button"
+                            class="inline-flex items-center rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                            @click="removeArgument(argument.id)"
+                          >
+                            Verwijderen
+                          </button>
+                        </div>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -558,7 +905,16 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useAdmin } from "~/composables/useAdmin";
-import type { AdminArgumentPayload, AdminIssuePayload, AdminPoliticalPartyPayload } from "~/types/admin";
+import type {
+  AdminArgumentImportPayload,
+  AdminArgumentPayload,
+  AdminArgumentUpsertPayload,
+  AdminIssue,
+  AdminIssueImportItem,
+  AdminIssueImportPayload,
+  AdminIssuePayload,
+  AdminPoliticalPartyPayload,
+} from "~/types/admin";
 
 const {
   auth,
@@ -572,9 +928,13 @@ const {
   loadReports,
   loadParties,
   createIssue,
+  updateIssue,
+  importIssues,
   deleteIssue,
   addArgument,
-  removeArgument,
+  updateArgument,
+  importArguments,
+  removeArgument: removeArgumentApi,
   createParty,
   updateParty,
   ADMIN_EMAIL,
@@ -612,6 +972,70 @@ const newIssueForm = reactive({
   conArguments: [] as IssueFormArgument[],
 });
 
+const issueUploadInput = ref<HTMLInputElement | null>(null);
+const argumentUploadInput = ref<HTMLInputElement | null>(null);
+
+const issueImportState = reactive({
+  fileName: "",
+  issues: [] as AdminIssueImportItem[],
+  arguments: [] as AdminArgumentUpsertPayload[],
+  error: null as string | null,
+});
+
+const argumentImportState = reactive({
+  fileName: "",
+  arguments: [] as AdminArgumentUpsertPayload[],
+  error: null as string | null,
+});
+
+const issueImportExample = JSON.stringify(
+  {
+    issues: [
+      {
+        title: "Voorbeeld issue",
+        slug: "voorbeeld-issue",
+        description: "Korte omschrijving",
+        more_info: "Uitgebreide toelichting",
+        party_stances: { agree: [1], neutral: [], disagree: [2] },
+        arguments: {
+          pro: [
+            {
+              side: "pro",
+              body: "Een voorbeeldargument voor het issue.",
+              sources: ["https://voorbeeld.nl/bron"],
+            },
+          ],
+          con: [],
+        },
+      },
+    ],
+    arguments: [
+      {
+        issue_slug: "voorbeeld-issue",
+        side: "con",
+        body: "Een extra tegenargument uit het importbestand.",
+      },
+    ],
+  },
+  null,
+  2
+);
+
+const argumentImportExample = JSON.stringify(
+  {
+    arguments: [
+      {
+        issue_slug: "voorbeeld-issue",
+        side: "pro",
+        body: "Een argument gekoppeld via de slug.",
+        sources: ["https://voorbeeld.nl/bron"],
+      },
+    ],
+  },
+  null,
+  2
+);
+
 function createArgumentField(): IssueFormArgument {
   return { body: "", sources: "" };
 }
@@ -639,8 +1063,34 @@ const isLoggedIn = computed(() => auth.isLoggedIn.value);
 const adminEmail = ADMIN_EMAIL;
 const adminUsername = ADMIN_USERNAME;
 
+const hasIssueImport = computed(
+  () => issueImportState.issues.length > 0 || issueImportState.arguments.length > 0
+);
+const hasArgumentImport = computed(() => argumentImportState.arguments.length > 0);
+
 const selectedIssueId = ref<number | null>(null);
 const argumentForm = reactive({
+  side: "pro" as "pro" | "con",
+  body: "",
+  sources: "",
+});
+
+const editingIssueId = ref<number | null>(null);
+const issueDraft = reactive({
+  title: "",
+  slug: "",
+  url: "",
+  description: "",
+  more_info: "",
+  stances: {
+    agree: [] as Array<number | string>,
+    neutral: [] as Array<number | string>,
+    disagree: [] as Array<number | string>,
+  },
+});
+
+const editingArgumentId = ref<number | null>(null);
+const argumentEditDraft = reactive({
   side: "pro" as "pro" | "con",
   body: "",
   sources: "",
@@ -781,9 +1231,62 @@ function resetIssueForm() {
   newIssueForm.conArguments.splice(0, newIssueForm.conArguments.length, createArgumentField());
 }
 
+function resetIssueDraft() {
+  issueDraft.title = "";
+  issueDraft.slug = "";
+  issueDraft.url = "";
+  issueDraft.description = "";
+  issueDraft.more_info = "";
+  issueDraft.stances.agree = [];
+  issueDraft.stances.neutral = [];
+  issueDraft.stances.disagree = [];
+}
+
+function startIssueEdit(issue: AdminIssue) {
+  editingIssueId.value = issue.id;
+  issueDraft.title = issue.title;
+  issueDraft.slug = issue.slug ?? "";
+  issueDraft.url = issue.url ?? "";
+  issueDraft.description = issue.description ?? "";
+  issueDraft.more_info = issue.more_info ?? "";
+  issueDraft.stances.agree = [...issue.party_stances.agree];
+  issueDraft.stances.neutral = [...issue.party_stances.neutral];
+  issueDraft.stances.disagree = [...issue.party_stances.disagree];
+}
+
+function cancelIssueEdit() {
+  editingIssueId.value = null;
+  resetIssueDraft();
+}
+
+async function saveIssueEdit(issueId: number) {
+  const payload: AdminIssuePayload = {
+    title: issueDraft.title.trim(),
+    slug: issueDraft.slug.trim() || undefined,
+    url: issueDraft.url.trim() || null,
+    description: issueDraft.description.trim() || null,
+    more_info: issueDraft.more_info.trim() || null,
+    party_stances: {
+      agree: toNumberArray(issueDraft.stances.agree),
+      neutral: toNumberArray(issueDraft.stances.neutral),
+      disagree: toNumberArray(issueDraft.stances.disagree),
+    },
+  };
+
+  if (!payload.title) return;
+
+  const updated = await updateIssue(issueId, payload);
+  if (!updated) return;
+
+  cancelIssueEdit();
+}
+
 async function confirmDeleteIssue(issueId: number, title: string) {
   if (!window.confirm(`Weet je zeker dat je de kwestie "${title}" wilt verwijderen?`)) return;
   await deleteIssue(issueId);
+  if (editingIssueId.value === issueId) {
+    cancelIssueEdit();
+  }
 }
 
 async function submitArgument() {
@@ -800,6 +1303,46 @@ async function submitArgument() {
 
   argumentForm.body = "";
   argumentForm.sources = "";
+}
+
+function resetArgumentEditDraft() {
+  argumentEditDraft.side = "pro";
+  argumentEditDraft.body = "";
+  argumentEditDraft.sources = "";
+}
+
+function startEditArgument(argument: AdminArgument) {
+  editingArgumentId.value = argument.id;
+  argumentEditDraft.side = argument.side;
+  argumentEditDraft.body = argument.body;
+  argumentEditDraft.sources = argument.sources.join("\n");
+}
+
+function cancelArgumentEdit() {
+  editingArgumentId.value = null;
+  resetArgumentEditDraft();
+}
+
+async function saveArgumentEdit(argumentId: number) {
+  const payload: AdminArgumentUpsertPayload = {
+    side: argumentEditDraft.side,
+    body: argumentEditDraft.body.trim(),
+    sources: parseSources(argumentEditDraft.sources),
+  };
+
+  if (!payload.body) return;
+
+  const updated = await updateArgument(argumentId, payload);
+  if (!updated) return;
+
+  cancelArgumentEdit();
+}
+
+async function removeArgument(argumentId: number) {
+  await removeArgumentApi(argumentId);
+  if (editingArgumentId.value === argumentId) {
+    cancelArgumentEdit();
+  }
 }
 
 async function submitParty() {
@@ -848,6 +1391,161 @@ async function saveParty(partyId: number) {
   const updated = await updateParty(partyId, payload);
   if (!updated) return;
   cancelEdit();
+}
+
+function triggerIssueUpload() {
+  issueUploadInput.value?.click();
+}
+
+function triggerArgumentUpload() {
+  argumentUploadInput.value?.click();
+}
+
+function resetIssueImportState() {
+  issueImportState.fileName = "";
+  issueImportState.issues = [];
+  issueImportState.arguments = [];
+  issueImportState.error = null;
+}
+
+function resetArgumentImportState() {
+  argumentImportState.fileName = "";
+  argumentImportState.arguments = [];
+  argumentImportState.error = null;
+}
+
+async function handleIssueFileUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  issueImportState.fileName = file.name;
+  issueImportState.error = null;
+  issueImportState.issues = [];
+  issueImportState.arguments = [];
+
+  try {
+    const raw = await file.text();
+    const parsed = JSON.parse(raw) as unknown;
+    const normalized = normalizeIssueImportPayload(parsed);
+    if (!normalized.issues.length && !normalized.arguments.length) {
+      throw new Error("Geen issues of argumenten gevonden in dit bestand.");
+    }
+    issueImportState.issues = normalized.issues;
+    issueImportState.arguments = normalized.arguments;
+  } catch (err) {
+    issueImportState.error =
+      err instanceof Error ? err.message : "Het bestand kon niet worden gelezen.";
+    issueImportState.issues = [];
+    issueImportState.arguments = [];
+  } finally {
+    input.value = "";
+  }
+}
+
+async function handleArgumentFileUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  argumentImportState.fileName = file.name;
+  argumentImportState.error = null;
+  argumentImportState.arguments = [];
+
+  try {
+    const raw = await file.text();
+    const parsed = JSON.parse(raw) as unknown;
+    const normalized = normalizeArgumentImportPayload(parsed);
+    if (!normalized.length) {
+      throw new Error("Geen argumenten gevonden in dit bestand.");
+    }
+    argumentImportState.arguments = normalized;
+  } catch (err) {
+    argumentImportState.error =
+      err instanceof Error ? err.message : "Het bestand kon niet worden gelezen.";
+    argumentImportState.arguments = [];
+  } finally {
+    input.value = "";
+  }
+}
+
+async function saveIssueImport() {
+  if (!hasIssueImport.value) return;
+
+  if (issueImportState.issues.length) {
+    const payload: AdminIssueImportPayload = {
+      issues: issueImportState.issues,
+    };
+    const result = await importIssues(payload);
+    if (!result) return;
+  }
+
+  if (issueImportState.arguments.length) {
+    const payload: AdminArgumentImportPayload = {
+      arguments: issueImportState.arguments,
+    };
+    const result = await importArguments(payload);
+    if (!result) return;
+  }
+
+  resetIssueImportState();
+  cancelIssueEdit();
+  cancelArgumentEdit();
+}
+
+async function saveArgumentImport() {
+  if (!hasArgumentImport.value) return;
+
+  const payload: AdminArgumentImportPayload = {
+    arguments: argumentImportState.arguments,
+  };
+
+  const result = await importArguments(payload);
+  if (!result) return;
+
+  resetArgumentImportState();
+  cancelArgumentEdit();
+}
+
+function normalizeIssueImportPayload(raw: unknown): {
+  issues: AdminIssueImportItem[];
+  arguments: AdminArgumentUpsertPayload[];
+} {
+  const result = {
+    issues: [] as AdminIssueImportItem[],
+    arguments: [] as AdminArgumentUpsertPayload[],
+  };
+
+  if (Array.isArray(raw)) {
+    if (raw.every(isArgumentPayload)) {
+      result.arguments = raw as AdminArgumentUpsertPayload[];
+    } else {
+      result.issues = raw as AdminIssueImportItem[];
+    }
+    return result;
+  }
+
+  if (raw && typeof raw === "object") {
+    const objectValue = raw as Record<string, unknown>;
+    if (Array.isArray(objectValue.issues)) {
+      result.issues = objectValue.issues as AdminIssueImportItem[];
+    }
+    if (Array.isArray(objectValue.arguments)) {
+      result.arguments = objectValue.arguments as AdminArgumentUpsertPayload[];
+    }
+  }
+
+  return result;
+}
+
+function normalizeArgumentImportPayload(raw: unknown): AdminArgumentUpsertPayload[] {
+  return normalizeIssueImportPayload(raw).arguments;
+}
+
+function isArgumentPayload(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.side === "string" && typeof candidate.body === "string";
 }
 
 function resolvePartyList(ids: number[]): string {

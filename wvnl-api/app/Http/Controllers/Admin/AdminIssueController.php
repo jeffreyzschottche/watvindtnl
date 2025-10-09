@@ -8,6 +8,7 @@ use App\Models\Issue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use App\Support\ReportReasons;
 
@@ -30,26 +31,18 @@ class AdminIssueController extends Controller
     {
         $data = $this->validateIssueData($request);
 
-        $issue = Issue::create([
-            'title' => $data['title'],
-            'slug' => $data['slug'],
-            'url' => $data['url'] ?? null,
-            'description' => $data['description'] ?? null,
-            'more_info' => $data['more_info'] ?? null,
-            'party_stances' => $data['party_stances'],
-            'reports' => $data['reports'],
-            'votes' => $data['votes'],
-        ]);
-
-        $this->syncArguments($issue, $data['arguments']);
-
-        $issue->load([
-            'arguments' => function ($query) {
-                $query->orderBy('side')->orderBy('created_at');
-            },
-        ]);
+        $issue = $this->persistIssue($data);
 
         return response()->json($this->serializeIssue($issue), 201);
+    }
+
+    public function update(Request $request, Issue $issue)
+    {
+        $data = $this->validateIssueData($request, $issue);
+
+        $issue = $this->persistIssue($data, $issue, $data['sync_arguments']);
+
+        return response()->json($this->serializeIssue($issue));
     }
 
     public function destroy(Issue $issue)
@@ -61,16 +54,76 @@ class AdminIssueController extends Controller
         return response()->json(['status' => 'deleted']);
     }
 
+    public function bulkStore(Request $request)
+    {
+        $payload = $request->validate([
+            'issues' => ['required', 'array', 'min:1'],
+        ]);
+
+        $results = collect();
+
+        foreach ($payload['issues'] as $issuePayload) {
+            if (!is_array($issuePayload)) {
+                continue;
+            }
+
+            $existing = $this->resolveIssueFromPayload($issuePayload);
+            $data = $this->validateIssuePayload($issuePayload, $existing);
+
+            $issue = $this->persistIssue($data, $existing, $data['sync_arguments']);
+            $results->push($this->serializeIssue($issue));
+        }
+
+        return response()->json($results->all());
+    }
+
     public function reports()
     {
         return $this->index();
     }
 
-    private function validateIssueData(Request $request): array
+    private function resolveIssueFromPayload(array $payload): ?Issue
     {
-        $validated = $request->validate([
+        if (isset($payload['id'])) {
+            $issue = Issue::find($payload['id']);
+            if ($issue) {
+                return $issue;
+            }
+        }
+
+        if (isset($payload['slug'])) {
+            return Issue::where('slug', $payload['slug'])->first();
+        }
+
+        return null;
+    }
+
+    private function validateIssueData(Request $request, ?Issue $issue = null): array
+    {
+        $validated = $request->validate($this->issueRules($issue));
+
+        return $this->prepareIssueData($validated, $request->all(), $issue);
+    }
+
+    private function validateIssuePayload(array $payload, ?Issue $issue = null): array
+    {
+        $validator = Validator::make($payload, $this->issueRules($issue));
+        $validated = $validator->validate();
+
+        return $this->prepareIssueData($validated, $payload, $issue);
+    }
+
+    private function issueRules(?Issue $issue = null): array
+    {
+        $slugRule = Rule::unique('issues', 'slug');
+
+        if ($issue) {
+            $slugRule = $slugRule->ignore($issue->id);
+        }
+
+        return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', Rule::unique('issues', 'slug')],
+            'slug' => ['nullable', 'string', 'max:255', $slugRule],
             'url' => ['nullable', 'url'],
             'description' => ['nullable', 'string'],
             'more_info' => ['nullable', 'string'],
@@ -102,23 +155,68 @@ class AdminIssueController extends Controller
             'arguments.con.*.body' => ['required_with:arguments.con', 'string'],
             'arguments.con.*.sources' => ['nullable', 'array'],
             'arguments.con.*.sources.*' => ['string'],
-        ]);
+        ];
+    }
 
-        $slug = $validated['slug'] ?? $this->generateUniqueSlug($validated['title']);
+    private function prepareIssueData(array $validated, array $original, ?Issue $issue = null): array
+    {
+        $title = $validated['title'];
+
+        $slug = $issue?->slug;
+        if (array_key_exists('slug', $original)) {
+            $slug = $validated['slug'] ?? null;
+        }
+
+        if (!$slug) {
+            $slug = $this->generateUniqueSlug($title, $issue?->id);
+        }
+
+        $url = $issue?->url;
+        if (array_key_exists('url', $original)) {
+            $url = $validated['url'] ?? null;
+        }
+
+        $description = $issue?->description;
+        if (array_key_exists('description', $original)) {
+            $description = $validated['description'] ?? null;
+        }
+
+        $moreInfo = $issue?->more_info;
+        if (array_key_exists('more_info', $original)) {
+            $moreInfo = $validated['more_info'] ?? null;
+        }
+
+        $stancesSource = $issue?->party_stances ?? [];
+        if (array_key_exists('party_stances', $original)) {
+            $stancesSource = $validated['party_stances'] ?? [];
+        }
+
+        $reportsSource = $issue?->reports ?? [];
+        if (array_key_exists('reports', $original)) {
+            $reportsSource = $validated['reports'] ?? [];
+        }
+
+        $votesSource = $issue?->votes ?? [];
+        if (array_key_exists('votes', $original)) {
+            $votesSource = $validated['votes'] ?? [];
+        }
+
+        $argumentsProvided = array_key_exists('arguments', $original);
 
         return [
-            'title' => $validated['title'],
+            'title' => $title,
             'slug' => $slug,
-            'url' => $validated['url'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'more_info' => $validated['more_info'] ?? null,
-            'party_stances' => $this->normalizeStances($validated['party_stances'] ?? []),
-            'reports' => ReportReasons::normalize($validated['reports'] ?? []),
-            'votes' => $this->normalizeVotes($validated['votes'] ?? []),
+            'url' => $url,
+            'description' => $description,
+            'more_info' => $moreInfo,
+            'party_stances' => $this->normalizeStances($stancesSource),
+            'reports' => ReportReasons::normalize($reportsSource),
+            'votes' => $this->normalizeVotes($votesSource),
             'arguments' => [
                 'pro' => $this->prepareArguments(Arr::get($validated, 'arguments.pro', []), 'pro'),
                 'con' => $this->prepareArguments(Arr::get($validated, 'arguments.con', []), 'con'),
             ],
+            'sync_arguments' => $argumentsProvided,
         ];
     }
 
@@ -166,6 +264,40 @@ class AdminIssueController extends Controller
                 ]);
             }
         }
+    }
+
+    private function persistIssue(array $data, ?Issue $issue = null, bool $syncArguments = true): Issue
+    {
+        $attributes = [
+            'title' => $data['title'],
+            'slug' => $data['slug'],
+            'url' => $data['url'] ?? null,
+            'description' => $data['description'] ?? null,
+            'more_info' => $data['more_info'] ?? null,
+            'party_stances' => $data['party_stances'],
+            'reports' => $data['reports'],
+            'votes' => $data['votes'],
+        ];
+
+        if ($issue) {
+            $issue->update($attributes);
+
+            if ($syncArguments) {
+                $issue->arguments()->delete();
+                $this->syncArguments($issue, $data['arguments']);
+            }
+        } else {
+            $issue = Issue::create($attributes);
+            $this->syncArguments($issue, $data['arguments']);
+        }
+
+        $issue->load([
+            'arguments' => function ($query) {
+                $query->orderBy('side')->orderBy('created_at');
+            },
+        ]);
+
+        return $issue;
     }
 
     private function serializeIssue(Issue $issue): array
@@ -217,13 +349,17 @@ class AdminIssueController extends Controller
         ];
     }
 
-    private function generateUniqueSlug(string $title): string
+    private function generateUniqueSlug(string $title, ?int $ignoreId = null): string
     {
         $base = Str::slug($title);
         $slug = $base;
         $counter = 2;
 
-        while (Issue::where('slug', $slug)->exists()) {
+        while (
+            Issue::where('slug', $slug)
+                ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
             $slug = $base . '-' . $counter;
             $counter++;
         }
