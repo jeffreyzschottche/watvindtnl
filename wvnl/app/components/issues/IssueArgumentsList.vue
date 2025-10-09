@@ -3,7 +3,11 @@
     <section class="arguments__column">
       <h3 class="arguments__heading">Voor</h3>
       <ul v-if="groups.pro.length" class="arguments__list">
-        <li v-for="argument in groups.pro" :key="argument.id" class="arguments__item">
+        <li
+          v-for="argument in groups.pro"
+          :key="argument.id"
+          class="arguments__item"
+        >
           <div class="arguments__item-body">
             <p class="arguments__text">{{ argument.body }}</p>
             <div v-if="argument.sources.length" class="arguments__sources">
@@ -14,9 +18,8 @@
                   :key="`${argument.id}-source-${index}`"
                 >
                   <a
-                    :href="source"
+                    :href="toAbsoluteUrl(source)"
                     class="arguments__source-link"
-                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     {{ source }}
@@ -38,7 +41,11 @@
     <section class="arguments__column">
       <h3 class="arguments__heading">Tegen</h3>
       <ul v-if="groups.con.length" class="arguments__list">
-        <li v-for="argument in groups.con" :key="argument.id" class="arguments__item">
+        <li
+          v-for="argument in groups.con"
+          :key="argument.id"
+          class="arguments__item"
+        >
           <div class="arguments__item-body">
             <p class="arguments__text">{{ argument.body }}</p>
             <div v-if="argument.sources.length" class="arguments__sources">
@@ -49,7 +56,7 @@
                   :key="`${argument.id}-source-${index}`"
                 >
                   <a
-                    :href="source"
+                    :href="toAbsoluteUrl(source)"
                     class="arguments__source-link"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -81,6 +88,14 @@ import type { IssueArgumentsGroup } from "~/types/issues";
 import type { ReportReason } from "~/types/reports";
 import { reportArgument } from "~/services/issues";
 import { useAuthStore } from "~/stores/auth";
+
+const toAbsoluteUrl = (url?: string) => {
+  if (!url) return "#";
+  const clean = url.trim();
+  if (/^https?:\/\//i.test(clean)) return clean; // al goed
+  if (/^\/\//.test(clean)) return "https:" + clean; // protocol-relative
+  return `https://${clean.replace(/^\/+/, "")}`; // voeg https toe
+};
 
 const props = defineProps<{
   groups: IssueArgumentsGroup;
