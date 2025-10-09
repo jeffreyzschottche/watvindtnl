@@ -7,6 +7,9 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\IssueArgsController;
 use App\Http\Controllers\UserIssueController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\AdminArgumentController;
+use App\Http\Controllers\Admin\AdminIssueController;
+use App\Http\Controllers\Admin\AdminPoliticalPartyController;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
@@ -27,3 +30,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/issues-args', [IssueArgsController::class, 'index']);
 Route::get('/issues-args/{issue}', [IssueArgsController::class, 'show']);
+
+Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(function () {
+    Route::get('/issues', [AdminIssueController::class, 'index']);
+    Route::get('/reports', [AdminIssueController::class, 'reports']);
+    Route::post('/issues', [AdminIssueController::class, 'store']);
+    Route::delete('/issues/{issue}', [AdminIssueController::class, 'destroy']);
+
+    Route::post('/issues/{issue}/arguments', [AdminArgumentController::class, 'store']);
+    Route::delete('/arguments/{argument}', [AdminArgumentController::class, 'destroy']);
+
+    Route::get('/political-parties', [AdminPoliticalPartyController::class, 'index']);
+    Route::post('/political-parties', [AdminPoliticalPartyController::class, 'store']);
+    Route::patch('/political-parties/{politicalParty}', [AdminPoliticalPartyController::class, 'update']);
+});
