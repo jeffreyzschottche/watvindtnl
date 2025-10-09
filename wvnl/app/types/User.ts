@@ -7,6 +7,8 @@ export interface NotificationPrefs {
 }
 
 export interface CookiePrefs {
+  accepted: boolean;
+  accepted_at?: string;
   analytics?: boolean;
   marketing?: boolean;
   functional?: boolean;

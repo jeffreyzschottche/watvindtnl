@@ -17,6 +17,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::patch('/users/{user}', [UserController::class, 'update']);
+    Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
     Route::get('/me/votes', [UserIssueController::class, 'history']);
     Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote']);

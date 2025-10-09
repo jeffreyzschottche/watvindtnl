@@ -15,6 +15,7 @@ class AuthController extends Controller
         $data = $r->validated();
 
         // verplichte transforms/defaults
+        unset($data['password_confirmation']);
         $data['password'] = Hash::make($data['password']);
         $data['secret_url_pw'] = (string) Str::uuid();
 

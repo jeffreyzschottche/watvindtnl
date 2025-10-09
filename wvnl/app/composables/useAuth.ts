@@ -13,6 +13,7 @@ export function useAuth() {
     username: string;
     email: string;
     password: string;
+    password_confirmation: string;
     language: "nl" | "en";
     age_category: AgeCategory;
     province: string;
@@ -20,6 +21,7 @@ export function useAuth() {
     education_level: "mbo" | "hbo" | "universiteit" | "overig";
     political_preference: "links" | "midden" | "rechts" | "geen";
     notification_prefs: { email?: boolean };
+    cookie_prefs: { accepted: boolean; accepted_at?: string };
   }) {
     const { token, user } = await api.post<{ token: string; user: User }>(
       "/register",

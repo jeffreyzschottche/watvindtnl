@@ -162,6 +162,61 @@
         </button>
       </form>
     </section>
+
+    <section class="space-y-6">
+      <header class="space-y-2">
+        <h2 class="text-2xl font-semibold">Wachtwoord wijzigen</h2>
+        <p class="text-gray-600">
+          Kies een nieuw wachtwoord en bevestig het om je wijzigingen op te slaan.
+        </p>
+      </header>
+
+      <div v-if="passwordError" class="rounded border border-red-200 bg-red-50 p-4 text-red-700">
+        {{ passwordError }}
+      </div>
+      <div
+        v-if="passwordMessage"
+        class="rounded border border-green-200 bg-green-50 p-4 text-green-700"
+      >
+        {{ passwordMessage }}
+      </div>
+
+      <form class="grid gap-6 md:grid-cols-2" @submit.prevent="updatePassword">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Nieuw wachtwoord</label>
+          <input
+            v-model="passwordForm.password"
+            type="password"
+            minlength="8"
+            class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+            required
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700"
+            >Bevestig nieuw wachtwoord</label
+          >
+          <input
+            v-model="passwordForm.password_confirmation"
+            type="password"
+            minlength="8"
+            class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
+            required
+          />
+        </div>
+
+        <div class="md:col-span-2 flex justify-end">
+          <button
+            type="submit"
+            class="inline-flex items-center rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+            :disabled="savingPassword"
+          >
+            {{ savingPassword ? "Bijwerken..." : "Wachtwoord opslaan" }}
+          </button>
+        </div>
+      </form>
+    </section>
   </div>
 
   <div v-else class="flex min-h-[60vh] items-center justify-center p-6 text-gray-500">
@@ -195,6 +250,11 @@ const premiumForm = reactive({
   premium: false,
 });
 
+const passwordForm = reactive({
+  password: "",
+  password_confirmation: "",
+});
+
 const profileMessage = ref<string | null>(null);
 const profileError = ref<string | null>(null);
 const savingProfile = ref(false);
@@ -203,6 +263,10 @@ const loadingProfile = ref(true);
 const premiumMessage = ref<string | null>(null);
 const premiumError = ref<string | null>(null);
 const savingPremium = ref(false);
+
+const passwordMessage = ref<string | null>(null);
+const passwordError = ref<string | null>(null);
+const savingPassword = ref(false);
 
 function handleAuthFailure(message: string) {
   if (message.toLowerCase().includes("unauth")) {
@@ -320,6 +384,42 @@ async function savePremium() {
     }
   } finally {
     savingPremium.value = false;
+  }
+}
+
+async function updatePassword() {
+  if (!user.value) return;
+
+  passwordMessage.value = null;
+  passwordError.value = null;
+
+  if (!passwordForm.password || passwordForm.password.length < 8) {
+    passwordError.value = "Het wachtwoord moet minimaal 8 tekens bevatten.";
+    return;
+  }
+
+  if (passwordForm.password !== passwordForm.password_confirmation) {
+    passwordError.value = "Wachtwoorden komen niet overeen.";
+    return;
+  }
+
+  savingPassword.value = true;
+
+  try {
+    await api.patch(`/users/${user.value.id}/password`, {
+      password: passwordForm.password,
+      password_confirmation: passwordForm.password_confirmation,
+    });
+    passwordMessage.value = "Wachtwoord succesvol bijgewerkt.";
+    passwordForm.password = "";
+    passwordForm.password_confirmation = "";
+  } catch (error: any) {
+    const message = error?.message || "Bijwerken mislukt.";
+    if (!handleAuthFailure(message)) {
+      passwordError.value = message;
+    }
+  } finally {
+    savingPassword.value = false;
   }
 }
 

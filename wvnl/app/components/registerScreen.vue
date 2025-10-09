@@ -29,6 +29,17 @@
       />
     </div>
 
+    <div>
+      <label class="block text-sm mb-1">Bevestig wachtwoord</label>
+      <input
+        v-model="confirmPassword"
+        type="password"
+        class="input"
+        minlength="8"
+        required
+      />
+    </div>
+
     <!-- Profielvelden Wat-vindt-NL -->
     <div>
       <label class="block text-sm mb-1">Leeftijdscategorie</label>
@@ -100,6 +111,19 @@
       >
     </div>
 
+    <div class="flex items-start gap-3">
+      <input
+        id="cookies"
+        v-model="acceptsCookies"
+        type="checkbox"
+        class="mt-1 h-4 w-4"
+        required
+      />
+      <label for="cookies" class="text-sm"
+        >Ik ga akkoord met het gebruik van cookies.</label
+      >
+    </div>
+
     <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
 
     <button class="btn w-full" :disabled="loading">
@@ -152,6 +176,8 @@ const form = reactive({
 });
 
 const wantsNotifications = ref<boolean>(true);
+const acceptsCookies = ref<boolean>(false);
+const confirmPassword = ref<string>("");
 
 const error = ref<string | null>(null);
 const loading = ref(false);
@@ -160,10 +186,21 @@ async function onSubmit() {
   error.value = null;
   loading.value = true;
   try {
+    if (form.password !== confirmPassword.value) {
+      throw new Error("Wachtwoorden komen niet overeen.");
+    }
+    if (!acceptsCookies.value) {
+      throw new Error("Je moet akkoord gaan met het cookiegebruik.");
+    }
     // payload normaliseren; voorkom nulls door lege strings te vermijden
     const payload = {
       ...form,
+      password_confirmation: confirmPassword.value,
       notification_prefs: { email: !!wantsNotifications.value },
+      cookie_prefs: {
+        accepted: acceptsCookies.value,
+        accepted_at: new Date().toISOString(),
+      },
     };
     await register(payload as any);
     router.push("/");
