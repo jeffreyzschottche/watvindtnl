@@ -6,6 +6,24 @@
         <li v-for="argument in groups.pro" :key="argument.id" class="arguments__item">
           <div class="arguments__item-body">
             <p class="arguments__text">{{ argument.body }}</p>
+            <div v-if="argument.sources.length" class="arguments__sources">
+              <span class="arguments__sources-label">Bronnen:</span>
+              <ul class="arguments__sources-list">
+                <li
+                  v-for="(source, index) in argument.sources"
+                  :key="`${argument.id}-source-${index}`"
+                >
+                  <a
+                    :href="source"
+                    class="arguments__source-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ source }}
+                  </a>
+                </li>
+              </ul>
+            </div>
             <ReportMenu
               class="arguments__report"
               size="sm"
@@ -23,6 +41,24 @@
         <li v-for="argument in groups.con" :key="argument.id" class="arguments__item">
           <div class="arguments__item-body">
             <p class="arguments__text">{{ argument.body }}</p>
+            <div v-if="argument.sources.length" class="arguments__sources">
+              <span class="arguments__sources-label">Bronnen:</span>
+              <ul class="arguments__sources-list">
+                <li
+                  v-for="(source, index) in argument.sources"
+                  :key="`${argument.id}-source-${index}`"
+                >
+                  <a
+                    :href="source"
+                    class="arguments__source-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ source }}
+                  </a>
+                </li>
+              </ul>
+            </div>
             <ReportMenu
               class="arguments__report"
               size="sm"
@@ -91,6 +127,29 @@ function handleArgumentReport(argumentId: number, reason: ReportReason) {
 
 .arguments__text {
   margin: 0;
+}
+
+.arguments__sources {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.arguments__sources-label {
+  font-weight: 600;
+}
+
+.arguments__sources-list {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.arguments__source-link {
+  color: #1d4ed8;
+  text-decoration: underline;
+  word-break: break-all;
 }
 
 .arguments__empty {
