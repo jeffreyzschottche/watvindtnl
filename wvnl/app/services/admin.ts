@@ -13,6 +13,34 @@ import type {
 
 export type AdminApiClient = ReturnType<typeof useApi>;
 
+function preparePoliticalPartyPayload(
+  payload: Partial<AdminPoliticalPartyPayload>
+): FormData | Record<string, unknown> {
+  const { logo, ...rest } = payload;
+
+  const cleaned: Record<string, unknown> = {};
+
+  Object.entries(rest).forEach(([key, value]) => {
+    if (value !== undefined) {
+      cleaned[key] = value;
+    }
+  });
+
+  if (logo instanceof File) {
+    const formData = new FormData();
+
+    Object.entries(cleaned).forEach(([key, value]) => {
+      formData.append(key, value === null ? "" : String(value));
+    });
+
+    formData.append("logo", logo);
+
+    return formData;
+  }
+
+  return cleaned;
+}
+
 export function createAdminService(api: AdminApiClient = useApi()) {
   return {
     fetchIssues: () => api.get<AdminIssue[]>("/admin/issues"),
@@ -37,10 +65,17 @@ export function createAdminService(api: AdminApiClient = useApi()) {
     fetchPoliticalParties: () =>
       api.get<AdminPoliticalParty[]>("/admin/political-parties"),
     createPoliticalParty: (payload: AdminPoliticalPartyPayload) =>
-      api.post<AdminPoliticalParty>("/admin/political-parties", payload),
+      api.post<AdminPoliticalParty>(
+        "/admin/political-parties",
+        preparePoliticalPartyPayload(payload)
+      ),
     updatePoliticalParty: (
       partyId: number,
       payload: Partial<AdminPoliticalPartyPayload>
-    ) => api.patch<AdminPoliticalParty>(`/admin/political-parties/${partyId}`, payload),
+    ) =>
+      api.patch<AdminPoliticalParty>(
+        `/admin/political-parties/${partyId}`,
+        preparePoliticalPartyPayload(payload)
+      ),
   };
 }

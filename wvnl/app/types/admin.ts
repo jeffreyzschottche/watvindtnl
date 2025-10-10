@@ -87,6 +87,7 @@ export interface AdminPoliticalPartyPayload {
   slug?: string;
   logo_url?: string | null;
   website_url?: string | null;
+  logo?: File | null;
 }
 
 export interface AdminIssueImportItem extends AdminIssuePayload {

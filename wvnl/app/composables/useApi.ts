@@ -14,12 +14,20 @@ export function useApi() {
       "X-Requested-With": "XMLHttpRequest",
     };
     if (auth.token) headers.Authorization = `Bearer ${auth.token}`;
-    if (body !== undefined) headers["Content-Type"] = "application/json";
+
+    const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+
+    if (body !== undefined && !isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
 
     return apiFetch<T>(endpoint, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body:
+        body !== undefined
+          ? (isFormData ? body : JSON.stringify(body))
+          : undefined,
     });
   }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PoliticalParty;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -30,15 +31,16 @@ class AdminPoliticalPartyController extends Controller
 
     public function update(Request $request, PoliticalParty $politicalParty)
     {
-        $data = $this->validatePartyData($request, $politicalParty->id);
+        $data = $this->validatePartyData($request, $politicalParty);
 
         $politicalParty->update($data);
 
         return response()->json($this->serializeParty($politicalParty->fresh()));
     }
 
-    private function validatePartyData(Request $request, ?int $partyId = null): array
+    private function validatePartyData(Request $request, ?PoliticalParty $party = null): array
     {
+        $partyId = $party?->id;
         $slugRule = Rule::unique('political_parties', 'slug');
         $abbrRule = Rule::unique('political_parties', 'abbreviation');
 
@@ -51,22 +53,95 @@ class AdminPoliticalPartyController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'abbreviation' => ['required', 'string', 'max:50', $abbrRule],
             'slug' => ['nullable', 'string', 'max:255', $slugRule],
+            'logo' => ['nullable', 'image', 'max:5120'],
             'logo_url' => ['nullable', 'string', 'max:2048'],
             'website_url' => ['nullable', 'string', 'max:2048'],
         ]);
 
-        $slug = $validated['slug'] ?? $this->generateUniqueSlug(
-            $validated['abbreviation'] ?: $validated['name'],
+        $name = trim($validated['name']);
+        $abbreviation = trim($validated['abbreviation']);
+        $slugInput = $this->normalizeNullableString($validated['slug'] ?? null);
+
+        $slug = $slugInput ?? $this->generateUniqueSlug(
+            $abbreviation ?: $name,
             $partyId
         );
 
+        $logoUrl = $this->determineLogoUrl($request, $party, $validated);
+
         return [
-            'name' => $validated['name'],
-            'abbreviation' => $validated['abbreviation'],
+            'name' => $name,
+            'abbreviation' => $abbreviation,
             'slug' => $slug,
-            'logo_url' => $validated['logo_url'] ?? null,
-            'website_url' => $validated['website_url'] ?? null,
+            'logo_url' => $logoUrl,
+            'website_url' => $this->normalizeNullableString($validated['website_url'] ?? null),
         ];
+    }
+
+    private function determineLogoUrl(Request $request, ?PoliticalParty $party, array $validated): ?string
+    {
+        $current = $party?->logo_url;
+
+        if ($request->hasFile('logo')) {
+            $this->deleteLogo($current);
+
+            $path = $request->file('logo')->store('logos', 'public');
+
+            return Storage::disk('public')->url($path);
+        }
+
+        if (array_key_exists('logo_url', $validated)) {
+            $value = $this->normalizeNullableString($validated['logo_url'] ?? null);
+
+            if ($value === null) {
+                $this->deleteLogo($current);
+            }
+
+            return $value;
+        }
+
+        return $current;
+    }
+
+    private function deleteLogo(?string $logoUrl): void
+    {
+        if (!$logoUrl) {
+            return;
+        }
+
+        $disk = Storage::disk('public');
+        $baseUrl = rtrim($disk->url(''), '/');
+
+        $prefixes = array_filter([
+            $baseUrl ? $baseUrl.'/' : null,
+            $baseUrl ?: null,
+            '/storage/',
+        ]);
+
+        foreach ($prefixes as $prefix) {
+            if (!Str::startsWith($logoUrl, $prefix)) {
+                continue;
+            }
+
+            $relative = ltrim(Str::after($logoUrl, $prefix), '/');
+
+            if ($relative !== '') {
+                $disk->delete($relative);
+            }
+
+            break;
+        }
+    }
+
+    private function normalizeNullableString(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 
     private function serializeParty(PoliticalParty $party): array

@@ -797,9 +797,49 @@
                 <label class="text-sm font-medium text-slate-700">Slug (optioneel)</label>
                 <input v-model="newPartyForm.slug" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
               </div>
-              <div class="grid gap-2">
-                <label class="text-sm font-medium text-slate-700">Logo URL (publieke route)</label>
-                <input v-model="newPartyForm.logo_url" type="text" placeholder="/storage/logos/voorbeeld.png" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+              <div class="grid gap-2 md:col-span-2">
+                <label class="text-sm font-medium text-slate-700">Logo</label>
+                <input
+                  ref="newPartyLogoInput"
+                  type="file"
+                  accept="image/*"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                  @change="handleNewPartyLogoChange"
+                />
+                <div
+                  v-if="newPartyForm.logoPreview"
+                  class="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+                >
+                  <img
+                    :src="newPartyForm.logoPreview"
+                    alt="Voorbeeld van partijlogo"
+                    class="h-10 w-10 rounded-full bg-white p-1 object-contain"
+                  />
+                  <div class="flex flex-1 flex-col text-xs text-slate-600">
+                    <span class="font-semibold">
+                      {{ newPartyForm.logoFile?.name || "Voorbeeld" }}
+                    </span>
+                    <span class="truncate">{{ newPartyForm.logoPreview }}</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="text-xs font-semibold text-red-600 hover:underline"
+                    @click="clearNewPartyLogo"
+                  >
+                    Verwijderen
+                  </button>
+                </div>
+                <div class="grid gap-1">
+                  <label class="text-xs font-semibold text-slate-600">
+                    Of gebruik een bestaande URL
+                  </label>
+                  <input
+                    v-model="newPartyForm.logo_url"
+                    type="text"
+                    placeholder="/storage/logos/voorbeeld.png"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                  />
+                </div>
               </div>
               <div class="md:col-span-2 grid gap-2">
                 <label class="text-sm font-medium text-slate-700">Website URL</label>
@@ -853,8 +893,43 @@
                       <input v-model="partyDraft.slug" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
                     </div>
                     <div class="grid gap-2 md:col-span-2">
-                      <label class="text-xs font-semibold text-slate-600">Logo URL</label>
-                      <input v-model="partyDraft.logo_url" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                      <label class="text-xs font-semibold text-slate-600">Logo</label>
+                      <input
+                        :ref="setEditPartyLogoInput"
+                        type="file"
+                        accept="image/*"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                        @change="handleEditPartyLogoChange"
+                      />
+                      <div
+                        v-if="partyDraft.logoPreview"
+                        class="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+                      >
+                        <img
+                          :src="partyDraft.logoPreview"
+                          :alt="`Logo ${partyDraft.abbreviation || partyDraft.name || 'partij'}`"
+                          class="h-10 w-10 rounded-full bg-white p-1 object-contain"
+                        />
+                        <div class="flex flex-1 flex-col text-xs text-slate-600">
+                          <span class="font-semibold">
+                            {{ partyDraft.logoFile?.name || "Voorbeeld" }}
+                          </span>
+                          <span class="truncate">{{ partyDraft.logoPreview }}</span>
+                        </div>
+                        <button
+                          type="button"
+                          class="text-xs font-semibold text-red-600 hover:underline"
+                          @click="clearEditPartyLogo"
+                        >
+                          Verwijderen
+                        </button>
+                      </div>
+                      <div class="grid gap-1">
+                        <label class="text-[11px] font-semibold text-slate-600">
+                          Of gebruik een bestaande URL
+                        </label>
+                        <input v-model="partyDraft.logo_url" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                      </div>
                     </div>
                   </div>
                   <div class="grid gap-2">
@@ -879,11 +954,29 @@
                   </div>
                 </div>
                 <div v-else class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <h3 class="text-lg font-semibold text-slate-900">{{ party.name }}</h3>
-                    <p class="text-xs uppercase tracking-wide text-slate-400">{{ party.abbreviation }} • {{ party.slug }}</p>
-                    <p v-if="party.logo_url" class="mt-1 text-sm text-slate-500">Logo: {{ party.logo_url }}</p>
-                    <p v-if="party.website_url" class="mt-1 text-sm text-slate-500">Website: {{ party.website_url }}</p>
+                  <div class="flex items-start gap-4">
+                    <div
+                      v-if="party.logo_url"
+                      class="mt-1 flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white p-2"
+                    >
+                      <img
+                        :src="party.logo_url"
+                        :alt="`Logo ${party.abbreviation || party.name}`"
+                        class="h-full w-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <h3 class="text-lg font-semibold text-slate-900">{{ party.name }}</h3>
+                      <p class="text-xs uppercase tracking-wide text-slate-400">{{ party.abbreviation }} • {{ party.slug }}</p>
+                      <p v-if="party.logo_url" class="mt-1 text-sm text-slate-500">
+                        Logo:
+                        <span class="break-all text-slate-600">{{ party.logo_url }}</span>
+                      </p>
+                      <p v-if="party.website_url" class="mt-1 text-sm text-slate-500">
+                        Website:
+                        <span class="break-all text-slate-600">{{ party.website_url }}</span>
+                      </p>
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -903,7 +996,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { useAdmin } from "~/composables/useAdmin";
 import type {
   AdminArgumentImportPayload,
@@ -913,6 +1006,7 @@ import type {
   AdminIssueImportItem,
   AdminIssueImportPayload,
   AdminIssuePayload,
+  AdminPoliticalParty,
   AdminPoliticalPartyPayload,
 } from "~/types/admin";
 
@@ -1097,12 +1191,17 @@ const argumentEditDraft = reactive({
 });
 
 const editingPartyId = ref<number | null>(null);
+const newPartyLogoInput = ref<HTMLInputElement | null>(null);
+const editPartyLogoInput = ref<HTMLInputElement | null>(null);
+
 const partyDraft = reactive({
   name: "",
   abbreviation: "",
   slug: "",
   logo_url: "",
   website_url: "",
+  logoFile: null as File | null,
+  logoPreview: null as string | null,
 });
 
 const newPartyForm = reactive({
@@ -1111,7 +1210,115 @@ const newPartyForm = reactive({
   slug: "",
   logo_url: "",
   website_url: "",
+  logoFile: null as File | null,
+  logoPreview: null as string | null,
 });
+
+function setEditPartyLogoInput(el: HTMLInputElement | null) {
+  editPartyLogoInput.value = el;
+}
+
+let newPartyLogoObjectUrl: string | null = null;
+let editPartyLogoObjectUrl: string | null = null;
+
+watch(
+  () => newPartyForm.logo_url,
+  (value) => {
+    if (newPartyForm.logoFile) return;
+    const trimmed = value.trim();
+    newPartyForm.logoPreview = trimmed.length ? trimmed : null;
+  }
+);
+
+watch(
+  () => partyDraft.logo_url,
+  (value) => {
+    if (partyDraft.logoFile) return;
+    const trimmed = value.trim();
+    partyDraft.logoPreview = trimmed.length ? trimmed : null;
+  }
+);
+
+function setNewPartyLogoFile(file: File | null) {
+  if (newPartyLogoObjectUrl) {
+    URL.revokeObjectURL(newPartyLogoObjectUrl);
+    newPartyLogoObjectUrl = null;
+  }
+
+  newPartyForm.logoFile = file;
+
+  if (file) {
+    newPartyLogoObjectUrl = URL.createObjectURL(file);
+    newPartyForm.logoPreview = newPartyLogoObjectUrl;
+  } else {
+    const trimmed = newPartyForm.logo_url.trim();
+    newPartyForm.logoPreview = trimmed.length ? trimmed : null;
+  }
+}
+
+function handleNewPartyLogoChange(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] ?? null;
+  setNewPartyLogoFile(file);
+}
+
+function clearNewPartyLogo() {
+  setNewPartyLogoFile(null);
+  if (newPartyLogoInput.value) {
+    newPartyLogoInput.value.value = "";
+  }
+}
+
+function setEditPartyLogoFile(file: File | null) {
+  if (editPartyLogoObjectUrl) {
+    URL.revokeObjectURL(editPartyLogoObjectUrl);
+    editPartyLogoObjectUrl = null;
+  }
+
+  partyDraft.logoFile = file;
+
+  if (file) {
+    editPartyLogoObjectUrl = URL.createObjectURL(file);
+    partyDraft.logoPreview = editPartyLogoObjectUrl;
+  } else {
+    const trimmed = partyDraft.logo_url.trim();
+    partyDraft.logoPreview = trimmed.length ? trimmed : null;
+  }
+}
+
+function handleEditPartyLogoChange(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] ?? null;
+  setEditPartyLogoFile(file);
+}
+
+function clearEditPartyLogo() {
+  setEditPartyLogoFile(null);
+  const input = editPartyLogoInput.value;
+  if (input) {
+    input.value = "";
+  }
+}
+
+function resetNewPartyFormState() {
+  newPartyForm.name = "";
+  newPartyForm.abbreviation = "";
+  newPartyForm.slug = "";
+  newPartyForm.logo_url = "";
+  newPartyForm.website_url = "";
+  clearNewPartyLogo();
+  newPartyForm.logoPreview = null;
+}
+
+function resetPartyDraftState() {
+  partyDraft.name = "";
+  partyDraft.abbreviation = "";
+  partyDraft.slug = "";
+  partyDraft.logo_url = "";
+  partyDraft.website_url = "";
+  clearEditPartyLogo();
+  partyDraft.logoPreview = null;
+}
 
 const partyLookup = computed(() => {
   const map = new Map<number, string>();
@@ -1349,35 +1556,36 @@ async function submitParty() {
   const payload: AdminPoliticalPartyPayload = {
     name: newPartyForm.name.trim(),
     abbreviation: newPartyForm.abbreviation.trim(),
-    slug: newPartyForm.slug.trim() || undefined,
     logo_url: newPartyForm.logo_url.trim() || null,
     website_url: newPartyForm.website_url.trim() || null,
   };
+  const slug = newPartyForm.slug.trim();
+  if (slug) {
+    payload.slug = slug;
+  }
+  if (newPartyForm.logoFile) {
+    payload.logo = newPartyForm.logoFile;
+  }
+
   const created = await createParty(payload);
   if (!created) return;
-  newPartyForm.name = "";
-  newPartyForm.abbreviation = "";
-  newPartyForm.slug = "";
-  newPartyForm.logo_url = "";
-  newPartyForm.website_url = "";
+  resetNewPartyFormState();
 }
 
-function startEdit(party: { id: number; name: string; abbreviation: string; slug: string; logo_url: string | null; website_url: string | null }) {
+function startEdit(party: AdminPoliticalParty) {
   editingPartyId.value = party.id;
   partyDraft.name = party.name;
   partyDraft.abbreviation = party.abbreviation;
-  partyDraft.slug = party.slug;
+  partyDraft.slug = party.slug ?? "";
   partyDraft.logo_url = party.logo_url ?? "";
   partyDraft.website_url = party.website_url ?? "";
+  partyDraft.logoFile = null;
+  clearEditPartyLogo();
 }
 
 function cancelEdit() {
   editingPartyId.value = null;
-  partyDraft.name = "";
-  partyDraft.abbreviation = "";
-  partyDraft.slug = "";
-  partyDraft.logo_url = "";
-  partyDraft.website_url = "";
+  resetPartyDraftState();
 }
 
 async function saveParty(partyId: number) {
@@ -1388,10 +1596,24 @@ async function saveParty(partyId: number) {
     logo_url: partyDraft.logo_url.trim() || null,
     website_url: partyDraft.website_url.trim() || null,
   };
+  if (partyDraft.logoFile) {
+    payload.logo = partyDraft.logoFile;
+  }
   const updated = await updateParty(partyId, payload);
   if (!updated) return;
   cancelEdit();
 }
+
+onBeforeUnmount(() => {
+  if (newPartyLogoObjectUrl) {
+    URL.revokeObjectURL(newPartyLogoObjectUrl);
+    newPartyLogoObjectUrl = null;
+  }
+  if (editPartyLogoObjectUrl) {
+    URL.revokeObjectURL(editPartyLogoObjectUrl);
+    editPartyLogoObjectUrl = null;
+  }
+});
 
 function triggerIssueUpload() {
   issueUploadInput.value?.click();
