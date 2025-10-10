@@ -40,7 +40,7 @@
             >Contact</NuxtLink
           >
         </nav>
-        <div class="auth-links">
+        <div v-if="!isLoggedIn" class="auth-links">
           <NuxtLink to="/login" class="button button-secondary" @click="closeMobile"
             >Inloggen</NuxtLink
           >
@@ -55,7 +55,9 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRoute } from '#imports'
+import { useAuthStore } from '~/stores/auth'
 
 const mobileOpen = ref(false)
 
@@ -68,6 +70,7 @@ const closeMobile = () => {
 }
 
 const route = useRoute()
+const { isLoggedIn } = storeToRefs(useAuthStore())
 
 watch(
   () => route.fullPath,
