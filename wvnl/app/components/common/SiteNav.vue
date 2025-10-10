@@ -40,13 +40,23 @@
             >Contact</NuxtLink
           >
         </nav>
-        <div v-if="!isLoggedIn" class="auth-links">
-          <NuxtLink to="/login" class="button button-secondary" @click="closeMobile"
-            >Inloggen</NuxtLink
+        <div class="auth-links">
+          <template v-if="!isLoggedIn">
+            <NuxtLink to="/login" class="button button-secondary" @click="closeMobile"
+              >Inloggen</NuxtLink
+            >
+            <NuxtLink to="/register" class="button" @click="closeMobile"
+              >Registreren</NuxtLink
+            >
+          </template>
+          <button
+            v-else
+            type="button"
+            class="button button-secondary"
+            @click="handleLogout"
           >
-          <NuxtLink to="/register" class="button" @click="closeMobile"
-            >Registreren</NuxtLink
-          >
+            Uitloggen
+          </button>
         </div>
       </div>
     </div>
@@ -56,7 +66,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute } from '#imports'
+import { useRoute, useRouter } from '#imports'
 import { useAuthStore } from '~/stores/auth'
 
 const mobileOpen = ref(false)
@@ -70,7 +80,15 @@ const closeMobile = () => {
 }
 
 const route = useRoute()
-const { isLoggedIn } = storeToRefs(useAuthStore())
+const router = useRouter()
+const authStore = useAuthStore()
+const { isLoggedIn } = storeToRefs(authStore)
+
+const handleLogout = () => {
+  authStore.logout()
+  closeMobile()
+  router.push('/')
+}
 
 watch(
   () => route.fullPath,
