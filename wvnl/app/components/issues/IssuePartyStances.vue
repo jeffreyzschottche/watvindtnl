@@ -21,13 +21,18 @@
             :key="party.id"
             class="issue-party-stances__party"
           >
-            <img
-              v-if="party.logo_url"
-              :src="party.logo_url"
-              :alt="party.abbreviation || party.name"
-              class="issue-party-stances__logo"
-              loading="lazy"
-            />
+            <div class="issue-party-stances__avatar">
+              <img
+                v-if="getLogoUrl(party.logo_url)"
+                :src="getLogoUrl(party.logo_url)"
+                :alt="party.abbreviation || party.name"
+                class="issue-party-stances__logo"
+                loading="lazy"
+              />
+              <span v-else class="issue-party-stances__avatar-fallback">
+                {{ getInitial(party) }}
+              </span>
+            </div>
             <div class="issue-party-stances__party-details">
               <span class="issue-party-stances__party-abbr">
                 {{ party.abbreviation || party.name }}
@@ -44,7 +49,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { IssuePartyStances } from "~/types/issues";
+import type {
+  IssuePartyStanceParty,
+  IssuePartyStances,
+} from "~/types/issues";
 
 type ColumnKey = keyof IssuePartyStances;
 
@@ -69,6 +77,46 @@ const columns = computed(() => [
 ]);
 
 const stances = computed(() => props.stances);
+
+const runtimeConfig = useRuntimeConfig();
+const apiBase = runtimeConfig.public.apiBase || "http://localhost:8000/api";
+
+let assetBaseUrl: URL | null = null;
+try {
+  assetBaseUrl = new URL(apiBase);
+  let path = assetBaseUrl.pathname.replace(/\/?api\/?$/, "/");
+  if (!path.endsWith("/")) {
+    path += "/";
+  }
+  assetBaseUrl.pathname = path;
+} catch (error) {
+  console.warn("Kan API-basis-URL niet parsen voor partijlogo's", error);
+}
+
+function getLogoUrl(logoUrl: string | null): string | null {
+  if (!logoUrl) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(logoUrl)) {
+    return logoUrl;
+  }
+
+  if (/^\/\//.test(logoUrl)) {
+    return `https:${logoUrl}`;
+  }
+
+  if (!assetBaseUrl) {
+    return logoUrl;
+  }
+
+  return new URL(logoUrl.replace(/^\/+/, ""), assetBaseUrl).toString();
+}
+
+function getInitial(party: IssuePartyStanceParty): string {
+  const source = party.abbreviation?.trim() || party.name?.trim();
+  return source ? source.charAt(0).toUpperCase() : "?";
+}
 </script>
 
 <style scoped>
@@ -161,13 +209,30 @@ const stances = computed(() => props.stances);
   gap: 0.75rem;
 }
 
-.issue-party-stances__logo {
+.issue-party-stances__avatar {
   width: 36px;
   height: 36px;
-  object-fit: contain;
   border-radius: 50%;
   background: #e2e8f0;
   padding: 0.25rem;
+}
+
+.issue-party-stances__logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.issue-party-stances__avatar-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #cbd5f5;
+  color: #1e3a8a;
+  font-weight: 700;
 }
 
 .issue-party-stances__party-details {
