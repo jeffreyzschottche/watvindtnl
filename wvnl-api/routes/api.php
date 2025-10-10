@@ -7,6 +7,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\IssueArgsController;
 use App\Http\Controllers\UserIssueController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PoliticalPartyLogoController;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
@@ -18,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::patch('/users/{user}', [UserController::class, 'update']);
     Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
+    Route::post('/political-parties/{politicalParty}/logo', [PoliticalPartyLogoController::class, 'store']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
     Route::get('/me/votes', [UserIssueController::class, 'history']);
     Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote']);
