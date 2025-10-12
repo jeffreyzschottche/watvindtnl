@@ -21,6 +21,7 @@ return [
     'altcha' => [
         'secret' => env('ALTCHA_SECRET'),
         'verify_url' => env('ALTCHA_VERIFY_URL', 'https://api.altcha.org/v1/verify'),
+        'challenge_url' => env('ALTCHA_CHALLENGE_URL', 'https://api.altcha.org/v1/challenge'),
     ],
 
     'resend' => [

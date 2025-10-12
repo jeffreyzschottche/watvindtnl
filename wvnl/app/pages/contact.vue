@@ -60,6 +60,7 @@
             ref="altchaRef"
             class="altcha"
             theme="auto"
+            :challengeurl="altchaChallengeUrl"
             @altcha-success="handleAltchaSuccess"
             @altcha-error="handleAltchaError"
             @altcha-reset="handleAltchaReset"
@@ -102,6 +103,11 @@ type AltchaDetail = {
   answer?: string;
   signature?: string;
 };
+
+const runtimeConfig = useRuntimeConfig();
+const altchaChallengeUrl =
+  runtimeConfig.public.altchaChallengeUrl ||
+  `${runtimeConfig.public.apiBase}/altcha/challenge`;
 
 const ALTCHA_SCRIPT_ID = "altcha-widget-script";
 

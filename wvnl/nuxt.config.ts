@@ -1,8 +1,13 @@
+const defaultApiBase =
+  process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api";
+
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      apiBase:
-        process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",
+      apiBase: defaultApiBase,
+      altchaChallengeUrl:
+        process.env.NUXT_PUBLIC_ALTCHA_CHALLENGE_URL ||
+        `${defaultApiBase}/altcha/challenge`,
     },
   },
   ssr: false,
