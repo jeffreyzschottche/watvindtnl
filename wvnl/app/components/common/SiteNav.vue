@@ -26,6 +26,13 @@
           <NuxtLink to="/issues" active-class="link-active" @click="closeMobile"
             >Kwesties</NuxtLink
           >
+          <NuxtLink
+            to="/politiek-kompas"
+            active-class="link-active"
+            @click="closeMobile"
+          >
+            Politiek Kompas
+          </NuxtLink>
           <NuxtLink to="/privacy" active-class="link-active" @click="closeMobile"
             >Privacy</NuxtLink
           >
@@ -39,6 +46,14 @@
           <NuxtLink to="/contact" active-class="link-active" @click="closeMobile"
             >Contact</NuxtLink
           >
+          <NuxtLink
+            to="/profile"
+            class="button button-profile"
+            active-class="link-active"
+            @click="closeMobile"
+          >
+            Mijn profiel
+          </NuxtLink>
         </nav>
         <div class="auth-links">
           <template v-if="!isLoggedIn">

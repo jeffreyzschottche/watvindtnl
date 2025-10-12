@@ -157,6 +157,12 @@ a:focus {
   box-shadow: none;
 }
 
+.button-profile {
+  background: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(14, 165, 233, 0.25);
+}
+
 .site-footer {
   background: #0f172a;
   color: #e2e8f0;
@@ -224,6 +230,10 @@ a:focus {
 
   .nav-links a {
     color: var(--color-text);
+  }
+
+  .nav-links .button-profile {
+    width: 100%;
   }
 
   .auth-links {
