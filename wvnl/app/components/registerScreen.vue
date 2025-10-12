@@ -107,22 +107,27 @@
         </select>
       </label>
 
+      <div
+        class="form-option"
+        :class="{ 'form-option--error': showTermsError }"
+      >
+        <input id="terms" v-model="acceptsTerms" type="checkbox" />
+        <label for="terms">
+          Ik accepteer de
+          <NuxtLink to="/algemene-voorwaarden">algemene voorwaarden</NuxtLink>.
+        </label>
+      </div>
+      <p v-if="showTermsError" class="form-option__error">
+        Vink dit aan om een account aan te maken.
+      </p>
+
       <div class="form-option">
-        <input
-          id="notif"
-          v-model="wantsNotifications"
-          type="checkbox"
-        />
+        <input id="notif" v-model="wantsNotifications" type="checkbox" />
         <label for="notif">Ik wil notificaties ontvangen (e-mail)</label>
       </div>
 
       <div class="form-option">
-        <input
-          id="cookies"
-          v-model="acceptsCookies"
-          type="checkbox"
-          required
-        />
+        <input id="cookies" v-model="acceptsCookies" type="checkbox" />
         <label for="cookies">Ik ga akkoord met het gebruik van cookies.</label>
       </div>
     </fieldset>
@@ -179,31 +184,51 @@ const form = reactive({
   political_preference: "" as "links" | "midden" | "rechts" | "geen" | "",
 });
 
-const wantsNotifications = ref<boolean>(true);
+const wantsNotifications = ref<boolean>(false);
 const acceptsCookies = ref<boolean>(false);
+const acceptsTerms = ref<boolean>(false);
 const confirmPassword = ref<string>("");
 
 const error = ref<string | null>(null);
 const loading = ref(false);
+const showTermsError = ref(false);
+
+const TERMS_ERROR_MESSAGE = "Vink de algemene voorwaarden aan om door te gaan.";
+
+watch(acceptsTerms, (value) => {
+  if (value && showTermsError.value) {
+    showTermsError.value = false;
+    if (error.value === TERMS_ERROR_MESSAGE) {
+      error.value = null;
+    }
+  }
+});
 
 async function onSubmit() {
   error.value = null;
+  showTermsError.value = false;
   loading.value = true;
   try {
     if (form.password !== confirmPassword.value) {
       throw new Error("Wachtwoorden komen niet overeen.");
     }
-    if (!acceptsCookies.value) {
-      throw new Error("Je moet akkoord gaan met het cookiegebruik.");
+    if (!acceptsTerms.value) {
+      showTermsError.value = true;
+      throw new Error(TERMS_ERROR_MESSAGE);
     }
     // payload normaliseren; voorkom nulls door lege strings te vermijden
+    const now = new Date().toISOString();
     const payload = {
       ...form,
       password_confirmation: confirmPassword.value,
       notification_prefs: { email: !!wantsNotifications.value },
       cookie_prefs: {
         accepted: acceptsCookies.value,
-        accepted_at: new Date().toISOString(),
+        accepted_at: acceptsCookies.value ? now : null,
+      },
+      terms: {
+        accepted: acceptsTerms.value,
+        accepted_at: now,
       },
     };
     await register(payload as any);
@@ -215,3 +240,42 @@ async function onSubmit() {
   }
 }
 </script>
+
+<style scoped>
+.form-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.form-option input[type="checkbox"] {
+  margin-top: 0.25rem;
+}
+
+.form-option label {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.form-option a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(0, 61, 165, 0.45);
+}
+
+.form-option--error {
+  outline: 2px solid rgba(200, 16, 46, 0.65);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: rgba(200, 16, 46, 0.05);
+}
+
+.form-option__error {
+  margin: -0.35rem 0 0.85rem 2.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #c8102e;
+}
+</style>
