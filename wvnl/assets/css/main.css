@@ -74,8 +74,7 @@ a:focus {
 
 .brand {
   font-weight: 700;
-  font-size: 1.25rem;
-  color: var(--color-text);
+  font-size: 2.5rem;
 }
 
 .menu-toggle {
@@ -413,4 +412,32 @@ a:focus {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* NL-vlag text fill */
+.nl-flag-text {
+  /* 3 horizontale banen: rood, wit, blauw */
+  background: linear-gradient(
+    to bottom,
+    #c8102e 0%,
+    #c8102e 40.333%,
+    #ffffff 33.333%,
+    #ffffff 40.666%,
+    #003da5 66.666%,
+    #003da5 100%
+  );
+  -webkit-background-clip: text; /* Safari/Chrome */
+  background-clip: text;
+  -webkit-text-fill-color: transparent; /* Safari */
+  color: transparent; /* overige browsers */
+  display: inline-block; /* zorgt dat de gradient op het element zelf zit */
+}
+
+/* Optioneel: dunne outline zodat de witte baan zichtbaar blijft op lichte achtergrond */
+.nl-flag-text.outline {
+  text-stroke: 1px rgba(0, 0, 0, 0.35);
+  /* of experimenteel (ondersteuning wisselt):
+     -webkit-text-stroke: 1px rgba(0,0,0,.35);
+     text-stroke: 1px rgba(0,0,0,.35);
+  */
 }

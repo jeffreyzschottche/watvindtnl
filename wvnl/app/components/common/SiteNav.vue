@@ -1,8 +1,7 @@
 <template>
   <header class="site-header">
     <div class="container nav-container">
-      <NuxtLink to="/" class="brand">WDNL</NuxtLink>
-
+      <NuxtLink to="/" class="brand nl-flag-text outline">WDNL</NuxtLink>
       <button
         class="menu-toggle"
         type="button"
