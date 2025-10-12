@@ -404,5 +404,6 @@ async function handleIssueReport(reason: ReportReason) {
   background: linear-gradient(135deg, #003da5, #0a4bc9);
   color: #ffffff;
   box-shadow: 0 14px 28px rgba(0, 61, 165, 0.25);
+  display: none !important;
 }
 </style>

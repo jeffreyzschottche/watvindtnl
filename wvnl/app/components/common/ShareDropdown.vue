@@ -6,6 +6,7 @@
     @keydown.esc.prevent="close"
   >
     <button
+      class="issue-card__button--share"
       type="button"
       :class="triggerClass"
       :aria-expanded="isOpen"
@@ -15,11 +16,7 @@
       {{ triggerLabel }}
     </button>
     <transition name="share-dropdown__transition">
-      <ul
-        v-if="isOpen"
-        class="share-dropdown__menu"
-        role="menu"
-      >
+      <ul v-if="isOpen" class="share-dropdown__menu" role="menu">
         <li v-for="option in computedOptions" :key="option.value" role="none">
           <button
             type="button"
@@ -49,7 +46,8 @@ const props = withDefaults(
   }>(),
   {
     triggerLabel: "Deel",
-    triggerClass: "issue-card__button issue-card__button--share",
+    triggerClass:
+      "issue-card__button issue-card__button--share issues-page__retry",
   }
 );
 
@@ -107,6 +105,9 @@ onBeforeUnmount(() => {
   display: inline-flex;
 }
 
+.share-dropdown__menu li {
+  list-style-type: none;
+}
 .share-dropdown__menu {
   position: absolute;
   right: 0;
@@ -115,7 +116,11 @@ onBeforeUnmount(() => {
   gap: 0.4rem;
   padding: 0.75rem;
   border-radius: 1rem;
-  background: linear-gradient(155deg, rgba(0, 61, 165, 0.1), rgba(255, 255, 255, 0.98));
+  background: linear-gradient(
+    155deg,
+    rgba(0, 61, 165, 0.1),
+    rgba(255, 255, 255, 0.98)
+  );
   min-width: 12rem;
   box-shadow: 0 22px 48px rgba(0, 28, 70, 0.2);
   border: 1px solid rgba(0, 61, 165, 0.2);
@@ -133,7 +138,8 @@ onBeforeUnmount(() => {
   color: #0f172a;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease,
+    box-shadow 0.18s ease;
   display: flex;
   align-items: center;
   gap: 0.45rem;
@@ -141,7 +147,11 @@ onBeforeUnmount(() => {
 
 .share-dropdown__option:hover,
 .share-dropdown__option:focus {
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.18), rgba(0, 61, 165, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.18),
+    rgba(0, 61, 165, 0.05)
+  );
   color: var(--color-primary);
   transform: translateX(2px);
   box-shadow: inset 0 0 0 1px rgba(0, 61, 165, 0.35);
@@ -156,5 +166,35 @@ onBeforeUnmount(() => {
 .share-dropdown__transition-leave-to {
   opacity: 0;
   transform: translateY(-4px);
+}
+.triggerClass {
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(
+    130deg,
+    var(--color-accent),
+    var(--color-primary)
+  );
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.triggerClass:hover,
+.triggerClass:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(0, 61, 165, 0.28);
+}
+
+.issue-card__button--share {
+  background: linear-gradient(135deg, #003da5, #0a4bc9);
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(0, 61, 165, 0.25);
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
 }
 </style>
