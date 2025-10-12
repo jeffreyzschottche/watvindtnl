@@ -12,4 +12,9 @@ export default defineNuxtConfig({
   modules: ["@pinia/nuxt", "@nuxt/devtools"],
   css: ["../assets/css/main.css"],
   devtools: { enabled: true },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag === "altcha-widget",
+    },
+  },
 });

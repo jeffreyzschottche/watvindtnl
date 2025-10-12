@@ -103,6 +103,8 @@ type AltchaDetail = {
   signature?: string;
 };
 
+const ALTCHA_SCRIPT_ID = "altcha-widget-script";
+
 const form = reactive({
   name: "",
   email: "",
@@ -190,14 +192,25 @@ const handleSubmit = async () => {
 };
 
 onMounted(() => {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || typeof customElements === "undefined") {
+    return;
+  }
 
   if (!customElements.get("altcha-widget")) {
-    const script = document.createElement("script");
-    script.src =
-      "https://cdn.jsdelivr.net/npm/altcha@latest/dist/altcha.min.js";
-    script.async = true;
-    document.head.appendChild(script);
+    const existingScript = document.getElementById(ALTCHA_SCRIPT_ID);
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = ALTCHA_SCRIPT_ID;
+      script.type = "module";
+      script.src =
+        "https://cdn.jsdelivr.net/npm/altcha@latest/dist/altcha.min.js";
+      script.addEventListener("error", () => {
+        status.value = "error";
+        errorMessage.value =
+          "De veiligheidscontrole kon niet geladen worden. Vernieuw de pagina en probeer het opnieuw.";
+      });
+      document.head.appendChild(script);
+    }
   }
 });
 
