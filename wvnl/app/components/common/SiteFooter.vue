@@ -10,7 +10,7 @@
             burgerparticipatie.
           </p>
           <p class="footer-text">
-            <i>Laat je stem horen en zie wat andere Nederlanders vinden.</i>
+            <i>Laat je stem horen en zie wat andere Nederlanders denken.</i>
           </p>
         </div>
 
