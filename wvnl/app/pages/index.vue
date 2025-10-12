@@ -48,7 +48,7 @@ const steps = [
             wat er leeft. Verzamel meningen, deel inzichten en werk aan
             besluiten waar iedereen achter staat.
           </p>
-          <div class="hero-actions">
+          <div class="ctahome">
             <NuxtLink to="/register" class="button">Start vandaag</NuxtLink>
             <NuxtLink to="/over-wdnl" class="button button-secondary"
               >Lees meer</NuxtLink
@@ -134,6 +134,10 @@ const steps = [
   padding: 0; /* hoogte komt uit height */
 }
 
+h2 {
+  color: black;
+}
+
 /* Top/Bottom gradient voor leesbaarheid */
 .hero::before {
   content: "";
@@ -182,6 +186,64 @@ const steps = [
   max-height: 220px; 
   object-fit: cover;
   */
+}
+
+/* Basis */
+.ctahome .button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+  color: var(--color-primary);
+  border: 2px solid transparent;
+  box-shadow: 0 18px 36px rgba(255, 255, 255, 0.35);
+  margin-right: 1em;
+  width: 7.5em;
+  min-height: 2em;
+  border-radius: 50px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease, transform 0.05s ease;
+}
+
+/* 1e knop: ROOD */
+.ctahome .button:first-child {
+  background: rgba(200, 16, 46, 0.95);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 18px 36px rgba(200, 16, 46, 0.35);
+}
+.ctahome .button:first-child:hover,
+.ctahome .button:first-child:focus {
+  background: #fff;
+  color: rgba(200, 16, 46, 0.95);
+  border-color: rgba(200, 16, 46, 0.95);
+  box-shadow: 0 22px 40px rgba(200, 16, 46, 0.45);
+}
+
+/* 2e knop: BLAUW */
+.ctahome .button:nth-child(2) {
+  background: rgba(0, 61, 165, 0.92);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 18px 36px rgba(0, 61, 165, 0.35);
+}
+.ctahome .button:nth-child(2):hover,
+.ctahome .button:nth-child(2):focus {
+  background: #fff;
+  color: rgba(0, 61, 165, 0.92);
+  border-color: rgba(0, 61, 165, 0.92);
+  box-shadow: 0 22px 40px rgba(0, 61, 165, 0.45);
+}
+
+/* Interactie */
+.ctahome .button:active {
+  transform: translateY(1px);
+}
+.ctahome .button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
 }
 
 /* Kleine schermen: eventueel iets hoger kader */
