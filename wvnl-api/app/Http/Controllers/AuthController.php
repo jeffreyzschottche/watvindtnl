@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\{RegisterRequest, LoginRequest};
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -26,12 +27,16 @@ class AuthController extends Controller
 
         $user = User::create($data);
 
+        event(new Registered($user));
+        $user->sendEmailVerificationNotification();
+
         // refresh voor casts
         $user->refresh();
 
         return response()->json([
             'token' => $user->createToken('mobile')->plainTextToken,
             'user' => $user,
+            'message' => 'We hebben je een e-mail gestuurd met een bevestigingslink. Bevestig je e-mailadres om te kunnen inloggen.',
         ], 201);
     }
 
@@ -41,6 +46,12 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($r->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 422);
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Bevestig eerst je e-mailadres via de link in je inbox voordat je inlogt.',
+            ], 403);
         }
 
         return response()->json([
