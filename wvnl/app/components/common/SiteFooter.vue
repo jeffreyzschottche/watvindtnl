@@ -216,11 +216,12 @@
 .footer-credits {
   margin-top: 0.5rem;
   font-size: 0.78rem;
-  color: rgba(247, 249, 255, 0.8);
+  color: rgba(247, 249, 255, 0);
 }
 
 .footer-credits a {
-  color: #ffcf73;
+  color: rgba(247, 249, 255, 0);
+
   text-decoration: underline;
 }
 

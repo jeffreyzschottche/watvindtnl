@@ -21,7 +21,12 @@
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top left, #ffffff 0%, #f5f7fa 55%, #eef1f6 100%);
+  background: radial-gradient(
+    circle at top left,
+    #ffffff 0%,
+    #f5f7fa 55%,
+    #eef1f6 100%
+  );
   color: var(--color-text);
 }
 
@@ -35,6 +40,13 @@ a:hover,
 a:focus {
   color: var(--color-accent);
   text-decoration: underline;
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+.button:hover {
+  text-decoration: none !important;
 }
 
 .site-wrapper {
@@ -219,8 +231,12 @@ a:focus {
 }
 
 .button-profile {
-  background: linear-gradient(120deg, var(--color-primary) 0%, #0b2e73 40%,
-      var(--color-accent) 100%);
+  background: linear-gradient(
+    120deg,
+    var(--color-primary) 0%,
+    #0b2e73 40%,
+    var(--color-accent) 100%
+  );
   color: #ffffff;
   border: none;
   box-shadow: 0 18px 40px rgba(0, 61, 165, 0.3);
@@ -241,7 +257,11 @@ a:focus {
     left: 50%;
     transform: translateX(-50%);
     width: min(480px, calc(100vw - 2.5rem));
-    background: linear-gradient(135deg, #ffffff 0%, rgba(238, 241, 246, 0.95) 100%);
+    background: linear-gradient(
+      135deg,
+      #ffffff 0%,
+      rgba(238, 241, 246, 0.95) 100%
+    );
     border: 1px solid rgba(0, 61, 165, 0.12);
     border-radius: 18px;
     box-shadow: 0 24px 45px rgba(0, 26, 77, 0.16);
@@ -288,7 +308,11 @@ a:focus {
 
 .hero {
   padding: 4.5rem 0 3.5rem;
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.08), rgba(255, 255, 255, 0.6));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.08),
+    rgba(255, 255, 255, 0.6)
+  );
 }
 
 .hero-content {
@@ -350,7 +374,11 @@ a:focus {
 }
 
 .card {
-  background: linear-gradient(135deg, #ffffff 0%, rgba(239, 243, 252, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    rgba(239, 243, 252, 0.9) 100%
+  );
   padding: 1.75rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-soft);
@@ -381,7 +409,11 @@ a:focus {
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: linear-gradient(120deg, rgba(200, 16, 46, 0.95), rgba(0, 61, 165, 0.92));
+  background: linear-gradient(
+    120deg,
+    rgba(200, 16, 46, 0.95),
+    rgba(0, 61, 165, 0.92)
+  );
   border-radius: var(--border-radius);
   padding: 2.25rem;
   color: #ffffff;
@@ -414,7 +446,11 @@ a:focus {
 
 .page-hero {
   padding: 3rem 0 2rem;
-  background: linear-gradient(135deg, rgba(200, 16, 46, 0.1), rgba(0, 61, 165, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(200, 16, 46, 0.1),
+    rgba(0, 61, 165, 0.05)
+  );
   border-bottom: 1px solid rgba(0, 61, 165, 0.08);
 }
 

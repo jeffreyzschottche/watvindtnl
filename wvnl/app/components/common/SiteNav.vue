@@ -42,7 +42,7 @@
           >
           <NuxtLink
             to="/profile"
-            class="button button-profile"
+            class="button"
             active-class="link-active"
             @click="closeMobile"
           >
