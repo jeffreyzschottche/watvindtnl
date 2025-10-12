@@ -18,6 +18,11 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    'altcha' => [
+        'secret' => env('ALTCHA_SECRET'),
+        'verify_url' => env('ALTCHA_VERIFY_URL', 'https://api.altcha.org/v1/verify'),
+    ],
+
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
