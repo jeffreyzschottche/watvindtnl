@@ -4,7 +4,7 @@
       <!-- Left side: text + links + copy -->
       <div class="footer-left">
         <div class="footer-brand">
-          <strong>WVNL</strong>
+          <strong>WDNL</strong>
           <p class="footer-text">
             Samen bouwen we aan transparante besluitvorming en heldere
             burgerparticipatie.
@@ -20,7 +20,7 @@
           <NuxtLink to="/contact">Contact</NuxtLink>
         </nav>
 
-        <p class="footer-copy">© {{ new Date().getFullYear() }} Wat Vindt NL</p>
+        <p class="footer-copy">© {{ new Date().getFullYear() }} Wat Denkt NL</p>
       </div>
 
       <!-- Right side: windmill illustration + credits -->

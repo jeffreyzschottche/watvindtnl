@@ -2,9 +2,9 @@
   <div class="page">
     <section class="page-hero">
       <div class="container narrow">
-        <h1>Over WVNL</h1>
+        <h1>Over WDNL</h1>
         <p>
-          WVNL is een platform voor burgerparticipatie. Wij brengen inwoners,
+          WDNL is een platform voor burgerparticipatie. Wij brengen inwoners,
           organisaties en overheden bij elkaar om meningen te verzamelen en
           beslissingen beter te onderbouwen.
         </p>
@@ -14,7 +14,7 @@
     <section class="container narrow page-section">
       <h2>Hoe werkt het?</h2>
       <p>
-        Met WVNL creëer je binnen enkele minuten een vraag of enquête. Nodig je
+        Met WDNL creëer je binnen enkele minuten een vraag of enquête. Nodig je
         doelgroep uit, deel de resultaten en bespreek vervolgstappen met je
         team. Ons platform is ontworpen om helder inzicht te bieden en het
         besluitvormingsproces te versnellen.

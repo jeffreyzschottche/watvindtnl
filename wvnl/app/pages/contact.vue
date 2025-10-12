@@ -5,7 +5,7 @@
         <h1>Contact</h1>
         <p>
           Wil je zelf een motie aanvragen? Heb je ideeën? Of wil je meer weten
-          over WVNL?
+          over WDNL?
         </p>
         <p>Laat het ons weten via onderstaand formulier.</p>
       </div>

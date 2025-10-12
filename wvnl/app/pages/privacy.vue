@@ -13,7 +13,7 @@
     <section class="container narrow page-section">
       <h2>Welke gegevens verzamelen we?</h2>
       <p>
-        WVNL verwerkt alleen gegevens die noodzakelijk zijn voor het aanbieden
+        WDNL verwerkt alleen gegevens die noodzakelijk zijn voor het aanbieden
         van het platform. Dit omvat accountgegevens, antwoorden op vragen en
         technische informatie die nodig is om onze diensten veilig aan te
         bieden.
@@ -42,7 +42,7 @@
       <p>
         Je hebt altijd het recht om gegevens in te zien, te corrigeren of te
         laten verwijderen. Neem contact met ons op via het contactformulier of
-        stuur een e-mail naar privacy@wvnl.nl voor vragen of verzoeken.
+        stuur een e-mail naar privacy@wdnl.nl voor vragen of verzoeken.
       </p>
     </section>
   </div>

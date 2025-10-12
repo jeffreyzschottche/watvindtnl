@@ -3,7 +3,7 @@ const highlights = [
   {
     title: "Burgerparticipatie centraal",
     description:
-      "WVNL maakt het eenvoudig om meningen te verzamelen en gedeeld inzicht zichtbaar te maken voor iedere gemeente.",
+      "WDNL maakt het eenvoudig om meningen te verzamelen en gedeeld inzicht zichtbaar te maken voor iedere gemeente.",
   },
   {
     title: "Inzicht in real-time",
@@ -44,7 +44,7 @@ const steps = [
           <p class="eyebrow">Burgerparticipatie platform</p>
           <h1>Ontdek wat Nederland écht vindt</h1>
           <p class="lead">
-            WVNL helpt organisaties en overheden om snel inzichten te krijgen in
+            WDNL helpt organisaties en overheden om snel inzichten te krijgen in
             wat er leeft. Verzamel meningen, deel inzichten en werk aan besluiten
             waar iedereen achter staat.
           </p>
@@ -56,7 +56,7 @@ const steps = [
           </div>
         </div>
         <div class="hero-card">
-          <h2>Waarom WVNL?</h2>
+          <h2>Waarom WDNL?</h2>
           <ul>
             <li>Gebruiksvriendelijke enquêtes en stellingen</li>
             <li>Realtime dashboards voor teams en bestuurders</li>

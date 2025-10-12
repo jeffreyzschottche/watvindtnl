@@ -4,7 +4,7 @@
       <div class="container narrow">
         <h1>Algemene voorwaarden</h1>
         <p>
-          Deze voorwaarden zijn van toepassing op alle diensten van WVNL. Lees
+          Deze voorwaarden zijn van toepassing op alle diensten van WDNL. Lees
           ze aandachtig door voordat je gebruikmaakt van ons platform.
         </p>
       </div>
@@ -13,7 +13,7 @@
     <section class="container narrow page-section">
       <h2>Gebruik van het platform</h2>
       <p>
-        WVNL stelt het platform beschikbaar voor organisaties die feedback willen
+        WDNL stelt het platform beschikbaar voor organisaties die feedback willen
         verzamelen. Gebruikers mogen het platform niet inzetten voor activiteiten
         die in strijd zijn met de wet of de rechten van anderen schenden.
       </p>
@@ -39,7 +39,7 @@
     <section class="container narrow page-section">
       <h2>Aansprakelijkheid</h2>
       <p>
-        WVNL is niet aansprakelijk voor indirecte schade of gederfde winst als
+        WDNL is niet aansprakelijk voor indirecte schade of gederfde winst als
         gevolg van het gebruik van het platform. Onze aansprakelijkheid blijft
         beperkt tot het bedrag dat is betaald voor de betreffende dienstverlening.
       </p>

@@ -1,7 +1,7 @@
 <template>
   <header class="site-header">
     <div class="container nav-container">
-      <NuxtLink to="/" class="brand">WVNL</NuxtLink>
+      <NuxtLink to="/" class="brand">WDNL</NuxtLink>
 
       <button
         class="menu-toggle"
@@ -23,7 +23,7 @@
             to="/over-wvnl"
             active-class="link-active"
             @click="closeMobile"
-            >Over WVNL</NuxtLink
+            >Over WDNL</NuxtLink
           >
           <NuxtLink to="/issues" active-class="link-active" @click="closeMobile"
             >Kwesties</NuxtLink

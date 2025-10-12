@@ -1,7 +1,7 @@
 <x-mail::message>
 # Introduction
 
-Welkom bij wat vindt nl.
+Welkom bij wat denkt nl.
 
 <x-mail::button :url="''">
 Button Text
