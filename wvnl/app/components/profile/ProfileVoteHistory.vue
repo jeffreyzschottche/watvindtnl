@@ -357,19 +357,21 @@ defineExpose({ refresh: loadHistory });
   gap: 0.35rem;
   padding: 0.45rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid rgba(0, 61, 165, 0.24);
-  background: #ffffff;
-  color: var(--color-primary);
+  border: none;
+  background: linear-gradient(135deg, #003da5, #0a4bc9);
+  color: #ffffff;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 12px 26px rgba(0, 61, 165, 0.22);
 }
 
 .share-button:hover,
 .share-button:focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(0, 61, 165, 0.18);
+  box-shadow: 0 16px 30px rgba(0, 61, 165, 0.28);
   outline: none;
+  filter: brightness(1.05);
 }
 
 .vote-pagination {
