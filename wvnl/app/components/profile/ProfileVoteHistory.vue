@@ -6,7 +6,9 @@
         <p>Bekijk op welke issues je hebt gestemd.</p>
       </div>
       <div class="vote-history__search">
-        <label class="sr-only" for="vote-history-search">Zoek in stemgeschiedenis</label>
+        <label class="sr-only" for="vote-history-search"
+          >Zoek in stemgeschiedenis</label
+        >
         <input
           id="vote-history-search"
           v-model="searchQuery"
@@ -31,7 +33,12 @@
     </header>
 
     <p v-if="loading" class="vote-history__status">Bezig met laden...</p>
-    <p v-else-if="error" class="vote-history__status vote-history__status--error">{{ error }}</p>
+    <p
+      v-else-if="error"
+      class="vote-history__status vote-history__status--error"
+    >
+      {{ error }}
+    </p>
     <p v-else-if="filteredItems.length === 0" class="vote-history__status">
       <template v-if="searchQuery.trim().length">
         Geen stemmen gevonden voor "{{ searchQuery }}".
@@ -44,13 +51,18 @@
         <li v-for="item in paginatedItems" :key="item.id" class="vote-card">
           <div class="vote-card__details">
             <p class="vote-card__title">{{ item.title }}</p>
-            <p v-if="item.description" class="vote-card__description">{{ item.description }}</p>
+            <p v-if="item.description" class="vote-card__description">
+              {{ item.description }}
+            </p>
           </div>
           <div class="vote-card__actions">
             <span class="vote-chip" :class="voteClass(item.vote)">
               {{ voteLabel(item.vote) }}
             </span>
-            <ShareDropdown trigger-class="share-button" @select="(platform) => share(item, platform)" />
+            <ShareDropdown
+              trigger-class="share-button"
+              @select="(platform) => share(item, platform)"
+            />
           </div>
         </li>
       </ul>
@@ -58,7 +70,12 @@
       <div v-if="totalPages > 1" class="vote-pagination">
         <span>Pagina {{ currentPage }} van {{ totalPages }}</span>
         <div class="vote-pagination__controls">
-          <button type="button" class="button button--outline" :disabled="currentPage === 1" @click="goToPreviousPage">
+          <button
+            type="button"
+            class="button button--outline"
+            :disabled="currentPage === 1"
+            @click="goToPreviousPage"
+          >
             Vorige
           </button>
           <button
@@ -163,9 +180,7 @@ async function loadHistory() {
     items.value = await api.get<UserVoteHistoryItem[]>("/me/votes");
   } catch (err: unknown) {
     error.value =
-      err instanceof Error
-        ? err.message
-        : "Kon stemgeschiedenis niet laden.";
+      err instanceof Error ? err.message : "Kon stemgeschiedenis niet laden.";
   } finally {
     loading.value = false;
   }
@@ -297,7 +312,11 @@ defineExpose({ refresh: loadHistory });
   gap: 1rem;
   padding: 1.25rem 1.5rem;
   border-radius: calc(var(--border-radius) - 2px);
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.04), rgba(200, 16, 46, 0.04));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.04),
+    rgba(200, 16, 46, 0.04)
+  );
   border: 1px solid rgba(0, 61, 165, 0.12);
   box-shadow: 0 10px 25px rgba(0, 27, 70, 0.08);
 }
