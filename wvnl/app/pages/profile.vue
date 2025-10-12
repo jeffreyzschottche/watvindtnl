@@ -20,15 +20,26 @@
             :key="tab.key"
             type="button"
             class="profile-tab"
+            :id="`${tab.key}-tab`"
+            role="tab"
+            :aria-selected="activeTab === tab.key"
+            :aria-controls="`${tab.key}-panel`"
+            :tabindex="activeTab === tab.key ? 0 : -1"
             :class="{ 'is-active': activeTab === tab.key }"
-            @click="activeTab = tab.key"
+            @click="setActiveTab(tab.key)"
           >
-            {{ tab.label }}
+            <span class="profile-tab__label">{{ tab.label }}</span>
           </button>
         </nav>
 
         <div class="profile__content">
-          <section v-if="activeTab === 'profile'" class="profile-panel">
+          <section
+            v-if="activeTab === 'profile'"
+            id="profile-panel"
+            class="profile-panel"
+            role="tabpanel"
+            aria-labelledby="profile-tab"
+          >
             <form class="form form-card profile-form" @submit.prevent="saveProfile">
               <header class="form-header">
                 <h2>Persoonlijke gegevens</h2>
@@ -116,11 +127,23 @@
             </form>
           </section>
 
-          <section v-else-if="activeTab === 'votes'" class="profile-panel">
-            <ProfileVoteHistory />
+          <section
+            v-else-if="activeTab === 'votes'"
+            id="votes-panel"
+            class="profile-panel"
+            role="tabpanel"
+            aria-labelledby="votes-tab"
+          >
+            <ProfileVoteHistory ref="voteHistoryRef" />
           </section>
 
-          <section v-else-if="activeTab === 'security'" class="profile-panel">
+          <section
+            v-else-if="activeTab === 'security'"
+            id="security-panel"
+            class="profile-panel"
+            role="tabpanel"
+            aria-labelledby="security-tab"
+          >
             <form class="form form-card profile-form" @submit.prevent="updatePassword">
               <header class="form-header">
                 <h2>Wachtwoord wijzigen</h2>
@@ -182,12 +205,14 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";
 
 const auth = useAuthStore();
 const api = useApi();
 const router = useRouter();
+const route = useRoute();
 const { user, isLoggedIn } = storeToRefs(auth);
 
 const ageCategories = AGE_CATEGORIES;
@@ -201,6 +226,22 @@ const tabs = [
 type TabKey = (typeof tabs)[number]["key"];
 
 const activeTab = ref<TabKey>("profile");
+const voteHistoryRef = ref<{ refresh?: () => Promise<void> } | null>(null);
+
+function setActiveTab(tab: TabKey) {
+  if (tab === activeTab.value) {
+    if (import.meta.client && route.query.tab !== tab) {
+      router.replace({ query: { ...route.query, tab } });
+    }
+    return;
+  }
+
+  activeTab.value = tab;
+
+  if (import.meta.client && route.query.tab !== tab) {
+    router.replace({ query: { ...route.query, tab } });
+  }
+}
 
 const profileForm = reactive({
   name: "",
@@ -250,6 +291,32 @@ watch(
   },
   { immediate: true }
 );
+
+watch(
+  () => route.query.tab,
+  (tab) => {
+    if (typeof tab !== "string") {
+      if (import.meta.client && route.query.tab) {
+        const { tab: _tab, ...query } = route.query;
+        router.replace({ query });
+      }
+      return;
+    }
+
+    const match = tabs.find((item) => item.key === tab);
+    if (match && activeTab.value !== match.key) {
+      activeTab.value = match.key;
+    }
+  },
+  { immediate: true }
+);
+
+watch(activeTab, async (tab) => {
+  if (tab === "votes") {
+    await nextTick();
+    voteHistoryRef.value?.refresh?.();
+  }
+});
 
 watch(
   isLoggedIn,
@@ -461,37 +528,54 @@ async function updatePassword() {
 }
 
 .profile-tabs {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1.25rem clamp(1rem, 3vw, 2rem) 1rem;
   background: linear-gradient(90deg, rgba(0, 61, 165, 0.12), rgba(200, 16, 46, 0.12));
   border-bottom: 1px solid rgba(0, 61, 165, 0.16);
 }
 
 .profile-tab {
   appearance: none;
-  background: transparent;
-  border: none;
-  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border: 2px solid rgba(0, 61, 165, 0.25);
+  border-radius: 999px;
+  padding: 0.65rem 1.5rem;
   font-weight: 700;
-  font-size: 1rem;
-  color: rgba(16, 24, 40, 0.75);
-  transition: background 0.2s ease, color 0.2s ease;
-  border-bottom: 3px solid transparent;
+  font-size: 0.95rem;
+  color: rgba(16, 24, 40, 0.82);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease,
+    border-color 0.2s ease;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.profile-tab__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .profile-tab:is(:hover, :focus-visible) {
-  background: rgba(0, 61, 165, 0.08);
-  color: var(--color-primary);
+  border-color: rgba(0, 61, 165, 0.55);
+  box-shadow: 0 8px 18px rgba(0, 61, 165, 0.2);
   outline: none;
+  transform: translateY(-1px);
 }
 
 .profile-tab.is-active {
-  color: var(--color-accent);
-  background: #ffffff;
-  border-bottom-color: var(--color-accent);
-  box-shadow: inset 0 -4px 0 rgba(200, 16, 46, 0.15);
+  color: #ffffff;
+  border-color: transparent;
+  background-image: linear-gradient(135deg, rgba(0, 61, 165, 0.95), rgba(200, 16, 46, 0.95));
+  box-shadow: 0 12px 24px rgba(0, 61, 165, 0.28);
+}
+
+.profile-tab.is-active .profile-tab__label {
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
 .profile__content {
@@ -546,21 +630,16 @@ async function updatePassword() {
 }
 
 @media (max-width: 768px) {
-  .profile-tabs {
-    grid-auto-flow: row;
-  }
-
-  .profile-tab {
-    text-align: left;
-    border-bottom-width: 2px;
-  }
-
   .profile {
     margin-top: -3rem;
   }
 
   .profile__content {
     padding: 2rem 1.25rem;
+  }
+
+  .profile-tabs {
+    justify-content: center;
   }
 }
 </style>
