@@ -30,15 +30,30 @@
         Nog geen account?
         <NuxtLink to="/register">Registreren</NuxtLink>
       </p>
+      <p class="form-subtext">
+        Wachtwoord vergeten?
+        <button type="button" class="form-subtext__link" @click="openForgotPassword">
+          Reset aanvragen
+        </button>
+      </p>
     </div>
+
+    <ForgotPasswordModal
+      v-if="showForgotPassword"
+      :initial-email="email"
+      @close="showForgotPassword = false"
+    />
   </form>
 </template>
 
 <script setup lang="ts">
+import ForgotPasswordModal from "~/components/auth/ForgotPasswordModal.vue";
+
 const email = ref("");
 const password = ref("");
 const error = ref<string | null>(null);
 const loading = ref(false);
+const showForgotPassword = ref(false);
 
 const { login } = useAuth();
 const router = useRouter();
@@ -55,4 +70,28 @@ async function onSubmit() {
     loading.value = false;
   }
 }
+
+function openForgotPassword() {
+  showForgotPassword.value = true;
+}
 </script>
+
+<style scoped>
+.form-subtext__link {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-left: 0.35rem;
+  color: var(--color-primary, #003da5);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.form-subtext__link:hover,
+.form-subtext__link:focus-visible {
+  color: var(--color-accent, #c8102e);
+}
+</style>

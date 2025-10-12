@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use App\Support\FrontendUrl;
 
 class PasswordResetController extends Controller
 {
@@ -17,10 +18,13 @@ class PasswordResetController extends Controller
         $email = $request->query('email');
 
         if (!$token || !$email) {
-            return redirect('/login')->with('status', 'De link om je wachtwoord te resetten is ongeldig of verlopen. Vraag een nieuwe aan.');
+            return redirect()->away(FrontendUrl::make('password-reset', ['status' => 'invalid']));
         }
 
-        return view('auth.password-reset', compact('token', 'email'));
+        return redirect()->away(FrontendUrl::make('password-reset', [
+            'token' => $token,
+            'email' => $email,
+        ]));
     }
 
     public function sendResetLinkEmail(Request $request)
@@ -35,7 +39,7 @@ class PasswordResetController extends Controller
             return response()->json(['message' => $message]);
         }
 
-        return back()->with('status', $message);
+        return redirect()->away(FrontendUrl::make('login', ['reset' => 'link-sent']))->with('status', $message);
     }
 
     public function reset(Request $request)
@@ -65,7 +69,7 @@ class PasswordResetController extends Controller
                 return response()->json(['message' => $message]);
             }
 
-            return redirect('/login')->with('status', $message);
+            return redirect()->away(FrontendUrl::make('login', ['reset' => 'success']))->with('status', $message);
         }
 
         $errorMessage = __($status);
@@ -74,6 +78,9 @@ class PasswordResetController extends Controller
             return response()->json(['message' => $errorMessage], 422);
         }
 
-        return back()->withErrors(['email' => $errorMessage]);
+        return redirect()->away(FrontendUrl::make('password-reset', [
+            'status' => 'error',
+            'message' => $errorMessage,
+        ]));
     }
 }

@@ -28,7 +28,6 @@ class AuthController extends Controller
         $user = User::create($data);
 
         event(new Registered($user));
-        $user->sendEmailVerificationNotification();
 
         // refresh voor casts
         $user->refresh();

@@ -232,7 +232,7 @@ async function onSubmit() {
       },
     };
     await register(payload as any);
-    router.push("/");
+    router.push({ path: "/login", query: { verify: "sent" } });
   } catch (e: any) {
     error.value = e?.message || "Registratie mislukt";
   } finally {
