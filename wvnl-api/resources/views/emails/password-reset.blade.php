@@ -1,9 +1,9 @@
 @component('mail::message')
-# Wachtwoord resetten
+# Wachtwoord reset
 
 Hoi {{ $name }},
 
-We hebben een verzoek ontvangen om je wachtwoord voor WVNL opnieuw in te stellen. Klik op de knop hieronder om een nieuw wachtwoord te kiezen.
+We hebben een verzoek ontvangen om je wachtwoord voor **WDNL** opnieuw in te stellen. Klik op de knop hieronder om een nieuw wachtwoord te kiezen.
 
 @component('mail::button', ['url' => $resetUrl])
 Nieuw wachtwoord instellen
@@ -16,5 +16,5 @@ Als je dit verzoek niet hebt gedaan kun je deze e-mail gerust negeren.
 
 Met vriendelijke groet,
 
-Het WVNL-team
+Het Wat Denkt Nederland-team
 @endcomponent

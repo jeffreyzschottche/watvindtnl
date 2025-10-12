@@ -1,0 +1,46 @@
+/* Custom WDNL Thema Overrides */
+/* ------------------------------------- */
+
+/* 1. Primaire Kleur (WDNL Blauw: #003da5) */
+
+/* Pas de kleur van de header link aan (meestal de app naam bovenin) */
+.header a {
+    color: #003da5 !important;
+}
+
+/* Pas de kleur van de belangrijkste kop (H1) aan */
+h1 {
+    color: #003da5 !important;
+}
+
+/* Pas de kleur van gewone links aan (als ze niet in een knop staan) */
+a {
+    color: #003da5 !important;
+}
+
+/* 2. Knop Kleur (CTA Oranje: #ff9b00) */
+
+/* Overschrijf de standaard 'blue' en 'primary' knopstijlen met Oranje */
+.button-blue,
+.button-primary {
+    background-color: #ff9b00 !important;
+    border-bottom: 8px solid #ff9b00 !important;
+    border-left: 18px solid #ff9b00 !important;
+    border-right: 18px solid #ff9b00 !important;
+    border-top: 8px solid #ff9b00 !important;
+}
+
+/* Optioneel: voeg een hover-effect toe voor moderne clients */
+.button-blue:hover,
+.button-primary:hover {
+    background-color: #e58b00 !important; /* Iets donkerder oranje */
+    border-color: #e58b00 !important;
+}
+
+/* 3. Panel Kleur (gebruik Blauw voor de balk) */
+/* Dit is relevant als je een panel component gebruikt */
+.panel {
+    border-left: #003da5 solid 4px !important;
+}
+
+/* ------------------------------------- */

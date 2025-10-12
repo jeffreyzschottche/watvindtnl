@@ -1,5 +1,5 @@
 @component('mail::message')
-# Welkom bij WVNL, {{ $name }}!
+# Welkom bij Wat Denkt Nederland, {{ $name }}!
 
 Leuk dat je je hebt geregistreerd. Klik op de knop hieronder om je e-mailadres te bevestigen en toegang te krijgen tot je account.
 
@@ -14,5 +14,5 @@ Bedankt voor je aanmelding!
 
 Met vriendelijke groet,
 
-Het WVNL-team
+Het WDNL-team
 @endcomponent

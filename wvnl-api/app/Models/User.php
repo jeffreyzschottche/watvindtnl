@@ -31,7 +31,6 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'notification_prefs',
         'cookie_prefs',
         'premium',
-        'secret_url_pw',
     ];
 
     protected $hidden = ['password', 'remember_token'];
