@@ -44,6 +44,7 @@ useHead({
             belangrijke politieke onderwerpen aan verschillende partijen. De
             partij die het meeste voorkomt is jouw beste partij.
           </p>
+          <i>Je vind het politieke kompas onder 'mijn profiel'</i>
         </div>
 
         <figure class="compass-figure" aria-hidden="true">
