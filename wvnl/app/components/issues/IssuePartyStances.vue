@@ -137,6 +137,7 @@ const stances = computed(() => props.stances);
   color: #101828;
   background: rgba(0, 61, 165, 0.08);
   border: 1px solid rgba(0, 61, 165, 0.15);
+  max-height: 20px;
 }
 
 .issue-party-stances__column--agree .issue-party-stances__badge {
