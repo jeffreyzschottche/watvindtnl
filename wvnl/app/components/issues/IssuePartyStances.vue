@@ -12,10 +12,7 @@
           <span class="issue-party-stances__badge">{{ column.label }}</span>
           <p class="issue-party-stances__hint">{{ column.hint }}</p>
         </header>
-        <ul
-          v-if="stances[column.key].length"
-          class="issue-party-stances__list"
-        >
+        <ul v-if="stances[column.key].length" class="issue-party-stances__list">
           <li
             v-for="party in stances[column.key]"
             :key="party.id"
@@ -32,11 +29,15 @@
               <span class="issue-party-stances__party-abbr">
                 {{ party.abbreviation || party.name }}
               </span>
-              <span class="issue-party-stances__party-name">{{ party.name }}</span>
+              <span class="issue-party-stances__party-name">{{
+                party.name
+              }}</span>
             </div>
           </li>
         </ul>
-        <p v-else class="issue-party-stances__empty">Nog geen standpunten.</p>
+        <p v-else class="issue-party-stances__empty">
+          Nog geen voor/tegenstanders.
+        </p>
       </div>
     </div>
   </section>
@@ -59,7 +60,7 @@ const columns = computed(() => [
   {
     key: "neutral" as ColumnKey,
     label: "Neutraal",
-    hint: "Deze partijen houden zich (nog) op de vlakte.",
+    hint: "Deze partijen zijn neutraal.",
   },
   {
     key: "disagree" as ColumnKey,
@@ -77,7 +78,11 @@ const stances = computed(() => props.stances);
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.05), rgba(255, 255, 255, 0.75));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.05),
+    rgba(255, 255, 255, 0.75)
+  );
   border: 1px solid rgba(0, 61, 165, 0.12);
 }
 
@@ -104,7 +109,11 @@ const stances = computed(() => props.stances);
   gap: 0.75rem;
   padding: 1rem;
   border-radius: 0.85rem;
-  background: linear-gradient(135deg, #ffffff 0%, rgba(238, 241, 246, 0.85) 100%);
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    rgba(238, 241, 246, 0.85) 100%
+  );
   box-shadow: 0 12px 24px rgba(0, 28, 70, 0.08);
   border: 1px solid rgba(0, 61, 165, 0.08);
 }

@@ -3,7 +3,7 @@
     <header class="issue-card__header">
       <div class="issue-card__title-group">
         <p v-if="remaining" class="issue-card__counter">
-          Nog {{ remaining }} vraag{{ remaining === 1 ? "" : "en" }} te gaan
+          Motie #{{ issue.id }}
         </p>
         <h2 class="issue-card__title">{{ issue.title }}</h2>
       </div>
@@ -16,62 +16,7 @@
     <p v-if="issue.description" class="issue-card__description">
       {{ issue.description }}
     </p>
-    <section class="issue-card__results">
-      <header class="issue-card__results-header">
-        <h3 class="issue-card__results-title">Wat anderen vinden</h3>
-        <span class="issue-card__results-total">
-          {{ totalVotes }} stem{{ totalVotes === 1 ? "" : "men" }}
-        </span>
-      </header>
-      <p v-if="totalVotes === 0" class="issue-card__results-empty">
-        Nog geen stemmen uitgebracht.
-      </p>
-      <template v-else>
-        <div class="issue-card__results-bar">
-          <span
-            class="issue-card__results-segment issue-card__results-segment--agree"
-            :style="{ width: `${votePercentages.agree}%` }"
-          />
-          <span
-            class="issue-card__results-segment issue-card__results-segment--neutral"
-            :style="{ width: `${votePercentages.neutral}%` }"
-          />
-          <span
-            class="issue-card__results-segment issue-card__results-segment--disagree"
-            :style="{ width: `${votePercentages.disagree}%` }"
-          />
-        </div>
-        <ul class="issue-card__results-list">
-          <li class="issue-card__results-item">
-            <span class="issue-card__results-label">Voor</span>
-            <span class="issue-card__results-value">
-              {{ votePercentages.agree }}%
-              ·
-              {{ voteCounts.agree }} stem{{ voteCounts.agree === 1 ? "" : "men" }}
-            </span>
-          </li>
-          <li class="issue-card__results-item">
-            <span class="issue-card__results-label">Neutraal</span>
-            <span class="issue-card__results-value">
-              {{ votePercentages.neutral }}%
-              ·
-              {{ voteCounts.neutral }} stem{{ voteCounts.neutral === 1 ? "" : "men" }}
-            </span>
-          </li>
-          <li class="issue-card__results-item">
-            <span class="issue-card__results-label">Tegen</span>
-            <span class="issue-card__results-value">
-              {{ votePercentages.disagree }}%
-              ·
-              {{ voteCounts.disagree }} stem{{ voteCounts.disagree === 1 ? "" : "men" }}
-            </span>
-          </li>
-        </ul>
-      </template>
-    </section>
-    <IssuePartyStances :stances="issue.party_stances" />
-    <IssueArgumentsList :groups="issue.arguments" />
-    <footer class="issue-card__footer">
+    <section class="issue-card__footer">
       <button
         type="button"
         class="issue-card__button issue-card__button--agree"
@@ -106,9 +51,67 @@
         Overslaan
       </button>
       <div v-if="showShare" class="issue-card__share">
-        <ShareDropdown class="issue-card__share-trigger" @select="handleShare" />
+        <ShareDropdown
+          class="issue-card__share-trigger"
+          @select="handleShare"
+        />
       </div>
-    </footer>
+    </section>
+    <section class="issue-card__results">
+      <header class="issue-card__results-header">
+        <h3 class="issue-card__results-title">Wat anderen vinden</h3>
+        <span class="issue-card__results-total">
+          {{ totalVotes }} stem{{ totalVotes === 1 ? "" : "men" }}
+        </span>
+      </header>
+      <p v-if="totalVotes === 0" class="issue-card__results-empty">
+        Nog geen stemmen uitgebracht.
+      </p>
+      <template v-else>
+        <div class="issue-card__results-bar">
+          <span
+            class="issue-card__results-segment issue-card__results-segment--agree"
+            :style="{ width: `${votePercentages.agree}%` }"
+          />
+          <span
+            class="issue-card__results-segment issue-card__results-segment--neutral"
+            :style="{ width: `${votePercentages.neutral}%` }"
+          />
+          <span
+            class="issue-card__results-segment issue-card__results-segment--disagree"
+            :style="{ width: `${votePercentages.disagree}%` }"
+          />
+        </div>
+        <ul class="issue-card__results-list">
+          <li class="issue-card__results-item">
+            <span class="issue-card__results-label">Voor</span>
+            <span class="issue-card__results-value">
+              {{ votePercentages.agree }}% · {{ voteCounts.agree }} stem{{
+                voteCounts.agree === 1 ? "" : "men"
+              }}
+            </span>
+          </li>
+          <li class="issue-card__results-item">
+            <span class="issue-card__results-label">Neutraal</span>
+            <span class="issue-card__results-value">
+              {{ votePercentages.neutral }}% · {{ voteCounts.neutral }} stem{{
+                voteCounts.neutral === 1 ? "" : "men"
+              }}
+            </span>
+          </li>
+          <li class="issue-card__results-item">
+            <span class="issue-card__results-label">Tegen</span>
+            <span class="issue-card__results-value">
+              {{ votePercentages.disagree }}% · {{ voteCounts.disagree }} stem{{
+                voteCounts.disagree === 1 ? "" : "men"
+              }}
+            </span>
+          </li>
+        </ul>
+      </template>
+    </section>
+    <IssuePartyStances :stances="issue.party_stances" />
+    <IssueArgumentsList :groups="issue.arguments" />
   </article>
 </template>
 
@@ -159,7 +162,10 @@ const voteCounts = computed(() => {
 });
 
 const totalVotes = computed(
-  () => voteCounts.value.agree + voteCounts.value.neutral + voteCounts.value.disagree,
+  () =>
+    voteCounts.value.agree +
+    voteCounts.value.neutral +
+    voteCounts.value.disagree
 );
 
 const votePercentages = computed(() => {
@@ -201,7 +207,11 @@ async function handleIssueReport(reason: ReportReason) {
   gap: 1.75rem;
   padding: 1.75rem;
   border-radius: 1.1rem;
-  background: linear-gradient(135deg, #ffffff 0%, rgba(238, 241, 246, 0.85) 100%);
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    rgba(238, 241, 246, 0.85) 100%
+  );
   box-shadow: 0 24px 45px rgba(0, 28, 70, 0.12);
   border: 1px solid rgba(0, 61, 165, 0.08);
 }
@@ -248,7 +258,11 @@ async function handleIssueReport(reason: ReportReason) {
   gap: 0.75rem;
   padding: 1.1rem;
   border-radius: 0.9rem;
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.95), rgba(238, 241, 246, 0.9));
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(238, 241, 246, 0.9)
+  );
   border: 1px solid rgba(0, 61, 165, 0.12);
 }
 
