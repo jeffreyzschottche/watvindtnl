@@ -20,15 +20,21 @@
         <nav id="primary-navigation" class="nav-links" aria-label="Hoofdmenu">
           <NuxtLink
             to="/over-wvnl"
+            class="nav-link"
             active-class="link-active"
             @click="closeMobile"
             >Over WDNL</NuxtLink
           >
-          <NuxtLink to="/issues" active-class="link-active" @click="closeMobile"
+          <NuxtLink
+            to="/issues"
+            class="nav-link"
+            active-class="link-active"
+            @click="closeMobile"
             >Kwesties</NuxtLink
           >
           <NuxtLink
             to="/politiek-kompas"
+            class="nav-link"
             active-class="link-active"
             @click="closeMobile"
           >
@@ -36,6 +42,7 @@
           </NuxtLink>
           <NuxtLink
             to="/contact"
+            class="nav-link"
             active-class="link-active"
             @click="closeMobile"
             >Contact</NuxtLink
@@ -53,7 +60,7 @@
           <template v-if="!isLoggedIn">
             <NuxtLink
               to="/login"
-              class="button button-secondary"
+              class="button"
               @click="closeMobile"
               >Inloggen</NuxtLink
             >
@@ -64,7 +71,7 @@
           <button
             v-else
             type="button"
-            class="button button-secondary"
+            class="button"
             @click="handleLogout"
           >
             Uitloggen

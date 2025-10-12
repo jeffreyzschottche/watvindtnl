@@ -102,22 +102,23 @@ a:focus {
   display: none;
   flex-direction: column;
   gap: 0.35rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), #eef1f6);
-  border: 2px solid #0b1320;
+  background: #ffffff;
+  border: 2px solid var(--color-cta);
   border-radius: 12px;
   padding: 0.35rem 0.4rem;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .menu-toggle:focus-visible {
-  outline: 3px solid rgba(200, 16, 46, 0.35);
+  outline: 3px solid rgba(255, 155, 0, 0.45);
   outline-offset: 2px;
 }
 
 .menu-toggle:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(0, 26, 77, 0.12);
+  box-shadow: 0 10px 22px rgba(255, 155, 0, 0.3);
+  border-color: #ffb347;
 }
 
 .menu-toggle span {
@@ -125,20 +126,8 @@ a:focus {
   width: 1.75rem;
   height: 0.18rem;
   border-radius: 999px;
+  background: var(--color-cta);
   transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.menu-toggle span:nth-of-type(1) {
-  background: var(--color-accent);
-}
-
-.menu-toggle span:nth-of-type(2) {
-  background: #ffffff;
-  border: 1px solid #0b1320;
-}
-
-.menu-toggle span:nth-of-type(3) {
-  background: var(--color-primary);
 }
 
 .nav-links {
@@ -148,31 +137,37 @@ a:focus {
   font-weight: 500;
 }
 
-.nav-links a {
-  color: var(--color-muted);
-  position: relative;
+.nav-link {
+  color: var(--color-cta);
+  font-weight: 600;
+  text-decoration: none;
   padding-bottom: 0.2rem;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
-  transition: width 0.25s ease;
+.nav-link:hover,
+.nav-link:focus {
+  color: #ffb347;
+  text-decoration: none;
+  border-bottom-color: rgba(255, 155, 0, 0.85);
 }
 
-.link-active,
-.nav-links a:hover {
-  color: var(--color-primary);
+.link-active.nav-link {
+  color: #ffb347;
+  border-bottom-color: var(--color-cta);
 }
 
-.link-active::after,
-.nav-links a:hover::after {
-  width: 100%;
+.nav-links .button {
+  border-bottom: none;
+  padding-bottom: 0;
+  text-decoration: none;
+}
+
+.nav-links .button:hover,
+.nav-links .button:focus {
+  border-bottom: none;
+  text-decoration: none;
 }
 
 .auth-links {
@@ -284,8 +279,7 @@ a:focus {
     padding: 0 1.75rem;
   }
 
-  .nav-links a {
-    color: var(--color-text);
+  .nav-link {
     width: 100%;
   }
 
