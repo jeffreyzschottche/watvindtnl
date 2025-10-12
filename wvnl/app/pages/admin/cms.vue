@@ -1,11 +1,14 @@
 <template>
-  <div class="min-h-screen bg-slate-100 p-6 md:p-10">
+  <div class="min-h-screen bg-slate-100 p-6 md:p-10 container">
     <div class="mx-auto max-w-6xl space-y-8">
-      <header class="flex flex-col gap-3 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+      <header
+        class="flex flex-col gap-3 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between"
+      >
         <div>
           <h1 class="text-2xl font-bold text-slate-900">WatVindt.nl CMS</h1>
           <p class="text-sm text-slate-500">
-            Beheer kwesties, argumenten, meldingen en politieke partijen vanuit één overzicht.
+            Beheer kwesties, argumenten, meldingen en politieke partijen vanuit
+            één overzicht.
           </p>
         </div>
         <div class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-600">
@@ -18,7 +21,8 @@
       <section v-if="!isLoggedIn" class="rounded-xl bg-white p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-slate-800">Aanmelden vereist</h2>
         <p class="mt-2 text-slate-600">
-          Log in met het beheerdersaccount ({{ adminEmail }}) om toegang te krijgen tot het CMS.
+          Log in met het beheerdersaccount ({{ adminEmail }}) om toegang te
+          krijgen tot het CMS.
         </p>
         <NuxtLink
           to="/login"
@@ -28,14 +32,8 @@
         </NuxtLink>
       </section>
 
-      <section
-        v-else-if="!isAdmin"
-        class="rounded-xl bg-white p-6 shadow-sm"
-      >
-        <h2 class="text-lg font-semibold text-slate-800">Geen toegang</h2>
-        <p class="mt-2 text-slate-600">
-          Dit CMS is alleen beschikbaar voor het administratieve account ({{ adminEmail }} / {{ adminUsername }}).
-        </p>
+      <section v-else-if="!isAdmin" class="rounded-xl bg-white p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-red">Geen toegang</h2>
       </section>
 
       <section v-else class="space-y-6">
@@ -49,7 +47,7 @@
                 'rounded-md px-4 py-2 text-sm font-semibold transition',
                 activeTab === tab.key
                   ? 'bg-slate-900 text-white shadow'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  : 'text-slate-600 hover:bg-slate-100',
               ]"
               @click="activeTab = tab.key"
             >
@@ -62,10 +60,16 @@
               class="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 font-medium text-slate-600 shadow-sm transition hover:bg-slate-100"
               @click="refreshAll"
             >
-              <span class="inline-block h-2 w-2 rounded-full" :class="loading ? 'bg-amber-500' : 'bg-emerald-500'"></span>
+              <span
+                class="inline-block h-2 w-2 rounded-full"
+                :class="loading ? 'bg-amber-500' : 'bg-emerald-500'"
+              ></span>
               {{ loading ? "Bezig met laden" : "Gegevens up-to-date" }}
             </button>
-            <span v-if="error" class="flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 font-medium text-red-700">
+            <span
+              v-if="error"
+              class="flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 font-medium text-red-700"
+            >
               <span>⚠️</span>
               <span>{{ error }}</span>
             </span>
@@ -74,12 +78,17 @@
 
         <div v-if="activeTab === 'issues'" class="space-y-6">
           <section class="rounded-xl bg-white p-6 shadow-sm">
-            <header class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <header
+              class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+            >
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Importeer issues</h2>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Importeer issues
+                </h2>
                 <p class="text-sm text-slate-500">
-                  Upload een JSON-bestand in hetzelfde formaat als de seeder om meerdere issues
-                  en bijbehorende argumenten tegelijk toe te voegen of te updaten.
+                  Upload een JSON-bestand in hetzelfde formaat als de seeder om
+                  meerdere issues en bijbehorende argumenten tegelijk toe te
+                  voegen of te updaten.
                 </p>
               </div>
               <div class="flex flex-wrap gap-2">
@@ -109,11 +118,18 @@
             </header>
             <div class="space-y-3 text-sm text-slate-600">
               <p>
-                Ondersteunt een object met <code class="rounded bg-slate-100 px-1">issues</code>
-                en optioneel <code class="rounded bg-slate-100 px-1">arguments</code>, of een array met issue-items.
+                Ondersteunt een object met
+                <code class="rounded bg-slate-100 px-1">issues</code> en
+                optioneel
+                <code class="rounded bg-slate-100 px-1">arguments</code>, of een
+                array met issue-items.
               </p>
-              <pre class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"><code>{{ issueImportExample }}</code></pre>
-              <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+              <pre
+                class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"
+              ><code>{{ issueImportExample }}</code></pre>
+              <div
+                class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600"
+              >
                 <div class="flex flex-wrap items-center gap-2">
                   <input
                     ref="issueDirectoryInput"
@@ -140,12 +156,22 @@
                   </button>
                 </div>
                 <p class="mt-3 text-xs text-slate-500">
-                  Kies de map <code class="rounded bg-slate-100 px-1">output</code> met submappen zoals <code class="rounded bg-slate-100 px-1">motie1/motie1.json</code>
+                  Kies de map
+                  <code class="rounded bg-slate-100 px-1">output</code> met
+                  submappen zoals
+                  <code class="rounded bg-slate-100 px-1"
+                    >motie1/motie1.json</code
+                  >
                   en geef hieronder het gewenste bereik op.
                 </p>
-                <div v-if="issueDirectoryState.motions.length" class="mt-4 grid gap-3 md:grid-cols-2">
+                <div
+                  v-if="issueDirectoryState.motions.length"
+                  class="mt-4 grid gap-3 md:grid-cols-2"
+                >
                   <div class="grid gap-1">
-                    <label class="text-xs font-semibold text-slate-600">Start motienummer</label>
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Start motienummer</label
+                    >
                     <input
                       v-model="issueDirectoryState.start"
                       type="number"
@@ -155,7 +181,9 @@
                     />
                   </div>
                   <div class="grid gap-1">
-                    <label class="text-xs font-semibold text-slate-600">Eind motienummer</label>
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Eind motienummer</label
+                    >
                     <input
                       v-model="issueDirectoryState.end"
                       type="number"
@@ -165,29 +193,53 @@
                     />
                   </div>
                 </div>
-                <p v-if="issueDirectoryBounds" class="mt-4 text-xs text-slate-500">
-                  Beschikbare moties: {{ issueDirectoryBounds.count }} (motie{{ issueDirectoryBounds.first }} - motie{{ issueDirectoryBounds.last }})
+                <p
+                  v-if="issueDirectoryBounds"
+                  class="mt-4 text-xs text-slate-500"
+                >
+                  Beschikbare moties: {{ issueDirectoryBounds.count }} (motie{{
+                    issueDirectoryBounds.first
+                  }}
+                  - motie{{ issueDirectoryBounds.last }})
                 </p>
-                <p v-if="issueDirectorySelectionPreview" class="mt-1 text-xs text-slate-500">
-                  Geselecteerd bereik: motie{{ issueDirectorySelectionPreview.requestedStart }} -
-                  motie{{ issueDirectorySelectionPreview.requestedEnd }} ({{ issueDirectorySelectionPreview.count }} moties
+                <p
+                  v-if="issueDirectorySelectionPreview"
+                  class="mt-1 text-xs text-slate-500"
+                >
+                  Geselecteerd bereik: motie{{
+                    issueDirectorySelectionPreview.requestedStart
+                  }}
+                  - motie{{ issueDirectorySelectionPreview.requestedEnd }} ({{
+                    issueDirectorySelectionPreview.count
+                  }}
+                  moties
                   <span
                     v-if="
                       issueDirectorySelectionPreview.availableFirst !== null &&
-                      (issueDirectorySelectionPreview.availableFirst !== issueDirectorySelectionPreview.requestedStart ||
-                        issueDirectorySelectionPreview.availableLast !== issueDirectorySelectionPreview.requestedEnd)
+                      (issueDirectorySelectionPreview.availableFirst !==
+                        issueDirectorySelectionPreview.requestedStart ||
+                        issueDirectorySelectionPreview.availableLast !==
+                          issueDirectorySelectionPreview.requestedEnd)
                     "
                     class="font-semibold text-slate-600"
                   >
-                    • beschikbaar: motie{{ issueDirectorySelectionPreview.availableFirst }} -
-                    motie{{ issueDirectorySelectionPreview.availableLast }}
+                    • beschikbaar: motie{{
+                      issueDirectorySelectionPreview.availableFirst
+                    }}
+                    - motie{{ issueDirectorySelectionPreview.availableLast }}
                   </span>
-                  <span v-if="issueDirectorySelectionPreview.missing > 0" class="font-semibold text-amber-600">
+                  <span
+                    v-if="issueDirectorySelectionPreview.missing > 0"
+                    class="font-semibold text-amber-600"
+                  >
                     • {{ issueDirectorySelectionPreview.missing }} ontbreken
                   </span>
                   )
                 </p>
-                <p v-if="issueDirectoryState.error" class="mt-3 text-sm font-semibold text-red-600">
+                <p
+                  v-if="issueDirectoryState.error"
+                  class="mt-3 text-sm font-semibold text-red-600"
+                >
                   {{ issueDirectoryState.error }}
                 </p>
               </div>
@@ -195,12 +247,20 @@
                 v-if="issueImportState.fileName"
                 class="rounded-lg border border-slate-200 bg-slate-50 p-4"
               >
-                <p class="text-sm font-semibold text-slate-700">Geselecteerd bestand</p>
-                <p class="text-sm text-slate-600">{{ issueImportState.fileName }}</p>
-                <p class="mt-2 text-xs text-slate-500">
-                  Issues: {{ issueImportState.issues.length }} • Argumenten: {{ issueImportState.arguments.length }}
+                <p class="text-sm font-semibold text-slate-700">
+                  Geselecteerd bestand
                 </p>
-                <p v-if="issueImportState.error" class="mt-2 text-sm font-semibold text-red-600">
+                <p class="text-sm text-slate-600">
+                  {{ issueImportState.fileName }}
+                </p>
+                <p class="mt-2 text-xs text-slate-500">
+                  Issues: {{ issueImportState.issues.length }} • Argumenten:
+                  {{ issueImportState.arguments.length }}
+                </p>
+                <p
+                  v-if="issueImportState.error"
+                  class="mt-2 text-sm font-semibold text-red-600"
+                >
                   {{ issueImportState.error }}
                 </p>
                 <button
@@ -217,65 +277,121 @@
           <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4 flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Nieuwe kwestie toevoegen</h2>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Nieuwe kwestie toevoegen
+                </h2>
                 <p class="text-sm text-slate-500">
-                  Vul de basisgegevens in en voeg optioneel alvast argumenten toe.
+                  Vul de basisgegevens in en voeg optioneel alvast argumenten
+                  toe.
                 </p>
               </div>
             </header>
             <form class="grid gap-4" @submit.prevent="submitIssue">
               <div class="grid gap-2">
                 <label class="text-sm font-medium text-slate-700">Titel</label>
-                <input v-model="newIssueForm.title" type="text" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                <input
+                  v-model="newIssueForm.title"
+                  type="text"
+                  required
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                />
               </div>
               <div class="grid gap-2 md:grid-cols-2 md:gap-4">
                 <div class="grid gap-2">
-                  <label class="text-sm font-medium text-slate-700">Slug (optioneel)</label>
-                  <input v-model="newIssueForm.slug" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                  <label class="text-sm font-medium text-slate-700"
+                    >Slug (optioneel)</label
+                  >
+                  <input
+                    v-model="newIssueForm.slug"
+                    type="text"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                  />
                 </div>
                 <div class="grid gap-2">
-                  <label class="text-sm font-medium text-slate-700">Bron URL (optioneel)</label>
-                  <input v-model="newIssueForm.url" type="url" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                  <label class="text-sm font-medium text-slate-700"
+                    >Bron URL (optioneel)</label
+                  >
+                  <input
+                    v-model="newIssueForm.url"
+                    type="url"
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                  />
                 </div>
               </div>
               <div class="grid gap-2">
-                <label class="text-sm font-medium text-slate-700">Korte beschrijving</label>
-                <textarea v-model="newIssueForm.description" rows="3" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
+                <label class="text-sm font-medium text-slate-700"
+                  >Korte beschrijving</label
+                >
+                <textarea
+                  v-model="newIssueForm.description"
+                  rows="3"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                ></textarea>
               </div>
               <div class="grid gap-2">
-                <label class="text-sm font-medium text-slate-700">Uitgebreide toelichting</label>
-                <textarea v-model="newIssueForm.more_info" rows="4" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
+                <label class="text-sm font-medium text-slate-700"
+                  >Uitgebreide toelichting</label
+                >
+                <textarea
+                  v-model="newIssueForm.more_info"
+                  rows="4"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                ></textarea>
               </div>
 
               <div class="grid gap-4 md:grid-cols-3">
                 <div class="grid gap-2">
-                  <label class="text-sm font-semibold text-slate-700">Voor (agree)</label>
+                  <label class="text-sm font-semibold text-slate-700"
+                    >Voor (agree)</label
+                  >
                   <select
                     v-model="newIssueForm.stances.agree"
                     multiple
                     class="h-32 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
                   >
-                    <option v-for="party in parties" :key="party.id" :value="party.id">{{ party.abbreviation || party.name }}</option>
+                    <option
+                      v-for="party in parties"
+                      :key="party.id"
+                      :value="party.id"
+                    >
+                      {{ party.abbreviation || party.name }}
+                    </option>
                   </select>
                 </div>
                 <div class="grid gap-2">
-                  <label class="text-sm font-semibold text-slate-700">Neutraal</label>
+                  <label class="text-sm font-semibold text-slate-700"
+                    >Neutraal</label
+                  >
                   <select
                     v-model="newIssueForm.stances.neutral"
                     multiple
                     class="h-32 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
                   >
-                    <option v-for="party in parties" :key="party.id" :value="party.id">{{ party.abbreviation || party.name }}</option>
+                    <option
+                      v-for="party in parties"
+                      :key="party.id"
+                      :value="party.id"
+                    >
+                      {{ party.abbreviation || party.name }}
+                    </option>
                   </select>
                 </div>
                 <div class="grid gap-2">
-                  <label class="text-sm font-semibold text-slate-700">Tegen (disagree)</label>
+                  <label class="text-sm font-semibold text-slate-700"
+                    >Tegen (disagree)</label
+                  >
                   <select
                     v-model="newIssueForm.stances.disagree"
                     multiple
                     class="h-32 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
                   >
-                    <option v-for="party in parties" :key="party.id" :value="party.id">{{ party.abbreviation || party.name }}</option>
+                    <option
+                      v-for="party in parties"
+                      :key="party.id"
+                      :value="party.id"
+                    >
+                      {{ party.abbreviation || party.name }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -284,10 +400,18 @@
                 <div class="rounded-lg border border-slate-200 p-4">
                   <header class="mb-3 flex items-center justify-between">
                     <div>
-                      <h3 class="text-sm font-semibold text-slate-800">Voor argumenten</h3>
-                      <p class="text-xs text-slate-500">Voeg argumenten toe zoals in de seeder.</p>
+                      <h3 class="text-sm font-semibold text-slate-800">
+                        Voor argumenten
+                      </h3>
+                      <p class="text-xs text-slate-500">
+                        Voeg argumenten toe zoals in de seeder.
+                      </p>
                     </div>
-                    <button type="button" class="text-xs font-semibold text-slate-600 hover:text-slate-900" @click="addArgumentField('pro')">
+                    <button
+                      type="button"
+                      class="text-xs font-semibold text-slate-600 hover:text-slate-900"
+                      @click="addArgumentField('pro')"
+                    >
                       + Argument
                     </button>
                   </header>
@@ -297,10 +421,23 @@
                       :key="`pro-${index}`"
                       class="rounded-lg bg-slate-50 p-3"
                     >
-                      <label class="text-xs font-semibold text-slate-600">Inhoud</label>
-                      <textarea v-model="argument.body" rows="3" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
-                      <label class="mt-3 block text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
-                      <textarea v-model="argument.sources" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Inhoud</label
+                      >
+                      <textarea
+                        v-model="argument.body"
+                        rows="3"
+                        class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      ></textarea>
+                      <label
+                        class="mt-3 block text-xs font-semibold text-slate-600"
+                        >Bronnen (één per regel)</label
+                      >
+                      <textarea
+                        v-model="argument.sources"
+                        rows="2"
+                        class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      ></textarea>
                       <button
                         v-if="newIssueForm.proArguments.length > 1"
                         type="button"
@@ -315,10 +452,18 @@
                 <div class="rounded-lg border border-slate-200 p-4">
                   <header class="mb-3 flex items-center justify-between">
                     <div>
-                      <h3 class="text-sm font-semibold text-slate-800">Tegen argumenten</h3>
-                      <p class="text-xs text-slate-500">Voeg tegenargumenten toe (optioneel).</p>
+                      <h3 class="text-sm font-semibold text-slate-800">
+                        Tegen argumenten
+                      </h3>
+                      <p class="text-xs text-slate-500">
+                        Voeg tegenargumenten toe (optioneel).
+                      </p>
                     </div>
-                    <button type="button" class="text-xs font-semibold text-slate-600 hover:text-slate-900" @click="addArgumentField('con')">
+                    <button
+                      type="button"
+                      class="text-xs font-semibold text-slate-600 hover:text-slate-900"
+                      @click="addArgumentField('con')"
+                    >
                       + Argument
                     </button>
                   </header>
@@ -328,10 +473,23 @@
                       :key="`con-${index}`"
                       class="rounded-lg bg-slate-50 p-3"
                     >
-                      <label class="text-xs font-semibold text-slate-600">Inhoud</label>
-                      <textarea v-model="argument.body" rows="3" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
-                      <label class="mt-3 block text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
-                      <textarea v-model="argument.sources" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Inhoud</label
+                      >
+                      <textarea
+                        v-model="argument.body"
+                        rows="3"
+                        class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      ></textarea>
+                      <label
+                        class="mt-3 block text-xs font-semibold text-slate-600"
+                        >Bronnen (één per regel)</label
+                      >
+                      <textarea
+                        v-model="argument.sources"
+                        rows="2"
+                        class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      ></textarea>
                       <button
                         v-if="newIssueForm.conArguments.length > 1"
                         type="button"
@@ -360,15 +518,25 @@
           <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4 flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Bestaande kwesties</h2>
-                <p class="text-sm text-slate-500">Bekijk alle kwesties inclusief argumenten en meldingen.</p>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Bestaande kwesties
+                </h2>
+                <p class="text-sm text-slate-500">
+                  Bekijk alle kwesties inclusief argumenten en meldingen.
+                </p>
               </div>
-              <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+              <span
+                class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"
+              >
                 {{ issues.length }} kwesties
               </span>
             </header>
-            <div v-if="!issues.length" class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
-              Nog geen kwesties gevonden. Voeg de eerste kwestie toe via het formulier hierboven.
+            <div
+              v-if="!issues.length"
+              class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500"
+            >
+              Nog geen kwesties gevonden. Voeg de eerste kwestie toe via het
+              formulier hierboven.
             </div>
             <ul v-else class="space-y-4">
               <li
@@ -379,7 +547,9 @@
                 <div v-if="editingIssueId === issue.id" class="space-y-4">
                   <div class="grid gap-3 md:grid-cols-2 md:gap-4">
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Titel</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Titel</label
+                      >
                       <input
                         v-model="issueDraft.title"
                         type="text"
@@ -387,7 +557,9 @@
                       />
                     </div>
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Slug</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Slug</label
+                      >
                       <input
                         v-model="issueDraft.slug"
                         type="text"
@@ -397,7 +569,9 @@
                   </div>
                   <div class="grid gap-3 md:grid-cols-2 md:gap-4">
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Bron URL</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Bron URL</label
+                      >
                       <input
                         v-model="issueDraft.url"
                         type="text"
@@ -405,7 +579,9 @@
                       />
                     </div>
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Meer info</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Meer info</label
+                      >
                       <textarea
                         v-model="issueDraft.more_info"
                         rows="3"
@@ -414,7 +590,9 @@
                     </div>
                   </div>
                   <div class="grid gap-2">
-                    <label class="text-xs font-semibold text-slate-600">Beschrijving</label>
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Beschrijving</label
+                    >
                     <textarea
                       v-model="issueDraft.description"
                       rows="3"
@@ -423,37 +601,55 @@
                   </div>
                   <div class="grid gap-4 md:grid-cols-3">
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Voor (agree)</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Voor (agree)</label
+                      >
                       <select
                         v-model="issueDraft.stances.agree"
                         multiple
                         class="h-28 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
                       >
-                        <option v-for="party in parties" :key="party.id" :value="party.id">
+                        <option
+                          v-for="party in parties"
+                          :key="party.id"
+                          :value="party.id"
+                        >
                           {{ party.abbreviation || party.name }}
                         </option>
                       </select>
                     </div>
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Neutraal</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Neutraal</label
+                      >
                       <select
                         v-model="issueDraft.stances.neutral"
                         multiple
                         class="h-28 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
                       >
-                        <option v-for="party in parties" :key="`neutral-${party.id}`" :value="party.id">
+                        <option
+                          v-for="party in parties"
+                          :key="`neutral-${party.id}`"
+                          :value="party.id"
+                        >
                           {{ party.abbreviation || party.name }}
                         </option>
                       </select>
                     </div>
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Tegen (disagree)</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Tegen (disagree)</label
+                      >
                       <select
                         v-model="issueDraft.stances.disagree"
                         multiple
                         class="h-28 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
                       >
-                        <option v-for="party in parties" :key="`disagree-${party.id}`" :value="party.id">
+                        <option
+                          v-for="party in parties"
+                          :key="`disagree-${party.id}`"
+                          :value="party.id"
+                        >
                           {{ party.abbreviation || party.name }}
                         </option>
                       </select>
@@ -478,12 +674,25 @@
                   </div>
                 </div>
                 <div v-else class="space-y-4">
-                  <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div
+                    class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
+                  >
                     <div>
-                      <h3 class="text-lg font-semibold text-slate-900">{{ issue.title }}</h3>
-                      <p class="text-xs uppercase tracking-wide text-slate-400">Slug: {{ issue.slug }}</p>
-                      <p v-if="issue.url" class="mt-1 text-sm text-slate-500">Bron: {{ issue.url }}</p>
-                      <p v-if="issue.description" class="mt-2 text-sm text-slate-600">{{ issue.description }}</p>
+                      <h3 class="text-lg font-semibold text-slate-900">
+                        {{ issue.title }}
+                      </h3>
+                      <p class="text-xs uppercase tracking-wide text-slate-400">
+                        Slug: {{ issue.slug }}
+                      </p>
+                      <p v-if="issue.url" class="mt-1 text-sm text-slate-500">
+                        Bron: {{ issue.url }}
+                      </p>
+                      <p
+                        v-if="issue.description"
+                        class="mt-2 text-sm text-slate-600"
+                      >
+                        {{ issue.description }}
+                      </p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                       <button
@@ -510,16 +719,32 @@
                     </div>
                     <div>
                       <p class="font-semibold text-slate-700">Partijen</p>
-                      <p class="text-xs text-slate-500">Voor: {{ resolvePartyList(issue.party_stances.agree) }}</p>
-                      <p class="text-xs text-slate-500">Neutraal: {{ resolvePartyList(issue.party_stances.neutral) }}</p>
-                      <p class="text-xs text-slate-500">Tegen: {{ resolvePartyList(issue.party_stances.disagree) }}</p>
+                      <p class="text-xs text-slate-500">
+                        Voor: {{ resolvePartyList(issue.party_stances.agree) }}
+                      </p>
+                      <p class="text-xs text-slate-500">
+                        Neutraal:
+                        {{ resolvePartyList(issue.party_stances.neutral) }}
+                      </p>
+                      <p class="text-xs text-slate-500">
+                        Tegen:
+                        {{ resolvePartyList(issue.party_stances.disagree) }}
+                      </p>
                     </div>
                     <div>
                       <p class="font-semibold text-slate-700">Meldingen</p>
                       <p>Onjuist: {{ issue.reports.incorrect_information }}</p>
-                      <p>Aanstootgevend: {{ issue.reports.offensive_information }}</p>
-                      <p>Kwestie verkeerd: {{ issue.reports.issue_misworded }}</p>
-                      <p>Argument verkeerd: {{ issue.reports.argument_misworded }}</p>
+                      <p>
+                        Aanstootgevend:
+                        {{ issue.reports.offensive_information }}
+                      </p>
+                      <p>
+                        Kwestie verkeerd: {{ issue.reports.issue_misworded }}
+                      </p>
+                      <p>
+                        Argument verkeerd:
+                        {{ issue.reports.argument_misworded }}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -530,12 +755,17 @@
 
         <div v-if="activeTab === 'arguments'" class="space-y-6">
           <section class="rounded-xl bg-white p-6 shadow-sm">
-            <header class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <header
+              class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+            >
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Importeer argumenten</h2>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Importeer argumenten
+                </h2>
                 <p class="text-sm text-slate-500">
-                  Upload een JSON-bestand met argumenten gekoppeld via <code class="rounded bg-slate-100 px-1">issue_id</code>
-                  of <code class="rounded bg-slate-100 px-1">issue_slug</code>.
+                  Upload een JSON-bestand met argumenten gekoppeld via
+                  <code class="rounded bg-slate-100 px-1">issue_id</code> of
+                  <code class="rounded bg-slate-100 px-1">issue_slug</code>.
                 </p>
               </div>
               <div class="flex flex-wrap gap-2">
@@ -565,17 +795,30 @@
             </header>
             <div class="space-y-3 text-sm text-slate-600">
               <p>
-                Ondersteunt een object met <code class="rounded bg-slate-100 px-1">arguments</code> of een array met argumentitems.
+                Ondersteunt een object met
+                <code class="rounded bg-slate-100 px-1">arguments</code> of een
+                array met argumentitems.
               </p>
-              <pre class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"><code>{{ argumentImportExample }}</code></pre>
+              <pre
+                class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"
+              ><code>{{ argumentImportExample }}</code></pre>
               <div
                 v-if="argumentImportState.fileName"
                 class="rounded-lg border border-slate-200 bg-slate-50 p-4"
               >
-                <p class="text-sm font-semibold text-slate-700">Geselecteerd bestand</p>
-                <p class="text-sm text-slate-600">{{ argumentImportState.fileName }}</p>
-                <p class="mt-2 text-xs text-slate-500">Argumenten: {{ argumentImportState.arguments.length }}</p>
-                <p v-if="argumentImportState.error" class="mt-2 text-sm font-semibold text-red-600">
+                <p class="text-sm font-semibold text-slate-700">
+                  Geselecteerd bestand
+                </p>
+                <p class="text-sm text-slate-600">
+                  {{ argumentImportState.fileName }}
+                </p>
+                <p class="mt-2 text-xs text-slate-500">
+                  Argumenten: {{ argumentImportState.arguments.length }}
+                </p>
+                <p
+                  v-if="argumentImportState.error"
+                  class="mt-2 text-sm font-semibold text-red-600"
+                >
                   {{ argumentImportState.error }}
                 </p>
                 <button
@@ -590,46 +833,87 @@
           </section>
 
           <section class="rounded-xl bg-white p-6 shadow-sm">
-            <header class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <header
+              class="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+            >
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Argumenten beheren</h2>
-                <p class="text-sm text-slate-500">Voeg argumenten toe aan een bestaande kwestie of verwijder ze.</p>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Argumenten beheren
+                </h2>
+                <p class="text-sm text-slate-500">
+                  Voeg argumenten toe aan een bestaande kwestie of verwijder ze.
+                </p>
               </div>
               <select
                 v-model.number="selectedIssueId"
                 class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none md:w-72"
               >
                 <option disabled value="">Kies een kwestie</option>
-                <option v-for="issue in issues" :key="issue.id" :value="issue.id">{{ issue.title }}</option>
+                <option
+                  v-for="issue in issues"
+                  :key="issue.id"
+                  :value="issue.id"
+                >
+                  {{ issue.title }}
+                </option>
               </select>
             </header>
 
-            <div v-if="!issues.length" class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
+            <div
+              v-if="!issues.length"
+              class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500"
+            >
               Voeg eerst een kwestie toe voordat je argumenten kunt beheren.
             </div>
 
-            <div v-else-if="!selectedIssue" class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
+            <div
+              v-else-if="!selectedIssue"
+              class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500"
+            >
               Selecteer een kwestie om argumenten te bekijken of toe te voegen.
             </div>
 
             <div v-else class="space-y-6">
               <div class="rounded-lg border border-slate-200 p-4">
-                <h3 class="text-sm font-semibold text-slate-800">Nieuw argument toevoegen voor "{{ selectedIssue.title }}"</h3>
-                <form class="mt-4 grid gap-4 md:grid-cols-2" @submit.prevent="submitArgument">
+                <h3 class="text-sm font-semibold text-slate-800">
+                  Nieuw argument toevoegen voor "{{ selectedIssue.title }}"
+                </h3>
+                <form
+                  class="mt-4 grid gap-4 md:grid-cols-2"
+                  @submit.prevent="submitArgument"
+                >
                   <div class="grid gap-2">
-                    <label class="text-xs font-semibold text-slate-600">Zijde</label>
-                    <select v-model="argumentForm.side" class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none">
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Zijde</label
+                    >
+                    <select
+                      v-model="argumentForm.side"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    >
                       <option value="pro">Voor</option>
                       <option value="con">Tegen</option>
                     </select>
                   </div>
                   <div class="grid gap-2 md:col-span-2">
-                    <label class="text-xs font-semibold text-slate-600">Argumenttekst</label>
-                    <textarea v-model="argumentForm.body" rows="4" required class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Argumenttekst</label
+                    >
+                    <textarea
+                      v-model="argumentForm.body"
+                      rows="4"
+                      required
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    ></textarea>
                   </div>
                   <div class="grid gap-2 md:col-span-2">
-                    <label class="text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
-                    <textarea v-model="argumentForm.sources" rows="3" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"></textarea>
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Bronnen (één per regel)</label
+                    >
+                    <textarea
+                      v-model="argumentForm.sources"
+                      rows="3"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    ></textarea>
                   </div>
                   <div class="md:col-span-2 flex justify-end">
                     <button
@@ -645,8 +929,13 @@
 
               <div class="grid gap-4 md:grid-cols-2">
                 <div class="rounded-lg border border-slate-200 p-4">
-                  <h3 class="mb-3 text-sm font-semibold text-slate-800">Voor argumenten ({{ selectedIssue.arguments.pro.length }})</h3>
-                  <div v-if="!selectedIssue.arguments.pro.length" class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">
+                  <h3 class="mb-3 text-sm font-semibold text-slate-800">
+                    Voor argumenten ({{ selectedIssue.arguments.pro.length }})
+                  </h3>
+                  <div
+                    v-if="!selectedIssue.arguments.pro.length"
+                    class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500"
+                  >
                     Nog geen voor argumenten.
                   </div>
                   <ul v-else class="space-y-3">
@@ -655,9 +944,14 @@
                       :key="argument.id"
                       class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700"
                     >
-                      <div v-if="editingArgumentId === argument.id" class="space-y-3">
+                      <div
+                        v-if="editingArgumentId === argument.id"
+                        class="space-y-3"
+                      >
                         <div class="grid gap-2">
-                          <label class="text-xs font-semibold text-slate-600">Zijde</label>
+                          <label class="text-xs font-semibold text-slate-600"
+                            >Zijde</label
+                          >
                           <select
                             v-model="argumentEditDraft.side"
                             class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
@@ -667,7 +961,9 @@
                           </select>
                         </div>
                         <div class="grid gap-2">
-                          <label class="text-xs font-semibold text-slate-600">Argumenttekst</label>
+                          <label class="text-xs font-semibold text-slate-600"
+                            >Argumenttekst</label
+                          >
                           <textarea
                             v-model="argumentEditDraft.body"
                             rows="4"
@@ -675,7 +971,9 @@
                           ></textarea>
                         </div>
                         <div class="grid gap-2">
-                          <label class="text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
+                          <label class="text-xs font-semibold text-slate-600"
+                            >Bronnen (één per regel)</label
+                          >
                           <textarea
                             v-model="argumentEditDraft.sources"
                             rows="3"
@@ -702,8 +1000,16 @@
                       </div>
                       <div v-else>
                         <p class="whitespace-pre-line">{{ argument.body }}</p>
-                        <ul v-if="argument.sources.length" class="mt-2 list-disc pl-5 text-xs text-slate-500">
-                          <li v-for="(source, index) in argument.sources" :key="index">{{ source }}</li>
+                        <ul
+                          v-if="argument.sources.length"
+                          class="mt-2 list-disc pl-5 text-xs text-slate-500"
+                        >
+                          <li
+                            v-for="(source, index) in argument.sources"
+                            :key="index"
+                          >
+                            {{ source }}
+                          </li>
                         </ul>
                         <div class="mt-3 flex flex-wrap gap-2">
                           <button
@@ -726,8 +1032,13 @@
                   </ul>
                 </div>
                 <div class="rounded-lg border border-slate-200 p-4">
-                  <h3 class="mb-3 text-sm font-semibold text-slate-800">Tegen argumenten ({{ selectedIssue.arguments.con.length }})</h3>
-                  <div v-if="!selectedIssue.arguments.con.length" class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500">
+                  <h3 class="mb-3 text-sm font-semibold text-slate-800">
+                    Tegen argumenten ({{ selectedIssue.arguments.con.length }})
+                  </h3>
+                  <div
+                    v-if="!selectedIssue.arguments.con.length"
+                    class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500"
+                  >
                     Nog geen tegenargumenten.
                   </div>
                   <ul v-else class="space-y-3">
@@ -736,9 +1047,14 @@
                       :key="argument.id"
                       class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700"
                     >
-                      <div v-if="editingArgumentId === argument.id" class="space-y-3">
+                      <div
+                        v-if="editingArgumentId === argument.id"
+                        class="space-y-3"
+                      >
                         <div class="grid gap-2">
-                          <label class="text-xs font-semibold text-slate-600">Zijde</label>
+                          <label class="text-xs font-semibold text-slate-600"
+                            >Zijde</label
+                          >
                           <select
                             v-model="argumentEditDraft.side"
                             class="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
@@ -748,7 +1064,9 @@
                           </select>
                         </div>
                         <div class="grid gap-2">
-                          <label class="text-xs font-semibold text-slate-600">Argumenttekst</label>
+                          <label class="text-xs font-semibold text-slate-600"
+                            >Argumenttekst</label
+                          >
                           <textarea
                             v-model="argumentEditDraft.body"
                             rows="4"
@@ -756,7 +1074,9 @@
                           ></textarea>
                         </div>
                         <div class="grid gap-2">
-                          <label class="text-xs font-semibold text-slate-600">Bronnen (één per regel)</label>
+                          <label class="text-xs font-semibold text-slate-600"
+                            >Bronnen (één per regel)</label
+                          >
                           <textarea
                             v-model="argumentEditDraft.sources"
                             rows="3"
@@ -783,8 +1103,16 @@
                       </div>
                       <div v-else>
                         <p class="whitespace-pre-line">{{ argument.body }}</p>
-                        <ul v-if="argument.sources.length" class="mt-2 list-disc pl-5 text-xs text-slate-500">
-                          <li v-for="(source, index) in argument.sources" :key="index">{{ source }}</li>
+                        <ul
+                          v-if="argument.sources.length"
+                          class="mt-2 list-disc pl-5 text-xs text-slate-500"
+                        >
+                          <li
+                            v-for="(source, index) in argument.sources"
+                            :key="index"
+                          >
+                            {{ source }}
+                          </li>
                         </ul>
                         <div class="mt-3 flex flex-wrap gap-2">
                           <button
@@ -815,8 +1143,12 @@
           <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4 flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Meldingenoverzicht</h2>
-                <p class="text-sm text-slate-500">Bekijk alle meldingen per kwestie op één plek.</p>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Meldingenoverzicht
+                </h2>
+                <p class="text-sm text-slate-500">
+                  Bekijk alle meldingen per kwestie op één plek.
+                </p>
               </div>
               <button
                 type="button"
@@ -826,29 +1158,60 @@
                 Vernieuwen
               </button>
             </header>
-            <div v-if="!reports.length" class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
+            <div
+              v-if="!reports.length"
+              class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500"
+            >
               Geen meldingen beschikbaar.
             </div>
             <div v-else class="overflow-x-auto">
               <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                <thead
+                  class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"
+                >
                   <tr>
                     <th class="px-4 py-3 text-left font-semibold">Kwestie</th>
-                    <th class="px-4 py-3 text-left font-semibold">Onjuiste info</th>
-                    <th class="px-4 py-3 text-left font-semibold">Aanstootgevend</th>
-                    <th class="px-4 py-3 text-left font-semibold">Kwestie verkeerd</th>
-                    <th class="px-4 py-3 text-left font-semibold">Argument verkeerd</th>
-                    <th class="px-4 py-3 text-left font-semibold">Laatste update</th>
+                    <th class="px-4 py-3 text-left font-semibold">
+                      Onjuiste info
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold">
+                      Aanstootgevend
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold">
+                      Kwestie verkeerd
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold">
+                      Argument verkeerd
+                    </th>
+                    <th class="px-4 py-3 text-left font-semibold">
+                      Laatste update
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
-                  <tr v-for="issue in reports" :key="`report-${issue.id}`" class="bg-white">
-                    <td class="px-4 py-3 font-medium text-slate-800">{{ issue.title }}</td>
-                    <td class="px-4 py-3 text-slate-600">{{ issue.reports.incorrect_information }}</td>
-                    <td class="px-4 py-3 text-slate-600">{{ issue.reports.offensive_information }}</td>
-                    <td class="px-4 py-3 text-slate-600">{{ issue.reports.issue_misworded }}</td>
-                    <td class="px-4 py-3 text-slate-600">{{ issue.reports.argument_misworded }}</td>
-                    <td class="px-4 py-3 text-slate-500">{{ formatDate(issue.updated_at) }}</td>
+                  <tr
+                    v-for="issue in reports"
+                    :key="`report-${issue.id}`"
+                    class="bg-white"
+                  >
+                    <td class="px-4 py-3 font-medium text-slate-800">
+                      {{ issue.title }}
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">
+                      {{ issue.reports.incorrect_information }}
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">
+                      {{ issue.reports.offensive_information }}
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">
+                      {{ issue.reports.issue_misworded }}
+                    </td>
+                    <td class="px-4 py-3 text-slate-600">
+                      {{ issue.reports.argument_misworded }}
+                    </td>
+                    <td class="px-4 py-3 text-slate-500">
+                      {{ formatDate(issue.updated_at) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -859,21 +1222,46 @@
         <div v-if="activeTab === 'parties'" class="space-y-6">
           <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4">
-              <h2 class="text-lg font-semibold text-slate-800">Nieuwe politieke partij</h2>
-              <p class="text-sm text-slate-500">Voeg een partij toe met alle velden uit de seeder.</p>
+              <h2 class="text-lg font-semibold text-slate-800">
+                Nieuwe politieke partij
+              </h2>
+              <p class="text-sm text-slate-500">
+                Voeg een partij toe met alle velden uit de seeder.
+              </p>
             </header>
-            <form class="grid gap-4 md:grid-cols-2" @submit.prevent="submitParty">
+            <form
+              class="grid gap-4 md:grid-cols-2"
+              @submit.prevent="submitParty"
+            >
               <div class="grid gap-2">
                 <label class="text-sm font-medium text-slate-700">Naam</label>
-                <input v-model="newPartyForm.name" required type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                <input
+                  v-model="newPartyForm.name"
+                  required
+                  type="text"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                />
               </div>
               <div class="grid gap-2">
-                <label class="text-sm font-medium text-slate-700">Afkorting</label>
-                <input v-model="newPartyForm.abbreviation" required type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                <label class="text-sm font-medium text-slate-700"
+                  >Afkorting</label
+                >
+                <input
+                  v-model="newPartyForm.abbreviation"
+                  required
+                  type="text"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                />
               </div>
               <div class="grid gap-2">
-                <label class="text-sm font-medium text-slate-700">Slug (optioneel)</label>
-                <input v-model="newPartyForm.slug" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                <label class="text-sm font-medium text-slate-700"
+                  >Slug (optioneel)</label
+                >
+                <input
+                  v-model="newPartyForm.slug"
+                  type="text"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                />
               </div>
               <div class="grid gap-2 md:col-span-2">
                 <label class="text-sm font-medium text-slate-700">Logo</label>
@@ -920,8 +1308,14 @@
                 </div>
               </div>
               <div class="md:col-span-2 grid gap-2">
-                <label class="text-sm font-medium text-slate-700">Website URL</label>
-                <input v-model="newPartyForm.website_url" type="url" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                <label class="text-sm font-medium text-slate-700"
+                  >Website URL</label
+                >
+                <input
+                  v-model="newPartyForm.website_url"
+                  type="url"
+                  class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                />
               </div>
               <div class="md:col-span-2 flex justify-end">
                 <button
@@ -938,14 +1332,23 @@
           <section class="rounded-xl bg-white p-6 shadow-sm">
             <header class="mb-4 flex items-center justify-between">
               <div>
-                <h2 class="text-lg font-semibold text-slate-800">Bestaande partijen</h2>
-                <p class="text-sm text-slate-500">Pas bestaande partijen aan en beheer logo's en links.</p>
+                <h2 class="text-lg font-semibold text-slate-800">
+                  Bestaande partijen
+                </h2>
+                <p class="text-sm text-slate-500">
+                  Pas bestaande partijen aan en beheer logo's en links.
+                </p>
               </div>
-              <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+              <span
+                class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"
+              >
                 {{ parties.length }} partijen
               </span>
             </header>
-            <div v-if="!parties.length" class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500">
+            <div
+              v-if="!parties.length"
+              class="rounded-lg border border-dashed border-slate-300 p-8 text-center text-slate-500"
+            >
               Nog geen partijen beschikbaar.
             </div>
             <ul v-else class="space-y-4">
@@ -957,21 +1360,41 @@
                 <div v-if="editingPartyId === party.id" class="space-y-3">
                   <div class="grid gap-2 md:grid-cols-2 md:gap-4">
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Naam</label>
-                      <input v-model="partyDraft.name" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Naam</label
+                      >
+                      <input
+                        v-model="partyDraft.name"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      />
                     </div>
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Afkorting</label>
-                      <input v-model="partyDraft.abbreviation" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Afkorting</label
+                      >
+                      <input
+                        v-model="partyDraft.abbreviation"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      />
                     </div>
                   </div>
                   <div class="grid gap-2 md:grid-cols-3 md:gap-4">
                     <div class="grid gap-2">
-                      <label class="text-xs font-semibold text-slate-600">Slug</label>
-                      <input v-model="partyDraft.slug" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Slug</label
+                      >
+                      <input
+                        v-model="partyDraft.slug"
+                        type="text"
+                        class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                      />
                     </div>
                     <div class="grid gap-2 md:col-span-2">
-                      <label class="text-xs font-semibold text-slate-600">Logo</label>
+                      <label class="text-xs font-semibold text-slate-600"
+                        >Logo</label
+                      >
                       <input
                         :ref="setEditPartyLogoInput"
                         type="file"
@@ -985,14 +1408,22 @@
                       >
                         <img
                           :src="partyDraft.logoPreview"
-                          :alt="`Logo ${partyDraft.abbreviation || partyDraft.name || 'partij'}`"
+                          :alt="`Logo ${
+                            partyDraft.abbreviation ||
+                            partyDraft.name ||
+                            'partij'
+                          }`"
                           class="h-10 w-10 rounded-full bg-white p-1 object-contain"
                         />
-                        <div class="flex flex-1 flex-col text-xs text-slate-600">
+                        <div
+                          class="flex flex-1 flex-col text-xs text-slate-600"
+                        >
                           <span class="font-semibold">
                             {{ partyDraft.logoFile?.name || "Voorbeeld" }}
                           </span>
-                          <span class="truncate">{{ partyDraft.logoPreview }}</span>
+                          <span class="truncate">{{
+                            partyDraft.logoPreview
+                          }}</span>
                         </div>
                         <button
                           type="button"
@@ -1006,13 +1437,23 @@
                         <label class="text-[11px] font-semibold text-slate-600">
                           Of gebruik een bestaande URL
                         </label>
-                        <input v-model="partyDraft.logo_url" type="text" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                        <input
+                          v-model="partyDraft.logo_url"
+                          type="text"
+                          class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                        />
                       </div>
                     </div>
                   </div>
                   <div class="grid gap-2">
-                    <label class="text-xs font-semibold text-slate-600">Website URL</label>
-                    <input v-model="partyDraft.website_url" type="url" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none" />
+                    <label class="text-xs font-semibold text-slate-600"
+                      >Website URL</label
+                    >
+                    <input
+                      v-model="partyDraft.website_url"
+                      type="url"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    />
                   </div>
                   <div class="flex flex-wrap gap-2">
                     <button
@@ -1031,7 +1472,10 @@
                     </button>
                   </div>
                 </div>
-                <div v-else class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div
+                  v-else
+                  class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+                >
                   <div class="flex items-start gap-4">
                     <div
                       v-if="party.logo_url"
@@ -1044,15 +1488,29 @@
                       />
                     </div>
                     <div>
-                      <h3 class="text-lg font-semibold text-slate-900">{{ party.name }}</h3>
-                      <p class="text-xs uppercase tracking-wide text-slate-400">{{ party.abbreviation }} • {{ party.slug }}</p>
-                      <p v-if="party.logo_url" class="mt-1 text-sm text-slate-500">
-                        Logo:
-                        <span class="break-all text-slate-600">{{ party.logo_url }}</span>
+                      <h3 class="text-lg font-semibold text-slate-900">
+                        {{ party.name }}
+                      </h3>
+                      <p class="text-xs uppercase tracking-wide text-slate-400">
+                        {{ party.abbreviation }} • {{ party.slug }}
                       </p>
-                      <p v-if="party.website_url" class="mt-1 text-sm text-slate-500">
+                      <p
+                        v-if="party.logo_url"
+                        class="mt-1 text-sm text-slate-500"
+                      >
+                        Logo:
+                        <span class="break-all text-slate-600">{{
+                          party.logo_url
+                        }}</span>
+                      </p>
+                      <p
+                        v-if="party.website_url"
+                        class="mt-1 text-sm text-slate-500"
+                      >
                         Website:
-                        <span class="break-all text-slate-600">{{ party.website_url }}</span>
+                        <span class="break-all text-slate-600">{{
+                          party.website_url
+                        }}</span>
                       </p>
                     </div>
                   </div>
@@ -1074,7 +1532,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { useAdmin } from "~/composables/useAdmin";
 import type {
   AdminArgumentImportPayload,
@@ -1171,7 +1636,8 @@ const issueDirectoryState = reactive({
 const issueDirectoryBounds = computed(() => {
   if (!issueDirectoryState.motions.length) return null;
   const first = issueDirectoryState.motions[0].number;
-  const last = issueDirectoryState.motions[issueDirectoryState.motions.length - 1].number;
+  const last =
+    issueDirectoryState.motions[issueDirectoryState.motions.length - 1].number;
   return {
     first,
     last,
@@ -1185,7 +1651,9 @@ const issueDirectorySelectionPreview = computed(() => {
   const end = toMotionNumber(issueDirectoryState.end);
   if (start === null || end === null || end < start) return null;
 
-  const motionByNumber = new Map(issueDirectoryState.motions.map((motion) => [motion.number, motion]));
+  const motionByNumber = new Map(
+    issueDirectoryState.motions.map((motion) => [motion.number, motion])
+  );
   const selected: MotionFileEntry[] = [];
   for (let number = start; number <= end; number += 1) {
     const motion = motionByNumber.get(number);
@@ -1293,9 +1761,12 @@ const adminEmail = ADMIN_EMAIL;
 const adminUsername = ADMIN_USERNAME;
 
 const hasIssueImport = computed(
-  () => issueImportState.issues.length > 0 || issueImportState.arguments.length > 0
+  () =>
+    issueImportState.issues.length > 0 || issueImportState.arguments.length > 0
 );
-const hasArgumentImport = computed(() => argumentImportState.arguments.length > 0);
+const hasArgumentImport = computed(
+  () => argumentImportState.arguments.length > 0
+);
 
 const selectedIssueId = ref<number | null>(null);
 const argumentForm = reactive({
@@ -1465,7 +1936,9 @@ const partyLookup = computed(() => {
 
 const selectedIssue = computed(() => {
   if (!selectedIssueId.value) return null;
-  return issues.value.find((issue) => issue.id === selectedIssueId.value) ?? null;
+  return (
+    issues.value.find((issue) => issue.id === selectedIssueId.value) ?? null
+  );
 });
 
 watch(
@@ -1475,7 +1948,10 @@ watch(
       selectedIssueId.value = null;
       return;
     }
-    if (!selectedIssueId.value || !currentIssues.some((issue) => issue.id === selectedIssueId.value)) {
+    if (
+      !selectedIssueId.value ||
+      !currentIssues.some((issue) => issue.id === selectedIssueId.value)
+    ) {
       selectedIssueId.value = currentIssues[0]?.id ?? null;
     }
   },
@@ -1507,9 +1983,7 @@ watch(
 function toNumberArray(list: Array<number | string>): number[] {
   return Array.from(
     new Set(
-      list
-        .map((value) => Number(value))
-        .filter((value) => !Number.isNaN(value))
+      list.map((value) => Number(value)).filter((value) => !Number.isNaN(value))
     )
   );
 }
@@ -1522,8 +1996,12 @@ function parseSources(input: string): string[] {
 }
 
 async function submitIssue() {
-  const proArguments = newIssueForm.proArguments.filter((argument) => argument.body.trim().length > 0);
-  const conArguments = newIssueForm.conArguments.filter((argument) => argument.body.trim().length > 0);
+  const proArguments = newIssueForm.proArguments.filter(
+    (argument) => argument.body.trim().length > 0
+  );
+  const conArguments = newIssueForm.conArguments.filter(
+    (argument) => argument.body.trim().length > 0
+  );
 
   const payload: AdminIssuePayload = {
     title: newIssueForm.title.trim(),
@@ -1569,8 +2047,16 @@ function resetIssueForm() {
   newIssueForm.stances.agree = [];
   newIssueForm.stances.neutral = [];
   newIssueForm.stances.disagree = [];
-  newIssueForm.proArguments.splice(0, newIssueForm.proArguments.length, createArgumentField());
-  newIssueForm.conArguments.splice(0, newIssueForm.conArguments.length, createArgumentField());
+  newIssueForm.proArguments.splice(
+    0,
+    newIssueForm.proArguments.length,
+    createArgumentField()
+  );
+  newIssueForm.conArguments.splice(
+    0,
+    newIssueForm.conArguments.length,
+    createArgumentField()
+  );
 }
 
 function resetIssueDraft() {
@@ -1624,7 +2110,12 @@ async function saveIssueEdit(issueId: number) {
 }
 
 async function confirmDeleteIssue(issueId: number, title: string) {
-  if (!window.confirm(`Weet je zeker dat je de kwestie "${title}" wilt verwijderen?`)) return;
+  if (
+    !window.confirm(
+      `Weet je zeker dat je de kwestie "${title}" wilt verwijderen?`
+    )
+  )
+    return;
   await deleteIssue(issueId);
   if (editingIssueId.value === issueId) {
     cancelIssueEdit();
@@ -1806,7 +2297,8 @@ async function handleIssueDirectoryUpload(event: Event) {
   }
 
   if (!motions.length) {
-    issueDirectoryState.error = "Geen motie JSON-bestanden gevonden in deze map.";
+    issueDirectoryState.error =
+      "Geen motie JSON-bestanden gevonden in deze map.";
     input.value = "";
     return;
   }
@@ -1832,11 +2324,14 @@ async function prepareIssueImportFromDirectory() {
   }
 
   if (endNumber < startNumber) {
-    issueDirectoryState.error = "Het eindnummer moet groter of gelijk zijn aan het startnummer.";
+    issueDirectoryState.error =
+      "Het eindnummer moet groter of gelijk zijn aan het startnummer.";
     return;
   }
 
-  const motionByNumber = new Map(issueDirectoryState.motions.map((motion) => [motion.number, motion]));
+  const motionByNumber = new Map(
+    issueDirectoryState.motions.map((motion) => [motion.number, motion])
+  );
   const selected: MotionFileEntry[] = [];
   const missing: number[] = [];
 
@@ -1850,7 +2345,8 @@ async function prepareIssueImportFromDirectory() {
   }
 
   if (!selected.length) {
-    issueDirectoryState.error = "Geen moties gevonden voor het geselecteerde bereik.";
+    issueDirectoryState.error =
+      "Geen moties gevonden voor het geselecteerde bereik.";
     return;
   }
 
@@ -1883,7 +2379,8 @@ async function prepareIssueImportFromDirectory() {
   }
 
   if (!aggregatedIssues.length && !aggregatedArguments.length) {
-    issueDirectoryState.error = "Geen issues of argumenten gevonden in de geselecteerde moties.";
+    issueDirectoryState.error =
+      "Geen issues of argumenten gevonden in de geselecteerde moties.";
     return;
   }
 
@@ -1918,7 +2415,9 @@ async function handleIssueFileUpload(event: Event) {
     issueImportState.arguments = normalized.arguments;
   } catch (err) {
     issueImportState.error =
-      err instanceof Error ? err.message : "Het bestand kon niet worden gelezen.";
+      err instanceof Error
+        ? err.message
+        : "Het bestand kon niet worden gelezen.";
     issueImportState.issues = [];
     issueImportState.arguments = [];
   } finally {
@@ -1945,7 +2444,9 @@ async function handleArgumentFileUpload(event: Event) {
     argumentImportState.arguments = normalized;
   } catch (err) {
     argumentImportState.error =
-      err instanceof Error ? err.message : "Het bestand kon niet worden gelezen.";
+      err instanceof Error
+        ? err.message
+        : "Het bestand kon niet worden gelezen.";
     argumentImportState.arguments = [];
   } finally {
     input.value = "";
@@ -2021,12 +2522,15 @@ function normalizeIssueImportPayload(raw: unknown): {
   return result;
 }
 
-function normalizeArgumentImportPayload(raw: unknown): AdminArgumentUpsertPayload[] {
+function normalizeArgumentImportPayload(
+  raw: unknown
+): AdminArgumentUpsertPayload[] {
   return normalizeIssueImportPayload(raw).arguments;
 }
 
 function getFileRelativePath(file: File): string {
-  const candidate = (file as File & { webkitRelativePath?: string }).webkitRelativePath;
+  const candidate = (file as File & { webkitRelativePath?: string })
+    .webkitRelativePath;
   return candidate ? candidate.replace(/\\/g, "/") : file.name;
 }
 
@@ -2041,7 +2545,8 @@ function extractMotionNumber(relativePath: string): number | null {
   if (!directoryMatch || !fileMatch) return null;
   const directoryNumber = Number.parseInt(directoryMatch[1], 10);
   const fileNumber = Number.parseInt(fileMatch[1], 10);
-  if (!Number.isFinite(directoryNumber) || directoryNumber !== fileNumber) return null;
+  if (!Number.isFinite(directoryNumber) || directoryNumber !== fileNumber)
+    return null;
   return directoryNumber;
 }
 
@@ -2054,14 +2559,14 @@ function toMotionNumber(value: string): number | null {
 function isArgumentPayload(value: unknown): value is Record<string, unknown> {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
-  return typeof candidate.side === "string" && typeof candidate.body === "string";
+  return (
+    typeof candidate.side === "string" && typeof candidate.body === "string"
+  );
 }
 
 function resolvePartyList(ids: number[]): string {
   if (!ids.length) return "-";
-  return ids
-    .map((id) => partyLookup.value.get(id) ?? `#${id}`)
-    .join(", ");
+  return ids.map((id) => partyLookup.value.get(id) ?? `#${id}`).join(", ");
 }
 
 function formatDate(value: string | null): string {

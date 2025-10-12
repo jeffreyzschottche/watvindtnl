@@ -410,6 +410,10 @@ a:focus {
   box-shadow: 0 12px 28px rgba(0, 26, 77, 0.08);
 }
 
+.text-red {
+  color: rgba(200, 16, 46, 0.95);
+}
+
 .cta {
   display: flex;
   align-items: center;
