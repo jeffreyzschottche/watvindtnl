@@ -3,8 +3,8 @@
     <section class="page-hero page-hero--contact">
       <div class="container narrow">
         <h1 class="page-hero__title">
-          <span class="page-hero__accent page-hero__accent--blue">Neem</span>
-          <span class="page-hero__accent page-hero__accent--red">contact</span>
+          <span class="page-hero__accent page-hero__accent--blue">Contact</span>
+          <span class="page-hero__accent page-hero__accent--red">opnemen</span>
         </h1>
         <p class="page-hero__subtitle">
           Wil je zelf een motie aanvragen? Heb je ideeën? Of wil je meer weten
@@ -139,6 +139,4 @@
     ),
     url("/images/norali-nayla-eDvG3IO8-Io-unsplash.jpg");
 }
-
-
 </style>
