@@ -47,35 +47,32 @@
             @click="closeMobile"
             >Contact</NuxtLink
           >
-          <NuxtLink
-            to="/profile"
-            class="button"
-            active-class="link-active"
-            @click="closeMobile"
-          >
-            Mijn profiel
-          </NuxtLink>
         </nav>
         <div class="auth-links">
           <template v-if="!isLoggedIn">
-            <NuxtLink
-              to="/login"
-              class="button"
-              @click="closeMobile"
-              >Inloggen</NuxtLink
-            >
-            <NuxtLink to="/register" class="button" @click="closeMobile"
-              >Registreren</NuxtLink
-            >
+            <button class="button my-profile">
+              <NuxtLink to="/login" @click="closeMobile">Inloggen</NuxtLink>
+            </button>
+            <button class="button my-profile">
+              <NuxtLink to="/register" @click="closeMobile"
+                >Registreren</NuxtLink
+              >
+            </button>
           </template>
-          <button
-            v-else
-            type="button"
-            class="button"
-            @click="handleLogout"
-          >
-            Uitloggen
-          </button>
+          <div v-else>
+            <button type="button" class="button my-profile">
+              <NuxtLink
+                to="/profile"
+                active-class="link-active"
+                @click="closeMobile"
+              >
+                Mijn profiel
+              </NuxtLink>
+            </button>
+            <button type="button" class="button" @click="handleLogout">
+              Uitloggen
+            </button>
+          </div>
         </div>
       </div>
     </div>
