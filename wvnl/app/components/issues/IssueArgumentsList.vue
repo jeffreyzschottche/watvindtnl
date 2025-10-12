@@ -162,9 +162,10 @@ function handleArgumentReport(argumentId: number, reason: ReportReason) {
 }
 
 .arguments__source-link {
-  color: #1d4ed8;
+  color: var(--color-primary);
   text-decoration: underline;
   word-break: break-all;
+  font-weight: 600;
 }
 
 .arguments__empty {

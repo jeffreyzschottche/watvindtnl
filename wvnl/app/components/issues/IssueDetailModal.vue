@@ -96,9 +96,10 @@ const emit = defineEmits<{
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   border-radius: 1rem;
-  background: #f8fafc;
-  padding: 1.5rem;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(238, 241, 246, 0.96));
+  padding: 1.75rem;
+  box-shadow: 0 28px 60px rgba(0, 26, 77, 0.35);
+  border: 1px solid rgba(0, 61, 165, 0.12);
 }
 
 .issue-modal__header {
@@ -110,23 +111,27 @@ const emit = defineEmits<{
 
 .issue-modal__title {
   margin: 0;
-  font-size: 1.25rem;
-  color: #0f172a;
+  font-size: 1.3rem;
+  color: var(--color-primary);
 }
 
 .issue-modal__close {
-  border: none;
-  width: 2rem;
-  height: 2rem;
+  border: 1px solid rgba(0, 61, 165, 0.25);
+  width: 2.2rem;
+  height: 2.2rem;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.1);
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--color-accent);
   font-size: 1.5rem;
   cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.issue-modal__close:hover {
-  background: rgba(15, 23, 42, 0.2);
+.issue-modal__close:hover,
+.issue-modal__close:focus-visible {
+  background: rgba(200, 16, 46, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0, 26, 77, 0.18);
 }
 
 .issue-modal__state {
@@ -135,9 +140,11 @@ const emit = defineEmits<{
   justify-items: center;
   text-align: center;
   padding: 2rem 1rem;
-  border-radius: 0.75rem;
-  background: #ffffff;
-  color: #0f172a;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #101828;
+  border: 1px solid rgba(0, 61, 165, 0.12);
+  box-shadow: 0 12px 24px rgba(0, 26, 77, 0.12);
 }
 
 .issue-modal__state--error {
@@ -145,17 +152,19 @@ const emit = defineEmits<{
 }
 
 .issue-modal__retry {
-  padding: 0.5rem 1.25rem;
+  padding: 0.55rem 1.35rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(130deg, var(--color-accent), var(--color-primary));
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.issue-modal__retry:hover {
+.issue-modal__retry:hover,
+.issue-modal__retry:focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 16px 30px rgba(0, 61, 165, 0.35);
 }
 </style>

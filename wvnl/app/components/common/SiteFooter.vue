@@ -35,14 +35,14 @@
         >
           <path
             d="M90.5 63.1a40 40 0 1 0-76.4 16.5h72.8a39.9 39.9 0 0 0 3.6-16.4z"
-            fill="#f0f2ff"
+            fill="#f6f8ff"
           />
           <path class="cls-2" d="M11 79.7h78M6.5 79.7H9M91 79.7h2.5" />
           <path
             class="cls-3"
             d="M29.3 35.7a2.1 2.1 0 0 0-.8.2 3.7 3.7 0 0 0-7.3 0 2 2 0 0 0-.8-.2 2.2 2.2 0 0 0 0 4.4h8.9a2.2 2.2 0 0 0 0-4.4z"
-            fill="#fff"
-            stroke="#4550e5"
+            fill="#ffffff"
+            stroke="#003da5"
             stroke-linejoin="round"
           />
           <path
@@ -90,9 +90,9 @@
           <path class="cls-2" d="M43 65.4h6M46 61.6v7.6" />
           <path
             d="M61 79.7h-4.5v-3a2.3 2.3 0 0 1 2.3-2.3 2.3 2.3 0 0 1 2.2 2.3z"
-            fill="#d6daff"
+            fill="#d4ddff"
             stroke-linecap="round"
-            stroke="#4550e5"
+            stroke="#003da5"
             stroke-linejoin="round"
           />
           <path class="cls-2" d="M43.5 79.7v-3.8M50.5 79.7v-3.8" />
@@ -153,9 +153,10 @@
 
 <style>
 .site-footer {
-  background: #0f1324;
-  color: #e6e9ff;
-  padding: 2rem 0;
+  background: linear-gradient(140deg, #001d5a 0%, #003da5 60%, #0b2e73 100%);
+  color: #f7f9ff;
+  padding: 2.75rem 0 2.25rem;
+  border-top: 6px solid #c8102e;
 }
 
 .footer-container {
@@ -170,9 +171,15 @@
   gap: 0.75rem;
 }
 
+.footer-brand strong {
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+}
+
 .footer-text {
   margin: 0.25rem 0;
-  opacity: 0.9;
+  opacity: 0.92;
+  max-width: 420px;
 }
 
 .footer-links {
@@ -183,17 +190,20 @@
 }
 
 .footer-links a {
-  color: #cfd3ff;
+  color: #f5f7ff;
   text-decoration: none;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
 }
 
 .footer-links a:hover {
-  text-decoration: underline;
+  border-bottom-color: rgba(255, 155, 0, 0.8);
+  color: #ffcf73;
 }
 
 .footer-copy {
   margin: 0.25rem 0 0;
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 /* Right block */
@@ -205,13 +215,12 @@
 
 .footer-credits {
   margin-top: 0.5rem;
-  font-size: 0.75rem;
-  color: #cfd3ff;
-  opacity: 0;
+  font-size: 0.78rem;
+  color: rgba(247, 249, 255, 0.8);
 }
 
 .footer-credits a {
-  color: #cfd3ff;
+  color: #ffcf73;
   text-decoration: underline;
 }
 
@@ -219,7 +228,6 @@
 #windmill {
   display: inline-block;
   width: 100%;
-  /* width: min(320px, 38vw); */
   height: auto;
 }
 .cls-2 {
@@ -227,22 +235,25 @@
 }
 .cls-2,
 .cls-7 {
-  stroke: #4550e5;
+  stroke: #003da5;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
-.cls-5,
+.cls-5 {
+  fill: #c8102e;
+}
 .cls-7 {
-  fill: #fff;
+  fill: #ff9b00;
 }
 .cls-4 {
-  fill: #d6daff;
+  fill: #cdd8ff;
 }
 
 /* Optionele wolk-scroll animatie */
 .cls-3 {
   transform: translateX(150px);
   animation: scroll 20s infinite linear;
+  fill: rgba(255, 255, 255, 0.7);
 }
 
 @keyframes scroll {
@@ -264,7 +275,7 @@
     text-align: left;
   }
   #windmill {
-    width: 260px;
+    width: min(320px, 85vw);
   }
 }
 </style>

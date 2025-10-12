@@ -288,6 +288,7 @@ function applyUserVote(
 .issues-page__header h1 {
   margin: 0 0 0.5rem;
   font-size: 2rem;
+  color: var(--color-primary);
 }
 
 .issues-page__header p {
@@ -303,9 +304,10 @@ function applyUserVote(
   text-align: center;
   padding: 2rem;
   border-radius: 1rem;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-  color: #0f172a;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(238, 241, 246, 0.9));
+  box-shadow: 0 18px 36px rgba(0, 28, 70, 0.12);
+  color: #101828;
+  border: 1px solid rgba(0, 61, 165, 0.12);
 }
 
 .issues-page__state--error {
@@ -328,15 +330,16 @@ function applyUserVote(
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(130deg, var(--color-accent), var(--color-primary));
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.issues-page__retry:hover {
+.issues-page__retry:hover,
+.issues-page__retry:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 14px 26px rgba(0, 61, 165, 0.28);
 }
 </style>

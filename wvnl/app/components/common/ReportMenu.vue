@@ -108,15 +108,17 @@ async function handleSelect(reason: ReportReason) {
 }
 
 .report-menu__trigger {
-  border: 1px solid #cbd5f5;
-  background: #eef2ff;
-  color: #3730a3;
+  border: 1px solid rgba(0, 61, 165, 0.3);
+  background: linear-gradient(120deg, rgba(0, 61, 165, 0.08), rgba(0, 61, 165, 0.18));
+  color: var(--color-primary);
   border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.4rem 0.9rem;
+  padding: 0.45rem 1rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0, 61, 165, 0.18);
 }
 
 .report-menu--sm .report-menu__trigger {
@@ -129,10 +131,12 @@ async function handleSelect(reason: ReportReason) {
   cursor: not-allowed;
 }
 
-.report-menu__trigger:not(:disabled):hover {
-  background: #dbeafe;
-  color: #1d4ed8;
+.report-menu__trigger:not(:disabled):hover,
+.report-menu__trigger:not(:disabled):focus-visible {
+  background: linear-gradient(120deg, rgba(0, 61, 165, 0.18), rgba(200, 16, 46, 0.12));
+  color: var(--color-primary);
   transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(200, 16, 46, 0.2);
 }
 
 .report-menu__panel {
@@ -141,18 +145,19 @@ async function handleSelect(reason: ReportReason) {
   right: 0;
   margin-top: 0.5rem;
   width: min(320px, 90vw);
-  border-radius: 0.75rem;
-  background: #ffffff;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
-  padding: 1rem;
+  border-radius: 1rem;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.98), rgba(238, 241, 246, 0.95));
+  box-shadow: 0 18px 40px rgba(0, 28, 70, 0.18);
+  padding: 1.1rem;
+  border: 1px solid rgba(0, 61, 165, 0.12);
   z-index: 10;
 }
 
 .report-menu__title {
   margin: 0 0 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1f2937;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
 }
 
 .report-menu__options {
@@ -165,16 +170,17 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__option {
   width: 100%;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(0, 61, 165, 0.15);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 0.65rem;
+  padding: 0.6rem 0.85rem;
   text-align: left;
-  font-size: 0.85rem;
-  color: #1f2937;
+  font-size: 0.9rem;
+  color: #101828;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease, transform 0.2s ease;
+  box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .report-menu__option:disabled {
@@ -182,10 +188,12 @@ async function handleSelect(reason: ReportReason) {
   cursor: not-allowed;
 }
 
-.report-menu__option:not(:disabled):hover {
-  background: #e0f2fe;
-  border-color: #38bdf8;
-  color: #0c4a6e;
+.report-menu__option:not(:disabled):hover,
+.report-menu__option:not(:disabled):focus-visible {
+  background: rgba(0, 61, 165, 0.1);
+  border-color: rgba(0, 61, 165, 0.3);
+  color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .report-menu__feedback {

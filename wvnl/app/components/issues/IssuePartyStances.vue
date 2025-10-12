@@ -75,16 +75,17 @@ const stances = computed(() => props.stances);
 .issue-party-stances {
   display: grid;
   gap: 1rem;
-  padding: 1.25rem;
+  padding: 1.5rem;
   border-radius: 1rem;
-  background: #f1f5f9;
+  background: linear-gradient(135deg, rgba(0, 61, 165, 0.05), rgba(255, 255, 255, 0.75));
+  border: 1px solid rgba(0, 61, 165, 0.12);
 }
 
 .issue-party-stances__title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-primary);
 }
 
 .issue-party-stances__grid {
@@ -102,9 +103,10 @@ const stances = computed(() => props.stances);
   display: grid;
   gap: 0.75rem;
   padding: 1rem;
-  border-radius: 0.75rem;
-  background: #ffffff;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+  border-radius: 0.85rem;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(238, 241, 246, 0.85) 100%);
+  box-shadow: 0 12px 24px rgba(0, 28, 70, 0.08);
+  border: 1px solid rgba(0, 61, 165, 0.08);
 }
 
 .issue-party-stances__column-header {
@@ -123,7 +125,9 @@ const stances = computed(() => props.stances);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #0f172a;
+  color: #101828;
+  background: rgba(0, 61, 165, 0.08);
+  border: 1px solid rgba(0, 61, 165, 0.15);
 }
 
 .issue-party-stances__column--agree .issue-party-stances__badge {
@@ -144,7 +148,7 @@ const stances = computed(() => props.stances);
 .issue-party-stances__hint {
   margin: 0;
   font-size: 0.8rem;
-  color: #64748b;
+  color: #475467;
 }
 
 .issue-party-stances__list {
@@ -166,8 +170,9 @@ const stances = computed(() => props.stances);
   height: 36px;
   object-fit: contain;
   border-radius: 50%;
-  background: #e2e8f0;
+  background: rgba(255, 255, 255, 0.9);
   padding: 0.25rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 61, 165, 0.08);
 }
 
 .issue-party-stances__party-details {
@@ -178,7 +183,7 @@ const stances = computed(() => props.stances);
 
 .issue-party-stances__party-abbr {
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-primary);
 }
 
 .issue-party-stances__party-name {

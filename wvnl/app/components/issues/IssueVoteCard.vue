@@ -198,11 +198,12 @@ async function handleIssueReport(reason: ReportReason) {
 <style scoped>
 .issue-card {
   display: grid;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  gap: 1.75rem;
+  padding: 1.75rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(238, 241, 246, 0.85) 100%);
+  box-shadow: 0 24px 45px rgba(0, 28, 70, 0.12);
+  border: 1px solid rgba(0, 61, 165, 0.08);
 }
 
 .issue-card__header {
@@ -220,14 +221,16 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__counter {
   margin: 0;
   font-size: 0.9rem;
-  color: #2563eb;
-  font-weight: 600;
+  color: var(--color-accent);
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .issue-card__title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  color: var(--color-primary);
 }
 
 .issue-card__report {
@@ -236,16 +239,17 @@ async function handleIssueReport(reason: ReportReason) {
 
 .issue-card__description {
   margin: 0;
-  line-height: 1.6;
-  color: #374151;
+  line-height: 1.7;
+  color: #344054;
 }
 
 .issue-card__results {
   display: grid;
   gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  background-color: #f8fafc;
+  padding: 1.1rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.95), rgba(238, 241, 246, 0.9));
+  border: 1px solid rgba(0, 61, 165, 0.12);
 }
 
 .issue-card__results-header {
@@ -253,7 +257,7 @@ async function handleIssueReport(reason: ReportReason) {
   justify-content: space-between;
   align-items: baseline;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--color-primary);
 }
 
 .issue-card__results-title {
@@ -263,13 +267,13 @@ async function handleIssueReport(reason: ReportReason) {
 
 .issue-card__results-total {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #475467;
 }
 
 .issue-card__results-empty {
   margin: 0;
   font-size: 0.95rem;
-  color: #64748b;
+  color: #475467;
 }
 
 .issue-card__results-bar {
@@ -278,7 +282,7 @@ async function handleIssueReport(reason: ReportReason) {
   height: 0.75rem;
   border-radius: 9999px;
   overflow: hidden;
-  background-color: #e2e8f0;
+  background-color: rgba(0, 61, 165, 0.12);
 }
 
 .issue-card__results-segment {
@@ -311,7 +315,7 @@ async function handleIssueReport(reason: ReportReason) {
   display: flex;
   justify-content: space-between;
   font-size: 0.95rem;
-  color: #0f172a;
+  color: #101828;
 }
 
 .issue-card__results-label {
@@ -325,15 +329,15 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__footer {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .issue-card__button {
   flex: 1 1 160px;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 0.85rem;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   color: #ffffff;
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
@@ -346,9 +350,10 @@ async function handleIssueReport(reason: ReportReason) {
   box-shadow: none;
 }
 
-.issue-card__button:not(:disabled):hover {
+.issue-card__button:not(:disabled):hover,
+.issue-card__button:not(:disabled):focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 16px 26px rgba(0, 28, 70, 0.18);
 }
 
 .issue-card__share {
@@ -377,12 +382,12 @@ async function handleIssueReport(reason: ReportReason) {
 }
 
 .issue-card__button--skip {
-  background: linear-gradient(135deg, #93c5fd, #60a5fa);
-  color: #1e3a8a;
+  background: linear-gradient(135deg, #ffe0b2, #ff9b00);
+  color: #2f1300;
 }
 
 .issue-card__button--share {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #78350f;
+  background: linear-gradient(135deg, #ff9b00, #ffb547);
+  color: #2f1300;
 }
 </style>

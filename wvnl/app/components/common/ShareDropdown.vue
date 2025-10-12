@@ -112,32 +112,34 @@ onBeforeUnmount(() => {
   right: 0;
   top: calc(100% + 0.5rem);
   display: grid;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  border-radius: 0.75rem;
-  background: #ffffff;
+  gap: 0.35rem;
+  padding: 0.65rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 241, 246, 0.95));
   min-width: 12rem;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 28, 70, 0.18);
+  border: 1px solid rgba(0, 61, 165, 0.15);
   z-index: 100;
 }
 
 .share-dropdown__option {
   width: 100%;
   text-align: left;
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.85rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.65rem;
   background: transparent;
-  color: #0f172a;
+  color: #101828;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .share-dropdown__option:hover,
 .share-dropdown__option:focus {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1d4ed8;
+  background: rgba(0, 61, 165, 0.12);
+  color: var(--color-primary);
+  transform: translateX(2px);
 }
 
 .share-dropdown__transition-enter-active,
