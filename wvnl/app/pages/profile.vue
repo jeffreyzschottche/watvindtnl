@@ -25,11 +25,22 @@
             role="tab"
             :aria-selected="activeTab === tab.key"
             :aria-controls="`${tab.key}-panel`"
+            :aria-disabled="tab.disabled ? 'true' : 'false'"
             :tabindex="activeTab === tab.key ? 0 : -1"
-            :class="{ 'is-active': activeTab === tab.key }"
-            @click="setActiveTab(tab.key)"
+            :disabled="tab.disabled"
+            :class="{
+              'is-active': activeTab === tab.key,
+              'is-disabled': tab.disabled,
+            }"
+            @click="!tab.disabled && setActiveTab(tab.key)"
           >
             <span class="profile-tab__label">{{ tab.label }}</span>
+            <span
+              v-if="tab.disabled && tab.description"
+              class="profile-tab__status"
+            >
+              {{ tab.description }}
+            </span>
           </button>
         </nav>
 
@@ -237,6 +248,19 @@
               </div>
             </form>
           </section>
+
+          <section
+            v-else-if="activeTab === 'compass'"
+            id="compass-panel"
+            class="profile-panel"
+            role="tabpanel"
+            aria-labelledby="compass-tab"
+          >
+            <div class="profile-placeholder">
+              <h2>Politiek kompas</h2>
+              <p>Coming Soon..</p>
+            </div>
+          </section>
         </div>
       </div>
     </section>
@@ -264,14 +288,27 @@ const tabs = [
   { key: "profile", label: "Profiel" },
   { key: "votes", label: "Stemgeschiedenis" },
   { key: "security", label: "Wachtwoord" },
+  {
+    key: "compass",
+    label: "Politiek kompas",
+    disabled: true,
+    description: "Coming Soon..",
+  },
 ] as const;
 
-type TabKey = (typeof tabs)[number]["key"];
+type Tab = (typeof tabs)[number];
+type TabKey = Tab["key"];
 
 const activeTab = ref<TabKey>("profile");
 const voteHistoryRef = ref<{ refresh?: () => Promise<void> } | null>(null);
 
 function setActiveTab(tab: TabKey) {
+  const match = tabs.find((item) => item.key === tab);
+
+  if (!match || match.disabled) {
+    return;
+  }
+
   if (tab === activeTab.value) {
     if (import.meta.client && route.query.tab !== tab) {
       router.replace({ query: { ...route.query, tab } });
@@ -347,7 +384,19 @@ watch(
     }
 
     const match = tabs.find((item) => item.key === tab);
-    if (match && activeTab.value !== match.key) {
+    if (!match) {
+      return;
+    }
+
+    if (match.disabled) {
+      if (import.meta.client && route.query.tab) {
+        const { tab: _tab, ...query } = route.query;
+        router.replace({ query });
+      }
+      return;
+    }
+
+    if (activeTab.value !== match.key) {
       activeTab.value = match.key;
     }
   },
@@ -611,11 +660,36 @@ async function updatePassword() {
   gap: 0.35rem;
 }
 
-.profile-tab:is(:hover, :focus-visible) {
+.profile-tab__status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(0, 61, 165, 0.9);
+  padding: 0.125rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(0, 61, 165, 0.1);
+}
+
+.profile-tab:not(.is-disabled):is(:hover, :focus-visible) {
   border-color: black;
   box-shadow: 0 8px 18px rgba(0, 61, 165, 0.2);
   outline: none;
   transform: translateY(-1px);
+}
+
+.profile-tab.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  border-style: dashed;
+  border-color: rgba(0, 61, 165, 0.2);
+  box-shadow: none;
+  background: rgba(248, 250, 252, 0.8);
+  color: rgba(16, 24, 40, 0.6);
+  transition: none;
+}
+
+.profile-tab.is-disabled .profile-tab__status {
+  background: rgba(255, 111, 0, 0.14);
+  color: rgba(255, 111, 0, 0.9);
 }
 
 .profile-tab.is-active {
@@ -631,6 +705,29 @@ async function updatePassword() {
 
 .profile-tab.is-active .profile-tab__label {
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+.profile-placeholder {
+  border: 1px dashed rgba(0, 61, 165, 0.3);
+  border-radius: 18px;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  text-align: center;
+  background: linear-gradient(
+    140deg,
+    rgba(0, 61, 165, 0.05) 0%,
+    rgba(255, 111, 0, 0.05) 100%
+  );
+}
+
+.profile-placeholder h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+.profile-placeholder p {
+  margin: 0;
+  font-weight: 600;
+  color: rgba(16, 24, 40, 0.72);
 }
 
 .profile__content {
