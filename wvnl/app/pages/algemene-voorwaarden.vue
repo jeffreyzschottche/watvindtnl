@@ -3,8 +3,12 @@
     <section class="page-hero page-hero--terms">
       <div class="container narrow">
         <h1 class="page-hero__title">
-          <span class="page-hero__accent page-hero__accent--blue">Algemene</span>
-          <span class="page-hero__accent page-hero__accent--red">voorwaarden</span>
+          <span class="page-hero__accent page-hero__accent--blue"
+            >Algemene</span
+          >
+          <span class="page-hero__accent page-hero__accent--red"
+            >voorwaarden</span
+          >
         </h1>
         <p class="page-hero__subtitle">
           Deze algemene voorwaarden zijn van toepassing op alle diensten en
@@ -209,6 +213,6 @@
       rgba(0, 61, 165, 0.18),
       rgba(200, 16, 46, 0.22)
     ),
-    url("/images/stockvault-amsterdam146473.jpg");
+    url("/images/e-mens-yEpUny1hxoE-unsplash.jpg");
 }
 </style>

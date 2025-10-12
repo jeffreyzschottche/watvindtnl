@@ -4,7 +4,9 @@
       <div class="container narrow">
         <h1 class="page-hero__title">
           <span class="page-hero__accent page-hero__accent--blue">Privacy</span>
-          <span class="page-hero__accent page-hero__accent--red">verklaring</span>
+          <span class="page-hero__accent page-hero__accent--red"
+            >verklaring</span
+          >
         </h1>
         <p class="page-hero__subtitle">
           WDNL hecht veel waarde aan jouw privacy. We verwerken persoonsgegevens
@@ -211,6 +213,6 @@
       rgba(0, 61, 165, 0.18),
       rgba(200, 16, 46, 0.22)
     ),
-    url("/images/bicycles-street-amsterdam.jpg");
+    url("/images/martijn-baudoin-C4rDHqqmu4w-unsplash.jpg");
 }
 </style>
