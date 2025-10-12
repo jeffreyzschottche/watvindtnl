@@ -99,7 +99,9 @@ const steps = [
             bouwen we aan draagvlak en vertrouwen.
           </p>
         </div>
-        <NuxtLink to="/contact" class="button">Plan een gesprek</NuxtLink>
+        <NuxtLink to="/contact" class="button button--accent"
+          >Plan een gesprek</NuxtLink
+        >
       </div>
     </section>
   </div>
