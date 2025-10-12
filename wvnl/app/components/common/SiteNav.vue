@@ -42,7 +42,7 @@
           >
           <NuxtLink
             to="/profile"
-            class="button button-profile"
+            class="button button--accent"
             active-class="link-active"
             @click="closeMobile"
           >
@@ -53,18 +53,21 @@
           <template v-if="!isLoggedIn">
             <NuxtLink
               to="/login"
-              class="button button-secondary"
+              class="button button--accent"
               @click="closeMobile"
               >Inloggen</NuxtLink
             >
-            <NuxtLink to="/register" class="button" @click="closeMobile"
+            <NuxtLink
+              to="/register"
+              class="button button--accent"
+              @click="closeMobile"
               >Registreren</NuxtLink
             >
           </template>
           <button
             v-else
             type="button"
-            class="button button-secondary"
+            class="button button--accent"
             @click="handleLogout"
           >
             Uitloggen
