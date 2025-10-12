@@ -598,8 +598,6 @@ async function updatePassword() {
   font-weight: 700;
   font-size: 0.95rem;
   color: rgba(16, 24, 40, 0.82);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease,
-    background 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -614,7 +612,7 @@ async function updatePassword() {
 }
 
 .profile-tab:is(:hover, :focus-visible) {
-  border-color: rgba(0, 61, 165, 0.55);
+  border-color: black;
   box-shadow: 0 8px 18px rgba(0, 61, 165, 0.2);
   outline: none;
   transform: translateY(-1px);
@@ -622,7 +620,7 @@ async function updatePassword() {
 
 .profile-tab.is-active {
   color: #ffffff;
-  border-color: transparent;
+  border-color: black;
   background-image: linear-gradient(
     135deg,
     rgba(0, 61, 165, 0.95),
