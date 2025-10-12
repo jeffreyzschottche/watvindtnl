@@ -36,7 +36,7 @@ export function useIssues() {
       if (tokenId !== requestToken) {
         return;
       }
-      issues.value = data;
+      issues.value = shuffleIssues(data);
       activeIndex.value = 0;
     } catch (err: unknown) {
       if (tokenId !== requestToken) {
@@ -106,4 +106,16 @@ export function useIssues() {
     vote,
     skip,
   };
+}
+
+function shuffleIssues<T>(items: readonly T[]): T[] {
+  const shuffled = items.slice();
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [
+      shuffled[swapIndex],
+      shuffled[index],
+    ];
+  }
+  return shuffled;
 }
