@@ -19,8 +19,10 @@
 
       <div class="nav-group" :class="{ open: mobileOpen }">
         <nav id="primary-navigation" class="nav-links" aria-label="Hoofdmenu">
-          <NuxtLink to="/" exact-active-class="link-active" @click="closeMobile">Home</NuxtLink>
-          <NuxtLink to="/over-wvnl" active-class="link-active" @click="closeMobile"
+          <NuxtLink
+            to="/over-wvnl"
+            active-class="link-active"
+            @click="closeMobile"
             >Over WVNL</NuxtLink
           >
           <NuxtLink to="/issues" active-class="link-active" @click="closeMobile"
@@ -33,17 +35,10 @@
           >
             Politiek Kompas
           </NuxtLink>
-          <NuxtLink to="/privacy" active-class="link-active" @click="closeMobile"
-            >Privacy</NuxtLink
-          >
           <NuxtLink
-            to="/algemene-voorwaarden"
+            to="/contact"
             active-class="link-active"
             @click="closeMobile"
-          >
-            Voorwaarden
-          </NuxtLink>
-          <NuxtLink to="/contact" active-class="link-active" @click="closeMobile"
             >Contact</NuxtLink
           >
           <NuxtLink
@@ -57,7 +52,10 @@
         </nav>
         <div class="auth-links">
           <template v-if="!isLoggedIn">
-            <NuxtLink to="/login" class="button button-secondary" @click="closeMobile"
+            <NuxtLink
+              to="/login"
+              class="button button-secondary"
+              @click="closeMobile"
               >Inloggen</NuxtLink
             >
             <NuxtLink to="/register" class="button" @click="closeMobile"
@@ -79,36 +77,36 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useRoute, useRouter } from '#imports'
-import { useAuthStore } from '~/stores/auth'
+import { ref, watch } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute, useRouter } from "#imports";
+import { useAuthStore } from "~/stores/auth";
 
-const mobileOpen = ref(false)
+const mobileOpen = ref(false);
 
 const toggleMobile = () => {
-  mobileOpen.value = !mobileOpen.value
-}
+  mobileOpen.value = !mobileOpen.value;
+};
 
 const closeMobile = () => {
-  mobileOpen.value = false
-}
+  mobileOpen.value = false;
+};
 
-const route = useRoute()
-const router = useRouter()
-const authStore = useAuthStore()
-const { isLoggedIn } = storeToRefs(authStore)
+const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
+const { isLoggedIn } = storeToRefs(authStore);
 
 const handleLogout = () => {
-  authStore.logout()
-  closeMobile()
-  router.push('/')
-}
+  authStore.logout();
+  closeMobile();
+  router.push("/");
+};
 
 watch(
   () => route.fullPath,
   () => {
-    mobileOpen.value = false
+    mobileOpen.value = false;
   }
-)
+);
 </script>
