@@ -7,7 +7,8 @@
           <span class="page-hero__accent page-hero__accent--red">profiel</span>
         </h1>
         <p class="page-hero__subtitle">
-          Beheer je gegevens, blader door je stemgeschiedenis en houd je wachtwoord up-to-date.
+          Beheer je gegevens, blader door je stemgeschiedenis en houd je
+          wachtwoord up-to-date.
         </p>
       </div>
     </section>
@@ -40,26 +41,48 @@
             role="tabpanel"
             aria-labelledby="profile-tab"
           >
-            <form class="form form-card profile-form" @submit.prevent="saveProfile">
+            <form
+              class="form form-card profile-form"
+              @submit.prevent="saveProfile"
+            >
               <header class="form-header">
                 <h2>Persoonlijke gegevens</h2>
-                <p>Werk je profielgegevens bij zodat we je beter kunnen leren kennen.</p>
+                <p>
+                  Werk je profielgegevens bij zodat we je beter kunnen leren
+                  kennen.
+                </p>
               </header>
 
-              <p v-if="profileError" class="alert alert--error">{{ profileError }}</p>
-              <p v-if="profileMessage" class="alert alert--success">{{ profileMessage }}</p>
-              <p v-if="loadingProfile" class="profile-loading">Profiel wordt geladen...</p>
+              <p v-if="profileError" class="alert alert--error">
+                {{ profileError }}
+              </p>
+              <p v-if="profileMessage" class="alert alert--success">
+                {{ profileMessage }}
+              </p>
+              <p v-if="loadingProfile" class="profile-loading">
+                Profiel wordt geladen...
+              </p>
 
               <template v-else>
                 <fieldset class="form-fieldset">
                   <legend>Contact</legend>
                   <label>
                     <span>Naam</span>
-                    <input v-model="profileForm.name" type="text" autocomplete="name" required />
+                    <input
+                      v-model="profileForm.name"
+                      type="text"
+                      autocomplete="name"
+                      required
+                    />
                   </label>
                   <label>
                     <span>E-mailadres</span>
-                    <input v-model="profileForm.email" type="email" autocomplete="email" required />
+                    <input
+                      v-model="profileForm.email"
+                      type="email"
+                      autocomplete="email"
+                      required
+                    />
                   </label>
                   <label>
                     <span>Taal</span>
@@ -76,7 +99,13 @@
                     <span>Leeftijdscategorie</span>
                     <select v-model="profileForm.age_category">
                       <option value="">Selecteer</option>
-                      <option v-for="age in ageCategories" :key="age" :value="age">{{ age }}</option>
+                      <option
+                        v-for="age in ageCategories"
+                        :key="age"
+                        :value="age"
+                      >
+                        {{ age }}
+                      </option>
                     </select>
                   </label>
                   <label>
@@ -119,7 +148,11 @@
                 </fieldset>
 
                 <div class="form-actions">
-                  <button class="button" type="submit" :disabled="savingProfile">
+                  <button
+                    class="button"
+                    type="submit"
+                    :disabled="savingProfile"
+                  >
                     {{ savingProfile ? "Opslaan..." : "Profiel opslaan" }}
                   </button>
                 </div>
@@ -144,14 +177,24 @@
             role="tabpanel"
             aria-labelledby="security-tab"
           >
-            <form class="form form-card profile-form" @submit.prevent="updatePassword">
+            <form
+              class="form form-card profile-form"
+              @submit.prevent="updatePassword"
+            >
               <header class="form-header">
                 <h2>Wachtwoord wijzigen</h2>
-                <p>Verifieer je huidige wachtwoord en kies vervolgens een nieuw wachtwoord.</p>
+                <p>
+                  Verifieer je huidige wachtwoord en kies vervolgens een nieuw
+                  wachtwoord.
+                </p>
               </header>
 
-              <p v-if="passwordError" class="alert alert--error">{{ passwordError }}</p>
-              <p v-if="passwordMessage" class="alert alert--success">{{ passwordMessage }}</p>
+              <p v-if="passwordError" class="alert alert--error">
+                {{ passwordError }}
+              </p>
+              <p v-if="passwordMessage" class="alert alert--success">
+                {{ passwordMessage }}
+              </p>
 
               <fieldset class="form-fieldset">
                 <legend>Beveiliging</legend>
@@ -398,7 +441,10 @@ async function updatePassword() {
   passwordMessage.value = null;
   passwordError.value = null;
 
-  if (!passwordForm.current_password || passwordForm.current_password.length < 8) {
+  if (
+    !passwordForm.current_password ||
+    passwordForm.current_password.length < 8
+  ) {
     passwordError.value = "Vul je huidige wachtwoord (minimaal 8 tekens) in.";
     return;
   }
@@ -434,12 +480,15 @@ async function updatePassword() {
     savingPassword.value = false;
   }
 }
-
 </script>
 
 <style scoped>
 .page-hero--profile {
-  background-image: linear-gradient(135deg, rgba(0, 61, 165, 0.12), rgba(200, 16, 46, 0.2)),
+  background-image: linear-gradient(
+      135deg,
+      rgba(0, 61, 165, 0.12),
+      rgba(200, 16, 46, 0.2)
+    ),
     url("/images/stockvault-cheese147191.jpg");
   background-size: cover;
   background-position: center;
@@ -471,7 +520,11 @@ async function updatePassword() {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.35) 100%);
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
   z-index: -1;
 }
 
@@ -532,8 +585,8 @@ async function updatePassword() {
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 1.25rem clamp(1rem, 3vw, 2rem) 1rem;
-  background: linear-gradient(90deg, rgba(0, 61, 165, 0.12), rgba(200, 16, 46, 0.12));
   border-bottom: 1px solid rgba(0, 61, 165, 0.16);
+  margin-top: 4.5em;
 }
 
 .profile-tab {
@@ -545,8 +598,8 @@ async function updatePassword() {
   font-weight: 700;
   font-size: 0.95rem;
   color: rgba(16, 24, 40, 0.82);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, background 0.2s ease,
-    border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease,
+    background 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -570,7 +623,11 @@ async function updatePassword() {
 .profile-tab.is-active {
   color: #ffffff;
   border-color: transparent;
-  background-image: linear-gradient(135deg, rgba(0, 61, 165, 0.95), rgba(200, 16, 46, 0.95));
+  background-image: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.95),
+    rgba(200, 16, 46, 0.95)
+  );
   box-shadow: 0 12px 24px rgba(0, 61, 165, 0.28);
 }
 
