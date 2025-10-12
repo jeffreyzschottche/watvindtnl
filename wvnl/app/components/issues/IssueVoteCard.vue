@@ -110,8 +110,8 @@
         </ul>
       </template>
     </section>
-    <IssuePartyStances :stances="issue.party_stances" />
     <IssueArgumentsList :groups="issue.arguments" />
+    <IssuePartyStances :stances="issue.party_stances" />
   </article>
 </template>
 
