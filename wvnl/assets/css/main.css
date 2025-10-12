@@ -515,15 +515,16 @@ a:focus {
     linear-gradient(135deg, #003da5 50%, transparent 50%),
     linear-gradient(to right, #ffffff, #ffffff);
   background-position: calc(100% - 20px) calc(50% + 2px),
-    calc(100% - 14px) calc(50% + 2px),
-    calc(100% - 2.5rem) 50%;
+    calc(100% - 14px) calc(50% + 2px), calc(100% - 2.5rem) 50%;
   background-size: 6px 6px, 6px 6px, 1px 55%;
   background-repeat: no-repeat;
 }
 
 .form-card {
   max-width: 640px;
-  margin: -2.5rem auto 0;
+  margin-top: 2.5em;
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
 }
 
@@ -531,7 +532,11 @@ a:focus {
   content: "";
   position: absolute;
   inset: -18px;
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.08), rgba(200, 16, 46, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.08),
+    rgba(200, 16, 46, 0.1)
+  );
   border-radius: calc(var(--border-radius) + 18px);
   z-index: -1;
   filter: blur(0);
@@ -640,7 +645,7 @@ a:focus {
 
 @media (max-width: 720px) {
   .form-card {
-    margin-top: -2rem;
+    margin-top: 2.5rem;
   }
 
   .form-card::before {
