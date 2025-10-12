@@ -31,10 +31,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import {
-  REPORT_REASON_OPTIONS,
-  type ReportReason,
-} from "~/types/reports";
+import { REPORT_REASON_OPTIONS, type ReportReason } from "~/types/reports";
 
 const props = withDefaults(
   defineProps<{
@@ -83,16 +80,13 @@ async function handleSelect(reason: ReportReason) {
     open.value = false;
   } catch (error) {
     const message =
-      error instanceof Error
-        ? error.message
-        : props.errorMessage ?? "";
+      error instanceof Error ? error.message : props.errorMessage ?? "";
 
     feedback.value = {
       type: "error",
-      message:
-        message.includes("Unauthenticated")
-          ? "Log in om te rapporteren."
-          : message || props.errorMessage,
+      message: message.includes("Unauthenticated")
+        ? "Log in om te rapporteren."
+        : message || props.errorMessage,
     };
   } finally {
     loading.value = false;
@@ -109,7 +103,11 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__trigger {
   border: 1px solid rgba(0, 61, 165, 0.3);
-  background: linear-gradient(120deg, rgba(0, 61, 165, 0.08), rgba(0, 61, 165, 0.18));
+  background: linear-gradient(
+    120deg,
+    rgba(0, 61, 165, 0.08),
+    rgba(0, 61, 165, 0.18)
+  );
   color: var(--color-primary);
   border-radius: 9999px;
   font-size: 0.85rem;
@@ -119,6 +117,8 @@ async function handleSelect(reason: ReportReason) {
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease,
     box-shadow 0.2s ease;
   box-shadow: 0 8px 20px rgba(0, 61, 165, 0.18);
+  max-width: 125px;
+  text-align: center;
 }
 
 .report-menu--sm .report-menu__trigger {
@@ -133,10 +133,8 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__trigger:not(:disabled):hover,
 .report-menu__trigger:not(:disabled):focus-visible {
-  background: linear-gradient(120deg, rgba(0, 61, 165, 0.18), rgba(200, 16, 46, 0.12));
   color: var(--color-primary);
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(200, 16, 46, 0.2);
 }
 
 .report-menu__panel {
@@ -146,7 +144,11 @@ async function handleSelect(reason: ReportReason) {
   margin-top: 0.5rem;
   width: min(320px, 90vw);
   border-radius: 1rem;
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.98), rgba(238, 241, 246, 0.95));
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(238, 241, 246, 0.95)
+  );
   box-shadow: 0 18px 40px rgba(0, 28, 70, 0.18);
   padding: 1.1rem;
   border: 1px solid rgba(0, 61, 165, 0.12);
@@ -180,7 +182,6 @@ async function handleSelect(reason: ReportReason) {
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease,
     color 0.2s ease, transform 0.2s ease;
-  box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .report-menu__option:disabled {
