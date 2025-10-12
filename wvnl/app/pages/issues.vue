@@ -37,7 +37,10 @@
         {{ error }}
       </p>
 
-      <div v-else class="issues-page__state issues-page__state--success">
+      <div
+        v-else-if="!activeIssue"
+        class="issues-page__state issues-page__state--success"
+      >
         <h2>Je bent helemaal bij!</h2>
         <p>Er staan momenteel geen onbeantwoorde kwesties voor je klaar.</p>
         <button type="button" class="issues-page__retry" @click="loadPending">
@@ -216,7 +219,9 @@ async function loadIssueForModal(id: number) {
   } catch (err: unknown) {
     modalIssue.value = null;
     modalError.value =
-      err instanceof Error ? err.message : "De kwestie kon niet geladen worden.";
+      err instanceof Error
+        ? err.message
+        : "De kwestie kon niet geladen worden.";
   } finally {
     modalLoading.value = false;
   }
@@ -238,7 +243,10 @@ function retryModal() {
   }
 }
 
-async function handleShare(issue: IssueWithArguments | null, platform: SharePlatform) {
+async function handleShare(
+  issue: IssueWithArguments | null,
+  platform: SharePlatform
+) {
   if (!issue) return;
 
   await shareIssue(issue, { path: route.path, platform });
@@ -304,7 +312,11 @@ function applyUserVote(
   text-align: center;
   padding: 2rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(238, 241, 246, 0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(238, 241, 246, 0.9)
+  );
   box-shadow: 0 18px 36px rgba(0, 28, 70, 0.12);
   color: #101828;
   border: 1px solid rgba(0, 61, 165, 0.12);
@@ -330,7 +342,11 @@ function applyUserVote(
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(130deg, var(--color-accent), var(--color-primary));
+  background: linear-gradient(
+    130deg,
+    var(--color-accent),
+    var(--color-primary)
+  );
   color: white;
   font-weight: 700;
   cursor: pointer;
