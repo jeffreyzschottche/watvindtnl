@@ -110,36 +110,41 @@ onBeforeUnmount(() => {
 .share-dropdown__menu {
   position: absolute;
   right: 0;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 0.6rem);
   display: grid;
-  gap: 0.35rem;
-  padding: 0.65rem;
-  border-radius: 0.9rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 241, 246, 0.95));
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: linear-gradient(155deg, rgba(0, 61, 165, 0.1), rgba(255, 255, 255, 0.98));
   min-width: 12rem;
-  box-shadow: 0 20px 40px rgba(0, 28, 70, 0.18);
-  border: 1px solid rgba(0, 61, 165, 0.15);
+  box-shadow: 0 22px 48px rgba(0, 28, 70, 0.2);
+  border: 1px solid rgba(0, 61, 165, 0.2);
+  backdrop-filter: blur(6px);
   z-index: 100;
 }
 
 .share-dropdown__option {
   width: 100%;
   text-align: left;
-  padding: 0.55rem 0.85rem;
+  padding: 0.6rem 0.9rem;
   border: none;
-  border-radius: 0.65rem;
-  background: transparent;
-  color: #101828;
+  border-radius: 0.7rem;
+  background: rgba(255, 255, 255, 0.65);
+  color: #0f172a;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .share-dropdown__option:hover,
 .share-dropdown__option:focus {
-  background: rgba(0, 61, 165, 0.12);
+  background: linear-gradient(135deg, rgba(0, 61, 165, 0.18), rgba(0, 61, 165, 0.05));
   color: var(--color-primary);
   transform: translateX(2px);
+  box-shadow: inset 0 0 0 1px rgba(0, 61, 165, 0.35);
 }
 
 .share-dropdown__transition-enter-active,

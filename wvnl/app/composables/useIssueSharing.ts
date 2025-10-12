@@ -21,9 +21,6 @@ export interface ShareIssueOptions {
   platform?: SharePlatform;
 }
 
-const SHARE_IMAGE_URL =
-  "https://via.placeholder.com/1200x630.png?text=Wat+vind+jij%3F";
-
 export function useIssueSharing() {
   const router = useRouter();
   const route = useRoute();
@@ -41,9 +38,8 @@ export function useIssueSharing() {
     const platform = options.platform ?? "clipboard";
 
     if (platform !== "clipboard") {
-      const messageWithImage = `${message}\n${SHARE_IMAGE_URL}`;
       const opened = openShareTarget(platform, {
-        message: messageWithImage,
+        message,
         link,
       });
 
@@ -56,7 +52,7 @@ export function useIssueSharing() {
       }
 
       const fallbackCopied = await copyWithFeedback(
-        messageWithImage,
+        message,
         "We konden geen directe deling openen. De tekst is naar het klembord gekopieerd.",
         notifications,
         "info"
@@ -183,9 +179,7 @@ export function useIssueSharing() {
 
     switch (platform) {
       case "facebook":
-        return `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${encodedMessage}&picture=${encodeURIComponent(
-          SHARE_IMAGE_URL
-        )}`;
+        return `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${encodedMessage}`;
       case "twitter":
         return `https://twitter.com/intent/tweet?text=${encodedMessage}`;
       case "whatsapp":
