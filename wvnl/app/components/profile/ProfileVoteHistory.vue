@@ -1,21 +1,20 @@
 <template>
-  <section class="space-y-4">
-    <header class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+  <section class="vote-history">
+    <header class="vote-history__header">
       <div>
-        <h2 class="text-2xl font-semibold">Stemgeschiedenis</h2>
-        <p class="text-gray-600">Bekijk op welke issues je hebt gestemd.</p>
+        <h2>Stemgeschiedenis</h2>
+        <p>Bekijk op welke issues je hebt gestemd.</p>
       </div>
-      <div class="relative w-full md:w-64">
+      <div class="vote-history__search">
         <label class="sr-only" for="vote-history-search">Zoek in stemgeschiedenis</label>
         <input
           id="vote-history-search"
           v-model="searchQuery"
           type="search"
-          class="w-full rounded border border-gray-300 px-3 py-2 pl-10 text-sm focus:border-black focus:outline-none"
           placeholder="Zoek op titel of beschrijving"
         />
         <svg
-          class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -31,9 +30,9 @@
       </div>
     </header>
 
-    <p v-if="loading" class="text-gray-500">Bezig met laden...</p>
-    <p v-else-if="error" class="text-red-600">{{ error }}</p>
-    <p v-else-if="filteredItems.length === 0" class="text-gray-500">
+    <p v-if="loading" class="vote-history__status">Bezig met laden...</p>
+    <p v-else-if="error" class="vote-history__status vote-history__status--error">{{ error }}</p>
+    <p v-else-if="filteredItems.length === 0" class="vote-history__status">
       <template v-if="searchQuery.trim().length">
         Geen stemmen gevonden voor "{{ searchQuery }}".
       </template>
@@ -41,50 +40,30 @@
     </p>
 
     <template v-else>
-      <ul class="space-y-3">
-        <li
-          v-for="item in paginatedItems"
-          :key="item.id"
-          class="flex flex-col gap-2 rounded border border-gray-200 p-4 shadow-sm md:flex-row md:items-center md:justify-between"
-        >
-          <div>
-            <p class="font-medium">{{ item.title }}</p>
-            <p v-if="item.description" class="mt-1 text-sm text-gray-600">
-              {{ item.description }}
-            </p>
+      <ul class="vote-history__list">
+        <li v-for="item in paginatedItems" :key="item.id" class="vote-card">
+          <div class="vote-card__details">
+            <p class="vote-card__title">{{ item.title }}</p>
+            <p v-if="item.description" class="vote-card__description">{{ item.description }}</p>
           </div>
-          <div class="flex flex-col items-start gap-2 md:flex-row md:items-center">
-            <span
-              class="inline-flex w-fit items-center rounded-full px-3 py-1 text-sm font-semibold"
-              :class="voteClass(item.vote)"
-            >
+          <div class="vote-card__actions">
+            <span class="vote-chip" :class="voteClass(item.vote)">
               {{ voteLabel(item.vote) }}
             </span>
-            <ShareDropdown
-              trigger-class="inline-flex items-center gap-2 rounded-full border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900"
-              @select="(platform) => share(item, platform)"
-            />
+            <ShareDropdown trigger-class="share-button" @select="(platform) => share(item, platform)" />
           </div>
         </li>
       </ul>
 
-      <div
-        v-if="totalPages > 1"
-        class="flex flex-col items-center gap-3 border-t border-gray-100 pt-4 text-sm text-gray-600 md:flex-row md:justify-between"
-      >
+      <div v-if="totalPages > 1" class="vote-pagination">
         <span>Pagina {{ currentPage }} van {{ totalPages }}</span>
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            class="inline-flex items-center rounded border border-gray-300 px-3 py-1 font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
-            :disabled="currentPage === 1"
-            @click="goToPreviousPage"
-          >
+        <div class="vote-pagination__controls">
+          <button type="button" class="button button--outline" :disabled="currentPage === 1" @click="goToPreviousPage">
             Vorige
           </button>
           <button
             type="button"
-            class="inline-flex items-center rounded border border-gray-300 px-3 py-1 font-medium text-gray-700 transition hover:border-gray-400 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+            class="button button--outline"
             :disabled="currentPage === totalPages"
             @click="goToNextPage"
           >
@@ -206,11 +185,11 @@ function voteLabel(vote: IssueVoteOption) {
 function voteClass(vote: IssueVoteOption) {
   switch (vote) {
     case "agree":
-      return "bg-green-100 text-green-800";
+      return "vote-chip--agree";
     case "disagree":
-      return "bg-red-100 text-red-800";
+      return "vote-chip--disagree";
     default:
-      return "bg-yellow-100 text-yellow-800";
+      return "vote-chip--neutral";
   }
 }
 
@@ -235,3 +214,202 @@ async function share(item: UserVoteHistoryItem, platform: SharePlatform) {
 
 defineExpose({ refresh: loadHistory });
 </script>
+
+<style scoped>
+.vote-history {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.vote-history__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.vote-history__header h2 {
+  margin: 0;
+  font-size: 1.85rem;
+  color: var(--color-primary);
+}
+
+.vote-history__header p {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.vote-history__search {
+  position: relative;
+  width: min(280px, 100%);
+}
+
+.vote-history__search input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 61, 165, 0.25);
+  background: #ffffff;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  box-shadow: inset 0 1px 4px rgba(0, 29, 72, 0.05);
+}
+
+.vote-history__search input:focus {
+  outline: 3px solid rgba(0, 61, 165, 0.28);
+  border-color: var(--color-primary);
+}
+
+.vote-history__search svg {
+  position: absolute;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  width: 1.1rem;
+  height: 1.1rem;
+  color: rgba(16, 24, 40, 0.55);
+}
+
+.vote-history__status {
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.vote-history__status--error {
+  color: var(--color-accent);
+}
+
+.vote-history__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.vote-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: calc(var(--border-radius) - 2px);
+  background: linear-gradient(135deg, rgba(0, 61, 165, 0.04), rgba(200, 16, 46, 0.04));
+  border: 1px solid rgba(0, 61, 165, 0.12);
+  box-shadow: 0 10px 25px rgba(0, 27, 70, 0.08);
+}
+
+.vote-card__details {
+  flex: 1 1 220px;
+}
+
+.vote-card__title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text);
+  font-size: 1.05rem;
+}
+
+.vote-card__description {
+  margin: 0.4rem 0 0;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.vote-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vote-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.vote-chip--agree {
+  background: rgba(6, 152, 98, 0.15);
+  color: #04724d;
+}
+
+.vote-chip--disagree {
+  background: rgba(200, 16, 46, 0.12);
+  color: var(--color-accent);
+}
+
+.vote-chip--neutral {
+  background: rgba(255, 155, 0, 0.2);
+  color: #8a4b00;
+}
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 61, 165, 0.24);
+  background: #ffffff;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.share-button:hover,
+.share-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0, 61, 165, 0.18);
+  outline: none;
+}
+
+.vote-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 61, 165, 0.12);
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.vote-pagination__controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.button--outline {
+  background: #ffffff;
+  border: 2px solid rgba(0, 61, 165, 0.35);
+  color: var(--color-primary);
+  padding-inline: 1.4rem;
+}
+
+.button--outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .vote-history__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .vote-card {
+    padding: 1rem 1.25rem;
+  }
+}
+</style>

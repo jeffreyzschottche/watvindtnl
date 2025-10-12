@@ -1,234 +1,182 @@
 <template>
-  <div class="mx-auto max-w-4xl space-y-10 p-6" v-if="isLoggedIn">
-    <section class="space-y-4">
-      <header class="space-y-2">
-        <h1 class="text-3xl font-semibold">Jouw profiel</h1>
-        <p class="text-gray-600">Beheer je gegevens en bekijk je stemgedrag.</p>
-      </header>
+  <div class="page" v-if="isLoggedIn">
+    <section class="page-hero page-hero--profile">
+      <div class="container narrow">
+        <h1 class="page-hero__title">
+          <span class="page-hero__accent page-hero__accent--blue">Mijn</span>
+          <span class="page-hero__accent page-hero__accent--red">profiel</span>
+        </h1>
+        <p class="page-hero__subtitle">
+          Beheer je gegevens, blader door je stemgeschiedenis en houd je wachtwoord up-to-date.
+        </p>
+      </div>
     </section>
 
-    <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
-      <nav class="flex flex-col gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-600 sm:flex-row">
-        <button
-          v-for="tab in tabs"
-          :key="tab.key"
-          type="button"
-          class="rounded px-3 py-2 transition"
-          :class="
-            activeTab === tab.key
-              ? 'bg-white text-black shadow-sm'
-              : 'text-gray-500 hover:text-black'
-          "
-          @click="activeTab = tab.key"
-        >
-          {{ tab.label }}
-        </button>
-      </nav>
-
-      <div class="space-y-8 p-6">
-        <section v-if="activeTab === 'profile'" class="space-y-6">
-          <header class="space-y-2">
-            <h2 class="text-2xl font-semibold">Persoonlijke gegevens</h2>
-            <p class="text-gray-600">Werk je profielgegevens bij.</p>
-          </header>
-
-          <div v-if="profileError" class="rounded border border-red-200 bg-red-50 p-4 text-red-700">
-            {{ profileError }}
-          </div>
-          <div v-if="profileMessage" class="rounded border border-green-200 bg-green-50 p-4 text-green-700">
-            {{ profileMessage }}
-          </div>
-
-          <p v-if="loadingProfile" class="text-gray-500">Profiel wordt geladen...</p>
-          <form v-else class="grid gap-6 md:grid-cols-2" @submit.prevent="saveProfile">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700">Naam</label>
-              <input
-                v-model="profileForm.name"
-                type="text"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-                required
-              />
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700">E-mailadres</label>
-              <input
-                v-model="profileForm.email"
-                type="email"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-                required
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Taal</label>
-              <select
-                v-model="profileForm.language"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-              >
-                <option value="nl">Nederlands</option>
-                <option value="en">Engels</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Leeftijdscategorie</label
-              >
-              <select
-                v-model="profileForm.age_category"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-              >
-                <option value="">Selecteer</option>
-                <option v-for="age in ageCategories" :key="age" :value="age">
-                  {{ age }}
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Provincie</label>
-              <input
-                v-model="profileForm.province"
-                type="text"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-                placeholder="Bijv. Noord-Holland"
-              />
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Gender</label>
-              <select
-                v-model="profileForm.gender"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-              >
-                <option value="male">Man</option>
-                <option value="female">Vrouw</option>
-                <option value="unspecified">Niet opgegeven</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Opleidingsniveau</label>
-              <select
-                v-model="profileForm.education_level"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-              >
-                <option value="">Selecteer</option>
-                <option value="mbo">MBO</option>
-                <option value="hbo">HBO</option>
-                <option value="universiteit">Universiteit</option>
-                <option value="overig">Overig</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Politieke voorkeur</label>
-              <select
-                v-model="profileForm.political_preference"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-              >
-                <option value="">Selecteer</option>
-                <option value="links">Links</option>
-                <option value="midden">Midden</option>
-                <option value="rechts">Rechts</option>
-                <option value="geen">Geen voorkeur</option>
-              </select>
-            </div>
-
-            <div class="md:col-span-2 flex justify-end">
-              <button
-                type="submit"
-                class="inline-flex items-center rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-                :disabled="savingProfile || loadingProfile"
-              >
-                {{ savingProfile ? "Opslaan..." : "Profiel opslaan" }}
-              </button>
-            </div>
-          </form>
-        </section>
-
-        <section v-else-if="activeTab === 'votes'" class="space-y-6">
-          <ProfileVoteHistory />
-        </section>
-
-        <!--
-          Premium lidmaatschap-tab tijdelijk verwijderd op verzoek. Kan opnieuw geactiveerd worden
-          door deze sectie terug te plaatsen.
-        -->
-
-        <section v-else-if="activeTab === 'security'" class="space-y-6">
-          <header class="space-y-2">
-            <h2 class="text-2xl font-semibold">Wachtwoord wijzigen</h2>
-            <p class="text-gray-600">
-              Verifieer je huidige wachtwoord en kies vervolgens een nieuw wachtwoord om je wijzigingen
-              op te slaan.
-            </p>
-          </header>
-
-          <div v-if="passwordError" class="rounded border border-red-200 bg-red-50 p-4 text-red-700">
-            {{ passwordError }}
-          </div>
-          <div
-            v-if="passwordMessage"
-            class="rounded border border-green-200 bg-green-50 p-4 text-green-700"
+    <section class="container narrow profile">
+      <div class="profile__card">
+        <nav class="profile-tabs" role="tablist" aria-label="Profielnavigatie">
+          <button
+            v-for="tab in tabs"
+            :key="tab.key"
+            type="button"
+            class="profile-tab"
+            :class="{ 'is-active': activeTab === tab.key }"
+            @click="activeTab = tab.key"
           >
-            {{ passwordMessage }}
-          </div>
+            {{ tab.label }}
+          </button>
+        </nav>
 
-          <form class="grid gap-6 md:grid-cols-2" @submit.prevent="updatePassword">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700">Huidig wachtwoord</label>
-              <input
-                v-model="passwordForm.current_password"
-                type="password"
-                minlength="8"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-                required
-              />
-            </div>
+        <div class="profile__content">
+          <section v-if="activeTab === 'profile'" class="profile-panel">
+            <form class="form form-card profile-form" @submit.prevent="saveProfile">
+              <header class="form-header">
+                <h2>Persoonlijke gegevens</h2>
+                <p>Werk je profielgegevens bij zodat we je beter kunnen leren kennen.</p>
+              </header>
 
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700">Nieuw wachtwoord</label>
-              <input
-                v-model="passwordForm.password"
-                type="password"
-                minlength="8"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-                required
-              />
-            </div>
+              <p v-if="profileError" class="alert alert--error">{{ profileError }}</p>
+              <p v-if="profileMessage" class="alert alert--success">{{ profileMessage }}</p>
+              <p v-if="loadingProfile" class="profile-loading">Profiel wordt geladen...</p>
 
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700"
-                >Bevestig nieuw wachtwoord</label
-              >
-              <input
-                v-model="passwordForm.password_confirmation"
-                type="password"
-                minlength="8"
-                class="mt-1 w-full rounded border border-gray-300 px-3 py-2 focus:border-black focus:outline-none"
-                required
-              />
-            </div>
+              <template v-else>
+                <fieldset class="form-fieldset">
+                  <legend>Contact</legend>
+                  <label>
+                    <span>Naam</span>
+                    <input v-model="profileForm.name" type="text" autocomplete="name" required />
+                  </label>
+                  <label>
+                    <span>E-mailadres</span>
+                    <input v-model="profileForm.email" type="email" autocomplete="email" required />
+                  </label>
+                  <label>
+                    <span>Taal</span>
+                    <select v-model="profileForm.language">
+                      <option value="nl">Nederlands</option>
+                      <option value="en">Engels</option>
+                    </select>
+                  </label>
+                </fieldset>
 
-            <div class="md:col-span-2 flex justify-end">
-              <button
-                type="submit"
-                class="inline-flex items-center rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-                :disabled="savingPassword"
-              >
-                {{ savingPassword ? "Bijwerken..." : "Wachtwoord opslaan" }}
-              </button>
-            </div>
-          </form>
-        </section>
+                <fieldset class="form-fieldset">
+                  <legend>Profielinformatie</legend>
+                  <label>
+                    <span>Leeftijdscategorie</span>
+                    <select v-model="profileForm.age_category">
+                      <option value="">Selecteer</option>
+                      <option v-for="age in ageCategories" :key="age" :value="age">{{ age }}</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Provincie</span>
+                    <input
+                      v-model="profileForm.province"
+                      type="text"
+                      placeholder="Bijv. Noord-Holland"
+                      autocomplete="address-level1"
+                    />
+                  </label>
+                  <label>
+                    <span>Gender</span>
+                    <select v-model="profileForm.gender">
+                      <option value="male">Man</option>
+                      <option value="female">Vrouw</option>
+                      <option value="unspecified">Niet opgegeven</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Opleidingsniveau</span>
+                    <select v-model="profileForm.education_level">
+                      <option value="">Selecteer</option>
+                      <option value="mbo">MBO</option>
+                      <option value="hbo">HBO</option>
+                      <option value="universiteit">Universiteit</option>
+                      <option value="overig">Overig</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Politieke voorkeur</span>
+                    <select v-model="profileForm.political_preference">
+                      <option value="">Selecteer</option>
+                      <option value="links">Links</option>
+                      <option value="midden">Midden</option>
+                      <option value="rechts">Rechts</option>
+                      <option value="geen">Geen voorkeur</option>
+                    </select>
+                  </label>
+                </fieldset>
+
+                <div class="form-actions">
+                  <button class="button" type="submit" :disabled="savingProfile">
+                    {{ savingProfile ? "Opslaan..." : "Profiel opslaan" }}
+                  </button>
+                </div>
+              </template>
+            </form>
+          </section>
+
+          <section v-else-if="activeTab === 'votes'" class="profile-panel">
+            <ProfileVoteHistory />
+          </section>
+
+          <section v-else-if="activeTab === 'security'" class="profile-panel">
+            <form class="form form-card profile-form" @submit.prevent="updatePassword">
+              <header class="form-header">
+                <h2>Wachtwoord wijzigen</h2>
+                <p>Verifieer je huidige wachtwoord en kies vervolgens een nieuw wachtwoord.</p>
+              </header>
+
+              <p v-if="passwordError" class="alert alert--error">{{ passwordError }}</p>
+              <p v-if="passwordMessage" class="alert alert--success">{{ passwordMessage }}</p>
+
+              <fieldset class="form-fieldset">
+                <legend>Beveiliging</legend>
+                <label>
+                  <span>Huidig wachtwoord</span>
+                  <input
+                    v-model="passwordForm.current_password"
+                    type="password"
+                    minlength="8"
+                    autocomplete="current-password"
+                    required
+                  />
+                </label>
+                <label>
+                  <span>Nieuw wachtwoord</span>
+                  <input
+                    v-model="passwordForm.password"
+                    type="password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                  />
+                </label>
+                <label>
+                  <span>Bevestig nieuw wachtwoord</span>
+                  <input
+                    v-model="passwordForm.password_confirmation"
+                    type="password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                  />
+                </label>
+              </fieldset>
+
+              <div class="form-actions">
+                <button class="button" type="submit" :disabled="savingPassword">
+                  {{ savingPassword ? "Bijwerken..." : "Wachtwoord opslaan" }}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 
-  <div v-else class="flex min-h-[60vh] items-center justify-center p-6 text-gray-500">
+  <div v-else class="profile-redirect">
     Je wordt doorgestuurd naar de inlogpagina...
   </div>
 </template>
@@ -421,3 +369,198 @@ async function updatePassword() {
 }
 
 </script>
+
+<style scoped>
+.page-hero--profile {
+  background-image: linear-gradient(135deg, rgba(0, 61, 165, 0.12), rgba(200, 16, 46, 0.2)),
+    url("/images/stockvault-cheese147191.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  min-height: min(48vh, 420px);
+  position: relative;
+  isolation: isolate;
+  padding: 0;
+}
+
+.page-hero--profile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.2) 45%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: -2;
+}
+
+.page-hero--profile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.35) 100%);
+  z-index: -1;
+}
+
+.page-hero--profile .container {
+  position: relative;
+  z-index: 1;
+  padding-inline: 1.25rem;
+}
+
+.page-hero__title {
+  margin: 0;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  display: flex;
+  gap: 0.65rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.page-hero__accent {
+  display: inline-block;
+  padding: 0.1rem 0.35rem;
+  border-radius: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.page-hero__accent--blue {
+  background: rgba(0, 61, 165, 0.92);
+}
+
+.page-hero__accent--red {
+  background: rgba(200, 16, 46, 0.92);
+}
+
+.page-hero__subtitle {
+  margin: 0.75rem auto 0;
+  max-width: 58ch;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.profile {
+  margin-top: -4rem;
+  padding-bottom: 4rem;
+}
+
+.profile__card {
+  background: var(--color-surface);
+  border-radius: calc(var(--border-radius) + 4px);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(0, 61, 165, 0.12);
+  overflow: hidden;
+}
+
+.profile-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0;
+  background: linear-gradient(90deg, rgba(0, 61, 165, 0.12), rgba(200, 16, 46, 0.12));
+  border-bottom: 1px solid rgba(0, 61, 165, 0.16);
+}
+
+.profile-tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 1rem 1.25rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgba(16, 24, 40, 0.75);
+  transition: background 0.2s ease, color 0.2s ease;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.profile-tab:is(:hover, :focus-visible) {
+  background: rgba(0, 61, 165, 0.08);
+  color: var(--color-primary);
+  outline: none;
+}
+
+.profile-tab.is-active {
+  color: var(--color-accent);
+  background: #ffffff;
+  border-bottom-color: var(--color-accent);
+  box-shadow: inset 0 -4px 0 rgba(200, 16, 46, 0.15);
+}
+
+.profile__content {
+  padding: 2.5rem clamp(1.5rem, 4vw, 3rem);
+}
+
+.profile-panel {
+  display: block;
+}
+
+.profile-form {
+  margin: 0 auto;
+}
+
+.profile-loading {
+  margin: 1rem 0 0;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.alert {
+  margin: 0;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.alert + .alert {
+  margin-top: 0.75rem;
+}
+
+.alert--error {
+  background: rgba(200, 16, 46, 0.08);
+  border: 1px solid rgba(200, 16, 46, 0.35);
+  color: var(--color-accent);
+}
+
+.alert--success {
+  background: rgba(0, 148, 94, 0.08);
+  border: 1px solid rgba(0, 148, 94, 0.35);
+  color: #087443;
+}
+
+.profile-redirect {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  color: var(--color-muted);
+  font-weight: 500;
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .profile-tabs {
+    grid-auto-flow: row;
+  }
+
+  .profile-tab {
+    text-align: left;
+    border-bottom-width: 2px;
+  }
+
+  .profile {
+    margin-top: -3rem;
+  }
+
+  .profile__content {
+    padding: 2rem 1.25rem;
+  }
+}
+</style>
