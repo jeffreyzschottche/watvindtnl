@@ -50,22 +50,32 @@
         </nav>
         <div class="auth-links">
           <template v-if="!isLoggedIn">
-            <NuxtLink to="/login" class="button" @click="closeMobile">
+            <button
+              type="button"
+              class="button"
+              :class="{ 'link-active': isActive('/login') }"
+              @click="navigateTo('/login')"
+            >
               Inloggen
-            </NuxtLink>
-            <NuxtLink to="/register" class="button" @click="closeMobile">
+            </button>
+            <button
+              type="button"
+              class="button"
+              :class="{ 'link-active': isActive('/register') }"
+              @click="navigateTo('/register')"
+            >
               Registreren
-            </NuxtLink>
+            </button>
           </template>
           <div v-else>
-            <NuxtLink
-              to="/profile"
+            <button
+              type="button"
               class="button"
-              active-class="link-active"
-              @click="closeMobile"
+              :class="{ 'link-active': isActive('/profile') }"
+              @click="navigateTo('/profile')"
             >
               Mijn profiel
-            </NuxtLink>
+            </button>
             <button type="button" class="button" @click="handleLogout">
               Uitloggen
             </button>
@@ -97,10 +107,16 @@ const router = useRouter();
 const authStore = useAuthStore();
 const { isLoggedIn } = storeToRefs(authStore);
 
+const navigateTo = (path) => {
+  closeMobile();
+  router.push(path);
+};
+
+const isActive = (path) => route.path === path;
+
 const handleLogout = () => {
   authStore.logout();
-  closeMobile();
-  router.push("/");
+  navigateTo("/");
 };
 
 watch(
