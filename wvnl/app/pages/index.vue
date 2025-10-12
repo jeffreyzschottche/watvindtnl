@@ -56,7 +56,7 @@ const steps = [
           </div>
         </div>
         <div class="hero-card">
-          <h2 style="margin-top: -0.5em">Waarom WDNL?</h2>
+          <h2 style="margin-top: -0.5em">Waarom Wat Denkt Nederland?</h2>
           <ul>
             <li>Actuele politieke moties</li>
             <li>Zien hoeveel % Nederlanders het met je eens/oneens is</li>
