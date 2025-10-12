@@ -105,7 +105,8 @@ const stances = computed(() => props.stances);
 }
 
 .issue-party-stances__column {
-  display: grid;
+  /* display: grid; */
+  margin-top: 2em;
   gap: 0.75rem;
   padding: 1rem;
   border-radius: 0.85rem;

@@ -381,6 +381,7 @@ async function handleIssueReport(reason: ReportReason) {
 
 .issue-card__share :deep(.issue-card__button) {
   width: 100%;
+  min-height: 40px;
 }
 
 .issue-card__button--agree {
