@@ -113,6 +113,84 @@
                 en optioneel <code class="rounded bg-slate-100 px-1">arguments</code>, of een array met issue-items.
               </p>
               <pre class="overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100"><code>{{ issueImportExample }}</code></pre>
+              <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+                <div class="flex flex-wrap items-center gap-2">
+                  <input
+                    ref="issueDirectoryInput"
+                    type="file"
+                    multiple
+                    webkitdirectory
+                    class="hidden"
+                    @change="handleIssueDirectoryUpload"
+                  />
+                  <button
+                    type="button"
+                    class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100"
+                    @click="triggerIssueDirectoryUpload"
+                  >
+                    Map kiezen
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+                    :disabled="!issueDirectoryState.motions.length"
+                    @click="prepareIssueImportFromDirectory"
+                  >
+                    Selectie laden
+                  </button>
+                </div>
+                <p class="mt-3 text-xs text-slate-500">
+                  Kies de map <code class="rounded bg-slate-100 px-1">output</code> met submappen zoals <code class="rounded bg-slate-100 px-1">motie1/motie1.json</code>
+                  en geef hieronder het gewenste bereik op.
+                </p>
+                <div v-if="issueDirectoryState.motions.length" class="mt-4 grid gap-3 md:grid-cols-2">
+                  <div class="grid gap-1">
+                    <label class="text-xs font-semibold text-slate-600">Start motienummer</label>
+                    <input
+                      v-model="issueDirectoryState.start"
+                      type="number"
+                      min="1"
+                      inputmode="numeric"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    />
+                  </div>
+                  <div class="grid gap-1">
+                    <label class="text-xs font-semibold text-slate-600">Eind motienummer</label>
+                    <input
+                      v-model="issueDirectoryState.end"
+                      type="number"
+                      min="1"
+                      inputmode="numeric"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
+                <p v-if="issueDirectoryBounds" class="mt-4 text-xs text-slate-500">
+                  Beschikbare moties: {{ issueDirectoryBounds.count }} (motie{{ issueDirectoryBounds.first }} - motie{{ issueDirectoryBounds.last }})
+                </p>
+                <p v-if="issueDirectorySelectionPreview" class="mt-1 text-xs text-slate-500">
+                  Geselecteerd bereik: motie{{ issueDirectorySelectionPreview.requestedStart }} -
+                  motie{{ issueDirectorySelectionPreview.requestedEnd }} ({{ issueDirectorySelectionPreview.count }} moties
+                  <span
+                    v-if="
+                      issueDirectorySelectionPreview.availableFirst !== null &&
+                      (issueDirectorySelectionPreview.availableFirst !== issueDirectorySelectionPreview.requestedStart ||
+                        issueDirectorySelectionPreview.availableLast !== issueDirectorySelectionPreview.requestedEnd)
+                    "
+                    class="font-semibold text-slate-600"
+                  >
+                    • beschikbaar: motie{{ issueDirectorySelectionPreview.availableFirst }} -
+                    motie{{ issueDirectorySelectionPreview.availableLast }}
+                  </span>
+                  <span v-if="issueDirectorySelectionPreview.missing > 0" class="font-semibold text-amber-600">
+                    • {{ issueDirectorySelectionPreview.missing }} ontbreken
+                  </span>
+                  )
+                </p>
+                <p v-if="issueDirectoryState.error" class="mt-3 text-sm font-semibold text-red-600">
+                  {{ issueDirectoryState.error }}
+                </p>
+              </div>
               <div
                 v-if="issueImportState.fileName"
                 class="rounded-lg border border-slate-200 bg-slate-50 p-4"
@@ -1067,6 +1145,7 @@ const newIssueForm = reactive({
 });
 
 const issueUploadInput = ref<HTMLInputElement | null>(null);
+const issueDirectoryInput = ref<HTMLInputElement | null>(null);
 const argumentUploadInput = ref<HTMLInputElement | null>(null);
 
 const issueImportState = reactive({
@@ -1075,6 +1154,62 @@ const issueImportState = reactive({
   arguments: [] as AdminArgumentUpsertPayload[],
   error: null as string | null,
 });
+
+interface MotionFileEntry {
+  number: number;
+  file: File;
+  relativePath: string;
+}
+
+const issueDirectoryState = reactive({
+  motions: [] as MotionFileEntry[],
+  start: "",
+  end: "",
+  error: null as string | null,
+});
+
+const issueDirectoryBounds = computed(() => {
+  if (!issueDirectoryState.motions.length) return null;
+  const first = issueDirectoryState.motions[0].number;
+  const last = issueDirectoryState.motions[issueDirectoryState.motions.length - 1].number;
+  return {
+    first,
+    last,
+    count: issueDirectoryState.motions.length,
+  };
+});
+
+const issueDirectorySelectionPreview = computed(() => {
+  if (!issueDirectoryState.motions.length) return null;
+  const start = toMotionNumber(issueDirectoryState.start);
+  const end = toMotionNumber(issueDirectoryState.end);
+  if (start === null || end === null || end < start) return null;
+
+  const motionByNumber = new Map(issueDirectoryState.motions.map((motion) => [motion.number, motion]));
+  const selected: MotionFileEntry[] = [];
+  for (let number = start; number <= end; number += 1) {
+    const motion = motionByNumber.get(number);
+    if (motion) {
+      selected.push(motion);
+    }
+  }
+
+  return {
+    count: selected.length,
+    requestedStart: start,
+    requestedEnd: end,
+    availableFirst: selected[0]?.number ?? null,
+    availableLast: selected[selected.length - 1]?.number ?? null,
+    missing: Math.max(0, end - start + 1 - selected.length),
+  };
+});
+
+watch(
+  () => [issueDirectoryState.start, issueDirectoryState.end],
+  () => {
+    issueDirectoryState.error = null;
+  }
+);
 
 const argumentImportState = reactive({
   fileName: "",
@@ -1619,8 +1754,19 @@ function triggerIssueUpload() {
   issueUploadInput.value?.click();
 }
 
+function triggerIssueDirectoryUpload() {
+  issueDirectoryInput.value?.click();
+}
+
 function triggerArgumentUpload() {
   argumentUploadInput.value?.click();
+}
+
+function resetIssueDirectoryState() {
+  issueDirectoryState.motions = [];
+  issueDirectoryState.start = "";
+  issueDirectoryState.end = "";
+  issueDirectoryState.error = null;
 }
 
 function resetIssueImportState() {
@@ -1634,6 +1780,121 @@ function resetArgumentImportState() {
   argumentImportState.fileName = "";
   argumentImportState.arguments = [];
   argumentImportState.error = null;
+}
+
+async function handleIssueDirectoryUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const files = Array.from(input.files ?? []);
+
+  resetIssueDirectoryState();
+
+  if (!files.length) {
+    input.value = "";
+    return;
+  }
+
+  const motions: MotionFileEntry[] = [];
+  for (const file of files) {
+    const relativePath = getFileRelativePath(file);
+    const number = extractMotionNumber(relativePath);
+    if (number === null) continue;
+    motions.push({
+      number,
+      file,
+      relativePath,
+    });
+  }
+
+  if (!motions.length) {
+    issueDirectoryState.error = "Geen motie JSON-bestanden gevonden in deze map.";
+    input.value = "";
+    return;
+  }
+
+  motions.sort((a, b) => a.number - b.number);
+  issueDirectoryState.motions = motions;
+  issueDirectoryState.start = String(motions[0].number);
+  issueDirectoryState.end = String(motions[motions.length - 1].number);
+  issueDirectoryState.error = null;
+
+  input.value = "";
+}
+
+async function prepareIssueImportFromDirectory() {
+  if (!issueDirectoryState.motions.length) return;
+
+  const startNumber = toMotionNumber(issueDirectoryState.start);
+  const endNumber = toMotionNumber(issueDirectoryState.end);
+
+  if (startNumber === null || endNumber === null) {
+    issueDirectoryState.error = "Voer een geldig start- en eindnummer in.";
+    return;
+  }
+
+  if (endNumber < startNumber) {
+    issueDirectoryState.error = "Het eindnummer moet groter of gelijk zijn aan het startnummer.";
+    return;
+  }
+
+  const motionByNumber = new Map(issueDirectoryState.motions.map((motion) => [motion.number, motion]));
+  const selected: MotionFileEntry[] = [];
+  const missing: number[] = [];
+
+  for (let number = startNumber; number <= endNumber; number += 1) {
+    const motion = motionByNumber.get(number);
+    if (motion) {
+      selected.push(motion);
+    } else {
+      missing.push(number);
+    }
+  }
+
+  if (!selected.length) {
+    issueDirectoryState.error = "Geen moties gevonden voor het geselecteerde bereik.";
+    return;
+  }
+
+  if (missing.length) {
+    const missingLabel =
+      missing.length > 5
+        ? `${missing.slice(0, 5).join(", ")} en ${missing.length - 5} andere`
+        : missing.join(", ");
+    issueDirectoryState.error = `De moties ${missingLabel} ontbreken in de map.`;
+    return;
+  }
+
+  const aggregatedIssues: AdminIssueImportItem[] = [];
+  const aggregatedArguments: AdminArgumentUpsertPayload[] = [];
+
+  for (const motion of selected) {
+    try {
+      const raw = await motion.file.text();
+      const parsed = JSON.parse(raw) as unknown;
+      const normalized = normalizeIssueImportPayload(parsed);
+      aggregatedIssues.push(...normalized.issues);
+      aggregatedArguments.push(...normalized.arguments);
+    } catch (err) {
+      issueDirectoryState.error =
+        err instanceof Error
+          ? `Motie ${motion.number} kon niet worden gelezen: ${err.message}`
+          : `Motie ${motion.number} kon niet worden gelezen.`;
+      return;
+    }
+  }
+
+  if (!aggregatedIssues.length && !aggregatedArguments.length) {
+    issueDirectoryState.error = "Geen issues of argumenten gevonden in de geselecteerde moties.";
+    return;
+  }
+
+  const firstNumber = selected[0].number;
+  const lastNumber = selected[selected.length - 1].number;
+
+  issueImportState.fileName = `Mapimport motie${firstNumber}-motie${lastNumber} (${selected.length} moties)`;
+  issueImportState.issues = aggregatedIssues;
+  issueImportState.arguments = aggregatedArguments;
+  issueImportState.error = null;
+  issueDirectoryState.error = null;
 }
 
 async function handleIssueFileUpload(event: Event) {
@@ -1762,6 +2023,32 @@ function normalizeIssueImportPayload(raw: unknown): {
 
 function normalizeArgumentImportPayload(raw: unknown): AdminArgumentUpsertPayload[] {
   return normalizeIssueImportPayload(raw).arguments;
+}
+
+function getFileRelativePath(file: File): string {
+  const candidate = (file as File & { webkitRelativePath?: string }).webkitRelativePath;
+  return candidate ? candidate.replace(/\\/g, "/") : file.name;
+}
+
+function extractMotionNumber(relativePath: string): number | null {
+  const normalized = relativePath.replace(/\\/g, "/");
+  const segments = normalized.split("/");
+  if (segments.length < 2) return null;
+  const directoryName = segments[segments.length - 2];
+  const fileName = segments[segments.length - 1];
+  const directoryMatch = directoryName.match(/^motie(\d+)$/i);
+  const fileMatch = fileName.match(/^motie(\d+)\.json$/i);
+  if (!directoryMatch || !fileMatch) return null;
+  const directoryNumber = Number.parseInt(directoryMatch[1], 10);
+  const fileNumber = Number.parseInt(fileMatch[1], 10);
+  if (!Number.isFinite(directoryNumber) || directoryNumber !== fileNumber) return null;
+  return directoryNumber;
+}
+
+function toMotionNumber(value: string): number | null {
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return null;
+  return parsed;
 }
 
 function isArgumentPayload(value: unknown): value is Record<string, unknown> {
