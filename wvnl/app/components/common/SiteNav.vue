@@ -50,25 +50,17 @@
         </nav>
         <div class="auth-links">
           <template v-if="!isLoggedIn">
-            <NuxtLink
-              to="/login"
-              class="button my-profile"
-              @click="closeMobile"
-            >
+            <NuxtLink to="/login" class="button" @click="closeMobile">
               Inloggen
             </NuxtLink>
-            <NuxtLink
-              to="/register"
-              class="button my-profile"
-              @click="closeMobile"
-            >
+            <NuxtLink to="/register" class="button" @click="closeMobile">
               Registreren
             </NuxtLink>
           </template>
           <div v-else>
             <NuxtLink
               to="/profile"
-              class="button my-profile"
+              class="button"
               active-class="link-active"
               @click="closeMobile"
             >
