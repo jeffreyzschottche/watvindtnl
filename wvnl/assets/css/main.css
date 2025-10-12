@@ -479,14 +479,21 @@ a:focus {
   border: 1px solid rgba(0, 61, 165, 0.1);
 }
 
-.form label {
+.form > label,
+.form-fieldset > label {
   display: grid;
   gap: 0.5rem;
   font-weight: 600;
 }
 
+.form > label span,
+.form-fieldset > label span {
+  color: var(--color-text);
+}
+
 .form input,
-.form textarea {
+.form textarea,
+.form select {
   border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 0.75rem 0.85rem;
@@ -495,9 +502,150 @@ a:focus {
 }
 
 .form input:focus,
-.form textarea:focus {
+.form textarea:focus,
+.form select:focus {
   outline: 3px solid rgba(0, 61, 165, 0.28);
   border-color: var(--color-primary);
+}
+
+.form select {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: linear-gradient(45deg, transparent 50%, #003da5 50%),
+    linear-gradient(135deg, #003da5 50%, transparent 50%),
+    linear-gradient(to right, #ffffff, #ffffff);
+  background-position: calc(100% - 20px) calc(50% + 2px),
+    calc(100% - 14px) calc(50% + 2px),
+    calc(100% - 2.5rem) 50%;
+  background-size: 6px 6px, 6px 6px, 1px 55%;
+  background-repeat: no-repeat;
+}
+
+.form-card {
+  max-width: 640px;
+  margin: -2.5rem auto 0;
+  position: relative;
+}
+
+.form-card::before {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  background: linear-gradient(135deg, rgba(0, 61, 165, 0.08), rgba(200, 16, 46, 0.1));
+  border-radius: calc(var(--border-radius) + 18px);
+  z-index: -1;
+  filter: blur(0);
+}
+
+.form-header {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.form-header p {
+  margin: 0;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.form-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-fieldset + .form-fieldset {
+  border-top: 1px solid rgba(0, 61, 165, 0.08);
+  padding-top: 1.5rem;
+}
+
+.form-fieldset legend {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.form-actions .button {
+  align-self: center;
+  padding-inline: 1.4rem;
+}
+
+.form-subtext {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.form-subtext a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.form-subtext a:hover,
+.form-subtext a:focus {
+  color: var(--color-accent);
+}
+
+.form-error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: rgba(200, 16, 46, 0.08);
+  border: 1px solid rgba(200, 16, 46, 0.35);
+  color: var(--color-accent);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.form-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.form-option input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  accent-color: var(--color-cta);
+}
+
+.form-option label {
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button:disabled,
+.button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.65;
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .form-card {
+    margin-top: -2rem;
+  }
+
+  .form-card::before {
+    inset: -12px;
+  }
 }
 
 @media (max-width: 768px) {

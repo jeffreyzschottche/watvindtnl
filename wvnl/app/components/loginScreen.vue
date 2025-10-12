@@ -1,27 +1,36 @@
 <template>
-  <form class="max-w-sm mx-auto space-y-4" @submit.prevent="onSubmit">
-    <h1 class="text-2xl font-semibold">Inloggen</h1>
+  <form class="form form-card auth-form" @submit.prevent="onSubmit">
+    <header class="form-header">
+      <h2>Inloggen</h2>
+      <p>Voer je e-mailadres en wachtwoord in om verder te gaan.</p>
+    </header>
 
-    <div>
-      <label class="block text-sm mb-1">E-mail</label>
-      <input v-model="email" type="email" class="input" required />
+    <label>
+      <span>E-mailadres</span>
+      <input v-model="email" type="email" autocomplete="email" required />
+    </label>
+
+    <label>
+      <span>Wachtwoord</span>
+      <input
+        v-model="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      />
+    </label>
+
+    <p v-if="error" class="form-error">{{ error }}</p>
+
+    <div class="form-actions">
+      <button class="button" :disabled="loading">
+        {{ loading ? "Bezig..." : "Log in" }}
+      </button>
+      <p class="form-subtext">
+        Nog geen account?
+        <NuxtLink to="/register">Registreren</NuxtLink>
+      </p>
     </div>
-
-    <div>
-      <label class="block text-sm mb-1">Wachtwoord</label>
-      <input v-model="password" type="password" class="input" required />
-    </div>
-
-    <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
-
-    <button class="btn w-full" :disabled="loading">
-      {{ loading ? "Bezig..." : "Log in" }}
-    </button>
-
-    <p class="text-sm text-center">
-      Nog geen account?
-      <NuxtLink class="underline" to="/register">Registreren</NuxtLink>
-    </p>
   </form>
 </template>
 
@@ -47,12 +56,3 @@ async function onSubmit() {
   }
 }
 </script>
-
-<style scoped>
-.input {
-  @apply w-full border rounded px-3 py-2;
-}
-.btn {
-  @apply bg-black text-white rounded px-4 py-2;
-}
-</style>

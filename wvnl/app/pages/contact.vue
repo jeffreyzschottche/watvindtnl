@@ -12,14 +12,19 @@
     </section>
 
     <section class="container narrow">
-      <h2>Neem contact op</h2>
-      <form class="form">
+      <form class="form form-card contact-form">
+        <header class="form-header">
+          <h2>Neem contact op</h2>
+          <p>We reageren zo snel mogelijk op je bericht.</p>
+        </header>
+
         <label>
-          Naam
+          <span>Naam</span>
           <input type="text" name="name" placeholder="Jouw naam" required />
         </label>
+
         <label>
-          E-mailadres
+          <span>E-mailadres</span>
           <input
             type="email"
             name="email"
@@ -27,8 +32,9 @@
             required
           />
         </label>
+
         <label>
-          Bericht
+          <span>Bericht</span>
           <textarea
             name="message"
             rows="5"
@@ -36,7 +42,10 @@
             required
           ></textarea>
         </label>
-        <button type="submit" class="button">Verstuur bericht</button>
+
+        <div class="form-actions">
+          <button type="submit" class="button">Verstuur bericht</button>
+        </div>
       </form>
     </section>
   </div>

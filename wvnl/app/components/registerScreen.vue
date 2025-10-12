@@ -1,139 +1,143 @@
 <template>
-  <form class="max-w-md mx-auto space-y-5 p-6" @submit.prevent="onSubmit">
-    <h1 class="text-2xl font-semibold">Registreren</h1>
+  <form class="form form-card auth-form" @submit.prevent="onSubmit">
+    <header class="form-header">
+      <h2>Registreren</h2>
+      <p>Vul je gegevens in en maak je account compleet.</p>
+    </header>
 
-    <!-- Basis -->
-    <div>
-      <label class="block text-sm mb-1">Naam</label>
-      <input v-model="form.name" class="input" required />
+    <fieldset class="form-fieldset">
+      <legend>Persoonlijke gegevens</legend>
+      <label>
+        <span>Naam</span>
+        <input v-model="form.name" autocomplete="name" required />
+      </label>
+
+      <label>
+        <span>Gebruikersnaam</span>
+        <input v-model="form.username" autocomplete="nickname" required />
+      </label>
+
+      <label>
+        <span>E-mailadres</span>
+        <input v-model="form.email" type="email" autocomplete="email" required />
+      </label>
+
+      <label>
+        <span>Wachtwoord</span>
+        <input
+          v-model="form.password"
+          type="password"
+          autocomplete="new-password"
+          minlength="8"
+          required
+        />
+      </label>
+
+      <label>
+        <span>Bevestig wachtwoord</span>
+        <input
+          v-model="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+          minlength="8"
+          required
+        />
+      </label>
+    </fieldset>
+
+    <fieldset class="form-fieldset">
+      <legend>Profielinformatie</legend>
+      <label>
+        <span>Leeftijdscategorie</span>
+        <select v-model="form.age_category" required>
+          <option disabled value="">Maak een keuze</option>
+          <option v-for="age in ageCategories" :key="age" :value="age">
+            {{ age }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        <span>Provincie</span>
+        <select v-model="form.province" required>
+          <option disabled value="">Maak een keuze</option>
+          <option v-for="p in provinces" :key="p" :value="p">{{ p }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Geslacht</span>
+        <select v-model="form.gender" required>
+          <option value="unspecified">Zeg ik niet</option>
+          <option value="male">Man</option>
+          <option value="female">Vrouw</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Onderwijsniveau</span>
+        <select v-model="form.education_level" required>
+          <option disabled value="">Maak een keuze</option>
+          <option value="mbo">MBO</option>
+          <option value="hbo">HBO</option>
+          <option value="universiteit">Universiteit</option>
+          <option value="overig">Overig</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Politieke voorkeur</span>
+        <select v-model="form.political_preference" required>
+          <option disabled value="">Maak een keuze</option>
+          <option value="links">Links</option>
+          <option value="midden">Midden</option>
+          <option value="rechts">Rechts</option>
+          <option value="geen">Geen / Onbekend</option>
+        </select>
+      </label>
+    </fieldset>
+
+    <fieldset class="form-fieldset">
+      <legend>Voorkeuren</legend>
+      <label>
+        <span>Taal</span>
+        <select v-model="form.language" required>
+          <option value="nl">Nederlands</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+
+      <div class="form-option">
+        <input
+          id="notif"
+          v-model="wantsNotifications"
+          type="checkbox"
+        />
+        <label for="notif">Ik wil notificaties ontvangen (e-mail)</label>
+      </div>
+
+      <div class="form-option">
+        <input
+          id="cookies"
+          v-model="acceptsCookies"
+          type="checkbox"
+          required
+        />
+        <label for="cookies">Ik ga akkoord met het gebruik van cookies.</label>
+      </div>
+    </fieldset>
+
+    <p v-if="error" class="form-error">{{ error }}</p>
+
+    <div class="form-actions">
+      <button class="button" :disabled="loading">
+        {{ loading ? "Bezig..." : "Maak account" }}
+      </button>
+      <p class="form-subtext">
+        Al een account?
+        <NuxtLink to="/login">Inloggen</NuxtLink>
+      </p>
     </div>
-
-    <div>
-      <label class="block text-sm mb-1">Gebruikersnaam</label>
-      <input v-model="form.username" class="input" required />
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">E-mail</label>
-      <input v-model="form.email" type="email" class="input" required />
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">Wachtwoord</label>
-      <input
-        v-model="form.password"
-        type="password"
-        class="input"
-        minlength="8"
-        required
-      />
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">Bevestig wachtwoord</label>
-      <input
-        v-model="confirmPassword"
-        type="password"
-        class="input"
-        minlength="8"
-        required
-      />
-    </div>
-
-    <!-- Profielvelden Wat-vindt-NL -->
-    <div>
-      <label class="block text-sm mb-1">Leeftijdscategorie</label>
-      <select v-model="form.age_category" class="input" required>
-        <option disabled value="">Maak een keuze</option>
-        <option v-for="age in ageCategories" :key="age" :value="age">
-          {{ age }}
-        </option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">Provincie</label>
-      <select v-model="form.province" class="input" required>
-        <option disabled value="">Maak een keuze</option>
-        <option v-for="p in provinces" :key="p" :value="p">{{ p }}</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">Geslacht</label>
-      <select v-model="form.gender" class="input" required>
-        <option value="unspecified">Zeg ik niet</option>
-        <option value="male">Man</option>
-        <option value="female">Vrouw</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">Onderwijsniveau</label>
-      <select v-model="form.education_level" class="input" required>
-        <option disabled value="">Maak een keuze</option>
-        <option value="mbo">MBO</option>
-        <option value="hbo">HBO</option>
-        <option value="universiteit">Universiteit</option>
-        <option value="overig">Overig</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm mb-1">Politieke voorkeur</label>
-      <select v-model="form.political_preference" class="input" required>
-        <option disabled value="">Maak een keuze</option>
-        <option value="links">Links</option>
-        <option value="midden">Midden</option>
-        <option value="rechts">Rechts</option>
-        <option value="geen">Geen / Onbekend</option>
-      </select>
-    </div>
-
-    <!-- App instellingen -->
-    <div>
-      <label class="block text-sm mb-1">Taal</label>
-      <select v-model="form.language" class="input" required>
-        <option value="nl">Nederlands</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <input
-        id="notif"
-        v-model="wantsNotifications"
-        type="checkbox"
-        class="h-4 w-4"
-      />
-      <label for="notif" class="text-sm"
-        >Ik wil notificaties ontvangen (e-mail)</label
-      >
-    </div>
-
-    <div class="flex items-start gap-3">
-      <input
-        id="cookies"
-        v-model="acceptsCookies"
-        type="checkbox"
-        class="mt-1 h-4 w-4"
-        required
-      />
-      <label for="cookies" class="text-sm"
-        >Ik ga akkoord met het gebruik van cookies.</label
-      >
-    </div>
-
-    <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
-
-    <button class="btn w-full" :disabled="loading">
-      {{ loading ? "Bezig..." : "Maak account" }}
-    </button>
-
-    <p class="text-sm text-center">
-      Al een account?
-      <NuxtLink class="underline" to="/login">Inloggen</NuxtLink>
-    </p>
   </form>
 </template>
 
@@ -211,12 +215,3 @@ async function onSubmit() {
   }
 }
 </script>
-
-<style scoped>
-.input {
-  @apply w-full border rounded px-3 py-2;
-}
-.btn {
-  @apply bg-black text-white rounded px-4 py-2;
-}
-</style>
