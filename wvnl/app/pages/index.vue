@@ -45,12 +45,12 @@ const steps = [
           <h1>Ontdek wat Nederland écht vindt</h1>
           <p class="lead">
             WDNL helpt organisaties en overheden om snel inzichten te krijgen in
-            wat er leeft. Verzamel meningen, deel inzichten en werk aan besluiten
-            waar iedereen achter staat.
+            wat er leeft. Verzamel meningen, deel inzichten en werk aan
+            besluiten waar iedereen achter staat.
           </p>
           <div class="hero-actions">
             <NuxtLink to="/register" class="button">Start vandaag</NuxtLink>
-            <NuxtLink to="/over-wvnl" class="button button-secondary"
+            <NuxtLink to="/over-wdnl" class="button button-secondary"
               >Lees meer</NuxtLink
             >
           </div>

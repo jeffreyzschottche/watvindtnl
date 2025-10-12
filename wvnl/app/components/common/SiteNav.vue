@@ -19,7 +19,7 @@
       <div class="nav-group" :class="{ open: mobileOpen }">
         <nav id="primary-navigation" class="nav-links" aria-label="Hoofdmenu">
           <NuxtLink
-            to="/over-wvnl"
+            to="/over-wdnl"
             class="nav-link"
             active-class="link-active"
             @click="closeMobile"

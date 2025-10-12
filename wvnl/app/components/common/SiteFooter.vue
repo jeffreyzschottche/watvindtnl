@@ -4,7 +4,7 @@
       <!-- Left side: text + links + copy -->
       <div class="footer-left">
         <div class="footer-brand">
-          <strong>WDNL</strong>
+          <NuxtLink to="/" class="brand nl-flag-text outline">WDNL</NuxtLink>
           <p class="footer-text">
             Samen bouwen we aan transparante besluitvorming en heldere
             burgerparticipatie.
