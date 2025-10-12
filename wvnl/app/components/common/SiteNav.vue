@@ -30,7 +30,7 @@
             class="nav-link"
             active-class="link-active"
             @click="closeMobile"
-            >Kwesties</NuxtLink
+            >Moties</NuxtLink
           >
           <NuxtLink
             to="/politiek-kompas"

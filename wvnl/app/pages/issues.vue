@@ -2,7 +2,7 @@
   <section class="issues-page">
     <div class="issues-page__container">
       <header class="issues-page__header">
-        <h1>Openstaande kwesties</h1>
+        <h1>Openstaande moties</h1>
         <p>
           Geef aan hoe jij over de volgende stellingen denkt. Kies voor, tegen,
           neutraal of sla over als je het nog niet weet.
@@ -10,7 +10,7 @@
       </header>
 
       <div v-if="loading" class="issues-page__state">
-        Even geduld, we laden je vragen...
+        Even geduld, we laden de moties...
       </div>
 
       <div
