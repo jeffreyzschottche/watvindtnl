@@ -14,7 +14,11 @@
     </section>
 
     <section class="container narrow">
-      <form class="form form-card contact-form">
+      <form
+        class="form form-card contact-form"
+        @submit="onSubmit"
+        novalidate
+      >
         <header class="form-header">
           <h2>Neem contact op</h2>
           <p>We reageren zo snel mogelijk op je bericht.</p>
@@ -45,13 +49,98 @@
           ></textarea>
         </label>
 
+        <!-- Honeypot (verborgen, maar in DOM aanwezig) -->
+        <label class="hp" aria-hidden="true">
+          <span>Laat dit veld leeg</span>
+          <input
+            v-model="hp"
+            type="text"
+            name="company"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </label>
+
+        <!-- Simpele 'ik ben geen robot' check -->
+        <label class="robot-check">
+          <input v-model="human" type="checkbox" />
+          <span>Ik ben geen robot</span>
+        </label>
+
         <div class="form-actions">
-          <button type="submit" class="button">Verstuur bericht</button>
+          <button type="submit" class="button" :disabled="disableSubmit">
+            {{ sending ? 'Versturen…' : 'Verstuur bericht' }}
+          </button>
         </div>
+
+        <p v-if="sent">Bedankt! We hebben je bericht ontvangen.</p>
+        <p v-if="error" class="error">{{ error }}</p>
       </form>
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+const sending = ref(false)
+const sent = ref(false)
+const error = ref<string | null>(null)
+
+// Front-end bot shields
+const startedAt = ref<number>(Date.now())
+const minDelayMs = 2500
+const hp = ref("")
+const human = ref(false)
+
+const disableSubmit = computed(() => {
+  const tooSoon = Date.now() - startedAt.value < minDelayMs
+  return sending.value || !human.value || tooSoon
+})
+
+const apiBase = useRuntimeConfig().public.apiBase
+
+async function onSubmit(e: Event) {
+  e.preventDefault()
+  error.value = null
+  sent.value = false
+
+  if (hp.value.trim() !== "") {
+    error.value = "Ongeldige invoer."
+    return
+  }
+
+  if (Date.now() - startedAt.value < minDelayMs) {
+    error.value = "Even geduld en probeer nogmaals."
+    return
+  }
+
+  if (!human.value) {
+    error.value = "Bevestig dat je geen robot bent."
+    return
+  }
+
+  const form = e.target as HTMLFormElement
+  const fd = new FormData(form)
+
+  try {
+    sending.value = true
+    await $fetch("/contact", {
+      method: "POST",
+      body: fd,
+      baseURL: apiBase,
+    })
+    sent.value = true
+    form.reset()
+    hp.value = ""
+    human.value = false
+    startedAt.value = Date.now()
+  } catch (err: any) {
+    error.value = "Versturen mislukt. Probeer het opnieuw."
+  } finally {
+    sending.value = false
+  }
+}
+</script>
+
 <style scoped>
 .page-hero {
   background-size: cover;
@@ -138,5 +227,36 @@
       rgba(200, 16, 46, 0.2)
     ),
     url("/images/norali-nayla-eDvG3IO8-Io-unsplash.jpg");
+}
+
+.hp {
+  position: absolute;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.robot-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.robot-check input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+}
+
+.error {
+  color: #c8102e;
+  font-weight: 600;
+  margin-top: 1rem;
 }
 </style>

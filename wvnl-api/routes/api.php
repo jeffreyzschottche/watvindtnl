@@ -11,6 +11,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Admin\AdminArgumentController;
 use App\Http\Controllers\Admin\AdminIssueController;
 use App\Http\Controllers\Admin\AdminPoliticalPartyController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
@@ -18,6 +19,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+Route::post('/contact', ContactController::class);
 
 
 Route::middleware('auth:sanctum')->group(function () {
