@@ -67,7 +67,7 @@
               Registreren
             </button>
           </template>
-          <div v-else>
+          <div class="auth-links" v-else>
             <button
               type="button"
               class="button"
