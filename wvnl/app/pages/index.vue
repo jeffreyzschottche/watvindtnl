@@ -21,7 +21,7 @@ const steps = [
   {
     title: "1. Stem",
     description:
-      "Alle stellingen zijn moties die in de tweede kamer behandeld worden. Stem en geef je mening over die kwesties.",
+      "Alle stellingen zijn moties die in de tweede kamer behandeld worden. Stem, geef je mening over die kwesties en zie wat andere erover denken.",
   },
   {
     title: "2. Vraag moties aan",
@@ -59,7 +59,7 @@ const steps = [
           <h2 style="margin-top: -0.5em">Waarom WDNL?</h2>
           <ul>
             <li>Actuele politieke moties</li>
-            <li>Zien hoeveel % Nederlanders het met je eens is</li>
+            <li>Zien hoeveel % Nederlanders het met je eens/oneens is</li>
             <li>Veilig opgeslagen data binnen de EU</li>
             <li>Helder geformuleerde vraagstellingen</li>
           </ul>
