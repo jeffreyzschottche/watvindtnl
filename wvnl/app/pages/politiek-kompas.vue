@@ -16,14 +16,18 @@ useHead({
           >
           <span class="page-hero__accent page-hero__accent--red">Kompas</span>
         </h1>
-        <p class="page-hero__subtitle">Deze pagina is nog in ontwikkeling.</p>
+        <p class="page-hero__subtitle">
+          Krijg meer inzichten op je eigen politieke voorkeur.
+          <br />
+          <i>Je vind het politieke kompas onder 'mijn profiel'</i>
+        </p>
       </div>
     </section>
 
     <section class="container narrow page-section compass-section">
       <div class="compass-layout">
         <div class="compass-content">
-          <h2>Wat kun je hier verwachten?</h2>
+          <h2>Wat is het politieke kompas?</h2>
           <p>
             Politiek Kompas houdt je keuzes bij en toont ze in een duidelijk
             overzicht. Door je antwoorden op verschillende stellingen
@@ -36,7 +40,9 @@ useHead({
           </p>
           <p>
             Dit is anders dan een reguliere stemwijzer, omdat het meebeweegt met
-            jouw mening en continu wordt bijgewerkt.
+            jouw mening en continu wordt bijgewerkt. We koppelen verschillende
+            belangrijke politieke onderwerpen aan verschillende partijen. De
+            partij die het meeste voorkomt is jouw beste partij.
           </p>
         </div>
 

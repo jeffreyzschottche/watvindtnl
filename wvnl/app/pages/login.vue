@@ -7,7 +7,7 @@
           <span class="page-hero__accent page-hero__accent--red">in</span>
         </h1>
         <p class="page-hero__subtitle">
-          Log in en ga direct verder met het delen van jouw mening.
+          Log in en ga direct verder met het geven van je mening.
         </p>
       </div>
     </section>

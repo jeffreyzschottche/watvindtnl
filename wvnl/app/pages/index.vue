@@ -3,7 +3,7 @@ const highlights = [
   {
     title: "Burgerparticipatie centraal",
     description:
-      "WDNL maakt het eenvoudig om meningen te verzamelen en gedeeld inzicht zichtbaar te maken voor iedere gemeente.",
+      "WDNL maakt het eenvoudig om je mening te delen over huidige politieke moties uit de tweede kamer. Zie wat de politieke partijen & mede-Nederlanders denken.",
   },
   {
     title: "",
@@ -13,25 +13,25 @@ const highlights = [
   {
     title: "Veilig en transparant",
     description:
-      "We verwerken gegevens met zorg en volgens de hoogste beveiligingsstandaarden zodat iedereen kan vertrouwen op het proces.",
+      "Compleet anoniem. Andere deelnemers zien niet wat jij stemt. We verwerken gegevens met zorg en volgens de hoogste beveiligingsstandaarden zodat iedereen zijn mening vrij kan geven.",
   },
 ];
 
 const steps = [
   {
-    title: "1. Verzamel",
+    title: "1. Stem",
     description:
-      "Start een vraag of enquête en nodig inwoners uit om hun mening te delen in een paar eenvoudige stappen.",
+      "Alle stellingen zijn moties die in de tweede kamer behandeld worden. Stem en geef je mening over die kwesties.",
   },
   {
-    title: "2. Analyseer",
+    title: "2. Vraag moties aan",
     description:
-      "Krijg onmiddellijk inzicht met duidelijke dashboards en vergelijk resultaten tussen wijken en doelgroepen.",
+      "Via het contactformulier is het mogelijk om je eigen motie aan te vragen. Wij zullen contact met je opnemen als we een besluit hebben genomen.",
   },
   {
-    title: "3. Handel",
+    title: "3. Leer jezelf beter kennen",
     description:
-      "Gebruik de inzichten om beleid vorm te geven, acties te plannen en draagvlak te laten groeien.",
+      "We houden bij wat je stemt op welke kwesties via het politiek kompas, zo maken we een profiel van je beslissingen en kunnen zo de perfecte politieke partij aanraden.",
   },
 ];
 </script>
@@ -42,25 +42,26 @@ const steps = [
       <div class="container hero-content">
         <div>
           <p class="eyebrow">Burgerparticipatie platform</p>
-          <h1>Ontdek wat Nederland écht vindt</h1>
+          <h1>Ontdek wat Nederland écht denkt</h1>
           <p class="lead-home">
-            WDNL helpt organisaties en overheden om snel inzichten te krijgen in
-            wat er leeft. Verzamel meningen, deel inzichten en werk aan
-            besluiten waar iedereen achter staat.
+            Geef je mening over politieke besluiten die momenteel in de tweede
+            kamer behandeld worden. Leer jezelf en de voor-tegen argumenten
+            beter begrijpen.
           </p>
           <div class="ctahome">
-            <NuxtLink to="/register" class="button">Start vandaag</NuxtLink>
+            <NuxtLink to="/register" class="button">Maak account</NuxtLink>
             <NuxtLink to="/over-wdnl" class="button button-secondary"
-              >Lees meer</NuxtLink
+              >Over ons</NuxtLink
             >
           </div>
         </div>
         <div class="hero-card">
-          <h2>Waarom WDNL?</h2>
+          <h2 style="margin-top: -0.5em">Waarom WDNL?</h2>
           <ul>
-            <li>Gebruiksvriendelijke enquêtes en stellingen</li>
-            <li>Realtime dashboards voor teams en bestuurders</li>
+            <li>Actuele politieke moties</li>
+            <li>Zien hoeveel % Nederlanders het met je eens is</li>
             <li>Veilig opgeslagen data binnen de EU</li>
+            <li>Helder geformuleerde vraagstellingen</li>
           </ul>
         </div>
       </div>
@@ -104,13 +105,12 @@ const steps = [
     <section class="section-light">
       <div class="container cta">
         <div>
-          <h2>Klaar om in gesprek te gaan met jouw inwoners?</h2>
+          <h2>Klaar om jouw mening te geven?</h2>
           <p>
-            Maak direct een account aan of neem contact op met ons team. Samen
-            bouwen we aan draagvlak en vertrouwen.
+            Maak direct een account aan en start met het beoordelen van moties.
           </p>
         </div>
-        <NuxtLink to="/contact" class="button">Plan een gesprek</NuxtLink>
+        <NuxtLink to="/issues" class="button">Start</NuxtLink>
       </div>
     </section>
   </div>

@@ -4,45 +4,119 @@
       <div class="container narrow">
         <h1>Algemene voorwaarden</h1>
         <p>
-          Deze voorwaarden zijn van toepassing op alle diensten van WDNL. Lees
-          ze aandachtig door voordat je gebruikmaakt van ons platform.
+          Deze algemene voorwaarden zijn van toepassing op alle diensten en
+          functionaliteiten die door WDNL worden aangeboden. Door gebruik te
+          maken van ons platform, ga je akkoord met deze voorwaarden.
         </p>
       </div>
     </section>
 
     <section class="container narrow page-section">
-      <h2>Gebruik van het platform</h2>
-      <p>
-        WDNL stelt het platform beschikbaar voor organisaties die feedback willen
-        verzamelen. Gebruikers mogen het platform niet inzetten voor activiteiten
-        die in strijd zijn met de wet of de rechten van anderen schenden.
-      </p>
+      <h2>Definities</h2>
       <ul class="list">
-        <li>Je bent verantwoordelijk voor de inhoud die je publiceert.</li>
-        <li>Respecteer de privacy van deelnemers en derden.</li>
-        <li>Gebruik het platform niet voor spam of misleiding.</li>
+        <li>
+          <strong>WDNL:</strong> de exploitant van het platform, gevestigd in
+          Nederland.
+        </li>
+        <li>
+          <strong>Gebruiker:</strong> iedere natuurlijke of rechtspersoon die
+          gebruikmaakt van het platform.
+        </li>
+        <li>
+          <strong>Platform:</strong> de website of applicatie van WDNL waarop
+          gebruikers informatie kunnen delen of raadplegen.
+        </li>
       </ul>
     </section>
 
     <section class="section-light">
       <div class="container narrow page-section">
-        <h2>Beschikbaarheid en ondersteuning</h2>
+        <h2>Gebruik van het platform</h2>
         <p>
-          We streven naar een hoge beschikbaarheid van onze diensten, maar kunnen
-          geen garantie geven op ononderbroken toegang. Onderhoudswerkzaamheden
-          plannen we zoveel mogelijk buiten piekuren. Bij vragen of storingen kun
-          je contact opnemen met ons supportteam.
+          WDNL stelt het platform beschikbaar voor burgers, organisaties en
+          overheden die meningen, ideeën of feedback willen delen. Het gebruik
+          van het platform is toegestaan zolang dit niet in strijd is met de
+          wet, openbare orde of rechten van anderen.
+        </p>
+        <ul class="list">
+          <li>
+            De gebruiker is verantwoordelijk voor de inhoud die wordt geplaatst.
+          </li>
+          <li>
+            Het is verboden om onjuiste, misleidende of discriminerende
+            informatie te publiceren.
+          </li>
+          <li>
+            Het is niet toegestaan het platform te gebruiken voor spam,
+            commerciële doeleinden of verspreiding van virussen of schadelijke
+            software.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="container narrow page-section">
+      <h2>Registratie en accountbeheer</h2>
+      <p>
+        Voor bepaalde onderdelen is registratie vereist. Gebruikers moeten
+        correcte gegevens verstrekken en deze actueel houden. WDNL mag accounts
+        blokkeren of verwijderen bij misbruik of overtreding van deze
+        voorwaarden.
+      </p>
+    </section>
+
+    <section class="section-light">
+      <div class="container narrow page-section">
+        <h2>Beschikbaarheid en onderhoud</h2>
+        <p>
+          WDNL streeft naar een hoge beschikbaarheid, maar kan geen absolute
+          garantie bieden op ononderbroken toegang. Onderhoud en updates kunnen
+          leiden tot tijdelijke onderbrekingen. WDNL is niet aansprakelijk voor
+          schade als gevolg van storingen of downtime.
         </p>
       </div>
     </section>
 
     <section class="container narrow page-section">
-      <h2>Aansprakelijkheid</h2>
+      <h2>Intellectueel eigendom</h2>
       <p>
-        WDNL is niet aansprakelijk voor indirecte schade of gederfde winst als
-        gevolg van het gebruik van het platform. Onze aansprakelijkheid blijft
-        beperkt tot het bedrag dat is betaald voor de betreffende dienstverlening.
+        Alle teksten, afbeeldingen, code en andere materialen op het platform
+        zijn eigendom van WDNL of van de respectieve rechthebbenden. Het is niet
+        toegestaan zonder schriftelijke toestemming van WDNL materialen te
+        kopiëren, verspreiden of hergebruiken.
       </p>
+    </section>
+
+    <section class="section-light">
+      <div class="container narrow page-section">
+        <h2>Aansprakelijkheid</h2>
+        <p>
+          WDNL is niet aansprakelijk voor directe of indirecte schade die
+          voortvloeit uit het gebruik van het platform. De totale
+          aansprakelijkheid blijft beperkt tot het bedrag dat de gebruiker heeft
+          betaald voor de betreffende dienst (indien van toepassing).
+        </p>
+      </div>
+    </section>
+
+    <section class="container narrow page-section">
+      <h2>Wijzigingen in de voorwaarden</h2>
+      <p>
+        WDNL behoudt zich het recht voor deze voorwaarden te wijzigen. De meest
+        recente versie is altijd beschikbaar op het platform. Bij ingrijpende
+        wijzigingen wordt de gebruiker hiervan op de hoogte gesteld.
+      </p>
+    </section>
+
+    <section class="section-light">
+      <div class="container narrow page-section">
+        <h2>Toepasselijk recht</h2>
+        <p>
+          Op deze voorwaarden is het Nederlands recht van toepassing. Geschillen
+          worden voorgelegd aan de bevoegde rechter te Amsterdam, tenzij anders
+          bepaald door dwingend recht.
+        </p>
+      </div>
     </section>
   </div>
 </template>

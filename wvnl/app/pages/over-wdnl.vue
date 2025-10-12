@@ -7,9 +7,8 @@
           <span class="page-hero__accent page-hero__accent--red">WDNL</span>
         </h1>
         <p class="page-hero__subtitle">
-          WDNL is een platform voor burgerparticipatie. Wij brengen inwoners,
-          organisaties en overheden bij elkaar om meningen te verzamelen en
-          beslissingen beter te onderbouwen.
+          WDNL is een platform voor burgerparticipatie. Wij proberen de inwoners
+          van Nederland weer een stem te geven.
         </p>
       </div>
     </section>
@@ -17,30 +16,36 @@
     <section class="container narrow page-section">
       <h2>Hoe werkt het?</h2>
       <p>
-        Met WDNL creëer je binnen enkele minuten een vraag of enquête. Nodig je
-        doelgroep uit, deel de resultaten en bespreek vervolgstappen met je
-        team. Ons platform is ontworpen om helder inzicht te bieden en het
-        besluitvormingsproces te versnellen.
+        WDNL geeft gebruikers de optie om je mening te geven over huidige
+        actuele moties in de tweede kamer. Via het politiek kompas proberen wij
+        de ideale politieke partij te koppelen aan jouw stemgeschiedenis. Alle
+        moties zijn voorzien van voor-tegen argumenten om je het onderwerp beter
+        te laten begrijpen.
       </p>
       <ul class="list">
-        <li>Stel vragen en stellingen op maat samen.</li>
-        <li>Verzamel antwoorden via web, mobiel en evenementen.</li>
-        <li>Volg de respons live in overzichtelijke dashboards.</li>
+        <li>Geef je mening.</li>
+        <li>Zie wat andere Nederlanders denken.</li>
+        <li>Leer politieke onderwerpen beter begrijpen.</li>
       </ul>
     </section>
 
     <section class="section-light">
       <div class="container narrow page-section">
-        <h2>Wat doen we?</h2>
+        <h2>Wat doen we nog meer?</h2>
         <p>
-          We helpen organisaties om draagvlak te creëren voor belangrijke
-          besluiten. Dit doen we door data te vertalen naar verhalen, workshops
-          te faciliteren en begeleiding te bieden tijdens het hele traject.
+          Heb je een vraag of wil je zelf een motie indienen om te zien wat
+          Nederland over een onderwerp denkt? Dien dit in via de
+          <a href="/contact">contactpagina</a>. Zie je informatie die niet
+          klopt? Meld het via de rapporteer knop naast het argument of de motie.
+          Alle moties komen rechtstreeks van
+          <a href="https://www.tweedekamer.nl/kamerstukken/moties"
+            >https://www.tweedekamer.nl/kamerstukken/moties</a
+          >
         </p>
         <ul class="list">
-          <li>Strategische begeleiding voor participatietrajecten.</li>
-          <li>Workshops en trainingen voor teams en bestuurders.</li>
-          <li>Rapportages en advies op basis van verzamelde inzichten.</li>
+          <li>Zie wat andere Nederlanders denken.</li>
+          <li>Echte moties uit de tweede kamer.</li>
+          <li>Elke motie is voorzien van voor-tegen argumenten.</li>
         </ul>
       </div>
     </section>
@@ -134,6 +139,4 @@
     ),
     url("/images/bicycles-street-amsterdam.jpg");
 }
-
-
 </style>
