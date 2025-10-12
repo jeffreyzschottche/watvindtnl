@@ -28,7 +28,7 @@ watchEffect(() => {
 
 <style scoped>
 .page-hero {
-  background-image: url("/images/Aerial Tulip Fields.png");
+  background-image: url("/images/frederic-paulussen-XHk0Se67H14-unsplash.jpg");
   background-size: cover;
   background-position: center; /* focus midden */
   background-repeat: no-repeat;

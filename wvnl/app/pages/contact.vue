@@ -52,7 +52,7 @@
 </template>
 <style scoped>
 .page-hero {
-  background-image: url("/images/low-angle-shot-windmills-zaanse-schans-neighborhood-near-lake-netherlands.jpg");
+  background-image: url("/images/norali-nayla-eDvG3IO8-Io-unsplash.jpg");
   background-size: cover;
   background-position: center; /* focus midden */
   background-repeat: no-repeat;

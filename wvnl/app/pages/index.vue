@@ -6,9 +6,9 @@ const highlights = [
       "WDNL maakt het eenvoudig om meningen te verzamelen en gedeeld inzicht zichtbaar te maken voor iedere gemeente.",
   },
   {
-    title: "Inzicht in real-time",
-    description:
-      "Bekijk direct hoe bewoners denken over actuele thema's en vertaal de resultaten naar actiegerichte besluiten.",
+    title: "",
+    // Toon een afbeelding i.p.v. tekst
+    image: "/images/map-netherlands-polygonal-mesh-line-map-flag-map.jpg",
   },
   {
     title: "Veilig en transparant",
@@ -43,7 +43,7 @@ const steps = [
         <div>
           <p class="eyebrow">Burgerparticipatie platform</p>
           <h1>Ontdek wat Nederland écht vindt</h1>
-          <p class="lead">
+          <p class="lead-home">
             WDNL helpt organisaties en overheden om snel inzichten te krijgen in
             wat er leeft. Verzamel meningen, deel inzichten en werk aan
             besluiten waar iedereen achter staat.
@@ -72,7 +72,18 @@ const steps = [
         <div class="card-grid">
           <article v-for="item in highlights" :key="item.title" class="card">
             <h3>{{ item.title }}</h3>
-            <p>{{ item.description }}</p>
+
+            <!-- Als er een image is, toon die; anders de description -->
+            <template v-if="item.image">
+              <img
+                :src="item.image"
+                alt="Inzicht in real-time – kaart van Nederland"
+                class="card-illustration"
+              />
+            </template>
+            <template v-else>
+              <p>{{ item.description }}</p>
+            </template>
           </article>
         </div>
       </div>
@@ -104,3 +115,79 @@ const steps = [
     </section>
   </div>
 </template>
+
+<style scoped>
+/* HERO met achtergrond uit /public/images/... */
+.hero {
+  background-image: url("/images/alix-greenman-ac-g-HU243Y-unsplash.jpg");
+  background-size: cover;
+  background-position: center; /* focus op het midden */
+  background-repeat: no-repeat;
+
+  height: min(50vh, 500px); /* max 500px hoog, krimpt mee */
+  display: flex; /* verticaal centreren zonder container te breken */
+  align-items: center;
+
+  color: #fff;
+  position: relative;
+  isolation: isolate; /* nodig voor overlays */
+  padding: 0; /* hoogte komt uit height */
+}
+
+/* Top/Bottom gradient voor leesbaarheid */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.12) 35%,
+    rgba(0, 0, 0, 0.12) 65%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: -1;
+}
+
+/* Vignette naar randen, meer focus op midden */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.52) 105%,
+    rgba(0, 0, 0, 0.62) 100%
+  );
+  z-index: -1;
+}
+
+/* Zorg dat je content boven de overlays staat, zonder breedte te forceren */
+.hero .hero-content {
+  position: relative;
+  z-index: 1;
+  gap: 2rem; /* optioneel: ruimte tussen tekst en kaart */
+}
+
+/* ---- Kaart-afbeelding in highlight-card ---- */
+.card-illustration {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 0.5rem;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  /* Als je vaste hoogte wilt, uncomment:
+  max-height: 220px; 
+  object-fit: cover;
+  */
+}
+
+/* Kleine schermen: eventueel iets hoger kader */
+@media (max-width: 768px) {
+  .hero {
+    height: min(60vh, 500px);
+  }
+}
+</style>

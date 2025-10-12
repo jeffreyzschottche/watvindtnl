@@ -28,7 +28,7 @@
 </template>
 <style scoped>
 .page-hero {
-  background-image: url("/images/Warm Elegance in Bloom_ A Rhythmic Tapestry of Red and White Tulips.png");
+  background-image: url("/images/max-van-den-oetelaar-rvDMd5LvJRA-unsplash.jpg");
   background-size: cover;
   background-position: center; /* focus midden */
   background-repeat: no-repeat;

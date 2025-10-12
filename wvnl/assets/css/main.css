@@ -28,6 +28,7 @@ body {
     #eef1f6 100%
   );
   color: var(--color-text);
+  overflow-x: hidden;
 }
 
 a {
@@ -38,12 +39,11 @@ a {
 
 a:hover,
 a:focus {
-  color: var(--color-accent);
   text-decoration: underline;
 }
 
 .brand:hover {
-  text-decoration: none;
+  text-decoration: none !important;
 }
 .button:hover {
   text-decoration: none !important;
@@ -139,7 +139,7 @@ a:focus {
 }
 
 .nav-link {
-  color: var(--color-cta);
+  color: var(--color-text);
   font-weight: 600;
   text-decoration: none;
   padding-bottom: 0.2rem;
@@ -328,6 +328,12 @@ a:focus {
 .lead {
   font-size: 1.125rem;
   color: #1d2939;
+  max-width: 560px;
+}
+
+.lead-home {
+  font-size: 1.125rem;
+  color: #ffffff;
   max-width: 560px;
 }
 
