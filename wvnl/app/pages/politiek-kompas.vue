@@ -11,7 +11,9 @@ useHead({
     <section class="page-hero page-hero--compass">
       <div class="container narrow">
         <h1 class="page-hero__title">
-          <span class="page-hero__accent page-hero__accent--blue">Politiek</span>
+          <span class="page-hero__accent page-hero__accent--blue"
+            >Politiek</span
+          >
           <span class="page-hero__accent page-hero__accent--red">Kompas</span>
         </h1>
         <p class="page-hero__subtitle">Deze pagina is nog in ontwikkeling.</p>
@@ -81,7 +83,14 @@ useHead({
                   in="shadowInnerInner1"
                 ></feColorMatrix>
               </filter>
-              <rect id="path-3" x="0" y="0" width="37" height="18.3333333" rx="2"></rect>
+              <rect
+                id="path-3"
+                x="0"
+                y="0"
+                width="37"
+                height="18.3333333"
+                rx="2"
+              ></rect>
               <filter
                 x="-12.2%"
                 y="-24.5%"
@@ -114,7 +123,13 @@ useHead({
                   in="shadowInnerInner1"
                 ></feColorMatrix>
               </filter>
-              <ellipse id="path-5" cx="75.5" cy="76" rx="75.5" ry="76"></ellipse>
+              <ellipse
+                id="path-5"
+                cx="75.5"
+                cy="76"
+                rx="75.5"
+                ry="76"
+              ></ellipse>
               <filter
                 x="-9.6%"
                 y="-9.5%"
@@ -147,7 +162,13 @@ useHead({
                   in="shadowInnerInner1"
                 ></feColorMatrix>
               </filter>
-              <ellipse id="path-7" cx="75.9389535" cy="76.4418605" rx="63.6482558" ry="64.0697674"></ellipse>
+              <ellipse
+                id="path-7"
+                cx="75.9389535"
+                cy="76.4418605"
+                rx="63.6482558"
+                ry="64.0697674"
+              ></ellipse>
               <filter
                 x="-3.9%"
                 y="-3.9%"
@@ -210,7 +231,13 @@ useHead({
                   in="shadowInnerInner1"
                 ></feColorMatrix>
               </filter>
-              <ellipse id="path-11" cx="74.8284884" cy="76.8604651" rx="4.82848837" ry="4.86046512"></ellipse>
+              <ellipse
+                id="path-11"
+                cx="74.8284884"
+                cy="76.8604651"
+                rx="4.82848837"
+                ry="4.86046512"
+              ></ellipse>
               <filter
                 x="-36.2%"
                 y="-36.0%"
@@ -248,7 +275,11 @@ useHead({
               fill="none"
               fill-rule="evenodd"
             >
-              <g id="Group-10-Copy-5" transform="translate(2.000000, 2.000000)" fill-rule="nonzero">
+              <g
+                id="Group-10-Copy-5"
+                transform="translate(2.000000, 2.000000)"
+                fill-rule="nonzero"
+              >
                 <path
                   d="M76.5,55 C61.3121694,55 49,42.6878306 49,27.5 C49,12.3121694 61.3121694,0 76.5,0 C91.6878306,0 104,12.3121694 104,27.5 C104,42.6878306 91.6878306,55 76.5,55 Z M76.5,48 C87.8218374,48 97,38.8218374 97,27.5 C97,16.1781626 87.8218374,7 76.5,7 C65.1781626,7 56,16.1781626 56,27.5 C56,38.8218374 65.1781626,48 76.5,48 Z"
                   id="Combined-Shape"
@@ -303,10 +334,22 @@ useHead({
                     stroke-linejoin="round"
                     stroke-width="2"
                   >
-                    <path d="M1.87781955,0.624324324 L1.87781955,5.61891892" id="Line-3"></path>
-                    <path d="M7.76981857,0.624324324 L7.76981857,5.61891892" id="Line-3-Copy"></path>
-                    <path d="M15.2810968,0.624324324 L15.2810968,5.61891892" id="Line-3-Copy-2"></path>
-                    <path d="M22.792375,0.624324324 L22.792375,5.61891892" id="Line-3-Copy-3"></path>
+                    <path
+                      d="M1.87781955,0.624324324 L1.87781955,5.61891892"
+                      id="Line-3"
+                    ></path>
+                    <path
+                      d="M7.76981857,0.624324324 L7.76981857,5.61891892"
+                      id="Line-3-Copy"
+                    ></path>
+                    <path
+                      d="M15.2810968,0.624324324 L15.2810968,5.61891892"
+                      id="Line-3-Copy-2"
+                    ></path>
+                    <path
+                      d="M22.792375,0.624324324 L22.792375,5.61891892"
+                      id="Line-3-Copy-3"
+                    ></path>
                   </g>
                   <g
                     id="Group-7"
@@ -316,10 +359,22 @@ useHead({
                     stroke-linejoin="round"
                     stroke-width="2"
                   >
-                    <path d="M1.87781955,0.535135135 L1.87781955,4.81621622" id="Line-3"></path>
-                    <path d="M7.82424812,0.535135135 L7.82424812,4.81621622" id="Line-3-Copy"></path>
-                    <path d="M15.3355263,0.535135135 L15.3355263,4.81621622" id="Line-3-Copy-2"></path>
-                    <path d="M22.8468045,0.535135135 L22.8468045,4.81621622" id="Line-3-Copy-3"></path>
+                    <path
+                      d="M1.87781955,0.535135135 L1.87781955,4.81621622"
+                      id="Line-3"
+                    ></path>
+                    <path
+                      d="M7.82424812,0.535135135 L7.82424812,4.81621622"
+                      id="Line-3-Copy"
+                    ></path>
+                    <path
+                      d="M15.3355263,0.535135135 L15.3355263,4.81621622"
+                      id="Line-3-Copy-2"
+                    ></path>
+                    <path
+                      d="M22.8468045,0.535135135 L22.8468045,4.81621622"
+                      id="Line-3-Copy-3"
+                    ></path>
                   </g>
                 </g>
                 <g id="Group-9" transform="translate(0.000000, 52.000000)">
@@ -332,7 +387,11 @@ useHead({
                         filter="url(#filter-6)"
                         xlink:href="#path-5"
                       ></use>
-                      <use stroke="#003DA5" stroke-width="3" xlink:href="#path-5"></use>
+                      <use
+                        stroke="#003DA5"
+                        stroke-width="3"
+                        xlink:href="#path-5"
+                      ></use>
                     </g>
                     <g id="Oval-6">
                       <use fill="#FFFFFF" xlink:href="#path-7"></use>
@@ -342,7 +401,11 @@ useHead({
                         filter="url(#filter-8)"
                         xlink:href="#path-7"
                       ></use>
-                      <use stroke="#003DA5" stroke-width="3" xlink:href="#path-7"></use>
+                      <use
+                        stroke="#003DA5"
+                        stroke-width="3"
+                        xlink:href="#path-7"
+                      ></use>
                     </g>
                     <ellipse
                       id="Oval"
@@ -411,7 +474,11 @@ useHead({
                       filter="url(#filter-12)"
                       xlink:href="#path-11"
                     ></use>
-                    <use stroke="#003DA5" stroke-width="3" xlink:href="#path-11"></use>
+                    <use
+                      stroke="#003DA5"
+                      stroke-width="3"
+                      xlink:href="#path-11"
+                    ></use>
                   </g>
                 </g>
               </g>
@@ -545,35 +612,4 @@ useHead({
   display: grid;
   min-height: clamp(280px, 45vw, 420px);
 }
-
-:global(body.page-politiek-kompas) {
-  width: 100vw;
-  min-height: 100vh;
-  display: grid;
-}
-
-:global(body.page-politiek-kompas) .compass-svg {
-  place-self: center;
-  height: 50%;
-  max-height: min(420px, 80vh);
-  width: auto;
-}
-
-:global(body.page-politiek-kompas) .spinner {
-  animation: spin 1s ease-in-out infinite;
-  transform-origin: 50% 50%;
-  transform-box: fill-box;
-}
-
-@keyframes spin {
-  50% {
-    transform: rotate(10deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
-
 </style>
