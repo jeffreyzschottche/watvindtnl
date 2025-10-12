@@ -48,3 +48,15 @@ Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(fun
     Route::post('/political-parties', [AdminPoliticalPartyController::class, 'store']);
     Route::patch('/political-parties/{politicalParty}', [AdminPoliticalPartyController::class, 'update']);
 });
+
+
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-mail', function () {
+    Mail::raw('Dit is een testmail vanaf WVNL via Mailtrap.', function ($m) {
+        $m->to('any@recipient.test')  // mag eender welk adres zijn
+            ->subject('WVNL Mailtrap Test');
+    });
+
+    return response()->json(['sent' => true]);
+});
