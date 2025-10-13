@@ -5,32 +5,20 @@
         class="flex flex-col gap-3 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between"
       >
         <div>
-          <h1 class="text-2xl font-bold text-slate-900">WatVindt.nl CMS</h1>
-          <p class="text-sm text-slate-500">
-            Beheer kwesties, argumenten, meldingen en politieke partijen vanuit
-            één overzicht.
-          </p>
+          <h1 class="text-2xl font-bold text-slate-900">
+            Hier heb jij niks te zoeken...
+          </h1>
+          <p class="text-sm text-slate-500">Login of registreer</p>
         </div>
-        <div class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-600">
-          <p class="font-semibold text-slate-700">Ingelogd als</p>
-          <p v-if="isLoggedIn" class="truncate">{{ auth.user.value?.email }}</p>
-          <p v-else class="truncate">Niet ingelogd</p>
-        </div>
+        <div
+          class="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-600"
+        ></div>
       </header>
 
-      <section v-if="!isLoggedIn" class="rounded-xl bg-white p-6 shadow-sm">
-        <h2 class="text-lg font-semibold text-slate-800">Aanmelden vereist</h2>
-        <p class="mt-2 text-slate-600">
-          Log in met het beheerdersaccount ({{ adminEmail }}) om toegang te
-          krijgen tot het CMS.
-        </p>
-        <NuxtLink
-          to="/login"
-          class="mt-4 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800"
-        >
-          Naar inloggen
-        </NuxtLink>
-      </section>
+      <section
+        v-if="!isLoggedIn"
+        class="rounded-xl bg-white p-6 shadow-sm"
+      ></section>
 
       <section v-else-if="!isAdmin" class="rounded-xl bg-white p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-red">Geen toegang</h2>
@@ -1552,6 +1540,8 @@ import type {
   AdminPoliticalParty,
   AdminPoliticalPartyPayload,
 } from "~/types/admin";
+
+import { useRouter } from "vue-router";
 
 const {
   auth,
