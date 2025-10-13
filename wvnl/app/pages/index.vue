@@ -124,14 +124,13 @@ const steps = [
   background-position: center; /* focus op het midden */
   background-repeat: no-repeat;
 
-  height: min(50vh, 500px); /* max 500px hoog, krimpt mee */
+  min-height: min(60vh, 520px); /* max 520px hoog, kan meegroeien */
   display: flex; /* verticaal centreren zonder container te breken */
   align-items: center;
 
   color: #fff;
   position: relative;
   isolation: isolate; /* nodig voor overlays */
-  padding: 0; /* hoogte komt uit height */
 }
 
 h2 {
@@ -174,6 +173,28 @@ h2 {
   gap: 2rem; /* optioneel: ruimte tussen tekst en kaart */
 }
 
+.hero h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2.25rem, 6.4vw, 3.5rem);
+  line-height: 1.08;
+}
+
+.hero .eyebrow {
+  margin-top: 0;
+}
+
+.hero .lead-home {
+  font-size: clamp(1.05rem, 3.2vw, 1.125rem);
+  margin: 0;
+}
+
+.ctahome {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
 /* ---- Kaart-afbeelding in highlight-card ---- */
 .card-illustration {
   width: 100%;
@@ -197,9 +218,8 @@ h2 {
   color: var(--color-primary);
   border: 2px solid transparent;
   box-shadow: 0 18px 36px rgba(255, 255, 255, 0.35);
-  margin-right: 1em;
   width: 7.5em;
-  min-height: 2em;
+  min-height: 2.5em;
   border-radius: 50px;
   font-weight: 700;
   text-decoration: none;
@@ -213,6 +233,46 @@ h2 {
   color: #fff;
   border-color: transparent;
   box-shadow: 0 18px 36px rgba(200, 16, 46, 0.35);
+}
+
+@media (max-width: 1023px) {
+  .hero {
+    min-height: unset;
+    padding-block: clamp(6.5rem, 14vw, 7.5rem) clamp(3.25rem, 9vw, 4.25rem);
+    align-items: flex-start;
+  }
+
+  .hero .hero-content {
+    gap: 2.5rem;
+  }
+
+  .hero-card {
+    backdrop-filter: blur(4px);
+    background: rgba(255, 255, 255, 0.92);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero .hero-content {
+    text-align: left;
+  }
+
+  .ctahome {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .ctahome .button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-card {
+    padding: 1.5rem;
+  }
 }
 .ctahome .button:first-child:hover,
 .ctahome .button:first-child:focus {
@@ -246,10 +306,4 @@ h2 {
   outline-offset: 2px;
 }
 
-/* Kleine schermen: eventueel iets hoger kader */
-@media (max-width: 768px) {
-  .hero {
-    height: min(60vh, 500px);
-  }
-}
 </style>
