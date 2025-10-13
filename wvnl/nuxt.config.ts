@@ -5,10 +5,19 @@ export default defineNuxtConfig({
         process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",
     },
   },
-  ssr: false,
   app: {
     baseURL: "/",
+    head: {
+      meta: [
+        {
+          name: "viewport",
+          content:
+            "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+        },
+      ],
+    },
   },
+  ssr: false,
   modules: ["@pinia/nuxt", "@nuxt/devtools"],
   css: ["../assets/css/main.css"],
   devtools: { enabled: true },

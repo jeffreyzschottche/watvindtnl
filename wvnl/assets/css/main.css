@@ -19,6 +19,11 @@
     sans-serif;
 }
 
+html,
+body {
+  touch-action: pan-x pan-y;
+}
+
 body {
   margin: 0;
   background: radial-gradient(
@@ -96,7 +101,7 @@ a:focus {
 @media screen and (max-width: 767px) {
   .auth-links button {
     width: 100% !important;
-    margin-left: -2em;
+    transform: scale(0.85);
   }
 }
 
@@ -112,7 +117,7 @@ a:focus {
   gap: 0.35rem;
   background: #ffffff;
   border: 2px solid var(--color-cta);
-  margin-left: 10em;
+  margin-left: 50%;
   border-radius: 12px;
   padding: 0.35rem 0.4rem;
   cursor: pointer;
