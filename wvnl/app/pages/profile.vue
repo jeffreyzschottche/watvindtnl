@@ -256,10 +256,7 @@
             role="tabpanel"
             aria-labelledby="compass-tab"
           >
-            <div class="profile-placeholder">
-              <h2>Politiek kompas</h2>
-              <p>Coming Soon..</p>
-            </div>
+            <ProfilePoliticalCompass />
           </section>
         </div>
       </div>
@@ -275,6 +272,7 @@
 import { nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";
+import ProfilePoliticalCompass from "~/components/profile/ProfilePoliticalCompass.vue";
 
 const auth = useAuthStore();
 const api = useApi();
@@ -288,12 +286,7 @@ const tabs = [
   { key: "profile", label: "Profiel" },
   { key: "votes", label: "Stemgeschiedenis" },
   { key: "security", label: "Wachtwoord" },
-  {
-    key: "compass",
-    label: "Politiek kompas",
-    disabled: true,
-    description: "Coming Soon..",
-  },
+  { key: "compass", label: "Politiek kompas" },
 ] as const;
 
 type Tab = (typeof tabs)[number];
@@ -705,29 +698,6 @@ async function updatePassword() {
 
 .profile-tab.is-active .profile-tab__label {
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-}
-
-.profile-placeholder {
-  border: 1px dashed rgba(0, 61, 165, 0.3);
-  border-radius: 18px;
-  padding: clamp(1.75rem, 3vw, 2.5rem);
-  text-align: center;
-  background: linear-gradient(
-    140deg,
-    rgba(0, 61, 165, 0.05) 0%,
-    rgba(255, 111, 0, 0.05) 100%
-  );
-}
-
-.profile-placeholder h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.35rem;
-}
-
-.profile-placeholder p {
-  margin: 0;
-  font-weight: 600;
-  color: rgba(16, 24, 40, 0.72);
 }
 
 .profile__content {

@@ -39,4 +39,10 @@ return [
         'recipient' => env('MAIL_CONTACT_RECIPIENT', env('MAIL_FROM_ADDRESS')),
     ],
 
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'organization' => env('OPENAI_ORG'),
+        'model' => env('OPENAI_MODEL', 'gpt-4.1-mini'),
+    ],
+
 ];

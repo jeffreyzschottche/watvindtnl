@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminArgumentController;
 use App\Http\Controllers\Admin\AdminIssueController;
 use App\Http\Controllers\Admin\AdminPoliticalPartyController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PoliticalCompassController;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
@@ -28,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
     Route::get('/me/votes', [UserIssueController::class, 'history']);
+    Route::get('/me/political-compass', [PoliticalCompassController::class, 'show']);
+    Route::post('/me/political-compass', [PoliticalCompassController::class, 'store']);
     Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote']);
     Route::post('/issues/{issue}/report', [ReportController::class, 'reportIssue']);
     Route::post('/arguments/{argument}/report', [ReportController::class, 'reportArgument']);
