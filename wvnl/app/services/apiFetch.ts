@@ -2,7 +2,8 @@ export async function apiFetch<T>(
   endpoint: string,
   init?: RequestInit
 ): Promise<T> {
-  const base = useRuntimeConfig().public.apiBase || "http://localhost:8000/api";
+  const base =
+    useRuntimeConfig().public.apiBase || "https://api.watdenktnl.nl/api";
   const res = await fetch(`${base}${endpoint}`, init);
 
   const isJson = res.headers.get("content-type")?.includes("application/json");

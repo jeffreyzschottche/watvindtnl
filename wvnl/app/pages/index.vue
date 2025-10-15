@@ -265,7 +265,7 @@ h2 {
   }
 
   .ctahome .button {
-    width: 100%;
+    width: 80%;
   }
 }
 
@@ -305,5 +305,4 @@ h2 {
   outline: 3px solid currentColor;
   outline-offset: 2px;
 }
-
 </style>
