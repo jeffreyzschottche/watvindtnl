@@ -35,7 +35,7 @@
           genereren. Stem op een issue om te starten.
         </template>
         <template v-else>
-          Je kunt één keer per maand een nieuw kompas genereren.
+          Je kunt één keer per dag een nieuw kompas genereren.
           <template v-if="overview.next_available_at">
             Volgende mogelijkheid:
             {{ formatDateTime(overview.next_available_at) }}.
@@ -224,6 +224,13 @@ async function loadOverview(options: { keepSuccess?: boolean } = {}) {
 
 async function generateCompass() {
   if (generating.value) return;
+  if (!overview.value) return;
+
+  const hasMinimumVotes =
+    overview.value.vote_count >= overview.value.minimum_votes;
+  if (!overview.value.can_generate || !hasMinimumVotes) {
+    return;
+  }
 
   generating.value = true;
   error.value = null;

@@ -52,7 +52,7 @@ class PoliticalCompassController extends Controller
 
         if ($voteCount < $minimumVotes) {
             throw ValidationException::withMessages([
-                'votes' => "Je hebt minimaal {$minimumVotes} stem nodig voor een politiek kompas.",
+                'votes' => "Je hebt minimaal {$minimumVotes} stemmen nodig voor een politiek kompas.",
             ]);
         }
 
@@ -60,7 +60,7 @@ class PoliticalCompassController extends Controller
             $next = $this->service->nextAvailableAt($user);
 
             return response()->json([
-                'message' => 'Je kunt maximaal één keer per maand een politiek kompas genereren.',
+                'message' => 'Je kunt maximaal één keer per dag een politiek kompas genereren.',
                 'next_available_at' => $next?->toIso8601String(),
             ], Response::HTTP_TOO_MANY_REQUESTS);
         }

@@ -16,7 +16,7 @@ use RuntimeException;
 class PoliticalCompassService
 {
     private const MAX_ISSUES = 25;
-    private const MINIMUM_VOTES = 1;
+    private const MINIMUM_VOTES = 10;
 
     /** @var int[] */
     private const ALLOWED_PARTY_IDS = [
@@ -51,7 +51,7 @@ class PoliticalCompassService
             return true;
         }
 
-        return $latest->created_at?->addMonth()->isPast() ?? true;
+        return $latest->created_at?->addDay()->isPast() ?? true;
     }
 
     public function nextAvailableAt(User $user): ?Carbon
@@ -61,7 +61,7 @@ class PoliticalCompassService
             return null;
         }
 
-        return $latest->created_at->copy()->addMonth();
+        return $latest->created_at->copy()->addDay();
     }
 
     public function generate(User $user): PoliticalCompass
