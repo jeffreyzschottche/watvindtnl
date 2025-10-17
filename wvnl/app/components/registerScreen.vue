@@ -115,6 +115,7 @@
         <label for="terms">
           Ik accepteer de
           <NuxtLink to="/algemene-voorwaarden">algemene voorwaarden</NuxtLink>.
+          <span class="form-option__required">*verplicht</span>
         </label>
       </div>
       <p v-if="showTermsError" class="form-option__error">
@@ -128,7 +129,7 @@
 
       <div class="form-option">
         <input id="cookies" v-model="acceptsCookies" type="checkbox" />
-        <label for="cookies">Ik ga akkoord met het gebruik van cookies.</label>
+        <label for="cookies">Ik ga akkoord met het gebruik van cookies (optioneel).</label>
       </div>
     </fieldset>
 
@@ -277,5 +278,12 @@ async function onSubmit() {
   font-size: 0.95rem;
   font-weight: 600;
   color: #c8102e;
+}
+
+.form-option__required {
+  color: #c8102e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 0.35rem;
 }
 </style>
