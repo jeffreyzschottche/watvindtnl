@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const siteName = "Wat Denkt Nederland"
-const title = "Wat Denkt Nederland | Ontdek wat Nederland écht denkt"
+const siteName = "Wat Denkt Nederland";
+const title = "Wat Denkt Nederland | Ontdek wat Nederland écht denkt";
 const description =
-  "Verken actuele politieke moties, geef je mening en zie direct hoe andere Nederlanders stemmen op het burgerparticipatieplatform Wat Denkt Nederland."
-const url = "https://watvindtnl.nl/"
+  "Verken actuele politieke moties, geef je mening en zie direct hoe andere Nederlanders stemmen op het burgerparticipatieplatform Wat Denkt Nederland.";
+const url = "https://watvindtnl.nl/";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -17,7 +17,7 @@ const jsonLd = {
     name: siteName,
     url: "https://watvindtnl.nl",
   },
-}
+};
 
 useHead({
   title,
@@ -41,7 +41,10 @@ useHead({
   __dangerouslyDisableSanitizersByTagID: {
     "ld-json-home": ["innerHTML"],
   },
-})
+});
+useSeoMeta({
+  robots: "index, follow",
+});
 
 const highlights = [
   {
