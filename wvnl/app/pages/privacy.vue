@@ -18,30 +18,6 @@ const jsonLd = {
     url: "https://watvindtnl.nl",
   },
 };
-
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-  script: [
-    {
-      id: "ld-json-privacy",
-      type: "application/ld+json",
-      innerHTML: JSON.stringify(jsonLd),
-    },
-  ],
-  __dangerouslyDisableSanitizersByTagID: {
-    "ld-json-privacy": ["innerHTML"],
-  },
-});
 </script>
 
 <template>

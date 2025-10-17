@@ -525,21 +525,6 @@ async function updatePassword() {
 const title = "Mijn profiel | Wat Denkt Nederland";
 const description =
   "Beheer je persoonlijke gegevens, stemgeschiedenis en voorkeuren binnen je Wat Denkt Nederland-profiel.";
-
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { name: "robots", content: "noindex, nofollow" },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-});
 </script>
 
 <style scoped>

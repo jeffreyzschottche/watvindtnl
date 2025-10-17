@@ -1,10 +1,15 @@
 <template>
   <div class="verification-page">
     <section class="container narrow">
-      <div class="verification-card" :class="`verification-card--${copy.variant}`">
+      <div
+        class="verification-card"
+        :class="`verification-card--${copy.variant}`"
+      >
         <h1>{{ copy.title }}</h1>
         <p>{{ copy.message }}</p>
-        <p class="verification-card__hint">Je wordt zo doorgestuurd naar de loginpagina.</p>
+        <p class="verification-card__hint">
+          Je wordt zo doorgestuurd naar de loginpagina.
+        </p>
         <NuxtLink class="verification-card__link" to="/login">
           Ga nu naar login
         </NuxtLink>
@@ -17,21 +22,6 @@
 const title = "E-mailadres verifiëren | Wat Denkt Nederland";
 const description =
   "Controleer de status van je e-mailverificatie voor je Wat Denkt Nederland-account en ga snel verder naar de loginpagina.";
-
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { name: "robots", content: "noindex, nofollow" },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-});
 
 const route = useRoute();
 const router = useRouter();
@@ -46,28 +36,32 @@ const copy = computed(() => {
     case "success":
       return {
         title: "Dankjewel!",
-        message: "Je e-mailadres is bevestigd. Je kunt nu inloggen met je gegevens.",
+        message:
+          "Je e-mailadres is bevestigd. Je kunt nu inloggen met je gegevens.",
         variant: "success",
         redirect: "success",
       } as const;
     case "already-verified":
       return {
         title: "Je was al bevestigd",
-        message: "We herkennen je account als geverifieerd. Log gerust in om verder te gaan.",
+        message:
+          "We herkennen je account als geverifieerd. Log gerust in om verder te gaan.",
         variant: "info",
         redirect: "already-verified",
       } as const;
     case "invalid":
       return {
         title: "Link verlopen of ongeldig",
-        message: "Het lijkt erop dat deze verificatielink niet (meer) werkt. Vraag een nieuwe bevestigingsmail aan via de loginpagina.",
+        message:
+          "Het lijkt erop dat deze verificatielink niet (meer) werkt. Vraag een nieuwe bevestigingsmail aan via de loginpagina.",
         variant: "error",
         redirect: "invalid",
       } as const;
     default:
       return {
         title: "We verwerken je verificatie",
-        message: "Je verzoek is ontvangen. Als er iets misgaat, kun je via de loginpagina een nieuwe e-mail laten sturen.",
+        message:
+          "Je verzoek is ontvangen. Als er iets misgaat, kun je via de loginpagina een nieuwe e-mail laten sturen.",
         variant: "info",
         redirect: status.value,
       } as const;
@@ -76,7 +70,10 @@ const copy = computed(() => {
 
 onMounted(() => {
   window.setTimeout(() => {
-    router.replace({ path: "/login", query: { verification: copy.value.redirect } });
+    router.replace({
+      path: "/login",
+      query: { verification: copy.value.redirect },
+    });
   }, 2000);
 });
 </script>
@@ -87,7 +84,11 @@ onMounted(() => {
   display: grid;
   align-items: center;
   padding: 4rem 1rem;
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.12), rgba(200, 16, 46, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.12),
+    rgba(200, 16, 46, 0.1)
+  );
 }
 
 .verification-card {
@@ -136,7 +137,11 @@ onMounted(() => {
   gap: 0.35rem;
   padding: 0.65rem 1.5rem;
   border-radius: 999px;
-  background: linear-gradient(130deg, var(--color-accent, #c8102e), var(--color-primary, #003da5));
+  background: linear-gradient(
+    130deg,
+    var(--color-accent, #c8102e),
+    var(--color-primary, #003da5)
+  );
   color: #fff;
   font-weight: 700;
 }

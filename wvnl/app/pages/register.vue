@@ -28,21 +28,6 @@ const title = "Account aanmaken | Wat Denkt Nederland";
 const description =
   "Maak een account aan bij Wat Denkt Nederland en doe mee aan discussies over actuele politieke moties.";
 
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { name: "robots", content: "noindex, nofollow" },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-});
-
 watchEffect(() => {
   if (isLoggedIn.value) router.replace("/");
 });

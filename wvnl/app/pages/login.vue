@@ -46,21 +46,6 @@ const title = "Inloggen | Wat Denkt Nederland";
 const description =
   "Log in bij Wat Denkt Nederland om verder te gaan met stemmen op actuele politieke moties en het beheren van je profiel.";
 
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { name: "robots", content: "noindex, nofollow" },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-});
-
 type BannerVariant = "success" | "info" | "warning" | "error";
 type Banner = { title: string; message: string; variant: BannerVariant };
 

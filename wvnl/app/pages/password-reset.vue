@@ -7,30 +7,56 @@
           Maak een nieuw wachtwoord aan om weer veilig in te loggen.
         </p>
 
-        <div v-if="state === 'invalid'" class="reset-card__state reset-card__state--warning">
+        <div
+          v-if="state === 'invalid'"
+          class="reset-card__state reset-card__state--warning"
+        >
           <h2>Deze link werkt niet meer</h2>
           <p>
-            De resetlink is ongeldig of verlopen. Vraag via de loginpagina een nieuwe e-mail aan.
+            De resetlink is ongeldig of verlopen. Vraag via de loginpagina een
+            nieuwe e-mail aan.
           </p>
-          <NuxtLink class="reset-card__link" to="/login">Terug naar login</NuxtLink>
+          <NuxtLink class="reset-card__link" to="/login"
+            >Terug naar login</NuxtLink
+          >
         </div>
 
-        <div v-else-if="state === 'error'" class="reset-card__state reset-card__state--error">
+        <div
+          v-else-if="state === 'error'"
+          class="reset-card__state reset-card__state--error"
+        >
           <h2>Er ging iets mis</h2>
-          <p>{{ serverMessage || "We konden je verzoek niet verwerken. Probeer het opnieuw." }}</p>
-          <NuxtLink class="reset-card__link" to="/login">Probeer opnieuw</NuxtLink>
+          <p>
+            {{
+              serverMessage ||
+              "We konden je verzoek niet verwerken. Probeer het opnieuw."
+            }}
+          </p>
+          <NuxtLink class="reset-card__link" to="/login"
+            >Probeer opnieuw</NuxtLink
+          >
         </div>
 
-        <div v-else-if="state === 'success'" class="reset-card__state reset-card__state--success">
+        <div
+          v-else-if="state === 'success'"
+          class="reset-card__state reset-card__state--success"
+        >
           <h2>Je wachtwoord is aangepast</h2>
           <p>{{ successMessage }}</p>
-          <NuxtLink class="reset-card__link" to="/login">Ga naar login</NuxtLink>
+          <NuxtLink class="reset-card__link" to="/login"
+            >Ga naar login</NuxtLink
+          >
         </div>
 
         <form v-else class="reset-form" @submit.prevent="onSubmit">
           <label>
             <span>E-mailadres</span>
-            <input v-model="form.email" type="email" autocomplete="email" required />
+            <input
+              v-model="form.email"
+              type="email"
+              autocomplete="email"
+              required
+            />
           </label>
 
           <label>
@@ -73,21 +99,6 @@
 const title = "Nieuw wachtwoord instellen | Wat Denkt Nederland";
 const description =
   "Stel een nieuw wachtwoord in voor je Wat Denkt Nederland-account en krijg weer toegang tot het platform.";
-
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { name: "robots", content: "noindex, nofollow" },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-});
 
 const route = useRoute();
 const router = useRouter();
@@ -167,7 +178,8 @@ async function onSubmit() {
       password_confirmation: form.confirm,
     });
     successMessage.value =
-      message || "Je wachtwoord is succesvol gewijzigd. Je wordt doorgestuurd naar de loginpagina.";
+      message ||
+      "Je wachtwoord is succesvol gewijzigd. Je wordt doorgestuurd naar de loginpagina.";
     state.value = "success";
     window.setTimeout(() => {
       router.replace({ path: "/login", query: { reset: "success" } });
@@ -186,7 +198,11 @@ async function onSubmit() {
   display: grid;
   align-items: center;
   padding: 4rem 1rem;
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.1), rgba(200, 16, 46, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.1),
+    rgba(200, 16, 46, 0.08)
+  );
 }
 
 .reset-card {
@@ -244,7 +260,11 @@ async function onSubmit() {
   display: inline-flex;
   padding: 0.55rem 1.45rem;
   border-radius: 999px;
-  background: linear-gradient(130deg, var(--color-accent, #c8102e), var(--color-primary, #003da5));
+  background: linear-gradient(
+    130deg,
+    var(--color-accent, #c8102e),
+    var(--color-primary, #003da5)
+  );
   color: #fff;
   font-weight: 700;
 }

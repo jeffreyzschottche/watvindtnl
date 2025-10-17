@@ -96,30 +96,6 @@ const jsonLd = {
   },
 };
 
-useHead({
-  title,
-  meta: [
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:locale", content: "nl_NL" },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-  ],
-  script: [
-    {
-      id: "ld-json-issues",
-      type: "application/ld+json",
-      innerHTML: JSON.stringify(jsonLd),
-    },
-  ],
-  __dangerouslyDisableSanitizersByTagID: {
-    "ld-json-issues": ["innerHTML"],
-  },
-});
-
 const route = useRoute();
 const router = useRouter();
 
@@ -185,8 +161,7 @@ onMounted(() => {
 function notifyLoginRequired() {
   notifications.addNotification({
     message: "Log in of registreer om te stemmen.",
-    html:
-      'Je kan pas stemmen als je een account hebt aangemaakt. <a class="issues-page__auth-link" href="/login">Log in</a> of <a class="issues-page__auth-link" href="/register">registreer</a> om mee te doen.',
+    html: 'Je kan pas stemmen als je een account hebt aangemaakt. <a class="issues-page__auth-link" href="/login">Log in</a> of <a class="issues-page__auth-link" href="/register">registreer</a> om mee te doen.',
     type: "info",
     timeout: 6000,
   });
