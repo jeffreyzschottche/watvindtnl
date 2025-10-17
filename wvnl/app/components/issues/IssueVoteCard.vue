@@ -194,7 +194,12 @@ const votePercentages = computed(() => {
 });
 
 function emitVote(vote: IssueVoteOption) {
-  emit("vote", vote);
+  if (!auth.isLoggedIn) {
+    alert("je bent niet ingelogd :P");
+    return;
+  } else {
+    emit("vote", vote);
+  }
 }
 
 function handleShare(platform: SharePlatform) {
