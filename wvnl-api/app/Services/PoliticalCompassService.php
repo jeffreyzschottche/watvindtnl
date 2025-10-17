@@ -20,7 +20,21 @@ class PoliticalCompassService
 
     /** @var int[] */
     private const ALLOWED_PARTY_IDS = [
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
     ];
 
     private const IDEOLOGY_OPTIONS = [
@@ -410,9 +424,9 @@ class PoliticalCompassService
     {
         $instructions = [
             'Analyseer het stemgedrag van de gebruiker op basis van de aangeleverde data.',
-            'Geef een score van 1 (links) tot 10 (rechts); 5 is exact het midden.',
+            'Geef een score van 1 (links) tot 10 (rechts); 5 is exact het midden. Wees eerlijk, rechts / links, mag allebei. Gebaseerd op de info, wat is deze gebruiker?',
             'Kies precies één label uit de lijst "ideology_options" en gebruik dezelfde term, hoofdkenmerk en spectrum als referentie.',
-            'Kies één partij-id uit "recommendable_parties" en motiveer de keuze in maximaal 80 woorden.',
+            'Kies één partij-id uit "recommendable_parties" en motiveer de keuze in maximaal 80 woorden gebaseerd op zijn stem gedrag.',
             'Noem geen partijen of labels buiten de lijsten en speculeer niet.',
             'Formuleer alle tekst in het Nederlands.',
         ];

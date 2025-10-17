@@ -63,7 +63,9 @@
               <div class="compass-score__bar">
                 <div
                   class="compass-score__indicator"
-                  :style="{ left: `${scorePosition(overview.latest.stemgedrag_score)}%` }"
+                  :style="{
+                    left: `${scorePosition(overview.latest.stemgedrag_score)}%`,
+                  }"
                   aria-hidden="true"
                 ></div>
               </div>
@@ -90,10 +92,7 @@
             </p>
           </div>
 
-          <div
-            v-if="overview.latest.aanbevolen_partij"
-            class="compass-detail"
-          >
+          <div v-if="overview.latest.aanbevolen_partij" class="compass-detail">
             <h4>Aanbevolen partij</h4>
             <div class="compass-party">
               <div class="compass-party__meta">
@@ -134,10 +133,13 @@
           <li v-for="item in previousEntries" :key="item.id">
             <div>
               <p class="compass-history__date">
-                {{ item.created_at ? formatDateTime(item.created_at) : "Onbekend" }}
+                {{
+                  item.created_at ? formatDateTime(item.created_at) : "Onbekend"
+                }}
               </p>
               <p class="compass-history__label">
-                {{ item.politieke_label.term }} — score {{ item.stemgedrag_score }}
+                {{ item.politieke_label.term }} — score
+                {{ item.stemgedrag_score }}
               </p>
             </div>
             <span v-if="item.aanbevolen_partij" class="compass-history__party">
@@ -383,7 +385,11 @@ onMounted(() => {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(0, 61, 165, 0.95), rgba(200, 16, 46, 0.95));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 61, 165, 0.95),
+    rgba(200, 16, 46, 0.95)
+  );
   box-shadow: 0 0 10px rgba(0, 61, 165, 0.35);
 }
 

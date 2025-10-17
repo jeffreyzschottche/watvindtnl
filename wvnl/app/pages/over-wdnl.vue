@@ -5,6 +5,9 @@ const description =
   "Lees hoe Wat Denkt Nederland burgers helpt om hun mening te geven over actuele moties en het politieke debat toegankelijk maakt.";
 const url = "https://watvindtnl.nl/over-wdnl";
 
+// Placeholder image (zet straks een echte in /public/images/)
+const placeholderImg = "/images/placeholder-16x9.webp";
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -59,6 +62,16 @@ useHead({
       </div>
     </section>
 
+    <!-- NIEUWE EXTRA TITEL -->
+    <section class="container narrow page-section">
+      <h2>Waarom WDNL?</h2>
+      <p>
+        Politiek voelt vaak ver weg. WDNL brengt het dichterbij met heldere
+        context, concrete moties en zicht op wat anderen vinden. Zo maak je
+        geïnformeerde keuzes en groeit het begrip voor elkaars standpunten.
+      </p>
+    </section>
+
     <section class="container narrow page-section">
       <h2>Hoe werkt het?</h2>
       <p>
@@ -73,6 +86,18 @@ useHead({
         <li>Zie wat andere Nederlanders denken.</li>
         <li>Leer politieke onderwerpen beter begrijpen.</li>
       </ul>
+
+      <!-- AFBEELDING ONDER DE TEKST -->
+      <figure class="section-image">
+        <img
+          :src="placeholderImg"
+          alt="Schematische weergave van hoe WDNL werkt"
+          loading="lazy"
+          width="1280"
+          height="720"
+        />
+        <figcaption>Jouw stem, direct gekoppeld aan actuele moties.</figcaption>
+      </figure>
     </section>
 
     <section class="section-light">
@@ -93,6 +118,20 @@ useHead({
           <li>Echte moties uit de tweede kamer.</li>
           <li>Elke motie is voorzien van voor-tegen argumenten.</li>
         </ul>
+
+        <!-- AFBEELDING ONDER DE TEKST -->
+        <figure class="section-image">
+          <img
+            :src="placeholderImg"
+            alt="Voorbeeld van een motie met argumenten in WDNL"
+            loading="lazy"
+            width="1280"
+            height="720"
+          />
+          <figcaption>
+            Iedere motie krijgt context met pro- en contra-argumenten.
+          </figcaption>
+        </figure>
       </div>
     </section>
   </div>
@@ -184,5 +223,27 @@ useHead({
       rgba(200, 16, 46, 0.2)
     ),
     url("/images/bicycles-street-amsterdam.webp");
+}
+
+/* Sectie-afbeeldingen */
+.section-image {
+  margin: 1.25rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+.section-image img {
+  display: block;
+  width: min(100%, 960px);
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.section-image figcaption {
+  font-size: 0.95rem;
+  color: #444;
+  text-align: center;
 }
 </style>
