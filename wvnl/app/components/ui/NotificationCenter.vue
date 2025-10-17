@@ -8,7 +8,12 @@
           class="notification"
           :class="`notification--${notification.type}`"
         >
-          <p class="notification__message">{{ notification.message }}</p>
+          <p
+            v-if="notification.html"
+            class="notification__message"
+            v-html="notification.html"
+          />
+          <p v-else class="notification__message">{{ notification.message }}</p>
           <button
             type="button"
             class="notification__close"

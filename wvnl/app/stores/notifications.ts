@@ -8,6 +8,7 @@ export interface Notification {
   message: string;
   type: NotificationType;
   timeout?: number;
+  html?: string;
 }
 
 let nextId = 1;

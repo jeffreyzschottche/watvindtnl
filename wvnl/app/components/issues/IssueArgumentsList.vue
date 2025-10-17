@@ -116,6 +116,13 @@ function handleArgumentReport(argumentId: number, reason: ReportReason) {
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  min-height: 220px;
+}
+
+.arguments__column {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
 }
 
 .arguments__heading {

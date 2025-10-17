@@ -31,11 +31,20 @@ class IssueArgsController extends Controller
         //     ],
         // ]);
 
+        $limit = (int) $request->query('limit', 200);
+        $offset = (int) $request->query('offset', 0);
+
+        $limit = max(1, min($limit, 200));
+        $offset = max(0, $offset);
+
         $issues = Issue::with([
             'arguments' => function ($q) {
                 $q->orderBy('side')->orderBy('created_at');
             }
-        ])->orderBy('created_at', 'desc')->get();
+        ])->orderBy('created_at', 'desc')
+            ->skip($offset)
+            ->take($limit)
+            ->get();
 
         $partyMap = $this->loadPartyMap($issues);
 

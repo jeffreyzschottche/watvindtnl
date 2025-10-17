@@ -16,6 +16,11 @@
     <p v-if="issue.description" class="issue-card__description">
       {{ issue.description }}
     </p>
+    <p
+      v-else
+      class="issue-card__description issue-card__description--empty"
+      aria-hidden="true"
+    ></p>
     <section class="issue-card__footer">
       <button
         type="button"
@@ -214,6 +219,9 @@ async function handleIssueReport(reason: ReportReason) {
   );
   box-shadow: 0 24px 45px rgba(0, 28, 70, 0.12);
   border: 1px solid rgba(0, 61, 165, 0.08);
+  width: min(100%, 720px);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .issue-card__header {
@@ -241,6 +249,8 @@ async function handleIssueReport(reason: ReportReason) {
   margin: 0;
   font-size: 1.6rem;
   color: var(--color-primary);
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .issue-card__report {
@@ -251,6 +261,12 @@ async function handleIssueReport(reason: ReportReason) {
   margin: 0;
   line-height: 1.7;
   color: #344054;
+  min-height: 3.2rem;
+  word-break: break-word;
+}
+
+.issue-card__description--empty {
+  visibility: hidden;
 }
 
 .issue-card__results {
@@ -264,6 +280,7 @@ async function handleIssueReport(reason: ReportReason) {
     rgba(238, 241, 246, 0.9)
   );
   border: 1px solid rgba(0, 61, 165, 0.12);
+  min-height: 9rem;
 }
 
 .issue-card__results-header {
@@ -382,6 +399,22 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__share :deep(.issue-card__button) {
   width: 100%;
   min-height: 40px;
+}
+
+@media (max-width: 640px) {
+  .issue-card {
+    padding: 1.5rem;
+  }
+
+  .issue-card__footer {
+    flex-direction: column;
+  }
+
+  .issue-card__button,
+  .issue-card__share {
+    flex: 1 1 auto;
+    width: 100%;
+  }
 }
 
 .issue-card__button--agree {

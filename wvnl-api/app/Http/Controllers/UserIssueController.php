@@ -17,6 +17,12 @@ class UserIssueController extends Controller
         $user = $request->user();
         $voted = array_map('intval', (array) ($user->voted_issue_ids ?? []));
 
+        $limit = (int) $request->query('limit', 200);
+        $offset = (int) $request->query('offset', 0);
+
+        $limit = max(1, min($limit, 200));
+        $offset = max(0, $offset);
+
         $issues = Issue::with([
             'arguments' => function ($query) {
                 $query->orderBy('side')->orderBy('created_at');
@@ -24,6 +30,8 @@ class UserIssueController extends Controller
         ])
             ->when(!empty($voted), fn($query) => $query->whereNotIn('id', $voted))
             ->orderBy('created_at', 'desc')
+            ->skip($offset)
+            ->take($limit)
             ->get();
 
         $partyMap = $this->loadPartyMap($issues);

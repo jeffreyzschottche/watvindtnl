@@ -184,8 +184,11 @@ onMounted(() => {
 
 function notifyLoginRequired() {
   notifications.addNotification({
-    message: "Registreer of log in om je mening te geven.",
+    message: "Log in of registreer om te stemmen.",
+    html:
+      'Je kan pas stemmen als je een account hebt aangemaakt. <a class="issues-page__auth-link" href="/login">Log in</a> of <a class="issues-page__auth-link" href="/register">registreer</a> om mee te doen.',
     type: "info",
+    timeout: 6000,
   });
 }
 
@@ -401,5 +404,11 @@ function applyUserVote(
 .issues-page__retry:focus-visible {
   transform: translateY(-2px);
   box-shadow: 0 14px 26px rgba(0, 61, 165, 0.28);
+}
+
+.issues-page__auth-link {
+  color: inherit;
+  font-weight: 700;
+  text-decoration: underline;
 }
 </style>

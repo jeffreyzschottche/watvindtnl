@@ -25,29 +25,89 @@ export function useIssues() {
   const activeIssue = computed(() => issues.value[activeIndex.value] ?? null);
   const remaining = computed(() => issues.value.length);
 
+  const INITIAL_BATCH_SIZE = 10;
+  const BACKGROUND_LIMIT = 200;
+
+  async function fetchBatch(limit?: number, offset?: number) {
+    if (isLoggedIn.value) {
+      return fetchPendingIssues(token.value ?? undefined, { limit, offset });
+    }
+
+    return fetchIssuesWithArguments({ limit, offset });
+  }
+
   async function loadPending() {
     const tokenId = ++requestToken;
     loading.value = true;
     error.value = null;
+    issues.value = [];
+    activeIndex.value = 0;
+
     try {
-      const data = isLoggedIn.value
-        ? await fetchPendingIssues(token.value ?? undefined)
-        : await fetchIssuesWithArguments();
+      const initialIssues = await fetchBatch(INITIAL_BATCH_SIZE, 0);
       if (tokenId !== requestToken) {
         return;
       }
-      issues.value = shuffleIssues(data);
+
+      issues.value = shuffleIssues(initialIssues);
       activeIndex.value = 0;
     } catch (err: unknown) {
       if (tokenId !== requestToken) {
         return;
       }
+      issues.value = [];
+      activeIndex.value = 0;
       error.value = err instanceof Error ? err.message : "Er is iets misgegaan.";
+      return;
     } finally {
-      if (tokenId !== requestToken) {
-        return;
+      if (tokenId === requestToken) {
+        loading.value = false;
       }
-      loading.value = false;
+    }
+
+    if (tokenId !== requestToken) {
+      return;
+    }
+
+    let offset = issues.value.length;
+
+    while (tokenId === requestToken) {
+      try {
+        const chunk = await fetchBatch(BACKGROUND_LIMIT, offset);
+        if (tokenId !== requestToken) {
+          return;
+        }
+
+        if (!chunk.length) {
+          break;
+        }
+
+        const existingIds = new Set(issues.value.map((issue) => issue.id));
+        const nextIssues = shuffleIssues(chunk).filter(
+          (issue) => !existingIds.has(issue.id)
+        );
+
+        if (nextIssues.length) {
+          issues.value = [...issues.value, ...nextIssues];
+        }
+
+        offset += chunk.length;
+
+        if (chunk.length < BACKGROUND_LIMIT) {
+          break;
+        }
+      } catch (err: unknown) {
+        if (tokenId !== requestToken) {
+          return;
+        }
+
+        error.value = issues.value.length
+          ? "Sommige moties konden niet worden geladen. Vernieuw om het opnieuw te proberen."
+          : err instanceof Error
+            ? err.message
+            : "Er is iets misgegaan.";
+        break;
+      }
     }
   }
 

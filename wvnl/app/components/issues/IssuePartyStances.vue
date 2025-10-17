@@ -96,6 +96,7 @@ const stances = computed(() => props.stances);
 .issue-party-stances__grid {
   display: grid;
   gap: 1rem;
+  min-height: 200px;
 }
 
 @media (min-width: 768px) {
@@ -105,7 +106,7 @@ const stances = computed(() => props.stances);
 }
 
 .issue-party-stances__column {
-  /* display: grid; */
+  display: grid;
   margin-top: 2em;
   gap: 0.75rem;
   padding: 1rem;
@@ -117,6 +118,7 @@ const stances = computed(() => props.stances);
   );
   box-shadow: 0 12px 24px rgba(0, 28, 70, 0.08);
   border: 1px solid rgba(0, 61, 165, 0.08);
+  align-content: start;
 }
 
 .issue-party-stances__column-header {

@@ -6,6 +6,11 @@ import type {
 } from "~/types/issues";
 import type { ReportCounts, ReportReason } from "~/types/reports";
 
+interface IssueListParams {
+  limit?: number;
+  offset?: number;
+}
+
 interface IssueReportResponse {
   status: string;
   reports: ReportCounts;
@@ -26,20 +31,37 @@ function buildHeaders(token?: string, extra?: HeadersInit): Headers {
   return headers;
 }
 
+function buildListQuery(params?: IssueListParams): string {
+  const searchParams = new URLSearchParams();
+  if (params?.limit !== undefined) {
+    searchParams.set("limit", String(params.limit));
+  }
+  if (params?.offset !== undefined) {
+    searchParams.set("offset", String(params.offset));
+  }
+
+  const query = searchParams.toString();
+  return query ? `?${query}` : "";
+}
+
 export function fetchPendingIssues(
   token?: string,
+  params?: IssueListParams,
   init?: RequestInit
 ): Promise<IssueWithArguments[]> {
-  return apiFetch<IssueWithArguments[]>("/issues/pending", {
+  const query = buildListQuery(params);
+  return apiFetch<IssueWithArguments[]>(`/issues/pending${query}`, {
     ...init,
     headers: buildHeaders(token, init?.headers ?? undefined),
   });
 }
 
 export function fetchIssuesWithArguments(
+  params?: IssueListParams,
   init?: RequestInit
 ): Promise<IssueWithArguments[]> {
-  return apiFetch<IssueWithArguments[]>("/issues-args", init);
+  const query = buildListQuery(params);
+  return apiFetch<IssueWithArguments[]>(`/issues-args${query}`, init);
 }
 
 export function fetchIssueWithArguments(
