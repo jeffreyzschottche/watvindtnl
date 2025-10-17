@@ -67,6 +67,15 @@ onMounted(() => {
     gtag('config', '${GA_ID}', { 'anonymize_ip': true });
   `;
   document.head.appendChild(gaInit);
+  if ((window as any).__adsenseLoaded) return;
+  (window as any).__adsenseLoaded = true;
+
+  const s = document.createElement("script");
+  s.async = true;
+  s.src =
+    "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2932017576194299";
+  s.crossOrigin = "anonymous";
+  document.head.appendChild(s);
 });
 
 // SPA pageviews bij routewissel
