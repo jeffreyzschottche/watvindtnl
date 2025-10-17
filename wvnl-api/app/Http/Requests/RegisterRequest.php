@@ -31,13 +31,9 @@ class RegisterRequest extends FormRequest
             'political_preference' => ['required', 'in:links,midden,rechts,geen'],
             'notification_prefs' => ['sometimes', 'array'],
             'notification_prefs.email' => ['sometimes', 'boolean'],
-            'cookie_prefs' => ['required', 'array'],
-            'cookie_prefs.accepted' => ['required', 'accepted'],
-            'cookie_prefs.accepted_at' => ['sometimes', 'date'],
-            'allergies' => ['sometimes', 'array'],
-            'allergies.*' => ['string'],
-            'special_notes' => ['sometimes', 'array'],
-            'special_notes.*' => ['string'],
+            'cookie_prefs' => ['sometimes', 'array'],
+            'cookie_prefs.accepted' => ['required', 'boolean'],
+            'cookie_prefs.accepted_at' => ['nullable', 'date'],
         ];
     }
 }
