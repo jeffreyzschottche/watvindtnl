@@ -55,7 +55,7 @@ const highlights = [
   {
     title: "",
     // Toon een afbeelding i.p.v. tekst
-    image: "/images/map-netherlands-polygonal-mesh-line-map-flag-map.jpg",
+    image: "/images/map-netherlands-polygonal-mesh-line-map-flag-map.webp",
   },
   {
     title: "Veilig en transparant",
@@ -166,7 +166,7 @@ const steps = [
 <style scoped>
 /* HERO met achtergrond uit /public/images/... */
 .hero {
-  background-image: url("/images/alix-greenman-ac-g-HU243Y-unsplash.jpg");
+  background-image: url("/images/alix-greenman-ac-g-HU243Y-unsplash.webp");
   background-size: cover;
   background-position: center; /* focus op het midden */
   background-repeat: no-repeat;
