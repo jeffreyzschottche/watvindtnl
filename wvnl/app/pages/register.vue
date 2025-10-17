@@ -133,6 +133,6 @@ watchEffect(() => {
       rgba(0, 61, 165, 0.12),
       rgba(200, 16, 46, 0.2)
     ),
-    url("/images/frederic-paulussen-XHk0Se67H14-unsplash.jpg");
+    url("/images/frederic-paulussen-XHk0Se67H14-unsplash.webp");
 }
 </style>

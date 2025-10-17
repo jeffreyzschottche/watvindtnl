@@ -549,7 +549,7 @@ useHead({
       rgba(0, 61, 165, 0.12),
       rgba(200, 16, 46, 0.2)
     ),
-    url("/images/stockvault-cheese147191.jpg");
+    url("/images/stockvault-cheese147191.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

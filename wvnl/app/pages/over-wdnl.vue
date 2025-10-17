@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const siteName = "Wat Denkt Nederland"
-const title = "Over Wat Denkt Nederland | Burgerparticipatie platform"
+const siteName = "Wat Denkt Nederland";
+const title = "Over Wat Denkt Nederland | Burgerparticipatie platform";
 const description =
-  "Lees hoe Wat Denkt Nederland burgers helpt om hun mening te geven over actuele moties en het politieke debat toegankelijk maakt."
-const url = "https://watvindtnl.nl/over-wdnl"
+  "Lees hoe Wat Denkt Nederland burgers helpt om hun mening te geven over actuele moties en het politieke debat toegankelijk maakt.";
+const url = "https://watvindtnl.nl/over-wdnl";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -17,7 +17,7 @@ const jsonLd = {
     name: siteName,
     url: "https://watvindtnl.nl",
   },
-}
+};
 
 useHead({
   title,
@@ -41,7 +41,7 @@ useHead({
   __dangerouslyDisableSanitizersByTagID: {
     "ld-json-over-wdnl": ["innerHTML"],
   },
-})
+});
 </script>
 
 <template>
@@ -183,6 +183,6 @@ useHead({
       rgba(0, 61, 165, 0.12),
       rgba(200, 16, 46, 0.2)
     ),
-    url("/images/bicycles-street-amsterdam.jpg");
+    url("/images/bicycles-street-amsterdam.webp");
 }
 </style>

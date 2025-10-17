@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const siteName = "Wat Denkt Nederland"
-const title = "Privacyverklaring | Wat Denkt Nederland"
+const siteName = "Wat Denkt Nederland";
+const title = "Privacyverklaring | Wat Denkt Nederland";
 const description =
   "Lees hoe Wat Denkt Nederland zorgvuldig omgaat met persoonsgegevens, beveiliging en jouw privacyrechten.";
-const url = "https://watvindtnl.nl/privacy"
+const url = "https://watvindtnl.nl/privacy";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -17,7 +17,7 @@ const jsonLd = {
     name: siteName,
     url: "https://watvindtnl.nl",
   },
-}
+};
 
 useHead({
   title,
@@ -41,7 +41,7 @@ useHead({
   __dangerouslyDisableSanitizersByTagID: {
     "ld-json-privacy": ["innerHTML"],
   },
-})
+});
 </script>
 
 <template>
@@ -259,6 +259,6 @@ useHead({
       rgba(0, 61, 165, 0.18),
       rgba(200, 16, 46, 0.22)
     ),
-    url("/images/martijn-baudoin-C4rDHqqmu4w-unsplash.jpg");
+    url("/images/martijn-baudoin-C4rDHqqmu4w-unsplash.webp");
 }
 </style>

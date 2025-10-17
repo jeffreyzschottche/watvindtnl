@@ -622,7 +622,7 @@ useHead({
       rgba(0, 61, 165, 0.12),
       rgba(200, 16, 46, 0.2)
     ),
-    url("/images/max-van-den-oetelaar-rvDMd5LvJRA-unsplash.jpg");
+    url("/images/max-van-den-oetelaar-rvDMd5LvJRA-unsplash.webp");
 }
 
 .compass-section {

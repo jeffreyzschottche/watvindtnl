@@ -13,12 +13,21 @@
     </section>
 
     <section class="container narrow">
-      <div v-if="banner" class="login-banner" :class="`login-banner--${banner.variant}`">
+      <div
+        v-if="banner"
+        class="login-banner"
+        :class="`login-banner--${banner.variant}`"
+      >
         <div class="login-banner__content">
           <h2>{{ banner.title }}</h2>
           <p>{{ banner.message }}</p>
         </div>
-        <button type="button" class="login-banner__close" @click="dismissBanner" aria-label="Melding sluiten">
+        <button
+          type="button"
+          class="login-banner__close"
+          @click="dismissBanner"
+          aria-label="Melding sluiten"
+        >
           ×
         </button>
       </div>
@@ -84,21 +93,24 @@ watch(
         case "already-verified":
           banner.value = {
             title: "Welkom terug",
-            message: "Je e-mailadres was al bevestigd. Log gerust in om verder te gaan.",
+            message:
+              "Je e-mailadres was al bevestigd. Log gerust in om verder te gaan.",
             variant: "info",
           };
           return;
         case "invalid":
           banner.value = {
             title: "Verificatielink verlopen",
-            message: "Vraag een nieuwe bevestigingsmail aan als je nog niet kunt inloggen.",
+            message:
+              "Vraag een nieuwe bevestigingsmail aan als je nog niet kunt inloggen.",
             variant: "error",
           };
           return;
         default:
           banner.value = {
             title: "Verificatie bijgewerkt",
-            message: "Controleer je inbox. Als het niet lukt, kun je hieronder opnieuw een mail laten sturen.",
+            message:
+              "Controleer je inbox. Als het niet lukt, kun je hieronder opnieuw een mail laten sturen.",
             variant: "info",
           };
           return;
@@ -126,7 +138,8 @@ watch(
         default:
           banner.value = {
             title: "Wachtwoord resetten",
-            message: "Volg de instructies in je e-mail om je wachtwoord opnieuw in te stellen.",
+            message:
+              "Volg de instructies in je e-mail om je wachtwoord opnieuw in te stellen.",
             variant: "info",
           };
           return;
@@ -232,7 +245,7 @@ function dismissBanner() {
       rgba(0, 61, 165, 0.12),
       rgba(200, 16, 46, 0.2)
     ),
-    url("/images/stockvault-cheese147191.jpg");
+    url("/images/stockvault-cheese147191.webp");
 }
 
 .login-banner {

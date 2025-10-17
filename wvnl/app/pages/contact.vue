@@ -14,11 +14,7 @@
     </section>
 
     <section class="container narrow">
-      <form
-        class="form form-card contact-form"
-        @submit="onSubmit"
-        novalidate
-      >
+      <form class="form form-card contact-form" @submit="onSubmit" novalidate>
         <header class="form-header">
           <h2>Neem contact op</h2>
           <p>We reageren zo snel mogelijk op je bericht.</p>
@@ -69,7 +65,7 @@
 
         <div class="form-actions">
           <button type="submit" class="button" :disabled="disableSubmit">
-            {{ sending ? 'Versturen…' : 'Verstuur bericht' }}
+            {{ sending ? "Versturen…" : "Verstuur bericht" }}
           </button>
         </div>
 
@@ -81,11 +77,11 @@
 </template>
 
 <script setup lang="ts">
-const siteName = "Wat Denkt Nederland"
-const title = "Contact opnemen | Wat Denkt Nederland"
+const siteName = "Wat Denkt Nederland";
+const title = "Contact opnemen | Wat Denkt Nederland";
 const description =
-  "Neem contact op met het team van Wat Denkt Nederland voor vragen, ideeën of het indienen van nieuwe moties via het contactformulier."
-const url = "https://watvindtnl.nl/contact"
+  "Neem contact op met het team van Wat Denkt Nederland voor vragen, ideeën of het indienen van nieuwe moties via het contactformulier.";
+const url = "https://watvindtnl.nl/contact";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -99,7 +95,7 @@ const jsonLd = {
     name: siteName,
     url: "https://watvindtnl.nl",
   },
-}
+};
 
 useHead({
   title,
@@ -123,64 +119,64 @@ useHead({
   __dangerouslyDisableSanitizersByTagID: {
     "ld-json-contact": ["innerHTML"],
   },
-})
+});
 
-const sending = ref(false)
-const sent = ref(false)
-const error = ref<string | null>(null)
+const sending = ref(false);
+const sent = ref(false);
+const error = ref<string | null>(null);
 
 // Front-end bot shields
-const startedAt = ref<number>(Date.now())
-const minDelayMs = 2500
-const hp = ref("")
-const human = ref(false)
+const startedAt = ref<number>(Date.now());
+const minDelayMs = 2500;
+const hp = ref("");
+const human = ref(false);
 
 const disableSubmit = computed(() => {
-  const tooSoon = Date.now() - startedAt.value < minDelayMs
-  return sending.value || !human.value || tooSoon
-})
+  const tooSoon = Date.now() - startedAt.value < minDelayMs;
+  return sending.value || !human.value || tooSoon;
+});
 
-const apiBase = useRuntimeConfig().public.apiBase
+const apiBase = useRuntimeConfig().public.apiBase;
 
 async function onSubmit(e: Event) {
-  e.preventDefault()
-  error.value = null
-  sent.value = false
+  e.preventDefault();
+  error.value = null;
+  sent.value = false;
 
   if (hp.value.trim() !== "") {
-    error.value = "Ongeldige invoer."
-    return
+    error.value = "Ongeldige invoer.";
+    return;
   }
 
   if (Date.now() - startedAt.value < minDelayMs) {
-    error.value = "Even geduld en probeer nogmaals."
-    return
+    error.value = "Even geduld en probeer nogmaals.";
+    return;
   }
 
   if (!human.value) {
-    error.value = "Bevestig dat je geen robot bent."
-    return
+    error.value = "Bevestig dat je geen robot bent.";
+    return;
   }
 
-  const form = e.target as HTMLFormElement
-  const fd = new FormData(form)
+  const form = e.target as HTMLFormElement;
+  const fd = new FormData(form);
 
   try {
-    sending.value = true
+    sending.value = true;
     await $fetch("/contact", {
       method: "POST",
       body: fd,
       baseURL: apiBase,
-    })
-    sent.value = true
-    form.reset()
-    hp.value = ""
-    human.value = false
-    startedAt.value = Date.now()
+    });
+    sent.value = true;
+    form.reset();
+    hp.value = "";
+    human.value = false;
+    startedAt.value = Date.now();
   } catch (err: any) {
-    error.value = "Versturen mislukt. Probeer het opnieuw."
+    error.value = "Versturen mislukt. Probeer het opnieuw.";
   } finally {
-    sending.value = false
+    sending.value = false;
   }
 }
 </script>
@@ -270,7 +266,7 @@ async function onSubmit(e: Event) {
       rgba(0, 61, 165, 0.12),
       rgba(200, 16, 46, 0.2)
     ),
-    url("/images/norali-nayla-eDvG3IO8-Io-unsplash.jpg");
+    url("/images/norali-nayla-eDvG3IO8-Io-unsplash.webp");
 }
 
 .hp {
