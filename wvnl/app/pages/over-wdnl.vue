@@ -90,7 +90,7 @@ useHead({
       <!-- AFBEELDING ONDER DE TEKST -->
       <figure class="section-image">
         <img
-          :src="placeholderImg"
+          src="/images/wdnlimage2.png"
           alt="Schematische weergave van hoe WDNL werkt"
           loading="lazy"
           width="1280"
@@ -122,7 +122,7 @@ useHead({
         <!-- AFBEELDING ONDER DE TEKST -->
         <figure class="section-image">
           <img
-            :src="placeholderImg"
+            src="/images/motie.png"
             alt="Voorbeeld van een motie met argumenten in WDNL"
             loading="lazy"
             width="1280"

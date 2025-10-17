@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const siteName = "Wat Denkt Nederland"
-const title = "Algemene voorwaarden | Wat Denkt Nederland"
+const siteName = "Wat Denkt Nederland";
+const title = "Algemene voorwaarden | Wat Denkt Nederland";
 const description =
-  "Lees de algemene voorwaarden van Wat Denkt Nederland en ontdek welke regels gelden voor het gebruik van het platform."
-const url = "https://watvindtnl.nl/algemene-voorwaarden"
+  "Lees de algemene voorwaarden van Wat Denkt Nederland en ontdek welke regels gelden voor het gebruik van het platform.";
+const url = "https://watvindtnl.nl/algemene-voorwaarden";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -17,7 +17,7 @@ const jsonLd = {
     name: siteName,
     url: "https://watvindtnl.nl",
   },
-}
+};
 
 useHead({
   title,
@@ -41,7 +41,7 @@ useHead({
   __dangerouslyDisableSanitizersByTagID: {
     "ld-json-algemene-voorwaarden": ["innerHTML"],
   },
-})
+});
 </script>
 
 <template>
@@ -259,6 +259,6 @@ useHead({
       rgba(0, 61, 165, 0.18),
       rgba(200, 16, 46, 0.22)
     ),
-    url("/images/e-mens-yEpUny1hxoE-unsplash.jpg");
+    url("/images/e-mens-yEpUny1hxoE-unsplash.webp");
 }
 </style>
