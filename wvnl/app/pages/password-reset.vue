@@ -70,6 +70,25 @@
 </template>
 
 <script setup lang="ts">
+const title = "Nieuw wachtwoord instellen | Wat Denkt Nederland";
+const description =
+  "Stel een nieuw wachtwoord in voor je Wat Denkt Nederland-account en krijg weer toegang tot het platform.";
+
+useHead({
+  title,
+  meta: [
+    { name: "description", content: description },
+    { name: "robots", content: "noindex, nofollow" },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:locale", content: "nl_NL" },
+    { name: "twitter:card", content: "summary" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+  ],
+});
+
 const route = useRoute();
 const router = useRouter();
 const { resetPassword } = useAuth();

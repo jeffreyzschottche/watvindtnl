@@ -1,7 +1,48 @@
 <script setup lang="ts">
+const siteName = "Wat Denkt Nederland";
+const title = "Politiek Kompas | Wat Denkt Nederland";
+const description =
+  "Ontdek hoe jouw antwoorden op politieke stellingen zich vertalen naar het Politiek Kompas en welke partijen bij je passen.";
+const url = "https://watvindtnl.nl/politiek-kompas";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: title,
+  description,
+  url,
+  inLanguage: "nl-NL",
+  isPartOf: {
+    "@type": "WebSite",
+    name: siteName,
+    url: "https://watvindtnl.nl",
+  },
+};
+
 useHead({
+  title,
+  meta: [
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:locale", content: "nl_NL" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+  ],
+  script: [
+    {
+      id: "ld-json-politiek-kompas",
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(jsonLd),
+    },
+  ],
   bodyAttrs: {
     class: ["page-politiek-kompas"],
+  },
+  __dangerouslyDisableSanitizersByTagID: {
+    "ld-json-politiek-kompas": ["innerHTML"],
   },
 });
 </script>

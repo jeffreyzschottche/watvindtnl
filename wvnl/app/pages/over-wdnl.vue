@@ -1,3 +1,49 @@
+<script setup lang="ts">
+const siteName = "Wat Denkt Nederland"
+const title = "Over Wat Denkt Nederland | Burgerparticipatie platform"
+const description =
+  "Lees hoe Wat Denkt Nederland burgers helpt om hun mening te geven over actuele moties en het politieke debat toegankelijk maakt."
+const url = "https://watvindtnl.nl/over-wdnl"
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: title,
+  description,
+  url,
+  inLanguage: "nl-NL",
+  isPartOf: {
+    "@type": "WebSite",
+    name: siteName,
+    url: "https://watvindtnl.nl",
+  },
+}
+
+useHead({
+  title,
+  meta: [
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:locale", content: "nl_NL" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+  ],
+  script: [
+    {
+      id: "ld-json-over-wdnl",
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(jsonLd),
+    },
+  ],
+  __dangerouslyDisableSanitizersByTagID: {
+    "ld-json-over-wdnl": ["innerHTML"],
+  },
+})
+</script>
+
 <template>
   <div class="page">
     <section class="page-hero page-hero--about">

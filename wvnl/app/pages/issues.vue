@@ -76,6 +76,50 @@ import type { SharePlatform } from "~/composables/useIssueSharing";
 import { fetchIssueWithArguments, voteOnIssue } from "~/services/issues";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
 
+const siteName = "Wat Denkt Nederland";
+const title = "Openstaande moties | Wat Denkt Nederland";
+const description =
+  "Bekijk openstaande politieke moties, lees de argumenten en geef je stem op het platform van Wat Denkt Nederland.";
+const url = "https://watvindtnl.nl/issues";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: title,
+  description,
+  url,
+  inLanguage: "nl-NL",
+  isPartOf: {
+    "@type": "WebSite",
+    name: siteName,
+    url: "https://watvindtnl.nl",
+  },
+};
+
+useHead({
+  title,
+  meta: [
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:locale", content: "nl_NL" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+  ],
+  script: [
+    {
+      id: "ld-json-issues",
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(jsonLd),
+    },
+  ],
+  __dangerouslyDisableSanitizersByTagID: {
+    "ld-json-issues": ["innerHTML"],
+  },
+});
+
 const route = useRoute();
 const router = useRouter();
 

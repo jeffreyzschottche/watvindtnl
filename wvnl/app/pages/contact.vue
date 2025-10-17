@@ -81,6 +81,50 @@
 </template>
 
 <script setup lang="ts">
+const siteName = "Wat Denkt Nederland"
+const title = "Contact opnemen | Wat Denkt Nederland"
+const description =
+  "Neem contact op met het team van Wat Denkt Nederland voor vragen, ideeën of het indienen van nieuwe moties via het contactformulier."
+const url = "https://watvindtnl.nl/contact"
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: title,
+  description,
+  url,
+  inLanguage: "nl-NL",
+  isPartOf: {
+    "@type": "WebSite",
+    name: siteName,
+    url: "https://watvindtnl.nl",
+  },
+}
+
+useHead({
+  title,
+  meta: [
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:locale", content: "nl_NL" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+  ],
+  script: [
+    {
+      id: "ld-json-contact",
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(jsonLd),
+    },
+  ],
+  __dangerouslyDisableSanitizersByTagID: {
+    "ld-json-contact": ["innerHTML"],
+  },
+})
+
 const sending = ref(false)
 const sent = ref(false)
 const error = ref<string | null>(null)

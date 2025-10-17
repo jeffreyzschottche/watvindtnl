@@ -14,6 +14,25 @@
 </template>
 
 <script setup lang="ts">
+const title = "E-mailadres verifiëren | Wat Denkt Nederland";
+const description =
+  "Controleer de status van je e-mailverificatie voor je Wat Denkt Nederland-account en ga snel verder naar de loginpagina.";
+
+useHead({
+  title,
+  meta: [
+    { name: "description", content: description },
+    { name: "robots", content: "noindex, nofollow" },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:locale", content: "nl_NL" },
+    { name: "twitter:card", content: "summary" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+  ],
+});
+
 const route = useRoute();
 const router = useRouter();
 
