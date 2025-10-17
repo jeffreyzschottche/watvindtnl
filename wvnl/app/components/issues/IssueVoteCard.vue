@@ -1,5 +1,37 @@
 <template>
   <article class="issue-card">
+    <Teleport v-if="showAuthModal" to="body">
+      <div class="modal" @keydown.esc.prevent="closeAuthModal">
+        <div class="modal__backdrop" @click="closeAuthModal" />
+        <div class="modal__dialog" role="dialog" aria-modal="true">
+          <header class="modal__header">
+            <h2 class="modal__title">Inloggen vereist</h2>
+            <button
+              type="button"
+              class="modal__close"
+              @click="closeAuthModal"
+              aria-label="Sluiten"
+            >
+              ×
+            </button>
+          </header>
+          <div class="modal__body">
+            <p class="modal__intro">
+              Je bent niet ingelogd en kan daarom geen stem uitbrengen. Log in om
+              je mening te geven of maak een account aan.
+            </p>
+            <div class="modal__actions">
+              <NuxtLink to="/login" class="modal__secondary" @click="closeAuthModal">
+                Inloggen
+              </NuxtLink>
+              <NuxtLink to="/register" class="modal__primary" @click="closeAuthModal">
+                Registreren
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
     <header class="issue-card__header">
       <div class="issue-card__title-group">
         <p v-if="remaining" class="issue-card__counter">
@@ -121,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import ReportMenu from "~/components/common/ReportMenu.vue";
 import ShareDropdown from "~/components/common/ShareDropdown.vue";
@@ -155,6 +187,8 @@ const emit = defineEmits<{
 
 const auth = useAuthStore();
 const { token } = storeToRefs(auth);
+
+const showAuthModal = ref(false);
 
 const voteCounts = computed(() => {
   const votes = props.issue.votes ?? { agree: [], neutral: [], disagree: [] };
@@ -195,11 +229,15 @@ const votePercentages = computed(() => {
 
 function emitVote(vote: IssueVoteOption) {
   if (!auth.isLoggedIn) {
-    alert("je bent niet ingelogd :P");
+    showAuthModal.value = true;
     return;
   } else {
     emit("vote", vote);
   }
+}
+
+function closeAuthModal() {
+  showAuthModal.value = false;
 }
 
 function handleShare(platform: SharePlatform) {
@@ -444,5 +482,117 @@ async function handleIssueReport(reason: ReportReason) {
   color: #ffffff;
   box-shadow: 0 14px 28px rgba(0, 61, 165, 0.25);
   display: none !important;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1600;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.modal__dialog {
+  position: relative;
+  width: min(420px, 100%);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(238, 241, 246, 0.97));
+  box-shadow: 0 24px 48px rgba(0, 26, 77, 0.28);
+  border: 1px solid rgba(0, 61, 165, 0.12);
+  padding: 1.75rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal__title {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--color-primary, #003da5);
+}
+
+.modal__close {
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.5rem;
+  color: var(--color-accent, #c8102e);
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 26, 77, 0.18);
+}
+
+.modal__close:hover,
+.modal__close:focus-visible {
+  background: rgba(200, 16, 46, 0.12);
+}
+
+.modal__body {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.modal__intro {
+  margin: 0;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.modal__secondary,
+.modal__primary {
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modal__secondary {
+  background: rgba(15, 23, 42, 0.05);
+  color: #0f172a;
+}
+
+.modal__secondary:hover,
+.modal__secondary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
+}
+
+.modal__primary {
+  background: linear-gradient(130deg, var(--color-accent, #c8102e), var(--color-primary, #003da5));
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(0, 61, 165, 0.28);
+}
+
+.modal__primary:hover,
+.modal__primary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(0, 61, 165, 0.32);
 }
 </style>
