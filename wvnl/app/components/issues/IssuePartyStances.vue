@@ -78,19 +78,15 @@ const stances = computed(() => props.stances);
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 1rem;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 61, 165, 0.05),
-    rgba(255, 255, 255, 0.75)
-  );
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  background: linear-gradient(145deg, #002347, #003366);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .issue-party-stances__title {
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-orange);
 }
 
 .issue-party-stances__grid {
@@ -111,13 +107,9 @@ const stances = computed(() => props.stances);
   gap: 0.75rem;
   padding: 1rem;
   border-radius: 0.85rem;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    rgba(238, 241, 246, 0.85) 100%
-  );
-  box-shadow: 0 12px 24px rgba(0, 28, 70, 0.08);
-  border: 1px solid rgba(0, 61, 165, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   align-content: start;
 }
 
@@ -137,9 +129,9 @@ const stances = computed(() => props.stances);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #101828;
-  background: rgba(0, 61, 165, 0.08);
-  border: 1px solid rgba(0, 61, 165, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   max-height: 20px;
 }
 
@@ -149,8 +141,8 @@ const stances = computed(() => props.stances);
 }
 
 .issue-party-stances__column--neutral .issue-party-stances__badge {
-  background: rgba(107, 114, 128, 0.15);
-  color: #374151;
+  background: rgba(0, 102, 204, 0.25);
+  color: #cfe3ff;
 }
 
 .issue-party-stances__column--disagree .issue-party-stances__badge {
@@ -161,7 +153,7 @@ const stances = computed(() => props.stances);
 .issue-party-stances__hint {
   margin: 0;
   font-size: 0.8rem;
-  color: #475467;
+  color: rgba(249, 250, 251, 0.7);
 }
 
 .issue-party-stances__list {
@@ -185,7 +177,7 @@ const stances = computed(() => props.stances);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
   padding: 0.25rem;
-  box-shadow: inset 0 0 0 1px rgba(0, 61, 165, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(0, 51, 102, 0.08);
 }
 
 .issue-party-stances__party-details {
@@ -196,20 +188,20 @@ const stances = computed(() => props.stances);
 
 .issue-party-stances__party-abbr {
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-text-light);
 }
 
 .issue-party-stances__party-name {
   font-size: 0.85rem;
-  color: #475569;
+  color: rgba(249, 250, 251, 0.75);
 }
 
 .issue-party-stances__empty {
   margin: 0;
   padding: 0.75rem;
   border-radius: 0.75rem;
-  background: #f8fafc;
-  color: #64748b;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 250, 251, 0.8);
   text-align: center;
   font-size: 0.85rem;
 }

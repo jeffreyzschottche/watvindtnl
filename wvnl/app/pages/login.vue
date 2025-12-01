@@ -210,11 +210,11 @@ function dismissBanner() {
 }
 
 .page-hero__accent--blue {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
 }
 
 .page-hero__accent--red {
-  background: rgba(200, 16, 46, 0.92);
+  background: rgba(255, 80, 3, 0.92);
 }
 
 .page-hero__subtitle {
@@ -227,8 +227,8 @@ function dismissBanner() {
 .page-hero--login {
   background-image: linear-gradient(
       135deg,
-      rgba(0, 61, 165, 0.12),
-      rgba(200, 16, 46, 0.2)
+      rgba(0, 51, 102, 0.12),
+      rgba(255, 80, 3, 0.2)
     ),
     url("/images/stockvault-cheese147191.webp");
 }
@@ -241,7 +241,7 @@ function dismissBanner() {
   padding: 1.25rem 1.5rem;
   border-radius: 1.1rem;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
   box-shadow: 0 18px 40px rgba(0, 26, 77, 0.12);
 }
 
@@ -289,7 +289,7 @@ function dismissBanner() {
 }
 
 .login-banner--error {
-  background: rgba(200, 16, 46, 0.08);
-  border-color: rgba(200, 16, 46, 0.45);
+  background: rgba(255, 80, 3, 0.08);
+  border-color: rgba(255, 80, 3, 0.45);
 }
 </style>

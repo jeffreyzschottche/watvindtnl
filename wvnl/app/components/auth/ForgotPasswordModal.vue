@@ -115,7 +115,7 @@ async function onSubmit() {
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(238, 241, 246, 0.97));
   box-shadow: 0 24px 48px rgba(0, 26, 77, 0.28);
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 63, 125, 0.35);
   padding: 1.75rem;
   display: grid;
   gap: 1.25rem;
@@ -131,7 +131,7 @@ async function onSubmit() {
 .modal__title {
   margin: 0;
   font-size: 1.35rem;
-  color: var(--color-primary, #003da5);
+  color: var(--color-primary, #003366);
 }
 
 .modal__close {
@@ -141,14 +141,14 @@ async function onSubmit() {
   width: 2.2rem;
   height: 2.2rem;
   font-size: 1.5rem;
-  color: var(--color-accent, #c8102e);
+  color: var(--color-accent, #ff5003);
   cursor: pointer;
   box-shadow: 0 6px 14px rgba(0, 26, 77, 0.18);
 }
 
 .modal__close:hover,
 .modal__close:focus-visible {
-  background: rgba(200, 16, 46, 0.12);
+  background: rgba(255, 80, 3, 0.2);
 }
 
 .modal__body {
@@ -170,7 +170,7 @@ async function onSubmit() {
 .modal__field input {
   padding: 0.7rem 0.9rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(0, 61, 165, 0.2);
+  border: 1px solid rgba(0, 63, 125, 0.35);
   font-size: 1rem;
 }
 
@@ -212,9 +212,13 @@ async function onSubmit() {
 }
 
 .modal__primary {
-  background: linear-gradient(130deg, var(--color-accent, #c8102e), var(--color-primary, #003da5));
+  background: linear-gradient(
+    130deg,
+    var(--color-accent, #ff5003),
+    var(--color-primary, #003366)
+  );
   color: #fff;
-  box-shadow: 0 12px 24px rgba(0, 61, 165, 0.28);
+  box-shadow: 0 12px 24px rgba(0, 35, 71, 0.35);
 }
 
 .modal__primary[disabled] {

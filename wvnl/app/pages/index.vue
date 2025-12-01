@@ -253,10 +253,10 @@ h2 {
 
 /* 1e knop: ROOD */
 .ctahome .button:first-child {
-  background: rgba(200, 16, 46, 0.95);
+  background: rgba(255, 80, 3, 0.95);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 18px 36px rgba(200, 16, 46, 0.35);
+  box-shadow: 0 18px 36px rgba(255, 80, 3, 0.35);
 }
 
 @media (max-width: 1023px) {
@@ -272,7 +272,8 @@ h2 {
 
   .hero-card {
     backdrop-filter: blur(4px);
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(0, 51, 102, 0.92);
+    color: var(--color-text-light);
   }
 }
 
@@ -301,24 +302,24 @@ h2 {
 .ctahome .button:first-child:hover,
 .ctahome .button:first-child:focus {
   background: #fff;
-  color: rgba(200, 16, 46, 0.95);
-  border-color: rgba(200, 16, 46, 0.95);
-  box-shadow: 0 22px 40px rgba(200, 16, 46, 0.45);
+  color: rgba(255, 80, 3, 0.95);
+  border-color: rgba(255, 80, 3, 0.95);
+  box-shadow: 0 22px 40px rgba(255, 80, 3, 0.45);
 }
 
 /* 2e knop: BLAUW */
 .ctahome .button:nth-child(2) {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 18px 36px rgba(0, 61, 165, 0.35);
+  box-shadow: 0 18px 36px rgba(0, 51, 102, 0.35);
 }
 .ctahome .button:nth-child(2):hover,
 .ctahome .button:nth-child(2):focus {
   background: #fff;
-  color: rgba(0, 61, 165, 0.92);
-  border-color: rgba(0, 61, 165, 0.92);
-  box-shadow: 0 22px 40px rgba(0, 61, 165, 0.45);
+  color: rgba(0, 51, 102, 0.92);
+  border-color: rgba(0, 51, 102, 0.92);
+  box-shadow: 0 22px 40px rgba(0, 51, 102, 0.45);
 }
 
 /* Interactie */

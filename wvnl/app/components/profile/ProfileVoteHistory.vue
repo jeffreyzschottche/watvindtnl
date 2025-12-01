@@ -265,7 +265,7 @@ defineExpose({ refresh: loadHistory });
   width: 100%;
   padding: 0.65rem 1rem 0.65rem 2.75rem;
   border-radius: 999px;
-  border: 1px solid rgba(0, 61, 165, 0.25);
+  border: 1px solid rgba(0, 51, 102, 0.25);
   background: #ffffff;
   font-size: 0.95rem;
   color: var(--color-text);
@@ -273,7 +273,7 @@ defineExpose({ refresh: loadHistory });
 }
 
 .vote-history__search input:focus {
-  outline: 3px solid rgba(0, 61, 165, 0.28);
+  outline: 3px solid rgba(0, 51, 102, 0.28);
   border-color: var(--color-primary);
 }
 
@@ -314,10 +314,10 @@ defineExpose({ refresh: loadHistory });
   border-radius: calc(var(--border-radius) - 2px);
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.04),
-    rgba(200, 16, 46, 0.04)
+    rgba(0, 51, 102, 0.04),
+    rgba(255, 80, 3, 0.04)
   );
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
   box-shadow: 0 10px 25px rgba(0, 27, 70, 0.08);
 }
 
@@ -361,13 +361,13 @@ defineExpose({ refresh: loadHistory });
 }
 
 .vote-chip--disagree {
-  background: rgba(200, 16, 46, 0.12);
+  background: rgba(255, 80, 3, 0.15);
   color: var(--color-accent);
 }
 
 .vote-chip--neutral {
-  background: rgba(255, 155, 0, 0.2);
-  color: #8a4b00;
+  background: rgba(0, 63, 125, 0.15);
+  color: rgba(249, 250, 251, 0.85);
 }
 
 .share-button {
@@ -377,18 +377,18 @@ defineExpose({ refresh: loadHistory });
   padding: 0.45rem 1.1rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, #003da5, #0a4bc9);
-  color: #ffffff;
+  background: linear-gradient(135deg, #ff8e00, #fd7702);
+  color: var(--color-midnight);
   font-weight: 600;
   font-size: 0.9rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-  box-shadow: 0 12px 26px rgba(0, 61, 165, 0.22);
+  box-shadow: 0 12px 26px rgba(255, 142, 0, 0.35);
 }
 
 .share-button:hover,
 .share-button:focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(0, 61, 165, 0.28);
+  box-shadow: 0 16px 30px rgba(253, 119, 2, 0.4);
   outline: none;
   filter: brightness(1.05);
 }
@@ -400,7 +400,7 @@ defineExpose({ refresh: loadHistory });
   justify-content: space-between;
   gap: 0.75rem 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid rgba(0, 61, 165, 0.12);
+  border-top: 1px solid rgba(0, 51, 102, 0.12);
   font-weight: 600;
   color: var(--color-muted);
 }
@@ -412,7 +412,7 @@ defineExpose({ refresh: loadHistory });
 
 .button--outline {
   background: #ffffff;
-  border: 2px solid rgba(0, 61, 165, 0.35);
+  border: 2px solid rgba(0, 51, 102, 0.35);
   color: var(--color-primary);
   padding-inline: 1.4rem;
 }

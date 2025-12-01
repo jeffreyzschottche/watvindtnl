@@ -99,7 +99,7 @@ const emit = defineEmits<{
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(238, 241, 246, 0.96));
   padding: 1.75rem;
   box-shadow: 0 28px 60px rgba(0, 26, 77, 0.35);
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
 }
 
 .issue-modal__header {
@@ -116,7 +116,7 @@ const emit = defineEmits<{
 }
 
 .issue-modal__close {
-  border: 1px solid rgba(0, 61, 165, 0.25);
+  border: 1px solid rgba(0, 51, 102, 0.25);
   width: 2.2rem;
   height: 2.2rem;
   border-radius: 999px;
@@ -129,7 +129,7 @@ const emit = defineEmits<{
 
 .issue-modal__close:hover,
 .issue-modal__close:focus-visible {
-  background: rgba(200, 16, 46, 0.12);
+  background: rgba(255, 80, 3, 0.12);
   transform: translateY(-1px);
   box-shadow: 0 10px 20px rgba(0, 26, 77, 0.18);
 }
@@ -143,7 +143,7 @@ const emit = defineEmits<{
   border-radius: 0.85rem;
   background: rgba(255, 255, 255, 0.95);
   color: #101828;
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
   box-shadow: 0 12px 24px rgba(0, 26, 77, 0.12);
 }
 
@@ -165,6 +165,6 @@ const emit = defineEmits<{
 .issue-modal__retry:hover,
 .issue-modal__retry:focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 16px 30px rgba(0, 61, 165, 0.35);
+  box-shadow: 0 16px 30px rgba(0, 51, 102, 0.35);
 }
 </style>

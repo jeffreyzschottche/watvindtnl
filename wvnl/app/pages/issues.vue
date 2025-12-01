@@ -341,7 +341,7 @@ function applyUserVote(
   );
   box-shadow: 0 18px 36px rgba(0, 28, 70, 0.12);
   color: #101828;
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
 }
 
 .issues-page__state--error {
@@ -364,12 +364,8 @@ function applyUserVote(
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(
-    130deg,
-    var(--color-accent),
-    var(--color-primary)
-  );
-  color: white;
+  background: linear-gradient(130deg, var(--color-orange), var(--color-orange-hover));
+  color: var(--color-midnight);
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -378,7 +374,7 @@ function applyUserVote(
 .issues-page__retry:hover,
 .issues-page__retry:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 14px 26px rgba(0, 61, 165, 0.28);
+  box-shadow: 0 18px 32px rgba(253, 119, 2, 0.35);
 }
 
 .issues-page__auth-link {

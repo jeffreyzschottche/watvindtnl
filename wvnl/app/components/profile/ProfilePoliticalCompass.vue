@@ -297,8 +297,8 @@ onMounted(() => {
   margin: 0;
   padding: 0.85rem 1rem;
   border-radius: 12px;
-  background: rgba(0, 61, 165, 0.07);
-  border: 1px solid rgba(0, 61, 165, 0.18);
+  background: rgba(0, 51, 102, 0.07);
+  border: 1px solid rgba(0, 51, 102, 0.18);
   color: rgba(16, 24, 40, 0.85);
 }
 
@@ -307,8 +307,8 @@ onMounted(() => {
   border: 1px solid rgba(16, 24, 40, 0.08);
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.06),
-    rgba(200, 16, 46, 0.05)
+    rgba(0, 51, 102, 0.06),
+    rgba(255, 80, 3, 0.05)
   );
   padding: clamp(1.5rem, 3vw, 2.25rem);
   display: flex;
@@ -351,8 +351,8 @@ onMounted(() => {
   justify-content: center;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
-  background: rgba(0, 61, 165, 0.15);
-  color: rgba(0, 61, 165, 0.95);
+  background: rgba(0, 51, 102, 0.15);
+  color: rgba(0, 51, 102, 0.95);
   font-weight: 700;
   font-size: 0.95rem;
 }
@@ -387,10 +387,10 @@ onMounted(() => {
   border-radius: 50%;
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.95),
-    rgba(200, 16, 46, 0.95)
+    rgba(0, 51, 102, 0.95),
+    rgba(255, 80, 3, 0.95)
   );
-  box-shadow: 0 0 10px rgba(0, 61, 165, 0.35);
+  box-shadow: 0 0 10px rgba(0, 51, 102, 0.35);
 }
 
 .compass-score__explain {
@@ -444,8 +444,8 @@ onMounted(() => {
   justify-content: center;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
-  background: rgba(200, 16, 46, 0.12);
-  color: rgba(200, 16, 46, 0.9);
+  background: rgba(255, 80, 3, 0.12);
+  color: rgba(255, 80, 3, 0.9);
   font-weight: 700;
   font-size: 0.85rem;
 }
@@ -457,14 +457,14 @@ onMounted(() => {
 .compass-party a {
   align-self: flex-start;
   font-weight: 600;
-  color: rgba(0, 61, 165, 0.95);
+  color: rgba(0, 51, 102, 0.95);
 }
 
 .compass-empty {
   padding: 1.5rem;
   border-radius: 16px;
   border: 1px dashed rgba(16, 24, 40, 0.2);
-  background: rgba(0, 61, 165, 0.05);
+  background: rgba(0, 51, 102, 0.05);
 }
 
 .compass-empty h3 {
@@ -515,7 +515,7 @@ onMounted(() => {
 
 .compass-history__party {
   font-weight: 700;
-  color: rgba(0, 61, 165, 0.9);
+  color: rgba(0, 51, 102, 0.9);
 }
 
 @media (max-width: 768px) {

@@ -86,8 +86,8 @@ onMounted(() => {
   padding: 4rem 1rem;
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.12),
-    rgba(200, 16, 46, 0.1)
+    rgba(0, 51, 102, 0.12),
+    rgba(255, 80, 3, 0.1)
   );
 }
 
@@ -97,7 +97,7 @@ onMounted(() => {
   padding: 2.5rem;
   text-align: center;
   box-shadow: 0 24px 60px rgba(0, 26, 77, 0.18);
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
   display: grid;
   gap: 1.25rem;
 }
@@ -118,11 +118,11 @@ onMounted(() => {
 }
 
 .verification-card--info {
-  border-color: rgba(37, 99, 235, 0.35);
+  border-color: rgba(0, 63, 125, 0.35);
 }
 
 .verification-card--error {
-  border-color: rgba(200, 16, 46, 0.45);
+  border-color: rgba(255, 80, 3, 0.55);
 }
 
 .verification-card__hint {
@@ -139,8 +139,8 @@ onMounted(() => {
   border-radius: 999px;
   background: linear-gradient(
     130deg,
-    var(--color-accent, #c8102e),
-    var(--color-primary, #003da5)
+    var(--color-accent, #ff5003),
+    var(--color-primary, #003366)
   );
   color: #fff;
   font-weight: 700;

@@ -215,11 +215,11 @@ const jsonLd = {
 }
 
 .page-hero__accent--blue {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
 }
 
 .page-hero__accent--red {
-  background: rgba(200, 16, 46, 0.92);
+  background: rgba(255, 80, 3, 0.92);
 }
 
 .page-hero__subtitle {
@@ -232,8 +232,8 @@ const jsonLd = {
 .page-hero--privacy {
   background-image: linear-gradient(
       135deg,
-      rgba(0, 61, 165, 0.18),
-      rgba(200, 16, 46, 0.22)
+      rgba(0, 51, 102, 0.18),
+      rgba(255, 80, 3, 0.22)
     ),
     url("/images/martijn-baudoin-C4rDHqqmu4w-unsplash.webp");
 }

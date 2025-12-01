@@ -200,8 +200,8 @@ async function onSubmit() {
   padding: 4rem 1rem;
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.1),
-    rgba(200, 16, 46, 0.08)
+    rgba(0, 51, 102, 0.1),
+    rgba(255, 80, 3, 0.08)
   );
 }
 
@@ -210,7 +210,7 @@ async function onSubmit() {
   border-radius: 1.5rem;
   padding: 2.5rem;
   box-shadow: 0 24px 60px rgba(0, 26, 77, 0.18);
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
   display: grid;
   gap: 1.75rem;
 }
@@ -246,8 +246,8 @@ async function onSubmit() {
 }
 
 .reset-card__state--error {
-  border-color: rgba(200, 16, 46, 0.45);
-  background: rgba(200, 16, 46, 0.08);
+  border-color: rgba(255, 80, 3, 0.45);
+  background: rgba(255, 80, 3, 0.08);
 }
 
 .reset-card__state--success {
@@ -262,8 +262,8 @@ async function onSubmit() {
   border-radius: 999px;
   background: linear-gradient(
     130deg,
-    var(--color-accent, #c8102e),
-    var(--color-primary, #003da5)
+    var(--color-accent, #ff5003),
+    var(--color-primary, #003366)
   );
   color: #fff;
   font-weight: 700;
@@ -282,7 +282,7 @@ async function onSubmit() {
 .reset-form input {
   padding: 0.7rem 0.9rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(0, 61, 165, 0.2);
+  border: 1px solid rgba(0, 51, 102, 0.2);
   font-size: 1rem;
 }
 
@@ -299,7 +299,7 @@ async function onSubmit() {
 }
 
 .reset-form__back {
-  color: var(--color-primary, #003da5);
+  color: var(--color-primary, #003366);
   font-weight: 600;
 }
 </style>

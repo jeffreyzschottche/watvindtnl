@@ -42,7 +42,7 @@
             class="cls-3"
             d="M29.3 35.7a2.1 2.1 0 0 0-.8.2 3.7 3.7 0 0 0-7.3 0 2 2 0 0 0-.8-.2 2.2 2.2 0 0 0 0 4.4h8.9a2.2 2.2 0 0 0 0-4.4z"
             fill="#ffffff"
-            stroke="#003da5"
+            stroke="#003366"
             stroke-linejoin="round"
           />
           <path
@@ -92,7 +92,7 @@
             d="M61 79.7h-4.5v-3a2.3 2.3 0 0 1 2.3-2.3 2.3 2.3 0 0 1 2.2 2.3z"
             fill="#d4ddff"
             stroke-linecap="round"
-            stroke="#003da5"
+            stroke="#003366"
             stroke-linejoin="round"
           />
           <path class="cls-2" d="M43.5 79.7v-3.8M50.5 79.7v-3.8" />
@@ -153,10 +153,11 @@
 
 <style>
 .site-footer {
-  background: linear-gradient(140deg, #001d5a 0%, #003da5 60%, #0b2e73 100%);
-  color: #f7f9ff;
+  background: var(--color-midnight);
+  color: var(--color-text-light);
   padding: 2.75rem 0 2.25rem;
-  border-top: 6px solid #c8102e;
+  border-top: 4px solid var(--color-orange);
+  box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.45);
 }
 
 .footer-container {
@@ -190,15 +191,15 @@
 }
 
 .footer-links a {
-  color: #f5f7ff;
+  color: var(--color-text-light);
   text-decoration: none;
   font-weight: 600;
   border-bottom: 2px solid transparent;
 }
 
 .footer-links a:hover {
-  border-bottom-color: rgba(255, 155, 0, 0.8);
-  color: #ffcf73;
+  border-bottom-color: var(--color-orange);
+  color: var(--color-orange);
 }
 
 .footer-copy {
@@ -216,12 +217,11 @@
 .footer-credits {
   margin-top: 0.5rem;
   font-size: 0.78rem;
-  color: rgba(247, 249, 255, 0);
+  color: rgba(249, 250, 251, 0.65);
 }
 
 .footer-credits a {
-  color: rgba(247, 249, 255, 0);
-
+  color: var(--color-orange);
   text-decoration: underline;
 }
 
@@ -236,18 +236,18 @@
 }
 .cls-2,
 .cls-7 {
-  stroke: #003da5;
+  stroke: #003366;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 .cls-5 {
-  fill: #c8102e;
+  fill: var(--color-danger);
 }
 .cls-7 {
-  fill: #ff9b00;
+  fill: var(--color-orange);
 }
 .cls-4 {
-  fill: #cdd8ff;
+  fill: #dbe4ff;
 }
 
 /* Optionele wolk-scroll animatie */

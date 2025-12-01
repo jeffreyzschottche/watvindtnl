@@ -118,14 +118,15 @@ onBeforeUnmount(() => {
   border-radius: 1rem;
   background: linear-gradient(
     155deg,
-    rgba(0, 61, 165, 0.1),
-    rgba(255, 255, 255, 0.98)
+    rgba(0, 35, 71, 0.95),
+    rgba(0, 51, 102, 0.85)
   );
   min-width: 12rem;
-  box-shadow: 0 22px 48px rgba(0, 28, 70, 0.2);
-  border: 1px solid rgba(0, 61, 165, 0.2);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(249, 250, 251, 0.12);
   backdrop-filter: blur(6px);
   z-index: 100;
+  color: var(--color-text-light);
 }
 
 .share-dropdown__option {
@@ -134,8 +135,8 @@ onBeforeUnmount(() => {
   padding: 0.6rem 0.9rem;
   border: none;
   border-radius: 0.7rem;
-  background: rgba(255, 255, 255, 0.65);
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-light);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease,
@@ -147,14 +148,10 @@ onBeforeUnmount(() => {
 
 .share-dropdown__option:hover,
 .share-dropdown__option:focus {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 61, 165, 0.18),
-    rgba(0, 61, 165, 0.05)
-  );
-  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-orange);
   transform: translateX(2px);
-  box-shadow: inset 0 0 0 1px rgba(0, 61, 165, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .share-dropdown__transition-enter-active,
@@ -185,13 +182,13 @@ onBeforeUnmount(() => {
 .triggerClass:hover,
 .triggerClass:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 14px 26px rgba(0, 61, 165, 0.28);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.35);
 }
 
 .issue-card__button--share {
-  background: linear-gradient(135deg, #003da5, #0a4bc9);
-  color: #ffffff;
-  box-shadow: 0 14px 28px rgba(0, 61, 165, 0.25);
+  background: linear-gradient(135deg, #ff8e00, #fd7702);
+  color: var(--color-midnight);
+  box-shadow: 0 18px 36px rgba(255, 142, 0, 0.35);
   border-radius: 15px;
   border: none;
   cursor: pointer;

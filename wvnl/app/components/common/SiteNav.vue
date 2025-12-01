@@ -52,7 +52,7 @@
           <template v-if="!isLoggedIn">
             <button
               type="button"
-              class="button"
+              class="button button-secondary"
               :class="{ 'link-active': isActive('/login') }"
               @click="navigateTo('/login')"
             >
@@ -70,13 +70,17 @@
           <div class="auth-links" v-else>
             <button
               type="button"
-              class="button"
+              class="button button-secondary"
               :class="{ 'link-active': isActive('/profile') }"
               @click="navigateTo('/profile')"
             >
               Mijn profiel
             </button>
-            <button type="button" class="button" @click="handleLogout">
+            <button
+              type="button"
+              class="button button-danger"
+              @click="handleLogout"
+            >
               Uitloggen
             </button>
           </div>

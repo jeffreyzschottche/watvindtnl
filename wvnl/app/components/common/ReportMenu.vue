@@ -102,13 +102,9 @@ async function handleSelect(reason: ReportReason) {
 }
 
 .report-menu__trigger {
-  border: 1px solid rgba(0, 61, 165, 0.3);
-  background: linear-gradient(
-    120deg,
-    rgba(0, 61, 165, 0.08),
-    rgba(0, 61, 165, 0.18)
-  );
-  color: var(--color-primary);
+  border: none;
+  background: linear-gradient(135deg, #ff8e00, #fd7702);
+  color: var(--color-midnight);
   border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -116,7 +112,7 @@ async function handleSelect(reason: ReportReason) {
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease,
     box-shadow 0.2s ease;
-  box-shadow: 0 8px 20px rgba(0, 61, 165, 0.18);
+  box-shadow: 0 8px 20px rgba(0, 51, 102, 0.18);
   max-width: 125px;
   text-align: center;
 }
@@ -133,8 +129,9 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__trigger:not(:disabled):hover,
 .report-menu__trigger:not(:disabled):focus-visible {
-  color: var(--color-primary);
+  color: var(--color-midnight);
   transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(253, 119, 2, 0.35);
 }
 
 .report-menu__panel {
@@ -145,13 +142,13 @@ async function handleSelect(reason: ReportReason) {
   width: min(320px, 90vw);
   border-radius: 1rem;
   background: linear-gradient(
-    140deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(238, 241, 246, 0.95)
+    145deg,
+    rgba(0, 35, 71, 0.95),
+    rgba(0, 51, 102, 0.85)
   );
-  box-shadow: 0 18px 40px rgba(0, 28, 70, 0.18);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
   padding: 1.1rem;
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 10;
 }
 
@@ -159,7 +156,7 @@ async function handleSelect(reason: ReportReason) {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-orange);
 }
 
 .report-menu__options {
@@ -172,13 +169,13 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__option {
   width: 100%;
-  border: 1px solid rgba(0, 61, 165, 0.15);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 0.65rem;
   padding: 0.6rem 0.85rem;
   text-align: left;
   font-size: 0.9rem;
-  color: #101828;
+  color: var(--color-text-light);
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease,
     color 0.2s ease, transform 0.2s ease;
@@ -191,9 +188,9 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__option:not(:disabled):hover,
 .report-menu__option:not(:disabled):focus-visible {
-  background: rgba(0, 61, 165, 0.1);
-  border-color: rgba(0, 61, 165, 0.3);
-  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--color-orange);
   transform: translateY(-1px);
 }
 

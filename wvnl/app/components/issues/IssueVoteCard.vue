@@ -101,51 +101,52 @@
           {{ totalVotes }} stem{{ totalVotes === 1 ? "" : "men" }}
         </span>
       </header>
-      <p v-if="totalVotes === 0" class="issue-card__results-empty">
-        Nog geen stemmen uitgebracht.
-      </p>
-      <template v-else>
-        <div class="issue-card__results-bar">
-          <span
-            class="issue-card__results-segment issue-card__results-segment--agree"
-            :style="{ width: `${votePercentages.agree}%` }"
-          />
-          <span
-            class="issue-card__results-segment issue-card__results-segment--neutral"
-            :style="{ width: `${votePercentages.neutral}%` }"
-          />
-          <span
-            class="issue-card__results-segment issue-card__results-segment--disagree"
-            :style="{ width: `${votePercentages.disagree}%` }"
-          />
-        </div>
-        <ul class="issue-card__results-list">
-          <li class="issue-card__results-item">
-            <span class="issue-card__results-label">Voor</span>
-            <span class="issue-card__results-value">
-              {{ votePercentages.agree }}% · {{ voteCounts.agree }} stem{{
-                voteCounts.agree === 1 ? "" : "men"
-              }}
-            </span>
-          </li>
-          <li class="issue-card__results-item">
-            <span class="issue-card__results-label">Neutraal</span>
-            <span class="issue-card__results-value">
-              {{ votePercentages.neutral }}% · {{ voteCounts.neutral }} stem{{
-                voteCounts.neutral === 1 ? "" : "men"
-              }}
-            </span>
-          </li>
-          <li class="issue-card__results-item">
-            <span class="issue-card__results-label">Tegen</span>
-            <span class="issue-card__results-value">
-              {{ votePercentages.disagree }}% · {{ voteCounts.disagree }} stem{{
-                voteCounts.disagree === 1 ? "" : "men"
-              }}
-            </span>
-          </li>
-        </ul>
-      </template>
+      <div class="issue-card__results-bar">
+        <span
+          class="issue-card__results-segment issue-card__results-segment--agree"
+          :style="{ width: `${votePercentages.agree}%` }"
+        />
+        <span
+          class="issue-card__results-segment issue-card__results-segment--neutral"
+          :style="{ width: `${votePercentages.neutral}%` }"
+        />
+        <span
+          class="issue-card__results-segment issue-card__results-segment--disagree"
+          :style="{ width: `${votePercentages.disagree}%` }"
+        />
+      </div>
+      <ul class="issue-card__results-list">
+        <li class="issue-card__results-item issue-card__results-item--agree">
+          <span class="issue-card__results-label">
+            Voor
+          </span>
+          <span class="issue-card__results-value">
+            {{ votePercentages.agree }}% · {{ voteCounts.agree }} stem{{
+              voteCounts.agree === 1 ? "" : "men"
+            }}
+          </span>
+        </li>
+        <li class="issue-card__results-item issue-card__results-item--neutral">
+          <span class="issue-card__results-label">
+            Neutraal
+          </span>
+          <span class="issue-card__results-value">
+            {{ votePercentages.neutral }}% · {{ voteCounts.neutral }} stem{{
+              voteCounts.neutral === 1 ? "" : "men"
+            }}
+          </span>
+        </li>
+        <li class="issue-card__results-item issue-card__results-item--disagree">
+          <span class="issue-card__results-label">
+            Tegen
+          </span>
+          <span class="issue-card__results-value">
+            {{ votePercentages.disagree }}% · {{ voteCounts.disagree }} stem{{
+              voteCounts.disagree === 1 ? "" : "men"
+            }}
+          </span>
+        </li>
+      </ul>
     </section>
     <IssueArgumentsList :groups="issue.arguments" />
     <IssuePartyStances :stances="issue.party_stances" />
@@ -255,16 +256,13 @@ async function handleIssueReport(reason: ReportReason) {
   gap: 1.75rem;
   padding: 1.75rem;
   border-radius: 1.1rem;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    rgba(238, 241, 246, 0.85) 100%
-  );
-  box-shadow: 0 24px 45px rgba(0, 28, 70, 0.12);
-  border: 1px solid rgba(0, 61, 165, 0.08);
+  background: #ffffff;
+  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 35, 71, 0.1);
   width: min(100%, 720px);
   margin: 0 auto;
   box-sizing: border-box;
+  color: var(--color-text-dark);
 }
 
 .issue-card__header {
@@ -282,7 +280,7 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__counter {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--color-accent);
+  color: var(--color-orange);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -291,19 +289,37 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__title {
   margin: 0;
   font-size: 1.6rem;
-  color: var(--color-primary);
+  color: var(--color-midnight);
   word-break: break-word;
   hyphens: auto;
 }
 
 .issue-card__report {
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #ff8e00, #fd7702);
+  color: var(--color-midnight);
+  font-weight: 700;
+  box-shadow: 0 12px 22px rgba(255, 142, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.issue-card__report:hover,
+.issue-card__report:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 26px rgba(253, 119, 2, 0.45);
 }
 
 .issue-card__description {
   margin: 0;
   line-height: 1.7;
-  color: #344054;
+  color: var(--color-text-dark);
   min-height: 3.2rem;
   word-break: break-word;
 }
@@ -317,12 +333,8 @@ async function handleIssueReport(reason: ReportReason) {
   gap: 0.75rem;
   padding: 1.1rem;
   border-radius: 0.9rem;
-  background: linear-gradient(
-    140deg,
-    rgba(255, 255, 255, 0.95),
-    rgba(238, 241, 246, 0.9)
-  );
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  background: linear-gradient(150deg, #002e63, #003f7d);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 9rem;
 }
 
@@ -331,7 +343,7 @@ async function handleIssueReport(reason: ReportReason) {
   justify-content: space-between;
   align-items: baseline;
   font-weight: 600;
-  color: var(--color-primary);
+  color: #f9fafb;
 }
 
 .issue-card__results-title {
@@ -341,13 +353,7 @@ async function handleIssueReport(reason: ReportReason) {
 
 .issue-card__results-total {
   font-size: 0.9rem;
-  color: #475467;
-}
-
-.issue-card__results-empty {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #475467;
+  color: rgba(249, 250, 251, 0.75);
 }
 
 .issue-card__results-bar {
@@ -356,7 +362,7 @@ async function handleIssueReport(reason: ReportReason) {
   height: 0.75rem;
   border-radius: 9999px;
   overflow: hidden;
-  background-color: rgba(0, 61, 165, 0.12);
+  background-color: rgba(249, 250, 251, 0.25);
 }
 
 .issue-card__results-segment {
@@ -389,15 +395,30 @@ async function handleIssueReport(reason: ReportReason) {
   display: flex;
   justify-content: space-between;
   font-size: 0.95rem;
-  color: #101828;
+  color: rgba(249, 250, 251, 0.95);
+}
+
+.issue-card__results-item--agree .issue-card__results-label {
+  color: #22c55e;
+}
+
+.issue-card__results-item--neutral .issue-card__results-label {
+  color: #8ab7ff;
+}
+
+.issue-card__results-item--disagree .issue-card__results-label {
+  color: #fb7185;
 }
 
 .issue-card__results-label {
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .issue-card__results-value {
-  color: #475569;
+  color: rgba(249, 250, 251, 0.8);
 }
 
 .issue-card__footer {
@@ -427,7 +448,7 @@ async function handleIssueReport(reason: ReportReason) {
 .issue-card__button:not(:disabled):hover,
 .issue-card__button:not(:disabled):focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 16px 26px rgba(0, 28, 70, 0.18);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.35);
 }
 
 .issue-card__share {
@@ -465,7 +486,9 @@ async function handleIssueReport(reason: ReportReason) {
 }
 
 .issue-card__button--neutral {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
+  background: linear-gradient(135deg, #003f7d, #002347);
+  color: var(--color-text-light);
+  border: 1px solid rgba(249, 250, 251, 0.2);
 }
 
 .issue-card__button--disagree {
@@ -473,14 +496,15 @@ async function handleIssueReport(reason: ReportReason) {
 }
 
 .issue-card__button--skip {
-  background: linear-gradient(135deg, #ffe0b2, #ff9b00);
-  color: #2f1300;
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: #f4f4f5;
+  border: none;
 }
 
 .issue-card__button--share {
-  background: linear-gradient(135deg, #003da5, #0a4bc9);
-  color: #ffffff;
-  box-shadow: 0 14px 28px rgba(0, 61, 165, 0.25);
+  background: linear-gradient(135deg, #ff8e00, #fd7702);
+  color: var(--color-midnight);
+  box-shadow: 0 18px 36px rgba(255, 142, 0, 0.35);
   display: none !important;
 }
 
@@ -506,7 +530,7 @@ async function handleIssueReport(reason: ReportReason) {
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(238, 241, 246, 0.97));
   box-shadow: 0 24px 48px rgba(0, 26, 77, 0.28);
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 63, 125, 0.35);
   padding: 1.75rem;
   display: grid;
   gap: 1.25rem;
@@ -522,7 +546,7 @@ async function handleIssueReport(reason: ReportReason) {
 .modal__title {
   margin: 0;
   font-size: 1.35rem;
-  color: var(--color-primary, #003da5);
+  color: var(--color-primary, #003366);
 }
 
 .modal__close {
@@ -532,14 +556,14 @@ async function handleIssueReport(reason: ReportReason) {
   width: 2.2rem;
   height: 2.2rem;
   font-size: 1.5rem;
-  color: var(--color-accent, #c8102e);
+  color: var(--color-accent, #ff5003);
   cursor: pointer;
   box-shadow: 0 6px 14px rgba(0, 26, 77, 0.18);
 }
 
 .modal__close:hover,
 .modal__close:focus-visible {
-  background: rgba(200, 16, 46, 0.12);
+  background: rgba(255, 80, 3, 0.2);
 }
 
 .modal__body {
@@ -585,14 +609,18 @@ async function handleIssueReport(reason: ReportReason) {
 }
 
 .modal__primary {
-  background: linear-gradient(130deg, var(--color-accent, #c8102e), var(--color-primary, #003da5));
+  background: linear-gradient(
+    130deg,
+    var(--color-accent, #ff5003),
+    var(--color-primary, #003366)
+  );
   color: #fff;
-  box-shadow: 0 12px 24px rgba(0, 61, 165, 0.28);
+  box-shadow: 0 12px 24px rgba(0, 35, 71, 0.35);
 }
 
 .modal__primary:hover,
 .modal__primary:focus-visible {
   transform: translateY(-1px);
-  box-shadow: 0 16px 28px rgba(0, 61, 165, 0.32);
+  box-shadow: 0 16px 28px rgba(0, 35, 71, 0.42);
 }
 </style>

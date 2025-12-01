@@ -3,18 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #f5f7fa;
-  --color-surface: #ffffff;
-  --color-surface-alt: #eef1f6;
-  --color-primary: #003da5;
-  --color-primary-light: #d7e2ff;
-  --color-accent: #c8102e;
-  --color-cta: #ff9b00;
-  --color-text: #101828;
-  --color-muted: #475467;
-  --color-border: #d0d5dd;
-  --border-radius: 14px;
-  --shadow-soft: 0 16px 40px rgba(0, 28, 70, 0.12);
+  --color-midnight: #002347;
+  --color-navy: #003366;
+  --color-navy-accent: #003f7d;
+  --color-orange: #ff8e00;
+  --color-orange-hover: #fd7702;
+  --color-danger: #ff5003;
+  --color-text-light: #f9fafb;
+  --color-text-muted: #c5d2f3;
+  --color-text-dark: #081225;
+  --color-panel-dark: rgba(0, 51, 102, 0.85);
+  --color-panel-light: rgba(255, 255, 255, 0.08);
+  --color-bg: #ffffff;
+  --color-surface: var(--color-panel-dark);
+  --color-surface-alt: rgba(0, 63, 125, 0.65);
+  --color-primary: var(--color-navy);
+  --color-primary-light: #1c4a80;
+  --color-accent: var(--color-danger);
+  --color-cta: var(--color-orange);
+  --color-text: var(--color-text-light);
+  --color-muted: var(--color-text-muted);
+  --color-border: rgba(249, 250, 251, 0.12);
+  --border-radius: 18px;
+  --shadow-soft: 0 25px 60px rgba(0, 0, 0, 0.4);
+  --focus-ring: 0 0 0 3px rgba(255, 142, 0, 0.45);
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -26,24 +38,21 @@ body {
 
 body {
   margin: 0;
-  background: radial-gradient(
-    circle at top left,
-    #ffffff 0%,
-    #f5f7fa 55%,
-    #eef1f6 100%
-  );
-  color: var(--color-text);
+  background: var(--color-bg);
+  color: var(--color-text-dark);
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-orange);
   text-decoration: none;
   font-weight: 600;
 }
 
 a:hover,
 a:focus {
+  color: var(--color-orange-hover);
   text-decoration: underline;
 }
 
@@ -75,10 +84,9 @@ a:focus {
 }
 
 .site-header {
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid rgba(0, 61, 165, 0.08);
-  box-shadow: 0 6px 24px rgba(0, 26, 77, 0.04);
-  backdrop-filter: blur(8px);
+  background: var(--color-midnight);
+  border-bottom: 1px solid rgba(249, 250, 251, 0.12);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -88,7 +96,7 @@ a:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
+  padding: 1.25rem 0;
   gap: 1.5rem;
 }
 
@@ -115,24 +123,26 @@ a:focus {
   display: none;
   flex-direction: column;
   gap: 0.35rem;
-  background: #ffffff;
-  border: 2px solid var(--color-cta);
+  background: var(--color-navy);
+  border: 1px solid var(--color-orange);
   margin-left: 30%;
   border-radius: 12px;
   padding: 0.35rem 0.4rem;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .menu-toggle:focus-visible {
-  outline: 3px solid rgba(255, 155, 0, 0.45);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .menu-toggle:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(255, 155, 0, 0.3);
-  border-color: #ffb347;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+  border-color: var(--color-orange-hover);
+  background: var(--color-navy-accent);
 }
 
 .menu-toggle span {
@@ -140,7 +150,7 @@ a:focus {
   width: 1.75rem;
   height: 0.18rem;
   border-radius: 999px;
-  background: var(--color-cta);
+  background: var(--color-orange);
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
@@ -152,7 +162,7 @@ a:focus {
 }
 
 .nav-link {
-  color: var(--color-text);
+  color: var(--color-text-light);
   font-weight: 600;
   text-decoration: none;
   padding-bottom: 0.2rem;
@@ -162,14 +172,14 @@ a:focus {
 
 .nav-link:hover,
 .nav-link:focus {
-  color: #ffb347;
+  color: var(--color-orange);
   text-decoration: none;
-  border-bottom-color: rgba(255, 155, 0, 0.85);
+  border-bottom-color: var(--color-orange);
 }
 
 .link-active.nav-link {
-  color: #ffb347;
-  border-bottom-color: var(--color-cta);
+  color: var(--color-orange);
+  border-bottom-color: var(--color-orange);
 }
 
 .nav-links .button {
@@ -207,10 +217,11 @@ a:focus {
   justify-content: center;
   padding: 0.6rem 1.6rem;
   border-radius: 999px;
-  background: var(--color-cta);
-  color: #101828;
+  background: var(--color-orange);
+  color: var(--color-midnight);
   font-weight: 700;
-  border: 2px solid rgba(11, 19, 32, 0.1);
+  border: none;
+  box-shadow: 0 20px 35px rgba(255, 142, 0, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
     color 0.2s ease;
 }
@@ -219,34 +230,51 @@ a:focus {
 .button:focus {
   text-decoration: none;
   transform: translateY(-1px);
-  background: linear-gradient(135deg, #ffb43a, #ff9b00);
-  color: #0b1320;
+  background: var(--color-orange-hover);
+  box-shadow: 0 24px 45px rgba(253, 119, 2, 0.45);
+  color: var(--color-midnight);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: 0 24px 45px rgba(253, 119, 2, 0.45), var(--focus-ring);
 }
 
 .button-secondary {
-  background: linear-gradient(135deg, var(--color-primary-light), #ffffff);
-  color: var(--color-primary);
-  border: 1px solid rgba(0, 61, 165, 0.25);
+  background: transparent;
+  color: var(--color-text-light);
+  border: 1px solid rgba(249, 250, 251, 0.35);
   box-shadow: none;
 }
 
 .button-secondary:hover,
 .button-secondary:focus {
-  background: #eef1ff;
-  color: var(--color-primary);
-  border-color: rgba(0, 61, 165, 0.45);
+  background: var(--color-panel-light);
+  color: var(--color-text-light);
+  border-color: rgba(249, 250, 251, 0.65);
 }
 
-.button-profile {
-  background: linear-gradient(
-    120deg,
-    var(--color-primary) 0%,
-    #0b2e73 40%,
-    var(--color-accent) 100%
-  );
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 18px 40px rgba(0, 61, 165, 0.3);
+.button-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(249, 250, 251, 0.35);
+}
+
+.button-danger {
+  background: var(--color-danger);
+  color: var(--color-text-light);
+  box-shadow: 0 22px 40px rgba(255, 80, 3, 0.35);
+}
+
+.button-danger:hover,
+.button-danger:focus {
+  background: #ff6f2a;
+  color: var(--color-text-light);
+  box-shadow: 0 26px 48px rgba(255, 80, 3, 0.5);
+}
+
+.button-danger:focus-visible {
+  box-shadow: 0 26px 48px rgba(255, 80, 3, 0.5),
+    0 0 0 3px rgba(255, 80, 3, 0.65);
 }
 
 @media (max-width: 960px) {
@@ -264,14 +292,10 @@ a:focus {
     left: 50%;
     transform: translateX(-50%);
     width: min(480px, calc(100vw - 2.5rem));
-    background: linear-gradient(
-      135deg,
-      #ffffff 0%,
-      rgba(238, 241, 246, 0.95) 100%
-    );
-    border: 1px solid rgba(0, 61, 165, 0.12);
+    background: var(--color-navy);
+    border: 1px solid rgba(249, 250, 251, 0.12);
     border-radius: 18px;
-    box-shadow: 0 24px 45px rgba(0, 26, 77, 0.16);
+    box-shadow: 0 28px 55px rgba(0, 0, 0, 0.7);
     padding: 1.5rem 0 1.75rem;
     display: none;
     flex-direction: column;
@@ -295,10 +319,6 @@ a:focus {
     width: 100%;
   }
 
-  .nav-links .button-profile {
-    width: 100%;
-  }
-
   .auth-links {
     flex-direction: column;
     width: 100%;
@@ -316,9 +336,10 @@ a:focus {
   padding: clamp(5.5rem, 12vw, 7rem) 0 clamp(3rem, 7vw, 4rem);
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.08),
-    rgba(255, 255, 255, 0.6)
+    rgba(0, 35, 71, 0.95),
+    rgba(0, 63, 125, 0.65)
   );
+  color: var(--color-text-light);
 }
 
 @media (min-width: 1024px) {
@@ -336,7 +357,7 @@ a:focus {
 
 .eyebrow {
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-orange);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: 0.75rem;
@@ -344,7 +365,7 @@ a:focus {
 
 .lead {
   font-size: 1.125rem;
-  color: #1d2939;
+  color: var(--color-text-muted);
   max-width: 560px;
 }
 
@@ -355,17 +376,23 @@ a:focus {
 }
 
 .hero-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f6f7fb 100%);
+  background: rgba(0, 51, 102, 0.9);
   padding: 2rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(0, 61, 165, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text-light);
 }
 
 .hero-card ul {
   margin: 1rem 0 0;
   padding-left: 1.1rem;
-  color: #344054;
+  color: var(--color-text-light);
+  font-weight: 600;
+}
+
+.hero-card li {
+  margin-bottom: 0.35rem;
 }
 
 .hero-actions {
@@ -376,13 +403,22 @@ a:focus {
 }
 
 .section-light {
-  background: var(--color-surface);
+  background: transparent;
   padding: 3.5rem 0;
+  border-block: none;
+  color: var(--color-text-dark);
+}
+
+.section-light p,
+.section-light li,
+.section-light a {
+  color: inherit;
 }
 
 .section-title {
   text-align: center;
   margin-bottom: 2.5rem;
+  color: var(--color-midnight);
 }
 
 .card-grid {
@@ -405,15 +441,12 @@ a:focus {
 }
 
 .card {
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    rgba(239, 243, 252, 0.9) 100%
-  );
+  background: var(--color-panel-dark);
   padding: 1.75rem;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(0, 61, 165, 0.07);
+  border: 1px solid rgba(249, 250, 251, 0.08);
+  color: var(--color-text-light);
 }
 
 .steps {
@@ -427,15 +460,16 @@ a:focus {
 }
 
 .step-card {
-  background: var(--color-surface);
+  background: var(--color-panel-dark);
   border-radius: var(--border-radius);
   padding: 1.75rem;
-  border: 1px solid rgba(0, 61, 165, 0.12);
-  box-shadow: 0 12px 28px rgba(0, 26, 77, 0.08);
+  border: 1px solid rgba(249, 250, 251, 0.12);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
+  color: var(--color-text-light);
 }
 
 .text-red {
-  color: rgba(200, 16, 46, 0.95);
+  color: var(--color-danger);
 }
 
 .cta {
@@ -444,15 +478,12 @@ a:focus {
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
-  background: linear-gradient(
-    120deg,
-    rgba(200, 16, 46, 0.95),
-    rgba(0, 61, 165, 0.92)
-  );
+  background: linear-gradient(130deg, #ff8e00, #fd7702);
   border-radius: var(--border-radius);
   padding: 2.25rem;
-  color: #ffffff;
-  box-shadow: 0 20px 45px rgba(0, 26, 77, 0.25);
+  color: var(--color-midnight);
+  box-shadow: var(--shadow-soft);
+  border: none;
 }
 
 .cta h2,
@@ -461,30 +492,20 @@ a:focus {
   margin: 0;
 }
 
-.cta .button {
-  background: #ffffff;
-  color: var(--color-primary);
-  border-color: transparent;
-  box-shadow: 0 18px 36px rgba(255, 255, 255, 0.35);
-}
-.cta .button:hover,
-.cta .button:focus {
-  background: #ff9b00;
-  color: #101828;
-}
-
 .page {
   padding-bottom: 3rem;
+  color: var(--color-text-dark);
 }
 
 .page-hero {
   padding: 3rem 0 2rem;
   background: linear-gradient(
     135deg,
-    rgba(200, 16, 46, 0.1),
-    rgba(0, 61, 165, 0.05)
+    rgba(0, 35, 71, 0.85),
+    rgba(0, 63, 125, 0.65)
   );
-  border-bottom: 1px solid rgba(0, 61, 165, 0.08);
+  border-bottom: 1px solid rgba(249, 250, 251, 0.08);
+  color: var(--color-text-light);
 }
 
 .page-section {
@@ -493,7 +514,7 @@ a:focus {
 
 .list {
   padding-left: 1.1rem;
-  color: var(--color-muted);
+  color: var(--color-primary);
 }
 
 .list li {
@@ -503,11 +524,12 @@ a:focus {
 .form {
   display: grid;
   gap: 1.5rem;
-  background: var(--color-surface);
+  background: #ffffff;
+  color: var(--color-text-dark);
   padding: 2rem;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(0, 61, 165, 0.1);
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.45);
+  border: none;
 }
 
 .form > label,
@@ -519,31 +541,33 @@ a:focus {
 
 .form > label span,
 .form-fieldset > label span {
-  color: var(--color-text);
+  color: var(--color-text-dark);
 }
 
 .form input,
 .form textarea,
 .form select {
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(0, 35, 71, 0.25);
   border-radius: 10px;
   padding: 0.75rem 0.85rem;
   font: inherit;
-  background: #fdfdff;
+  background: #f9fbff;
+  color: var(--color-text-dark);
 }
 
 .form input:focus,
 .form textarea:focus,
 .form select:focus {
-  outline: 3px solid rgba(0, 61, 165, 0.28);
-  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 142, 0, 0.3);
+  border-color: var(--color-orange);
 }
 
 .form select {
   appearance: none;
   padding-right: 2.5rem;
-  background-image: linear-gradient(45deg, transparent 50%, #003da5 50%),
-    linear-gradient(135deg, #003da5 50%, transparent 50%),
+  background-image: linear-gradient(45deg, transparent 50%, #ff8e00 50%),
+    linear-gradient(135deg, #ff8e00 50%, transparent 50%),
     linear-gradient(to right, #ffffff, #ffffff);
   background-position: calc(100% - 20px) calc(50% + 2px),
     calc(100% - 14px) calc(50% + 2px), calc(100% - 2.5rem) 50%;
@@ -565,8 +589,8 @@ a:focus {
   inset: -18px;
   background: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.08),
-    rgba(200, 16, 46, 0.1)
+    rgba(0, 35, 71, 0.4),
+    rgba(255, 142, 0, 0.25)
   );
   border-radius: calc(var(--border-radius) + 18px);
   z-index: -1;
@@ -586,7 +610,7 @@ a:focus {
 
 .form-header p {
   margin: 0;
-  color: var(--color-muted);
+  color: rgba(8, 18, 37, 0.75);
   font-weight: 500;
 }
 
@@ -599,14 +623,14 @@ a:focus {
 }
 
 .form-fieldset + .form-fieldset {
-  border-top: 1px solid rgba(0, 61, 165, 0.08);
+  border-top: 1px solid rgba(0, 35, 71, 0.15);
   padding-top: 1.5rem;
 }
 
 .form-fieldset legend {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-orange);
   margin-bottom: 0.75rem;
 }
 
@@ -624,25 +648,25 @@ a:focus {
 
 .form-subtext {
   font-size: 0.95rem;
-  color: var(--color-text);
+  color: var(--color-text-dark);
 }
 
 .form-subtext a {
-  color: var(--color-primary);
+  color: var(--color-orange);
   font-weight: 600;
 }
 
 .form-subtext a:hover,
 .form-subtext a:focus {
-  color: var(--color-accent);
+  color: var(--color-orange-hover);
 }
 
 .form-error {
   margin: 0;
   padding: 0.75rem 1rem;
-  background: rgba(200, 16, 46, 0.08);
-  border: 1px solid rgba(200, 16, 46, 0.35);
-  color: var(--color-accent);
+  background: rgba(255, 80, 3, 0.12);
+  border: 1px solid rgba(255, 80, 3, 0.5);
+  color: var(--color-danger);
   border-radius: 12px;
   font-weight: 600;
 }
@@ -652,14 +676,14 @@ a:focus {
   align-items: flex-start;
   gap: 0.75rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--color-text-dark);
 }
 
 .form-option input[type="checkbox"] {
   width: 1.1rem;
   height: 1.1rem;
   margin-top: 0.2rem;
-  accent-color: var(--color-cta);
+  accent-color: var(--color-orange);
 }
 
 .form-option label {

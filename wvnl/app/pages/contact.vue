@@ -222,11 +222,11 @@ async function onSubmit(e: Event) {
 }
 
 .page-hero__accent--blue {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
 }
 
 .page-hero__accent--red {
-  background: rgba(200, 16, 46, 0.92);
+  background: rgba(255, 80, 3, 0.92);
 }
 
 .page-hero__subtitle {
@@ -239,8 +239,8 @@ async function onSubmit(e: Event) {
 .page-hero--contact {
   background-image: linear-gradient(
       135deg,
-      rgba(0, 61, 165, 0.12),
-      rgba(200, 16, 46, 0.2)
+      rgba(0, 51, 102, 0.12),
+      rgba(255, 80, 3, 0.2)
     ),
     url("/images/norali-nayla-eDvG3IO8-Io-unsplash.webp");
 }
@@ -271,7 +271,7 @@ async function onSubmit(e: Event) {
 }
 
 .error {
-  color: #c8102e;
+  color: #ff5003;
   font-weight: 600;
   margin-top: 1rem;
 }

@@ -575,11 +575,11 @@ const jsonLd = {
 }
 
 .page-hero__accent--blue {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
 }
 
 .page-hero__accent--red {
-  background: rgba(200, 16, 46, 0.92);
+  background: rgba(255, 80, 3, 0.92);
 }
 
 .page-hero__subtitle {
@@ -592,14 +592,14 @@ const jsonLd = {
 .page-hero--compass {
   background-image: linear-gradient(
       135deg,
-      rgba(0, 61, 165, 0.12),
-      rgba(200, 16, 46, 0.2)
+      rgba(0, 51, 102, 0.12),
+      rgba(255, 80, 3, 0.2)
     ),
     url("/images/max-van-den-oetelaar-rvDMd5LvJRA-unsplash.webp");
 }
 
 .compass-section {
-  padding-block: clamp(3rem, 5vw, 4.5rem);
+  padding: clamp(3rem, 5vw, 4.5rem);
 }
 
 .compass-layout {
@@ -607,20 +607,43 @@ const jsonLd = {
   gap: clamp(2rem, 4vw, 3rem);
   align-items: center;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  justify-items: center;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .compass-layout {
+    text-align: center;
+  }
+
+  .compass-content {
+    justify-items: center;
+  }
+
+  .compass-content p {
+    text-align: left;
+  }
 }
 
 .compass-content {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.35rem;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  background: rgba(0, 35, 71, 0.04);
+  border: 1px solid rgba(0, 35, 71, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .compass-content h2 {
   margin: 0;
+  color: var(--color-midnight);
+  font-size: 1.85rem;
 }
 
 .compass-content p {
   margin: 0;
-  color: rgba(15, 23, 42, 0.75);
+  color: rgba(15, 23, 42, 0.82);
   line-height: 1.65;
   font-weight: 500;
 }
@@ -629,8 +652,36 @@ const jsonLd = {
   margin-top: 0.25rem;
 }
 
+.compass-content i {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--color-orange);
+  background: rgba(255, 142, 0, 0.12);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  width: fit-content;
+}
+
 .compass-figure {
   display: grid;
-  min-height: clamp(280px, 45vw, 420px);
+  place-items: center;
+  min-height: clamp(240px, 45vw, 420px);
+  width: 100%;
+}
+
+.compass-svg {
+  width: min(320px, 60vw);
+  height: auto;
+}
+
+@media (max-width: 640px) {
+  .compass-content {
+    padding: 1.5rem;
+  }
+
+  .compass-svg {
+    width: min(220px, 70vw);
+    margin: 0 auto;
+  }
 }
 </style>

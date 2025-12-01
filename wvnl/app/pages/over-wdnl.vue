@@ -178,11 +178,11 @@ const jsonLd = {
 }
 
 .page-hero__accent--blue {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
 }
 
 .page-hero__accent--red {
-  background: rgba(200, 16, 46, 0.92);
+  background: rgba(255, 80, 3, 0.92);
 }
 
 .page-hero__subtitle {
@@ -195,8 +195,8 @@ const jsonLd = {
 .page-hero--about {
   background-image: linear-gradient(
       135deg,
-      rgba(0, 61, 165, 0.12),
-      rgba(200, 16, 46, 0.2)
+      rgba(0, 51, 102, 0.12),
+      rgba(255, 80, 3, 0.2)
     ),
     url("/images/bicycles-street-amsterdam.webp");
 }

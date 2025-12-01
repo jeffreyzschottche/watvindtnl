@@ -263,25 +263,25 @@ async function onSubmit() {
   color: inherit;
   text-decoration: underline;
   text-decoration-thickness: 2px;
-  text-decoration-color: rgba(0, 61, 165, 0.45);
+  text-decoration-color: rgba(0, 51, 102, 0.45);
 }
 
 .form-option--error {
-  outline: 2px solid rgba(200, 16, 46, 0.65);
+  outline: 2px solid rgba(255, 80, 3, 0.65);
   border-radius: 12px;
   padding: 0.75rem;
-  background: rgba(200, 16, 46, 0.05);
+  background: rgba(255, 80, 3, 0.08);
 }
 
 .form-option__error {
   margin: -0.35rem 0 0.85rem 2.4rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #c8102e;
+  color: #ff5003;
 }
 
 .form-option__required {
-  color: #c8102e;
+  color: #ff5003;
   font-size: 0.8rem;
   font-weight: 600;
   margin-left: 0.35rem;

@@ -83,7 +83,7 @@ function openForgotPassword() {
   background: none;
   padding: 0;
   margin-left: 0.35rem;
-  color: var(--color-primary, #003da5);
+  color: var(--color-primary, #003366);
   font-weight: 600;
   cursor: pointer;
   text-decoration: underline;
@@ -92,6 +92,6 @@ function openForgotPassword() {
 
 .form-subtext__link:hover,
 .form-subtext__link:focus-visible {
-  color: var(--color-accent, #c8102e);
+  color: var(--color-accent, #ff5003);
 }
 </style>

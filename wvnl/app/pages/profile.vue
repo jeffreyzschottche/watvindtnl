@@ -531,8 +531,8 @@ const description =
 .page-hero--profile {
   background-image: linear-gradient(
       135deg,
-      rgba(0, 61, 165, 0.12),
-      rgba(200, 16, 46, 0.2)
+      rgba(0, 51, 102, 0.12),
+      rgba(255, 80, 3, 0.2)
     ),
     url("/images/stockvault-cheese147191.webp");
   background-size: cover;
@@ -598,11 +598,11 @@ const description =
 }
 
 .page-hero__accent--blue {
-  background: rgba(0, 61, 165, 0.92);
+  background: rgba(0, 51, 102, 0.92);
 }
 
 .page-hero__accent--red {
-  background: rgba(200, 16, 46, 0.92);
+  background: rgba(255, 80, 3, 0.92);
 }
 
 .page-hero__subtitle {
@@ -621,7 +621,7 @@ const description =
   background: var(--color-surface);
   border-radius: calc(var(--border-radius) + 4px);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(0, 61, 165, 0.12);
+  border: 1px solid rgba(0, 51, 102, 0.12);
   overflow: hidden;
 }
 
@@ -630,14 +630,14 @@ const description =
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 1.25rem clamp(1rem, 3vw, 2rem) 1rem;
-  border-bottom: 1px solid rgba(0, 61, 165, 0.16);
+  border-bottom: 1px solid rgba(0, 51, 102, 0.16);
   margin-top: 4.5em;
 }
 
 .profile-tab {
   appearance: none;
   background: #ffffff;
-  border: 2px solid rgba(0, 61, 165, 0.25);
+  border: 2px solid rgba(0, 51, 102, 0.25);
   border-radius: 999px;
   padding: 0.65rem 1.5rem;
   font-weight: 700;
@@ -659,15 +659,15 @@ const description =
 .profile-tab__status {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(0, 61, 165, 0.9);
+  color: rgba(0, 51, 102, 0.9);
   padding: 0.125rem 0.45rem;
   border-radius: 999px;
-  background: rgba(0, 61, 165, 0.1);
+  background: rgba(0, 51, 102, 0.1);
 }
 
 .profile-tab:not(.is-disabled):is(:hover, :focus-visible) {
   border-color: black;
-  box-shadow: 0 8px 18px rgba(0, 61, 165, 0.2);
+  box-shadow: 0 8px 18px rgba(0, 51, 102, 0.2);
   outline: none;
   transform: translateY(-1px);
 }
@@ -676,7 +676,7 @@ const description =
   cursor: not-allowed;
   opacity: 0.55;
   border-style: dashed;
-  border-color: rgba(0, 61, 165, 0.2);
+  border-color: rgba(0, 51, 102, 0.2);
   box-shadow: none;
   background: rgba(248, 250, 252, 0.8);
   color: rgba(16, 24, 40, 0.6);
@@ -693,10 +693,10 @@ const description =
   border-color: black;
   background-image: linear-gradient(
     135deg,
-    rgba(0, 61, 165, 0.95),
-    rgba(200, 16, 46, 0.95)
+    rgba(0, 51, 102, 0.95),
+    rgba(255, 80, 3, 0.95)
   );
-  box-shadow: 0 12px 24px rgba(0, 61, 165, 0.28);
+  box-shadow: 0 12px 24px rgba(0, 51, 102, 0.28);
 }
 
 .profile-tab.is-active .profile-tab__label {
@@ -733,8 +733,8 @@ const description =
 }
 
 .alert--error {
-  background: rgba(200, 16, 46, 0.08);
-  border: 1px solid rgba(200, 16, 46, 0.35);
+  background: rgba(255, 80, 3, 0.08);
+  border: 1px solid rgba(255, 80, 3, 0.35);
   color: var(--color-accent);
 }
 
