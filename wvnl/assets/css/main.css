@@ -75,12 +75,14 @@ a:focus {
 }
 
 .container {
-  width: min(1100px, 92vw);
+  width: min(1100px, 100%);
   margin: 0 auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+  box-sizing: border-box;
 }
 
 .container.narrow {
-  width: min(820px, 92vw);
+  width: min(820px, 100%);
 }
 
 .site-header {

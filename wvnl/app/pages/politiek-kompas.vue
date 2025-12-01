@@ -666,12 +666,16 @@ const jsonLd = {
   display: grid;
   place-items: center;
   min-height: clamp(240px, 45vw, 420px);
-  width: 100%;
+  width: min(420px, 100%);
+  margin: 0 auto;
+  justify-self: center;
 }
 
 .compass-svg {
+  display: block;
   width: min(320px, 60vw);
   height: auto;
+  margin: 0 auto;
 }
 
 @media (max-width: 640px) {
