@@ -243,6 +243,9 @@ async function onSubmit() {
 </script>
 
 <style scoped>
+.auth-form {
+  margin-top: 3rem;
+}
 .form-option {
   display: flex;
   align-items: flex-start;

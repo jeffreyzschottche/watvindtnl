@@ -245,6 +245,10 @@ async function onSubmit(e: Event) {
     url("/images/norali-nayla-eDvG3IO8-Io-unsplash.webp");
 }
 
+.contact-form {
+  margin-top: 3rem;
+}
+
 .hp {
   position: absolute;
   height: 0;

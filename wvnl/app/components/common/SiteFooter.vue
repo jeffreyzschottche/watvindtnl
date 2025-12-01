@@ -24,8 +24,8 @@
       </div>
 
       <!-- Right side: windmill illustration + credits -->
+      <!-- Illustration by Streamline: http://www.streamlineicons.com/ux/free-illustrations.html -->
       <figure class="footer-right">
-        <!-- windmill credits to http://www.streamlineicons.com/ux/free-illustrations.html -->
         <svg
           id="windmill"
           data-name="Layer 1"
@@ -132,7 +132,7 @@
             ry="1"
           />
         </svg>
-
+        <!-- 
         <figcaption class="footer-credits">
           Illustratie door
           <a
@@ -141,7 +141,7 @@
             rel="noopener"
             >Streamline</a
           >
-        </figcaption>
+        </figcaption> -->
       </figure>
     </div>
   </footer>
@@ -162,9 +162,9 @@
 
 .footer-container {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 2rem;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  align-items: stretch;
+  gap: clamp(2rem, 4vw, 3.5rem);
 }
 
 .footer-left {
@@ -211,11 +211,18 @@
 .footer-right {
   margin: 0;
   padding: 0;
-  text-align: right;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: clamp(220px, 28vw, 340px);
+  height: 100%;
 }
 
 .footer-credits {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   font-size: 0.78rem;
   color: rgba(249, 250, 251, 0.65);
 }
@@ -227,9 +234,12 @@
 
 /* Windmill sizing & animation helpers */
 #windmill {
-  display: inline-block;
+  display: block;
   width: 100%;
   height: auto;
+  max-width: 520px;
+  max-height: 320px;
+  margin: auto 0 0;
 }
 .cls-2 {
   fill: none;
@@ -267,16 +277,19 @@
 }
 
 /* Responsive: stack on small screens */
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .footer-container {
     grid-template-columns: 1fr;
     text-align: left;
   }
   .footer-right {
+    min-height: 220px;
+    align-items: flex-start;
     text-align: left;
   }
   #windmill {
-    width: min(320px, 85vw);
+    max-width: min(300px, 85vw);
+    max-height: 220px;
   }
 }
 </style>

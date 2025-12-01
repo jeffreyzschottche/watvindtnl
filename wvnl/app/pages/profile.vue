@@ -14,36 +14,36 @@
     </section>
 
     <section class="container narrow profile">
-      <div class="profile__card">
-        <nav class="profile-tabs" role="tablist" aria-label="Profielnavigatie">
-          <button
-            v-for="tab in tabs"
-            :key="tab.key"
-            type="button"
-            class="profile-tab"
-            :id="`${tab.key}-tab`"
-            role="tab"
-            :aria-selected="activeTab === tab.key"
-            :aria-controls="`${tab.key}-panel`"
-            :aria-disabled="tab.disabled ? 'true' : 'false'"
-            :tabindex="activeTab === tab.key ? 0 : -1"
-            :disabled="tab.disabled"
-            :class="{
-              'is-active': activeTab === tab.key,
-              'is-disabled': tab.disabled,
-            }"
-            @click="!tab.disabled && setActiveTab(tab.key)"
+      <nav class="profile-tabs" role="tablist" aria-label="Profielnavigatie">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          type="button"
+          class="profile-tab"
+          :id="`${tab.key}-tab`"
+          role="tab"
+          :aria-selected="activeTab === tab.key"
+          :aria-controls="`${tab.key}-panel`"
+          :aria-disabled="tab.disabled ? 'true' : 'false'"
+          :tabindex="activeTab === tab.key ? 0 : -1"
+          :disabled="tab.disabled"
+          :class="{
+            'is-active': activeTab === tab.key,
+            'is-disabled': tab.disabled,
+          }"
+          @click="!tab.disabled && setActiveTab(tab.key)"
+        >
+          <span class="profile-tab__label">{{ tab.label }}</span>
+          <span
+            v-if="tab.disabled && tab.description"
+            class="profile-tab__status"
           >
-            <span class="profile-tab__label">{{ tab.label }}</span>
-            <span
-              v-if="tab.disabled && tab.description"
-              class="profile-tab__status"
-            >
-              {{ tab.description }}
-            </span>
-          </button>
-        </nav>
+            {{ tab.description }}
+          </span>
+        </button>
+      </nav>
 
+      <div class="profile__card">
         <div class="profile__content">
           <section
             v-if="activeTab === 'profile'"
@@ -613,15 +613,15 @@ const description =
 }
 
 .profile {
-  margin-top: -4rem;
+  margin-top: clamp(2rem, 5vw, 4rem);
   padding-bottom: 4rem;
 }
 
 .profile__card {
-  background: var(--color-surface);
-  border-radius: calc(var(--border-radius) + 4px);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(0, 51, 102, 0.12);
+  background: #ffffff;
+  border-radius: calc(var(--border-radius) + 6px);
+  box-shadow: 0 25px 60px rgba(6, 22, 44, 0.12);
+  border: 1px solid rgba(8, 18, 37, 0.05);
   overflow: hidden;
 }
 
@@ -629,25 +629,26 @@ const description =
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  padding: 1.25rem clamp(1rem, 3vw, 2rem) 1rem;
-  border-bottom: 1px solid rgba(0, 51, 102, 0.16);
-  margin-top: 4.5em;
+  padding: 0;
+  margin-bottom: 1.75rem;
 }
 
 .profile-tab {
   appearance: none;
-  background: #ffffff;
-  border: 2px solid rgba(0, 51, 102, 0.25);
+  background: rgba(255, 142, 0, 0.18);
+  border: 2px solid rgba(255, 142, 0, 0.45);
   border-radius: 999px;
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1.65rem;
   font-weight: 700;
   font-size: 0.95rem;
-  color: rgba(16, 24, 40, 0.82);
+  color: #a54800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  transition: background 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .profile-tab__label {
@@ -659,15 +660,16 @@ const description =
 .profile-tab__status {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(0, 51, 102, 0.9);
+  color: #a54800;
   padding: 0.125rem 0.45rem;
   border-radius: 999px;
-  background: rgba(0, 51, 102, 0.1);
+  background: rgba(255, 142, 0, 0.2);
 }
 
 .profile-tab:not(.is-disabled):is(:hover, :focus-visible) {
-  border-color: black;
-  box-shadow: 0 8px 18px rgba(0, 51, 102, 0.2);
+  border-color: #ff8e00;
+  background-color: rgba(255, 142, 0, 0.3);
+  box-shadow: 0 10px 24px rgba(255, 142, 0, 0.22);
   outline: none;
   transform: translateY(-1px);
 }
@@ -676,9 +678,9 @@ const description =
   cursor: not-allowed;
   opacity: 0.55;
   border-style: dashed;
-  border-color: rgba(0, 51, 102, 0.2);
+  border-color: rgba(255, 142, 0, 0.25);
   box-shadow: none;
-  background: rgba(248, 250, 252, 0.8);
+  background: rgba(248, 145, 55, 0.1);
   color: rgba(16, 24, 40, 0.6);
   transition: none;
 }
@@ -690,17 +692,13 @@ const description =
 
 .profile-tab.is-active {
   color: #ffffff;
-  border-color: black;
-  background-image: linear-gradient(
-    135deg,
-    rgba(0, 51, 102, 0.95),
-    rgba(255, 80, 3, 0.95)
-  );
-  box-shadow: 0 12px 24px rgba(0, 51, 102, 0.28);
+  border-color: #ff8e00;
+  background-color: #ff8e00;
+  box-shadow: 0 15px 30px rgba(255, 142, 0, 0.35);
 }
 
 .profile-tab.is-active .profile-tab__label {
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
 }
 
 .profile__content {
@@ -756,7 +754,7 @@ const description =
 
 @media (max-width: 768px) {
   .profile {
-    margin-top: -3rem;
+    margin-top: 2rem;
   }
 
   .profile__content {

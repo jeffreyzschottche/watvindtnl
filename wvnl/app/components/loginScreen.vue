@@ -77,6 +77,9 @@ function openForgotPassword() {
 </script>
 
 <style scoped>
+.auth-form {
+  margin-top: 3rem;
+}
 .form-subtext__link {
   appearance: none;
   border: none;

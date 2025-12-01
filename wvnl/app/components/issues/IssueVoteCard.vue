@@ -259,7 +259,7 @@ async function handleIssueReport(reason: ReportReason) {
   background: #ffffff;
   box-shadow: 0 35px 70px rgba(0, 0, 0, 0.12);
   border: 1px solid rgba(0, 35, 71, 0.1);
-  width: min(100%, 720px);
+  width: min(100%, 1000px);
   margin: 0 auto;
   box-sizing: border-box;
   color: var(--color-text-dark);
@@ -298,22 +298,7 @@ async function handleIssueReport(reason: ReportReason) {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, #ff8e00, #fd7702);
-  color: var(--color-midnight);
-  font-weight: 700;
-  box-shadow: 0 12px 22px rgba(255, 142, 0, 0.35);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.issue-card__report:hover,
-.issue-card__report:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 26px rgba(253, 119, 2, 0.45);
+  justify-content: flex-end;
 }
 
 .issue-card__description {

@@ -304,13 +304,13 @@ function applyUserVote(
 .issues-page {
   display: flex;
   justify-content: center;
-  padding: 2rem 1rem 4rem;
+  padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
   background: #f8fafc;
   min-height: 100vh;
 }
 
 .issues-page__container {
-  width: min(960px, 100%);
+  width: min(1200px, 100%);
   display: grid;
   gap: 2rem;
 }

@@ -30,6 +30,13 @@
             class="nav-link"
             active-class="link-active"
             @click="closeMobile"
+            >Stem nu</NuxtLink
+          >
+          <NuxtLink
+            to="/news"
+            class="nav-link"
+            active-class="link-active"
+            @click="closeMobile"
             >Moties</NuxtLink
           >
           <NuxtLink

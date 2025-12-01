@@ -61,9 +61,9 @@ Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(fun
 use Illuminate\Support\Facades\Mail;
 
 Route::get('/test-mail', function () {
-    Mail::raw('Dit is een testmail vanaf WVNL via Mailtrap.', function ($m) {
+    Mail::raw('Dit is een testmail vanaf WDNL via Mailtrap.', function ($m) {
         $m->to('any@recipient.test')  // mag eender welk adres zijn
-            ->subject('WVNL Mailtrap Test');
+            ->subject('WDNL Mailtrap Test');
     });
 
     return response()->json(['sent' => true]);

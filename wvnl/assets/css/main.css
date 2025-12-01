@@ -577,28 +577,6 @@ a:focus {
   background-repeat: no-repeat;
 }
 
-.form-card {
-  max-width: 640px;
-  margin-top: 2.5em;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-}
-
-.form-card::before {
-  content: "";
-  position: absolute;
-  inset: -18px;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 35, 71, 0.4),
-    rgba(255, 142, 0, 0.25)
-  );
-  border-radius: calc(var(--border-radius) + 18px);
-  z-index: -1;
-  filter: blur(0);
-}
-
 .form-header {
   display: grid;
   gap: 0.5rem;

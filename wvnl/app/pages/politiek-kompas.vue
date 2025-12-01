@@ -603,26 +603,11 @@ const jsonLd = {
 }
 
 .compass-layout {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: clamp(2rem, 4vw, 3rem);
   align-items: center;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  justify-items: center;
   text-align: left;
-}
-
-@media (max-width: 768px) {
-  .compass-layout {
-    text-align: center;
-  }
-
-  .compass-content {
-    justify-items: center;
-  }
-
-  .compass-content p {
-    text-align: left;
-  }
 }
 
 .compass-content {
@@ -633,6 +618,7 @@ const jsonLd = {
   background: rgba(0, 35, 71, 0.04);
   border: 1px solid rgba(0, 35, 71, 0.1);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  width: 100%;
 }
 
 .compass-content h2 {

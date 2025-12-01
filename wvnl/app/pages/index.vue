@@ -114,6 +114,26 @@ const steps = [
       </div>
     </section>
 
+    <section class="feature-divider">
+      <div class="container feature-divider__content">
+        <div class="feature-divider__text">
+          <h2 class="section-title">Leer je mede Nederlander begrijpen</h2>
+          <p>
+            Zie in één oogopslag waar anderen staan en ontdek hoe jouw mening zich verhoudt.
+          </p>
+        </div>
+        <figure class="feature-divider__figure">
+          <img
+            src="/images/home-img.png"
+            alt="Overzicht van WDNL moties en inzichten"
+            loading="lazy"
+            width="1280"
+            height="720"
+          />
+        </figure>
+      </div>
+    </section>
+
     <section>
       <div class="container steps">
         <h2 class="section-title">Zo werkt het</h2>
@@ -134,7 +154,7 @@ const steps = [
             Maak direct een account aan en start met het beoordelen van moties.
           </p>
         </div>
-        <NuxtLink to="/issues" class="button">Start</NuxtLink>
+        <NuxtLink to="/issues" class="button">Stem nu</NuxtLink>
       </div>
     </section>
   </div>
@@ -231,6 +251,36 @@ h2 {
   max-height: 220px; 
   object-fit: cover;
   */
+}
+
+.feature-divider {
+  background: #f8fafc;
+  padding: clamp(2rem, 6vw, 4rem) 0;
+}
+
+.feature-divider__content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(2rem, 5vw, 3rem);
+  align-items: center;
+}
+
+.feature-divider__text {
+  display: grid;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.feature-divider__figure {
+  margin: 0;
+}
+
+.feature-divider__figure img {
+  display: block;
+  width: 100%;
+  border-radius: 1rem;
+  box-shadow: 0 25px 60px rgba(15, 8, 36, 0.2);
+  object-fit: cover;
 }
 
 /* Basis */

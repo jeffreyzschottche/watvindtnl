@@ -64,7 +64,7 @@ const jsonLd = {
       </ul>
 
       <!-- AFBEELDING ONDER DE TEKST -->
-      <figure class="section-image">
+      <figure class="section-image--plain">
         <img
           src="/images/wdnlimage2.png"
           alt="Schematische weergave van hoe WDNL werkt"
@@ -72,7 +72,6 @@ const jsonLd = {
           width="1280"
           height="720"
         />
-        <figcaption>Jouw stem, direct gekoppeld aan actuele moties.</figcaption>
       </figure>
     </section>
 
@@ -95,18 +94,14 @@ const jsonLd = {
           <li>Elke motie is voorzien van voor-tegen argumenten.</li>
         </ul>
 
-        <!-- AFBEELDING ONDER DE TEKST -->
         <figure class="section-image">
           <img
-            src="/images/motie.png"
-            alt="Voorbeeld van een motie met argumenten in WDNL"
+            src="/images/wdnlimg1.png"
+            alt="Visualisatie van WDNL moties"
             loading="lazy"
             width="1280"
             height="720"
           />
-          <figcaption>
-            Iedere motie krijgt context met pro- en contra-argumenten.
-          </figcaption>
         </figure>
       </div>
     </section>
@@ -207,6 +202,9 @@ const jsonLd = {
   display: grid;
   gap: 0.5rem;
   justify-items: center;
+  border-radius: 1rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .section-image img {
@@ -221,5 +219,23 @@ const jsonLd = {
   font-size: 0.95rem;
   color: #444;
   text-align: center;
+}
+
+.section-image--plain {
+  background: transparent;
+  box-shadow: none;
+  width: min(100%, 800px);
+  margin: 1.25rem auto 0;
+  padding: 0;
+  text-align: center;
+}
+
+.section-image--plain img {
+  box-shadow: none;
+  margin: 0 auto;
+  display: block;
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
 }
 </style>
