@@ -1,5 +1,13 @@
 import type { ReportCounts } from "~/types/reports";
 
+export interface IssueNewsLink {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  generated_at: string | null;
+}
+
 export interface IssueArgument {
   id: number;
   body: string;
@@ -36,6 +44,8 @@ export interface IssueWithArguments {
   url: string | null;
   description: string | null;
   more_info: string | null;
+  news_article_slug?: string | null;
+  news_article?: IssueNewsLink | null;
   party_stances: IssuePartyStances;
   reports: ReportCounts;
   votes: {

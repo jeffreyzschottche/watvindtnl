@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Issue extends Model
 {
@@ -12,6 +13,7 @@ class Issue extends Model
         'url',
         'description',
         'more_info',
+        'news_article_slug',
         'party_stances',
         'reports',
         'votes',
@@ -34,5 +36,10 @@ class Issue extends Model
     public function stances()
     {
         return $this->hasMany(IssuePartyStance::class);
+    }
+
+    public function newsArticle(): HasOne
+    {
+        return $this->hasOne(NewsArticle::class);
     }
 }

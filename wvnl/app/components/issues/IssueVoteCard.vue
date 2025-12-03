@@ -53,6 +53,14 @@
       class="issue-card__description issue-card__description--empty"
       aria-hidden="true"
     ></p>
+    <div v-if="newsSlug" class="issue-card__more-info">
+      <NuxtLink
+        :to="`/news/${newsSlug}`"
+        class="issue-card__more-info-link button button--outline"
+      >
+        Meer info over deze motie
+      </NuxtLink>
+    </div>
     <section class="issue-card__footer">
       <button
         type="button"
@@ -228,6 +236,15 @@ const votePercentages = computed(() => {
   };
 });
 
+const newsSlug = computed(() => {
+  return (
+    props.issue.news_article?.slug ??
+    props.issue.news_article_slug ??
+    props.issue.slug ??
+    null
+  );
+});
+
 function emitVote(vote: IssueVoteOption) {
   if (!auth.isLoggedIn) {
     showAuthModal.value = true;
@@ -311,6 +328,32 @@ async function handleIssueReport(reason: ReportReason) {
 
 .issue-card__description--empty {
   visibility: hidden;
+}
+
+.issue-card__more-info {
+  margin-top: -0.25rem;
+}
+
+.issue-card__more-info-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding-inline: 1.15rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.issue-card__more-info-link::after {
+  content: \"→\";
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.issue-card__more-info-link:hover::after,
+.issue-card__more-info-link:focus-visible::after {
+  transform: translateX(2px);
 }
 
 .issue-card__results {

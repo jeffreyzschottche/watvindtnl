@@ -40,7 +40,8 @@ class IssueArgsController extends Controller
         $issues = Issue::with([
             'arguments' => function ($q) {
                 $q->orderBy('side')->orderBy('created_at');
-            }
+            },
+            'newsArticle',
         ])->orderBy('created_at', 'desc')
             ->skip($offset)
             ->take($limit)
@@ -64,7 +65,8 @@ class IssueArgsController extends Controller
         $issue->load([
             'arguments' => function ($q) {
                 $q->orderBy('side')->orderBy('created_at');
-            }
+            },
+            'newsArticle',
         ]);
 
         $partyMap = $this->loadPartyMap(collect([$issue]));
@@ -88,6 +90,8 @@ class IssueArgsController extends Controller
             'url' => $issue->url,
             'description' => $issue->description,
             'more_info' => $issue->more_info,
+            'news_article_slug' => $issue->news_article_slug,
+            'news_article' => $this->serializeNewsArticle($issue->newsArticle),
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),
             'reports' => ReportReasons::normalize($issue->reports ?? []),
             'votes' => [
@@ -121,6 +125,21 @@ class IssueArgsController extends Controller
             ],
             'created_at' => $issue->created_at?->toIso8601String(),
             'updated_at' => $issue->updated_at?->toIso8601String(),
+        ];
+    }
+
+    protected function serializeNewsArticle(?\App\Models\NewsArticle $article): ?array
+    {
+        if (!$article) {
+            return null;
+        }
+
+        return [
+            'id' => $article->id,
+            'slug' => $article->slug,
+            'title' => $article->title,
+            'excerpt' => $article->excerpt,
+            'generated_at' => $article->generated_at?->toIso8601String(),
         ];
     }
 

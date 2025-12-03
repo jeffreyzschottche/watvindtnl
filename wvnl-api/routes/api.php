@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminIssueController;
 use App\Http\Controllers\Admin\AdminPoliticalPartyController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PoliticalCompassController;
+use App\Http\Controllers\NewsArticleController;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
@@ -34,10 +35,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote']);
     Route::post('/issues/{issue}/report', [ReportController::class, 'reportIssue']);
     Route::post('/arguments/{argument}/report', [ReportController::class, 'reportArgument']);
+    Route::post('/issues/{issue}/news-article', [NewsArticleController::class, 'generateForIssue']);
 });
 
 Route::get('/issues-args', [IssueArgsController::class, 'index']);
 Route::get('/issues-args/{issue}', [IssueArgsController::class, 'show']);
+Route::get('/news-articles', [NewsArticleController::class, 'index']);
+Route::get('/news-articles/{slug}', [NewsArticleController::class, 'show']);
+Route::get('/issues/{issue}/news-article', [NewsArticleController::class, 'showByIssue']);
 
 Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(function () {
     Route::get('/issues', [AdminIssueController::class, 'index']);
