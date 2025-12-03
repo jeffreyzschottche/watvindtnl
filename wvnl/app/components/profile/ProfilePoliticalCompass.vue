@@ -1,5 +1,5 @@
 <template>
-  <section class="compass">
+  <section class="profile-panel-section compass">
     <header class="compass__header">
       <div>
         <h2>Politiek kompas</h2>

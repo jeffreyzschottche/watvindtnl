@@ -53,7 +53,7 @@
             aria-labelledby="profile-tab"
           >
             <form
-              class="form form-card profile-form"
+              class="form form-card profile-form profile-panel-section"
               @submit.prevent="saveProfile"
             >
               <header class="form-header">
@@ -189,7 +189,7 @@
             aria-labelledby="security-tab"
           >
             <form
-              class="form form-card profile-form"
+              class="form form-card profile-form profile-panel-section"
               @submit.prevent="updatePassword"
             >
               <header class="form-header">
@@ -617,14 +617,6 @@ const description =
   padding-bottom: 4rem;
 }
 
-.profile__card {
-  background: #ffffff;
-  border-radius: calc(var(--border-radius) + 6px);
-  box-shadow: 0 25px 60px rgba(6, 22, 44, 0.12);
-  border: 1px solid rgba(8, 18, 37, 0.05);
-  overflow: hidden;
-}
-
 .profile-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -707,6 +699,16 @@ const description =
 
 .profile-panel {
   display: block;
+}
+
+.profile-panel :deep(.profile-panel-section) {
+  display: block;
+  width: 100%;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border-radius: calc(var(--border-radius) + 4px);
+  border: 1px solid rgba(12, 20, 38, 0.08);
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
 }
 
 .profile-form {

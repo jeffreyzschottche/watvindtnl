@@ -1,5 +1,5 @@
 <template>
-  <section class="vote-history">
+  <section class="profile-panel-section vote-history">
     <header class="vote-history__header">
       <div>
         <h2>Stemgeschiedenis</h2>
