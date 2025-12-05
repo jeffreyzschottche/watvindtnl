@@ -1542,6 +1542,7 @@ import type {
 } from "~/types/admin";
 
 import { useRouter } from "vue-router";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const {
   auth,
@@ -2360,10 +2361,10 @@ async function prepareIssueImportFromDirectory() {
       aggregatedIssues.push(...normalized.issues);
       aggregatedArguments.push(...normalized.arguments);
     } catch (err) {
-      issueDirectoryState.error =
-        err instanceof Error
-          ? `Motie ${motion.number} kon niet worden gelezen: ${err.message}`
-          : `Motie ${motion.number} kon niet worden gelezen.`;
+      const message = translateErrorMessage(err, {
+        fallback: `Motie ${motion.number} kon niet worden gelezen.`,
+      });
+      issueDirectoryState.error = `Motie ${motion.number} kon niet worden gelezen: ${message}`;
       return;
     }
   }
@@ -2404,10 +2405,9 @@ async function handleIssueFileUpload(event: Event) {
     issueImportState.issues = normalized.issues;
     issueImportState.arguments = normalized.arguments;
   } catch (err) {
-    issueImportState.error =
-      err instanceof Error
-        ? err.message
-        : "Het bestand kon niet worden gelezen.";
+    issueImportState.error = translateErrorMessage(err, {
+      fallback: "Het bestand kon niet worden gelezen.",
+    });
     issueImportState.issues = [];
     issueImportState.arguments = [];
   } finally {
@@ -2433,10 +2433,9 @@ async function handleArgumentFileUpload(event: Event) {
     }
     argumentImportState.arguments = normalized;
   } catch (err) {
-    argumentImportState.error =
-      err instanceof Error
-        ? err.message
-        : "Het bestand kon niet worden gelezen.";
+    argumentImportState.error = translateErrorMessage(err, {
+      fallback: "Het bestand kon niet worden gelezen.",
+    });
     argumentImportState.arguments = [];
   } finally {
     input.value = "";

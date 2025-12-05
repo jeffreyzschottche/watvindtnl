@@ -99,6 +99,7 @@ import { useIssueSharing } from "~/composables/useIssueSharing";
 import type { SharePlatform } from "~/composables/useIssueSharing";
 import type { IssueVoteOption, UserVoteHistoryItem } from "~/types/issues";
 import { useAuthStore } from "~/stores/auth";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const api = useApi();
 const auth = useAuthStore();
@@ -179,8 +180,9 @@ async function loadHistory() {
   try {
     items.value = await api.get<UserVoteHistoryItem[]>("/me/votes");
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : "Kon stemgeschiedenis niet laden.";
+    error.value = translateErrorMessage(err, {
+      fallback: "Kon stemgeschiedenis niet laden.",
+    });
   } finally {
     loading.value = false;
   }

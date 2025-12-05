@@ -8,6 +8,7 @@ import type {
   IssueVoteResponse,
   IssueWithArguments,
 } from "~/types/issues";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 export function useIssues() {
   const api = useApi();
@@ -57,7 +58,9 @@ export function useIssues() {
       }
       issues.value = [];
       activeIndex.value = 0;
-      error.value = err instanceof Error ? err.message : "Er is iets misgegaan.";
+      error.value = translateErrorMessage(err, {
+        fallback: "Er is iets misgegaan.",
+      });
       return;
     } finally {
       if (tokenId === requestToken) {
@@ -103,9 +106,9 @@ export function useIssues() {
 
         error.value = issues.value.length
           ? "Sommige moties konden niet worden geladen. Vernieuw om het opnieuw te proberen."
-          : err instanceof Error
-            ? err.message
-            : "Er is iets misgegaan.";
+          : translateErrorMessage(err, {
+              fallback: "Er is iets misgegaan.",
+            });
         break;
       }
     }
@@ -132,8 +135,10 @@ export function useIssues() {
       if (activeIndex.value >= issues.value.length) {
         activeIndex.value = Math.max(issues.value.length - 1, 0);
       }
-    } catch (err: unknown) {
-      error.value = err instanceof Error ? err.message : "Stemmen is niet gelukt.";
+  } catch (err: unknown) {
+    error.value = translateErrorMessage(err, {
+      fallback: "Stemmen is niet gelukt.",
+    });
     } finally {
       actionPending.value = false;
     }

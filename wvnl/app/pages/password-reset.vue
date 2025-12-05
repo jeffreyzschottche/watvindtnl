@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 const title = "Nieuw wachtwoord instellen | Wat Denkt Nederland";
 const description =
   "Stel een nieuw wachtwoord in voor je Wat Denkt Nederland-account en krijg weer toegang tot het platform.";
@@ -185,7 +186,9 @@ async function onSubmit() {
       router.replace({ path: "/login", query: { reset: "success" } });
     }, 2000);
   } catch (e: any) {
-    error.value = e?.message || "We konden je wachtwoord niet resetten.";
+    error.value = translateErrorMessage(e, {
+      fallback: "We konden je wachtwoord niet resetten.",
+    });
   } finally {
     loading.value = false;
   }

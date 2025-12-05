@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { onMounted, watch } from "vue";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const props = defineProps<{ initialEmail?: string }>();
 const emit = defineEmits<{ (e: "close"): void }>();
@@ -85,7 +86,9 @@ async function onSubmit() {
       responseMessage ||
       "Als het e-mailadres bij ons bekend is, ontvang je binnen enkele ogenblikken een e-mail met verdere instructies.";
   } catch (e: any) {
-    error.value = e?.message || "Verzenden mislukt.";
+    error.value = translateErrorMessage(e, {
+      fallback: "Verzenden mislukt.",
+    });
   } finally {
     loading.value = false;
   }

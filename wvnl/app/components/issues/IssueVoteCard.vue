@@ -41,6 +41,7 @@
       </div>
       <ReportMenu
         class="issue-card__report"
+        :key="issue.id"
         :submit="handleIssueReport"
         success-message="Bedankt voor je melding over deze kwestie."
       />

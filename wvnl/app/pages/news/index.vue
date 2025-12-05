@@ -100,6 +100,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { fetchNewsArticles } from "~/services/news";
 import type { NewsArticleListItem } from "~/types/news";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const articles = ref<NewsArticleListItem[]>([]);
 const loading = ref(true);
@@ -133,8 +134,9 @@ async function loadArticles() {
     const response = await fetchNewsArticles();
     articles.value = response;
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : "Kon nieuwsartikelen niet laden.";
+    error.value = translateErrorMessage(err, {
+      fallback: "Kon nieuwsartikelen niet laden.",
+    });
   } finally {
     loading.value = false;
   }

@@ -150,6 +150,7 @@
 <script setup lang="ts">
 import { useAuth } from "~/composables/useAuth";
 import { AGE_CATEGORIES, type AgeCategory } from "~/types/User";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const { register } = useAuth();
 const router = useRouter();
@@ -235,7 +236,9 @@ async function onSubmit() {
     await register(payload as any);
     router.push({ path: "/login", query: { verify: "sent" } });
   } catch (e: any) {
-    error.value = e?.message || "Registratie mislukt";
+    error.value = translateErrorMessage(e, {
+      fallback: "Registratie mislukt",
+    });
   } finally {
     loading.value = false;
   }

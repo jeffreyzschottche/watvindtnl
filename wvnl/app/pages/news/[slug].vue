@@ -88,6 +88,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { fetchNewsArticle } from "~/services/news";
 import type { NewsArticleSummary } from "~/types/news";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const route = useRoute();
 const article = ref<NewsArticleSummary | null>(null);
@@ -103,8 +104,9 @@ async function loadArticle() {
   try {
     article.value = await fetchNewsArticle(slug.value);
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error ? err.message : "Kon artikel niet laden.";
+    error.value = translateErrorMessage(err, {
+      fallback: "Kon artikel niet laden.",
+    });
     article.value = null;
   } finally {
     loading.value = false;

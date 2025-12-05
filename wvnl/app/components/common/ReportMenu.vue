@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { REPORT_REASON_OPTIONS, type ReportReason } from "~/types/reports";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const props = withDefaults(
   defineProps<{
@@ -79,14 +80,20 @@ async function handleSelect(reason: ReportReason) {
     };
     open.value = false;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : props.errorMessage ?? "";
+    const message = translateErrorMessage(error, {
+      fallback: props.errorMessage,
+    });
+    const statusCode =
+      typeof error === "object" && error && "statusCode" in (error as any)
+        ? Number((error as any).statusCode)
+        : null;
 
     feedback.value = {
       type: "error",
-      message: message.includes("Unauthenticated")
-        ? "Log in om te rapporteren."
-        : message || props.errorMessage,
+      message:
+        statusCode === 401
+          ? "Log in om te rapporteren."
+          : message || props.errorMessage,
     };
   } finally {
     loading.value = false;

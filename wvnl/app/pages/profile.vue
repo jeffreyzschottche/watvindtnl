@@ -42,6 +42,9 @@
           </span>
         </button>
       </nav>
+      <p v-if="!hasCompassAccess" class="profile-compass-notice" role="status">
+        {{ politicalCompassMaintenanceMessage }}
+      </p>
 
       <div class="profile__card">
         <div class="profile__content">
@@ -160,7 +163,7 @@
 
                 <div class="form-actions">
                   <button
-                    class="button"
+                    class="button profiel-opslaan"
                     type="submit"
                     :disabled="savingProfile"
                   >
@@ -256,7 +259,18 @@
             role="tabpanel"
             aria-labelledby="compass-tab"
           >
-            <ProfilePoliticalCompass />
+            <ProfilePoliticalCompass v-if="hasCompassAccess" />
+            <div
+              v-else
+              class="profile-panel-section profile-panel-section--maintenance"
+            >
+              <h2>Politiek kompas</h2>
+              <p>{{ politicalCompassMaintenanceMessage }}</p>
+              <p>
+                Het Politiek Kompas wordt onderdeel van onze aankomende betaalde
+                ervaring. We laten het weten zodra je kunt upgraden.
+              </p>
+            </div>
           </section>
         </div>
       </div>
@@ -269,10 +283,11 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick } from "vue";
+import { computed, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";
 import ProfilePoliticalCompass from "~/components/profile/ProfilePoliticalCompass.vue";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const auth = useAuthStore();
 const api = useApi();
@@ -281,22 +296,42 @@ const route = useRoute();
 const { user, isLoggedIn } = storeToRefs(auth);
 
 const ageCategories = AGE_CATEGORIES;
+const politicalCompassMaintenanceMessage =
+  "Het politiek kompas ondergaat momenteel onderhoud, we proberen dit zo snel mogelijk werkend te krijgen";
+const hasCompassAccess = computed(() => Boolean(user.value?.premium));
 
-const tabs = [
+const tabDefinitions = [
   { key: "profile", label: "Profiel" },
   { key: "votes", label: "Stemgeschiedenis" },
   { key: "security", label: "Wachtwoord" },
   { key: "compass", label: "Politiek kompas" },
 ] as const;
 
-type Tab = (typeof tabs)[number];
-type TabKey = Tab["key"];
+type TabDefinition = (typeof tabDefinitions)[number];
+type TabKey = TabDefinition["key"];
+type Tab = TabDefinition & {
+  disabled?: boolean;
+  description?: string;
+};
+
+const tabs = computed<Tab[]>(() =>
+  tabDefinitions.map((tab) => {
+    if (tab.key === "compass") {
+      return {
+        ...tab,
+        disabled: !hasCompassAccess.value,
+        description: !hasCompassAccess.value ? "Premium" : undefined,
+      };
+    }
+    return tab;
+  })
+);
 
 const activeTab = ref<TabKey>("profile");
 const voteHistoryRef = ref<{ refresh?: () => Promise<void> } | null>(null);
 
 function setActiveTab(tab: TabKey) {
-  const match = tabs.find((item) => item.key === tab);
+  const match = tabs.value.find((item) => item.key === tab);
 
   if (!match || match.disabled) {
     return;
@@ -344,8 +379,21 @@ const passwordMessage = ref<string | null>(null);
 const passwordError = ref<string | null>(null);
 const savingPassword = ref(false);
 
-function handleAuthFailure(message: string) {
-  if (message.toLowerCase().includes("unauth")) {
+function handleAuthFailure(error: unknown) {
+  const statusCode =
+    typeof error === "object" && error && "statusCode" in (error as any)
+      ? Number((error as any).statusCode)
+      : null;
+  const rawMessage =
+    typeof error === "object" && error && "message" in (error as any)
+      ? String((error as any).message).toLowerCase()
+      : "";
+
+  if (
+    statusCode === 401 ||
+    statusCode === 419 ||
+    rawMessage.includes("unauth")
+  ) {
     auth.logout();
     router.replace("/login");
     return true;
@@ -376,7 +424,7 @@ watch(
       return;
     }
 
-    const match = tabs.find((item) => item.key === tab);
+    const match = tabs.value.find((item) => item.key === tab);
     if (!match) {
       return;
     }
@@ -425,8 +473,10 @@ async function refreshProfile() {
     const me = await api.get<User>("/me");
     auth.updateUser(me);
   } catch (error: any) {
-    const message = error?.message || "Kon profiel niet laden";
-    if (!handleAuthFailure(message)) {
+    const message = translateErrorMessage(error, {
+      fallback: "Kon profiel niet laden",
+    });
+    if (!handleAuthFailure(error)) {
       profileError.value = message;
     }
   } finally {
@@ -468,8 +518,10 @@ async function saveProfile() {
     auth.updateUser(updated);
     profileMessage.value = "Profiel succesvol bijgewerkt.";
   } catch (error: any) {
-    const message = error?.message || "Bijwerken mislukt.";
-    if (!handleAuthFailure(message)) {
+    const message = translateErrorMessage(error, {
+      fallback: "Bijwerken mislukt.",
+    });
+    if (!handleAuthFailure(error)) {
       profileError.value = message;
     }
   } finally {
@@ -514,8 +566,10 @@ async function updatePassword() {
     passwordForm.password = "";
     passwordForm.password_confirmation = "";
   } catch (error: any) {
-    const message = error?.message || "Bijwerken mislukt.";
-    if (!handleAuthFailure(message)) {
+    const message = translateErrorMessage(error, {
+      fallback: "Bijwerken mislukt.",
+    });
+    if (!handleAuthFailure(error)) {
       passwordError.value = message;
     }
   } finally {
@@ -625,6 +679,17 @@ const description =
   margin-bottom: 1.75rem;
 }
 
+.profile-compass-notice {
+  margin: -0.35rem 0 1.85rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 16px;
+  border: 1px dashed rgba(0, 61, 165, 0.45);
+  background: rgba(0, 61, 165, 0.08);
+  color: rgba(8, 32, 67, 0.95);
+  font-weight: 600;
+  text-align: center;
+}
+
 .profile-tab {
   appearance: none;
   background: rgba(255, 142, 0, 0.18);
@@ -639,8 +704,8 @@ const description =
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: background 0.2s ease, border-color 0.2s ease,
-    box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    color 0.2s ease, transform 0.2s ease;
 }
 
 .profile-tab__label {
@@ -701,6 +766,10 @@ const description =
   display: block;
 }
 
+.profiel-opslaan {
+  margin-top: 2em;
+}
+
 .profile-panel :deep(.profile-panel-section) {
   display: block;
   width: 100%;
@@ -709,6 +778,24 @@ const description =
   border: 1px solid rgba(12, 20, 38, 0.08);
   background: #ffffff;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+.profile-panel-section--maintenance {
+  border-style: dashed;
+  border-color: rgba(12, 20, 38, 0.18);
+  background: rgba(250, 250, 250, 0.95);
+  text-align: center;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-panel-section--maintenance h2 {
+  margin: 0;
+}
+
+.profile-panel-section--maintenance p {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.75);
 }
 
 .profile-form {

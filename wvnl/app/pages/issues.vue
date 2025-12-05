@@ -75,6 +75,7 @@ import { useIssueSharing } from "~/composables/useIssueSharing";
 import type { SharePlatform } from "~/composables/useIssueSharing";
 import { fetchIssueWithArguments, voteOnIssue } from "~/services/issues";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const siteName = "Wat Denkt Nederland";
 const title = "Openstaande moties | Wat Denkt Nederland";
@@ -213,8 +214,9 @@ async function handleModalVote(choice: IssueVoteOption) {
     const updated = applyUserVote(issue, user.value?.id ?? null, choice);
     modalIssue.value = updated;
   } catch (err: unknown) {
-    modalError.value =
-      err instanceof Error ? err.message : "Stemmen is niet gelukt.";
+    modalError.value = translateErrorMessage(err, {
+      fallback: "Stemmen is niet gelukt.",
+    });
   } finally {
     modalActionPending.value = false;
   }
@@ -240,10 +242,9 @@ async function loadIssueForModal(id: number) {
     modalIssue.value = issue;
   } catch (err: unknown) {
     modalIssue.value = null;
-    modalError.value =
-      err instanceof Error
-        ? err.message
-        : "De kwestie kon niet geladen worden.";
+    modalError.value = translateErrorMessage(err, {
+      fallback: "De kwestie kon niet geladen worden.",
+    });
   } finally {
     modalLoading.value = false;
   }

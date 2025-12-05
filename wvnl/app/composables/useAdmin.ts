@@ -12,6 +12,7 @@ import type {
   AdminPoliticalParty,
   AdminPoliticalPartyPayload,
 } from "~/types/admin";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const ADMIN_EMAIL = "jeffreyzschot@gmail.com";
 const ADMIN_USERNAME = "jeffreyzschot";
@@ -74,7 +75,9 @@ export function useAdmin() {
       const result = await callback();
       return result;
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Er is iets misgegaan.");
+      setError(
+        translateErrorMessage(err, { fallback: "Er is iets misgegaan." })
+      );
       return null;
     } finally {
       loading.value = false;

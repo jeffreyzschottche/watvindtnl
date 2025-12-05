@@ -159,6 +159,7 @@ import type {
   PoliticalCompassEntry,
   PoliticalCompassOverview,
 } from "~/types/politicalCompass";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const api = useApi();
 
@@ -215,10 +216,9 @@ async function loadOverview(options: { keepSuccess?: boolean } = {}) {
       "/me/political-compass"
     );
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error
-        ? err.message
-        : "Kon het politieke kompas niet laden.";
+    error.value = translateErrorMessage(err, {
+      fallback: "Kon het politieke kompas niet laden.",
+    });
   } finally {
     loading.value = false;
   }
@@ -243,10 +243,9 @@ async function generateCompass() {
     successMessage.value = "Nieuw politiek kompas gegenereerd.";
     await loadOverview({ keepSuccess: true });
   } catch (err: unknown) {
-    error.value =
-      err instanceof Error
-        ? err.message
-        : "Kon geen nieuw politiek kompas genereren.";
+    error.value = translateErrorMessage(err, {
+      fallback: "Kon geen nieuw politiek kompas genereren.",
+    });
   } finally {
     generating.value = false;
   }

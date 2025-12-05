@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 import ForgotPasswordModal from "~/components/auth/ForgotPasswordModal.vue";
+import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 const email = ref("");
 const password = ref("");
@@ -65,7 +66,7 @@ async function onSubmit() {
     await login(email.value, password.value);
     router.push("/");
   } catch (e: any) {
-    error.value = e?.message || "Inloggen mislukt";
+    error.value = translateErrorMessage(e, { fallback: "Inloggen mislukt" });
   } finally {
     loading.value = false;
   }
