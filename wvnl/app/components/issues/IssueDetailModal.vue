@@ -17,7 +17,10 @@
         <section v-if="loading" class="issue-modal__state">
           Bezig met laden...
         </section>
-        <section v-else-if="error" class="issue-modal__state issue-modal__state--error">
+        <section
+          v-else-if="error"
+          class="issue-modal__state issue-modal__state--error"
+        >
           <p>{{ error }}</p>
           <button
             v-if="canRetry"
@@ -92,11 +95,15 @@ const emit = defineEmits<{
 
 .issue-modal__dialog {
   position: relative;
-  width: min(720px, 100%);
+  width: 75%;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(238, 241, 246, 0.96));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(238, 241, 246, 0.96)
+  );
   padding: 1.75rem;
   box-shadow: 0 28px 60px rgba(0, 26, 77, 0.35);
   border: 1px solid rgba(0, 51, 102, 0.12);
@@ -155,7 +162,11 @@ const emit = defineEmits<{
   padding: 0.55rem 1.35rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(130deg, var(--color-accent), var(--color-primary));
+  background: linear-gradient(
+    130deg,
+    var(--color-accent),
+    var(--color-primary)
+  );
   color: #ffffff;
   font-weight: 700;
   cursor: pointer;

@@ -5,11 +5,13 @@
         <p class="page-hero__eyebrow">Wat Denkt Nederland</p>
         <h1 class="page-hero__title">
           <span class="page-hero__accent page-hero__accent--blue">Nieuws</span>
-          <span class="page-hero__accent page-hero__accent--red">&amp; moties</span>
+          <span class="page-hero__accent page-hero__accent--red"
+            >&amp; moties</span
+          >
         </h1>
         <p class="page-hero__subtitle">
-          Voor elke motie schrijven we een artikel in heldere taal, zodat je binnen enkele minuten begrijpt waar
-          je over stemt.
+          Voor elke motie schrijven we een artikel in heldere taal, zodat je
+          binnen enkele minuten begrijpt waar je over stemt.
         </p>
       </div>
     </section>
@@ -74,7 +76,7 @@
               }}</NuxtLink>
             </h3>
             <p v-if="article.excerpt" class="news-card__excerpt">
-              {{ article.excerpt }}
+              {{ previewExcerpt(article.excerpt) }}
             </p>
             <footer class="news-card__footer">
               <NuxtLink class="button" :to="`/news/${article.slug}`">
@@ -146,6 +148,20 @@ function voteUrl(issueId: number | null | undefined) {
   return `/issues?${params.toString()}`;
 }
 
+function previewExcerpt(text: string | null | undefined, maxLength = 160) {
+  if (!text) {
+    return "";
+  }
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= maxLength) {
+    return clean;
+  }
+  const sliced = clean.slice(0, maxLength);
+  const lastSpace = sliced.lastIndexOf(" ");
+  const trimmed = (lastSpace > 0 ? sliced.slice(0, lastSpace) : sliced).trim();
+  return `${trimmed}...`;
+}
+
 watch(
   () => searchQuery.value,
   (value) => {
@@ -198,7 +214,7 @@ useHead({
   min-height: min(48vh, 420px);
   display: grid;
   place-items: center;
-  padding: clamp(2rem, 6vw, 4rem) 1.25rem;
+  padding: 0 1.25rem;
   position: relative;
   isolation: isolate;
 }
@@ -329,16 +345,21 @@ useHead({
   list-style: none;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: 2.5rem;
+}
+
+.news-grid li {
+  height: 100%;
+  display: flex;
 }
 
 .news-card {
   background: #fff;
   border-radius: 20px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.65rem;
   box-shadow: 0 18px 40px rgba(5, 17, 45, 0.08);
   border: 1px solid rgba(0, 35, 71, 0.08);
 }
@@ -364,12 +385,17 @@ useHead({
   margin: 0;
   color: rgba(8, 18, 37, 0.75);
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .news-card__footer {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+  margin-top: auto;
 }
 
 @media (max-width: 640px) {

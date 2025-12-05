@@ -6,8 +6,7 @@
         <div class="footer-brand">
           <NuxtLink to="/" class="brand nl-flag-text outline">WDNL</NuxtLink>
           <p class="footer-text">
-            Samen bouwen we aan transparante besluitvorming en heldere
-            burgerparticipatie.
+            Samen bouwen we aan heldere en transparante besluitvorming.
           </p>
           <p class="footer-text">
             <i>Laat je stem horen en zie wat andere Nederlanders denken.</i>

@@ -19,19 +19,30 @@
           {{ article.excerpt }}
         </p>
         <p v-else-if="!loading && !error" class="page-hero__subtitle">
-          Zodra er voldoende informatie beschikbaar is tonen we hier de volledige uitleg.
+          Zodra er voldoende informatie beschikbaar is tonen we hier de
+          volledige uitleg.
         </p>
         <div v-if="article" class="news-single__hero-actions">
-          <NuxtLink class="button" :to="voteUrl(article.issue?.id ?? article.issue_id)">
+          <NuxtLink
+            class="button"
+            :to="voteUrl(article.issue?.id ?? article.issue_id)"
+          >
             Stem op deze motie
           </NuxtLink>
           <NuxtLink class="button button--outline" to="/news">
             Terug naar overzicht
           </NuxtLink>
         </div>
-        <div v-else-if="error" class="news-single__state news-single__state--error">
+        <div
+          v-else-if="error"
+          class="news-single__state news-single__state--error"
+        >
           <p>{{ error }}</p>
-          <button class="button button--outline" type="button" @click="loadArticle">
+          <button
+            class="button button--outline"
+            type="button"
+            @click="loadArticle"
+          >
             Probeer opnieuw
           </button>
         </div>
@@ -49,16 +60,21 @@
             <h2>{{ section.heading }}</h2>
             <p>{{ section.content }}</p>
           </section>
-          <p v-if="article.call_to_action" class="news-section__cta">
+          <!-- <p v-if="article.call_to_action" class="news-section__cta">
             {{ article.call_to_action }}
-          </p>
+          </p> -->
         </article>
       </div>
       <aside class="news-single__sidebar">
         <div class="news-sidebar">
           <h3>Meer weten?</h3>
-          <p>Open de motie in de stem-omgeving en bekijk het volledige dossier.</p>
-          <NuxtLink class="button" :to="voteUrl(article.issue?.id ?? article.issue_id)">
+          <p>
+            Open de motie in de stem-omgeving en bekijk het volledige dossier.
+          </p>
+          <NuxtLink
+            class="button"
+            :to="voteUrl(article.issue?.id ?? article.issue_id)"
+          >
             Stem op deze motie
           </NuxtLink>
         </div>
@@ -87,7 +103,8 @@ async function loadArticle() {
   try {
     article.value = await fetchNewsArticle(slug.value);
   } catch (err: unknown) {
-    error.value = err instanceof Error ? err.message : "Kon artikel niet laden.";
+    error.value =
+      err instanceof Error ? err.message : "Kon artikel niet laden.";
     article.value = null;
   } finally {
     loading.value = false;
@@ -234,6 +251,7 @@ watch(
   gap: clamp(1.5rem, 4vw, 2.5rem);
   padding-bottom: 4rem;
   align-items: flex-start;
+  margin-top: 5em;
 }
 
 .news-single__body {

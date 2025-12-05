@@ -223,7 +223,7 @@ a:focus {
   color: var(--color-midnight);
   font-weight: 700;
   border: none;
-  box-shadow: 0 20px 35px rgba(255, 142, 0, 0.35);
+  box-shadow: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
     color 0.2s ease;
 }
@@ -233,13 +233,12 @@ a:focus {
   text-decoration: none;
   transform: translateY(-1px);
   background: var(--color-orange-hover);
-  box-shadow: 0 24px 45px rgba(253, 119, 2, 0.45);
   color: var(--color-midnight);
 }
 
 .button:focus-visible {
   outline: none;
-  box-shadow: 0 24px 45px rgba(253, 119, 2, 0.45), var(--focus-ring);
+  box-shadow: var(--focus-ring);
 }
 
 .button-secondary {

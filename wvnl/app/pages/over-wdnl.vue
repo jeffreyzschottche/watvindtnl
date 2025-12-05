@@ -32,8 +32,9 @@ const jsonLd = {
           <span class="page-hero__accent page-hero__accent--red">WDNL</span>
         </h1>
         <p class="page-hero__subtitle">
-          WDNL is een platform voor burgerparticipatie. Wij proberen de inwoners
-          van Nederland weer een stem te geven.
+          WDNL is een platform om je mening te delen over politieke moties. Zie
+          wat andere Nederlanders vinden en leer de keuzes die over je leven
+          gemaakt worden beter begrijpen.
         </p>
       </div>
     </section>

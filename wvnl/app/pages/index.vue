@@ -45,7 +45,7 @@ const steps = [
   {
     title: "1. Stem",
     description:
-      "Alle stellingen zijn moties die in de tweede kamer behandeld worden. Stem, geef je mening over die kwesties en zie wat andere erover denken.",
+      "Alle stellingen zijn moties die in de tweede kamer behandeld worden met wat uitgebreidere informatie. Stem, geef je mening over die kwesties en zie wat andere erover denken.",
   },
   {
     title: "2. Vraag moties aan",
@@ -83,9 +83,9 @@ const steps = [
           <h2 style="margin-top: -0.5em">Waarom Wat Denkt Nederland?</h2>
           <ul>
             <li>Actuele politieke moties</li>
-            <li>Zien hoeveel % Nederlanders het met je eens/oneens is</li>
             <li>Veilig opgeslagen data binnen de EU</li>
             <li>Helder geformuleerde vraagstellingen</li>
+            <li>Hoeveel % Nederlanders is het met je eens/oneens</li>
           </ul>
         </div>
       </div>
@@ -119,7 +119,8 @@ const steps = [
         <div class="feature-divider__text">
           <h2 class="section-title">Leer je mede Nederlander begrijpen</h2>
           <p>
-            Zie in één oogopslag waar anderen staan en ontdek hoe jouw mening zich verhoudt.
+            Zie in één oogopslag waar anderen staan en ontdek hoe jouw mening
+            zich verhoudt tegenover de andere stemmers.
           </p>
         </div>
         <figure class="feature-divider__figure">

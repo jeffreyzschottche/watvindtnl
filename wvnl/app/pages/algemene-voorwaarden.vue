@@ -58,32 +58,6 @@ const jsonLd = {
       </ul>
     </section>
 
-    <section class="section-light">
-      <div class="container narrow page-section">
-        <h2>Gebruik van het platform</h2>
-        <p>
-          WDNL stelt het platform beschikbaar voor burgers, organisaties en
-          overheden die meningen, ideeën of feedback willen delen. Het gebruik
-          van het platform is toegestaan zolang dit niet in strijd is met de
-          wet, openbare orde of rechten van anderen.
-        </p>
-        <ul class="list">
-          <li>
-            De gebruiker is verantwoordelijk voor de inhoud die wordt geplaatst.
-          </li>
-          <li>
-            Het is verboden om onjuiste, misleidende of discriminerende
-            informatie te publiceren.
-          </li>
-          <li>
-            Het is niet toegestaan het platform te gebruiken voor spam,
-            commerciële doeleinden of verspreiding van virussen of schadelijke
-            software.
-          </li>
-        </ul>
-      </div>
-    </section>
-
     <section class="container narrow page-section">
       <h2>Registratie en accountbeheer</h2>
       <p>
