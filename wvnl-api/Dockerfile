@@ -1,6 +1,26 @@
-FROM composer:2 AS composer_build
+FROM composer:2 AS composer_binary
+
+FROM php:8.3-cli-alpine AS composer_build
 WORKDIR /app
 
+RUN apk add --no-cache \
+        git \
+        unzip \
+        libzip-dev \
+        icu-dev \
+        oniguruma-dev \
+        sqlite-dev \
+        postgresql-dev \
+    && docker-php-ext-install \
+        bcmath \
+        intl \
+        pdo_mysql \
+        pdo_pgsql \
+        pdo_sqlite \
+        zip \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=composer_binary /usr/bin/composer /usr/bin/composer
 COPY . .
 RUN composer install \
     --no-dev \
