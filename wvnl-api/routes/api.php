@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\AdminPoliticalPartyController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PoliticalCompassController;
 use App\Http\Controllers\NewsArticleController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 
 Route::get('/questions', [QuestionController::class, 'index']);
 
@@ -72,4 +74,22 @@ Route::get('/test-mail', function () {
     });
 
     return response()->json(['sent' => true]);
+});
+
+Route::get('/run-news-articles-migration', function () {
+    $migrationFile = 'database/migrations/2025_10_09_000000_create_news_articles_table.php';
+    $migrationPath = database_path('migrations/2025_10_09_000000_create_news_articles_table.php');
+
+    if (! File::exists($migrationPath)) {
+        return response()->json(['status' => 'skipped', 'reason' => 'Migration file niet gevonden'], 404);
+    }
+
+    Artisan::call('migrate', [
+        '--path' => $migrationFile,
+        '--force' => true,
+    ]);
+
+    File::delete($migrationPath);
+
+    return response()->json(['status' => 'ok', 'file_deleted' => true]);
 });

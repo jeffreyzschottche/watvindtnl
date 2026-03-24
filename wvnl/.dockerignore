@@ -1,0 +1,12 @@
+.DS_Store
+.env
+.env.*
+.git
+.gitignore
+.nuxt
+.output
+dist
+node_modules
+npm-debug.log*
+Dockerfile*
+README.md
