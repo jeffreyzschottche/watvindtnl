@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 import type { IssuePartyStances } from "~/types/issues";
 
 const props = defineProps<{ stances: IssuePartyStances }>();
-const failedLogos = ref(new Set<number>());
-watch(
-  () => props.stances,
-  () => {
-    failedLogos.value = new Set();
-  },
-);
 const hasParties = computed(() =>
   Object.values(props.stances).some((parties) => parties.length > 0),
 );
@@ -55,29 +48,7 @@ const groups = computed(() => [
             class="party-chip"
             :title="party.name"
           >
-            <span class="party-chip__mark" aria-hidden="true">
-              <img
-                v-if="party.logo_url && !failedLogos.has(party.id)"
-                :src="party.logo_url"
-                alt=""
-                width="24"
-                height="24"
-                loading="lazy"
-                @error="failedLogos.add(party.id)"
-              />
-              <span v-else>{{
-                (party.abbreviation || party.name).slice(0, 2)
-              }}</span>
-            </span>
-            <span class="party-chip__name">{{
-              party.abbreviation || party.name
-            }}</span>
-            <span
-              v-if="party.abbreviation && party.name !== party.abbreviation"
-              class="sr-only"
-            >
-              — {{ party.name }}</span
-            >
+            <span class="party-chip__name">{{ party.name }}</span>
           </li>
         </ul>
         <p v-else class="party-group__empty">Geen partijen vermeld.</p>
@@ -181,41 +152,17 @@ const groups = computed(() => [
   gap: 0.45rem;
   min-width: 0;
   max-width: 100%;
-  padding: 0.35rem 0.6rem 0.35rem 0.35rem;
+  padding: 0.5rem 0.65rem;
   border: 1px solid #dfe5ee;
   border-radius: 8px;
   background: #fff;
   color: #001f4d;
 }
-.party-chip__mark {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  flex: 0 0 24px;
-  border-radius: 5px;
-  background: #f7f9fc;
-  overflow: hidden;
-}
-.party-chip__mark img {
-  display: block;
-  width: 24px;
-  height: 24px;
-  padding: 2px;
-  object-fit: contain;
-}
-.party-chip__mark > span {
-  font-size: 0.55rem;
-  color: #63738a;
-  font-weight: 700;
-}
 .party-chip__name {
   font-size: 0.73rem;
   line-height: 1.3;
   font-weight: 650;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 .party-group__empty,
 .party-stances__empty {

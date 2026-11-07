@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(prepend: [\App\Http\Middleware\ApiSecurityHeaders::class], append: ['throttle:api']);
         $middleware->alias([
+            'cms.content' => \App\Http\Middleware\EnsureCmsContentToken::class,
             'admin.account' => \App\Http\Middleware\EnsureAdminAccount::class,
         ]);
     })

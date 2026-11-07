@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Illuminate\Support\Facades\RateLimiter::for('cms-motion-sync', fn ($r) => \Illuminate\Cache\RateLimiting\Limit::perHour(10)->by((string) $r->attributes->get('cms_token_id')));
         $key = static fn ($request) => hash('sha256', mb_strtolower(trim((string) $request->input('email'))).'|'.$request->ip());
         $identity = static fn ($request) => (string) ($request->user('sanctum')?->id ?? hash('sha256', (string) $request->ip()));
         $limit = static fn ($name) => max(1, (int) config('wdnl.limits.'.$name));

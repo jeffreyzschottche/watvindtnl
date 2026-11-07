@@ -29,3 +29,7 @@ Stripe web en RevenueCat native leveren events aan centrale entitlementledger. `
 ## ADR-005: referentieontwerp
 
 De drie userreferenties bepalen kleur, logo-concept, website-layout en mobiele navigatie. Tokens: navy #001F4D, blue #0057B8, red #E1062E, background #F5F7FA, white #FFFFFF. Inter/system fallback, weinig schaduw, focuszichtbaarheid, reduced motion, 44px aanraakdoelen, toetsenbord en contrast controleren. Links tegen, rechts voor. Uitslag blijft staan tot Volgende stelling. Geen fictieve statistieken. Het oude SVG is geen goedgekeurd molenlogo: een nieuwe vector wordt als concept ter beoordeling aangeboden; geen finale logogoedkeuring aangenomen.
+
+## Uitgevoerde keuze: ZschotCMS-contentbeheer
+
+De bestaande CMS-modules van Allergie-ID en Spot & Find zijn als referentie geïnspecteerd. WDNL gebruikt dezelfde Integration/Action-registratie, versleutelde serverconfiguratie en projectgebonden acties. Eén centrale Laravel-content-API beheert partijen, stellingen/argumenten en officiële bronmoties voor alle clients. Geen databasecredentials in het CMS; afzonderlijke contenttokens kunnen geen appaccounts of stemmen lezen. Een begrensde officiële motieophaling vereist geen LLM/worker en publiceert niets. Zware PDF/OCR/LLM-verwerking blijft buiten deze handmatige beheerstap en wordt niet via een publieke GET gestart. Contract, grenzen en uitrol: [ZSCHOTCMS.md](ZSCHOTCMS.md).

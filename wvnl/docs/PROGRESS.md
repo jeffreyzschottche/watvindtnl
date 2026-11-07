@@ -1,6 +1,6 @@
 # WDNL V2 — voortgang
 
-Branch `refactor`, gestart 2026-11-07. Referentie: user masterbrief + drie ontwerpbeelden. Geen productie-uitrol of datamigratie.
+Branch `refactor`, gestart 2026-11-07. Referentie: user masterbrief + drie ontwerpbeelden. Geen productie-uitrol. Lokale aanvullende CMS-migratie en contentseed op 7 november 2026, zie de laatste voortgangssectie.
 
 ## Geanalyseerd
 
@@ -31,7 +31,7 @@ Lokale login + /me: HTTP200. CORS preflight: 204. npm audit: 49 issues (7 critic
 
 ## Externe configuratie / open beslissingen
 
-ZschotCMS-contract ontbreekt. Stripe/RevenueCat/storeproductconfig, gecertificeerde CMP, native signing/appidentifiers, mail sandbox, encrypted backupstorage/keybeheer en juridische toets nodig. Goedgekeurd origineel molenlogo niet aangetroffen; SVG-concept moet worden beoordeeld. Historische politieke data niet automatisch als nieuwe toestemming behandelen. Geen van deze punten als afgerond/live presenteren.
+ZschotCMS is lokaal gekoppeld; productie-API en afzonderlijke productietoken blijven te configureren. Stripe/RevenueCat/storeproductconfig, gecertificeerde CMP, native signing/appidentifiers, mail sandbox, encrypted backupstorage/keybeheer en juridische toets nodig. Goedgekeurd origineel molenlogo niet aangetroffen; SVG-concept moet worden beoordeeld. Historische politieke data niet automatisch als nieuwe toestemming behandelen. Geen van deze punten als afgerond/live presenteren.
 
 ## M1 verificatie
 
@@ -62,3 +62,16 @@ Eindcontrole zichtbare ontwerpstap: 23 backendtests / 101 assertions, 10 Vitest-
 UI-verfijning partijstandpunten: donker driekolomsblok vervangen door lichte tegen-/voorkaarten met compacte logo/afkorting-labels, volledige namen als tooltip en toegankelijke tekst, aantallen en alleen een neutrale groep bij aanwezige data. Ontbrekende/beschadigde logo's krijgen een fallback. Typecheck en git diff --check geslaagd. Chrome-controle op echte /spel-data met 15 partijen: desktophoogte 365px; mobiele weergave zonder interne horizontale overflow. Geen backend- of datawijzigingen.
 
 Onderzoek partijen/logorechten per 2026-11-07: alle 15 bestaande partijrecords en vier ontbrekende actuele Kamervermeldingen onderzocht. Officiële Kamerlijst bevat 17 groepen/fracties (150 zetels); PRO, 50PLUS, Groep Markuszower en Lid Keijzer ontbreken als actuele vermelding. GL-PvdA/NSC historisch behouden. Openbare logo-/huisstijlvoorwaarden met bronnen en beperkingen, asset-hashes en een niet-verstuurd conceptverzoek vastgelegd in PARTY_AUDIT_2026-11-07.md en research/party-audit-2026-11-07.json. Geen rechten verleend/aangevraagd, geen database-/weergavewijzigingen. Ook verouderde importaliases en vaste kompaspartij-ID’s vastgesteld. JSON-consistentie (15/17/150/4) en git diff --check gecontroleerd.
+
+## CMS-contentbeheer en partijen zonder logo’s — 7 november 2026
+
+- [x] Partijlogo’s uit de steminterface, volledige partijnamen zichtbaar zonder afkappen.
+- [x] Herhaalbare lokale partijseed: PRO, Groep Markuszower, 50PLUS en Lid Keijzer toegevoegd; 19 records inclusief historische GL-PvdA/NSC. Alle 15 logoverwijzingen verwijderd; bestaande IDs behouden. Privéherstelkopie vooraf gemaakt.
+- [x] Bestaande ZschotCMS-projecten en referentie-integraties geïnspecteerd. Echte WDNL-module, drie-tab-contentpaneel, beperkte versleutelde koppeling en verbindingscommando toegevoegd. Geen dependencies toegevoegd; andere projectkoppelingen behouden.
+- [x] Afzonderlijke afgeschermde API voor partijen, stellingen, argumenten en moties; geen toegang tot account-/stemdata. Versiecontrole, bron-/publicatievalidatie, atomische batches, audit-voorversies, tijdslimieten, bronallowlist en rate limiting.
+- [x] Eenknops-ophaling officiële moties werkt: vijf bronrecords geïmporteerd, herhaling nul duplicaten. UUIDs blijven strings; bronlinks verwijzen naar de exact opgehaalde officiële OData-records. Geen LLM-aanroep of automatische publicatie.
+- [x] Verouderde partijaliasing in de oude importer gecorrigeerd: actuele namen uit de DB worden exact herkend; GroenLinks/PvdA niet blind aan een latere coalitie toegeschreven. Volledige oude AI-import en kompas-ID-lijst blijven afzonderlijke technische schuld.
+- [x] WDNL 35 backendtests / 179 assertions, CMS 64 backendtests / 432 assertions, frontend 10 unit tests; beide typechecks en productiebuilds geslaagd. Browsercontroles op echte lokale CMS/API: 1440/390/320 pixels, acht argumentvelden, geen pageerrors/overflow. Zie ZSCHOTCMS.md.
+- [x] Integriteitscheck na seed/import: gebruikers/stellingen/argumenten gelijk; volledige historische vote-JSON-hash gelijk. Tijdelijke browsertoken na controle ingetrokken.
+
+Lokaal paneel: http://localhost:3100/projects/watdenktnederland/integrations/5. Productie niet uitgerold; daarvoor backend/CMS deployen en HTTPS-productie-API met eigen beperkte token configureren. De bestaande CMS-map heeft geen Git-repository. De volledige queue/LLM/reviewpipeline, genormaliseerde stemmen/consent en overige V2-mijlpalen blijven open; deze concrete contentbeheerstap is geen claim dat heel M3 of V2 gereed is.

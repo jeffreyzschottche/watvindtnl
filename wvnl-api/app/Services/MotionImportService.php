@@ -23,9 +23,6 @@ class MotionImportService
         'partij voor de vrijheid' => 'PVV',
         'groenlinks-pvda' => 'GL-PvdA',
         'gl-pvda' => 'GL-PvdA',
-        'groenlinks' => 'GL-PvdA',
-        'pvda' => 'GL-PvdA',
-        'pvdA' => 'GL-PvdA',
         'volkspartij voor vrijheid en democratie' => 'VVD',
         'vvd' => 'VVD',
         'nieuw sociaal contract' => 'NSC',
@@ -607,13 +604,15 @@ PROMPT;
     private function mapPartyToId(?string $name, ?string $fractie): ?int
     {
         $key = mb_strtolower(trim((string) ($fractie ?: $name ?: '')), 'UTF-8');
-        $key = str_replace(['groep ', 'fractie '], '', $key);
+        $key = preg_replace('~^fractie\\s+~', '', $key);
         $key = preg_replace('~\s+~', ' ', $key);
 
         if (!$key) {
             return null;
         }
 
+        $exact = $this->partyIndex[mb_strtoupper($key, 'UTF-8')] ?? null;
+        if ($exact) return $exact;
         $abbr = self::PARTY_SYNONYMS[$key] ?? null;
         if (!$abbr) {
             return null;
@@ -629,12 +628,13 @@ PROMPT;
             return;
         }
 
-        $parties = PoliticalParty::query()->get(['id', 'abbreviation']);
+        $parties = PoliticalParty::query()->get(['id', 'name', 'abbreviation']);
         foreach ($parties as $party) {
             if (!$party->abbreviation) {
                 continue;
             }
             $this->partyIndex[mb_strtoupper($party->abbreviation, 'UTF-8')] = (int) $party->id;
+            $this->partyIndex[mb_strtoupper($party->name, 'UTF-8')] = (int) $party->id;
         }
     }
 

@@ -62,3 +62,20 @@ Route::middleware(['auth:sanctum', 'admin.account', 'throttle:admin'])->prefix('
     Route::post('/political-parties', [AdminPoliticalPartyController::class, 'store']);
     Route::patch('/political-parties/{politicalParty}', [AdminPoliticalPartyController::class, 'update']);
 });
+
+// Separate content-only credentials: never accept an ordinary app/admin login here.
+Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])->group(function () {
+    Route::get('/', [\App\Http\Controllers\Cms\ContentController::class, 'overview']);
+    Route::get('/statements', [\App\Http\Controllers\Cms\ContentController::class, 'statements']);
+    Route::get('/statements/{issue}', [\App\Http\Controllers\Cms\ContentController::class, 'statement']);
+    Route::get('/motions', [\App\Http\Controllers\Cms\ContentController::class, 'motions']);
+    Route::middleware('cms.content:write')->group(function () {
+        Route::post('/parties/seed', [\App\Http\Controllers\Cms\ContentController::class, 'seedParties']);
+        Route::post('/parties', [\App\Http\Controllers\Cms\ContentController::class, 'saveParty']);
+        Route::patch('/parties/{party}', [\App\Http\Controllers\Cms\ContentController::class, 'saveParty']);
+        Route::post('/statements', [\App\Http\Controllers\Cms\ContentController::class, 'saveStatement']);
+        Route::post('/motions', [\App\Http\Controllers\Cms\ContentController::class, 'saveMotion']);
+        Route::post('/import', [\App\Http\Controllers\Cms\ContentController::class, 'import']);
+        Route::post('/motions/sync', [\App\Http\Controllers\Cms\ContentController::class, 'syncMotions'])->middleware('throttle:cms-motion-sync');
+    });
+});

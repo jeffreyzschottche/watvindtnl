@@ -15,3 +15,7 @@ M2: versieerbare resources, cursor-meta, expliciete consent- en privacyroutes, g
 `GET /issues-args?search=...&answered=all|yes|no&limit=24&offset=0` zoekt server-side in titels (maximaal 120 tekens) vóór paginering. Eigen stemfilters vereisen Sanctum-authenticatie; unauthenticated krijgt 401. Resultaatcontract blijft counts-na-eigen-stem, geen politieke identiteiten. Sortering op created_at en id geeft stabiele volgorde binnen de huidige offsetoplossing. Cursorpagination blijft de genormaliseerde datamijlpaal.
 
 `GET /statements/{slug}` geeft dezelfde veilige detailresource. Onbekende slug geeft 404. Frontend `/stellingen/[slug]` gebruikt dezelfde stemactie en kaart als `/spel`; geen tweede stemimplementatie.
+
+## ZschotCMS-contentgrens (7 november 2026)
+
+`/api/cms/content` heeft een eigen beperkte bearer-token, los van app-/adminaccounts. Partijen, stellingen en bronmoties kunnen worden gelezen, gewijzigd en atomisch geïmporteerd. De API exporteert geen gebruikers, individuele stemmen of rapportages. Zie [ZSCHOTCMS.md](ZSCHOTCMS.md) voor alle routes, publicatievoorwaarden, revisions/contenthashes en live-configuratie.

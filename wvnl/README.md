@@ -72,3 +72,7 @@ Native openen vereist Xcode/CocoaPods of Android Studio/JDK/SDK. Geen bewezen st
 ## Productie
 
 Bestaande Coolify-instructies: `../COOLIFY-DOCKER.md`. [Deployment](docs/DEPLOYMENT.md) beschrijft de releasevoorwaarden. Frontend en backend samen uitrollen bij gewijzigde resourcecontracten; oudere native clients vereisen versiebeleid. Geen automatische productiedatamigraties. Resterende dependencyadvisories, consent/privacyflows, RBAC/MFA, betalingen, CMP en native releases blokkeren production readiness. Juridische documenten en verwerking van politieke gegevens vereisen beoordeling. [Security](docs/SECURITY.md), [privacy](docs/PRIVACY.md).
+
+### Content beheren vanuit ZschotCMS
+
+Partijen, stellingen, argumenten en moties zijn lokaal te beheren via [WatDenktNederland in ZschotCMS](http://localhost:3100/projects/watdenktnederland/integrations/5). Het paneel heeft een partijseed, officiële motieophaling en een atomische contentimport. Zie [docs/ZSCHOTCMS.md](docs/ZSCHOTCMS.md) voor gebruik, API-contract, veilige live-koppeling en herstel.
