@@ -1,208 +1,248 @@
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import type { IssuePartyStances } from "~/types/issues";
+
+const props = defineProps<{ stances: IssuePartyStances }>();
+const failedLogos = ref(new Set<number>());
+watch(
+  () => props.stances,
+  () => {
+    failedLogos.value = new Set();
+  },
+);
+const hasParties = computed(() =>
+  Object.values(props.stances).some((parties) => parties.length > 0),
+);
+const groups = computed(() => [
+  { key: "disagree", label: "Tegen", parties: props.stances.disagree },
+  { key: "agree", label: "Voor", parties: props.stances.agree },
+  ...(props.stances.neutral.length
+    ? [{ key: "neutral", label: "Neutraal", parties: props.stances.neutral }]
+    : []),
+]);
+</script>
+
 <template>
-  <section class="issue-party-stances">
-    <h3 class="issue-party-stances__title">Standpunten van partijen</h3>
-    <div class="issue-party-stances__grid">
-      <div
-        v-for="column in columns"
-        :key="column.key"
-        class="issue-party-stances__column"
-        :class="`issue-party-stances__column--${column.key}`"
+  <section class="party-stances" aria-label="Standpunten van partijen">
+    <header class="party-stances__header">
+      <h3>Standpunten van partijen</h3>
+      <p>Deze verdeling staat los van de stemmen van WDNL-deelnemers.</p>
+    </header>
+    <div v-if="hasParties" class="party-stances__groups">
+      <section
+        v-for="group in groups"
+        :key="group.key"
+        class="party-group"
+        :class="`party-group--${group.key}`"
+        :aria-label="`Partijen ${group.label.toLowerCase()}`"
       >
-        <header class="issue-party-stances__column-header">
-          <span class="issue-party-stances__badge">{{ column.label }}</span>
-          <p class="issue-party-stances__hint">{{ column.hint }}</p>
+        <header class="party-group__header">
+          <h4>
+            <span class="party-group__dot" aria-hidden="true" />{{
+              group.label
+            }}
+          </h4>
+          <span>{{
+            group.parties.length
+              ? `${group.parties.length} ${group.parties.length === 1 ? "partij" : "partijen"}`
+              : "Niet vermeld"
+          }}</span>
         </header>
-        <ul v-if="stances[column.key].length" class="issue-party-stances__list">
+        <ul v-if="group.parties.length" class="party-group__list">
           <li
-            v-for="party in stances[column.key]"
+            v-for="party in group.parties"
             :key="party.id"
-            class="issue-party-stances__party"
+            class="party-chip"
+            :title="party.name"
           >
-            <img
-              v-if="party.logo_url"
-              :src="party.logo_url"
-              :alt="party.abbreviation || party.name"
-              class="issue-party-stances__logo"
-              loading="lazy"
-            />
-            <div class="issue-party-stances__party-details">
-              <span class="issue-party-stances__party-abbr">
-                {{ party.abbreviation || party.name }}
-              </span>
-              <span class="issue-party-stances__party-name">{{
-                party.name
+            <span class="party-chip__mark" aria-hidden="true">
+              <img
+                v-if="party.logo_url && !failedLogos.has(party.id)"
+                :src="party.logo_url"
+                alt=""
+                width="24"
+                height="24"
+                loading="lazy"
+                @error="failedLogos.add(party.id)"
+              />
+              <span v-else>{{
+                (party.abbreviation || party.name).slice(0, 2)
               }}</span>
-            </div>
+            </span>
+            <span class="party-chip__name">{{
+              party.abbreviation || party.name
+            }}</span>
+            <span
+              v-if="party.abbreviation && party.name !== party.abbreviation"
+              class="sr-only"
+            >
+              — {{ party.name }}</span
+            >
           </li>
         </ul>
-        <p v-else class="issue-party-stances__empty">
-          Nog geen voor/tegenstanders.
-        </p>
-      </div>
+        <p v-else class="party-group__empty">Geen partijen vermeld.</p>
+      </section>
     </div>
+    <p v-else class="party-stances__empty">
+      Bij deze stelling zijn geen partijstandpunten beschikbaar.
+    </p>
   </section>
 </template>
 
-<script setup lang="ts">
-import { computed } from "vue";
-import type { IssuePartyStances } from "~/types/issues";
-
-type ColumnKey = keyof IssuePartyStances;
-
-const props = defineProps<{ stances: IssuePartyStances }>();
-
-const columns = computed(() => [
-  {
-    key: "agree" as ColumnKey,
-    label: "Voor",
-    hint: "Deze partijen zijn voor deze kwestie.",
-  },
-  {
-    key: "neutral" as ColumnKey,
-    label: "Neutraal",
-    hint: "Deze partijen zijn neutraal.",
-  },
-  {
-    key: "disagree" as ColumnKey,
-    label: "Tegen",
-    hint: "Deze partijen zijn tegen deze kwestie.",
-  },
-]);
-
-const stances = computed(() => props.stances);
-</script>
-
 <style scoped>
-.issue-party-stances {
-  display: grid;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  background: linear-gradient(145deg, #002347, #003366);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.party-stances {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--wdnl-border, #dce3ee);
+  color: #001f4d;
 }
-
-.issue-party-stances__title {
+.party-stances__header {
+  margin-bottom: 1rem;
+}
+.party-stances__header h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 750;
+}
+.party-stances__header p {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--color-orange);
+  color: #63738a;
+  font-size: 0.76rem;
+  line-height: 1.6;
 }
-
-.issue-party-stances__grid {
+.party-stances__groups {
   display: grid;
-  gap: 1rem;
-  min-height: 200px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  align-items: start;
 }
-
-@media (min-width: 768px) {
-  .issue-party-stances__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.issue-party-stances__column {
-  display: grid;
-  margin-top: 2em;
-  gap: 0.75rem;
+.party-group {
+  border: 1px solid #d8e4f5;
+  border-radius: 12px;
+  background: #f1f6ff;
   padding: 1rem;
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  align-content: start;
+  min-width: 0;
 }
-
-.issue-party-stances__column-header {
-  display: grid;
-  gap: 0.25rem;
+.party-group--disagree {
+  background: #fff5f7;
+  border-color: #f1dce2;
 }
-
-.issue-party-stances__badge {
-  display: inline-flex;
+.party-group--neutral {
+  grid-column: 1 / -1;
+  background: #f7f8fa;
+  border-color: #e1e6ed;
+}
+.party-group__header {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: fit-content;
-  padding: 0.2rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  max-height: 20px;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
 }
-
-.issue-party-stances__column--agree .issue-party-stances__badge {
-  background: rgba(34, 197, 94, 0.15);
-  color: #15803d;
-}
-
-.issue-party-stances__column--neutral .issue-party-stances__badge {
-  background: rgba(0, 102, 204, 0.25);
-  color: #cfe3ff;
-}
-
-.issue-party-stances__column--disagree .issue-party-stances__badge {
-  background: rgba(239, 68, 68, 0.15);
-  color: #b91c1c;
-}
-
-.issue-party-stances__hint {
+.party-group__header h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #0057b8;
+  font-size: 0.83rem;
   margin: 0;
-  font-size: 0.8rem;
-  color: rgba(249, 250, 251, 0.7);
+  letter-spacing: 0;
+  font-weight: 750;
 }
-
-.issue-party-stances__list {
+.party-group--disagree h4 {
+  color: #be0025;
+}
+.party-group--neutral h4 {
+  color: #586980;
+}
+.party-group__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.party-group__header > span {
+  color: #63738a;
+  font-size: 0.65rem;
+  white-space: nowrap;
+}
+.party-group__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.75rem;
 }
-
-.issue-party-stances__party {
-  display: flex;
+.party-chip {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.45rem;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.35rem 0.6rem 0.35rem 0.35rem;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+  background: #fff;
+  color: #001f4d;
 }
-
-.issue-party-stances__logo {
-  width: 36px;
-  height: 36px;
+.party-chip__mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 5px;
+  background: #f7f9fc;
+  overflow: hidden;
+}
+.party-chip__mark img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
   object-fit: contain;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 0.25rem;
-  box-shadow: inset 0 0 0 1px rgba(0, 51, 102, 0.08);
 }
-
-.issue-party-stances__party-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.issue-party-stances__party-abbr {
+.party-chip__mark > span {
+  font-size: 0.55rem;
+  color: #63738a;
   font-weight: 700;
-  color: var(--color-text-light);
 }
-
-.issue-party-stances__party-name {
-  font-size: 0.85rem;
-  color: rgba(249, 250, 251, 0.75);
+.party-chip__name {
+  font-size: 0.73rem;
+  line-height: 1.3;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.issue-party-stances__empty {
+.party-group__empty,
+.party-stances__empty {
+  font-size: 0.77rem;
+  line-height: 1.6;
+  color: #63738a;
   margin: 0;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(249, 250, 251, 0.8);
-  text-align: center;
-  font-size: 0.85rem;
+}
+.party-stances__empty {
+  padding: 1rem;
+  background: #f5f7fa;
+  border: 1px solid #e2e7ef;
+  border-radius: 10px;
+}
+@media (max-width: 520px) {
+  .party-stances__groups {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+  .party-group {
+    padding: 0.85rem;
+  }
+  .party-group--neutral {
+    grid-column: auto;
+  }
+  .party-group__header {
+    margin-bottom: 0.7rem;
+  }
 }
 </style>
