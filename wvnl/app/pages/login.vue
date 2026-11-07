@@ -37,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: "/inloggen" });
 import loginScreen from "~/components/loginScreen.vue";
 const { isLoggedIn } = storeToRefs(useAuthStore());
 const router = useRouter();

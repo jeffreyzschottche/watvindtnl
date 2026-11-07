@@ -1,655 +1,109 @@
-<template>
-  <article class="issue-card">
-    <Teleport v-if="showAuthModal" to="body">
-      <div class="modal" @keydown.esc.prevent="closeAuthModal">
-        <div class="modal__backdrop" @click="closeAuthModal" />
-        <div class="modal__dialog" role="dialog" aria-modal="true">
-          <header class="modal__header">
-            <h2 class="modal__title">Inloggen vereist</h2>
-            <button
-              type="button"
-              class="modal__close"
-              @click="closeAuthModal"
-              aria-label="Sluiten"
-            >
-              ×
-            </button>
-          </header>
-          <div class="modal__body">
-            <p class="modal__intro">
-              Je bent niet ingelogd en kan daarom geen stem uitbrengen. Log in om
-              je mening te geven of maak een account aan.
-            </p>
-            <div class="modal__actions">
-              <NuxtLink to="/login" class="modal__secondary" @click="closeAuthModal">
-                Inloggen
-              </NuxtLink>
-              <NuxtLink to="/register" class="modal__primary" @click="closeAuthModal">
-                Registreren
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
-    <header class="issue-card__header">
-      <div class="issue-card__title-group">
-        <p v-if="remaining" class="issue-card__counter">
-          Motie #{{ issue.id }}
-        </p>
-        <h2 class="issue-card__title">{{ issue.title }}</h2>
-      </div>
-      <ReportMenu
-        class="issue-card__report"
-        :key="issue.id"
-        :submit="handleIssueReport"
-        success-message="Bedankt voor je melding over deze kwestie."
-      />
-    </header>
-    <p v-if="issue.description" class="issue-card__description">
-      {{ issue.description }}
-    </p>
-    <p
-      v-else
-      class="issue-card__description issue-card__description--empty"
-      aria-hidden="true"
-    ></p>
-    <div v-if="newsSlug" class="issue-card__more-info">
-      <NuxtLink
-        :to="`/news/${newsSlug}`"
-        class="issue-card__more-info-link button button--outline"
-      >
-        Meer info over deze motie
-      </NuxtLink>
-    </div>
-    <section class="issue-card__footer">
-      <button
-        type="button"
-        class="issue-card__button issue-card__button--agree"
-        :disabled="disabled"
-        @click="emitVote('agree')"
-      >
-        Voor
-      </button>
-      <button
-        type="button"
-        class="issue-card__button issue-card__button--neutral"
-        :disabled="disabled"
-        @click="emitVote('neutral')"
-      >
-        Neutraal
-      </button>
-      <button
-        type="button"
-        class="issue-card__button issue-card__button--disagree"
-        :disabled="disabled"
-        @click="emitVote('disagree')"
-      >
-        Tegen
-      </button>
-      <button
-        v-if="showSkip"
-        type="button"
-        class="issue-card__button issue-card__button--skip"
-        :disabled="disabled"
-        @click="emit('skip')"
-      >
-        Overslaan
-      </button>
-      <div v-if="showShare" class="issue-card__share">
-        <ShareDropdown
-          class="issue-card__share-trigger"
-          @select="handleShare"
-        />
-      </div>
-    </section>
-    <section class="issue-card__results">
-      <header class="issue-card__results-header">
-        <h3 class="issue-card__results-title">Wat anderen vinden</h3>
-        <span class="issue-card__results-total">
-          {{ totalVotes }} stem{{ totalVotes === 1 ? "" : "men" }}
-        </span>
-      </header>
-      <div class="issue-card__results-bar">
-        <span
-          class="issue-card__results-segment issue-card__results-segment--agree"
-          :style="{ width: `${votePercentages.agree}%` }"
-        />
-        <span
-          class="issue-card__results-segment issue-card__results-segment--neutral"
-          :style="{ width: `${votePercentages.neutral}%` }"
-        />
-        <span
-          class="issue-card__results-segment issue-card__results-segment--disagree"
-          :style="{ width: `${votePercentages.disagree}%` }"
-        />
-      </div>
-      <ul class="issue-card__results-list">
-        <li class="issue-card__results-item issue-card__results-item--agree">
-          <span class="issue-card__results-label">
-            Voor
-          </span>
-          <span class="issue-card__results-value">
-            {{ votePercentages.agree }}% · {{ voteCounts.agree }} stem{{
-              voteCounts.agree === 1 ? "" : "men"
-            }}
-          </span>
-        </li>
-        <li class="issue-card__results-item issue-card__results-item--neutral">
-          <span class="issue-card__results-label">
-            Neutraal
-          </span>
-          <span class="issue-card__results-value">
-            {{ votePercentages.neutral }}% · {{ voteCounts.neutral }} stem{{
-              voteCounts.neutral === 1 ? "" : "men"
-            }}
-          </span>
-        </li>
-        <li class="issue-card__results-item issue-card__results-item--disagree">
-          <span class="issue-card__results-label">
-            Tegen
-          </span>
-          <span class="issue-card__results-value">
-            {{ votePercentages.disagree }}% · {{ voteCounts.disagree }} stem{{
-              voteCounts.disagree === 1 ? "" : "men"
-            }}
-          </span>
-        </li>
-      </ul>
-    </section>
-    <IssueArgumentsList :groups="issue.arguments" />
-    <IssuePartyStances :stances="issue.party_stances" />
-  </article>
-</template>
-
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import ReportMenu from "~/components/common/ReportMenu.vue";
-import ShareDropdown from "~/components/common/ShareDropdown.vue";
-import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
-import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
 import type { IssueVoteOption, IssueWithArguments } from "~/types/issues";
+import type { SharePlatform } from "~/composables/useIssueSharing";
 import type { ReportReason } from "~/types/reports";
 import { reportIssue } from "~/services/issues";
 import { useAuthStore } from "~/stores/auth";
-import type { SharePlatform } from "~/composables/useIssueSharing";
+import { votePercentages } from "~/utils/voting";
+import IssueArgumentsList from "~/components/issues/IssueArgumentsList.vue";
+import IssuePartyStances from "~/components/issues/IssuePartyStances.vue";
+import ReportMenu from "~/components/common/ReportMenu.vue";
+import ShareDropdown from "~/components/common/ShareDropdown.vue";
 
-const props = withDefaults(
-  defineProps<{
-    issue: IssueWithArguments;
-    remaining: number;
-    disabled?: boolean;
-    showSkip?: boolean;
-    showShare?: boolean;
-  }>(),
-  {
-    showSkip: true,
-    showShare: true,
-  }
-);
-
+const props = withDefaults(defineProps<{
+  issue: IssueWithArguments;
+  remaining: number;
+  disabled?: boolean;
+  showSkip?: boolean;
+  showShare?: boolean;
+}>(), { showSkip: true, showShare: true });
 const emit = defineEmits<{
-  (e: "vote", vote: IssueVoteOption): void;
-  (e: "skip"): void;
-  (e: "share", platform: SharePlatform): void;
+  vote: [vote: IssueVoteOption];
+  skip: [];
+  share: [platform: SharePlatform];
 }>();
-
 const auth = useAuthStore();
 const { token } = storeToRefs(auth);
-
-const showAuthModal = ref(false);
-
-const voteCounts = computed(() => {
-  const votes = props.issue.votes ?? { agree: [], neutral: [], disagree: [] };
-
-  return {
-    agree: votes.agree?.length ?? 0,
-    neutral: votes.neutral?.length ?? 0,
-    disagree: votes.disagree?.length ?? 0,
-  };
-});
-
-const totalVotes = computed(
-  () =>
-    voteCounts.value.agree +
-    voteCounts.value.neutral +
-    voteCounts.value.disagree
-);
-
-const votePercentages = computed(() => {
-  const total = totalVotes.value;
-
-  if (!total) {
-    return {
-      agree: 0,
-      neutral: 0,
-      disagree: 0,
-    };
-  }
-
-  const toPercentage = (count: number) => Math.round((count / total) * 100);
-
-  return {
-    agree: toPercentage(voteCounts.value.agree),
-    neutral: toPercentage(voteCounts.value.neutral),
-    disagree: toPercentage(voteCounts.value.disagree),
-  };
-});
-
-const newsSlug = computed(() => {
-  return (
-    props.issue.news_article?.slug ??
-    props.issue.news_article_slug ??
-    props.issue.slug ??
-    null
-  );
-});
-
-function emitVote(vote: IssueVoteOption) {
-  if (!auth.isLoggedIn) {
-    showAuthModal.value = true;
-    return;
-  } else {
-    emit("vote", vote);
-  }
-}
-
-function closeAuthModal() {
-  showAuthModal.value = false;
-}
-
-function handleShare(platform: SharePlatform) {
-  emit("share", platform);
-}
-
-async function handleIssueReport(reason: ReportReason) {
+const counts = computed(() => props.issue.votes ?? { agree: 0, disagree: 0, neutral: 0 });
+const percentages = computed(() => votePercentages(counts.value));
+const total = computed(() => counts.value.agree + counts.value.disagree + counts.value.neutral);
+const answered = computed(() => props.issue.user_vote != null);
+const choiceLabel = computed(() => ({ agree: "voor", disagree: "tegen", neutral: "neutraal" })[props.issue.user_vote ?? "neutral"]);
+async function handleReport(reason: ReportReason) {
   await reportIssue(props.issue.id, reason, token.value ?? undefined);
 }
 </script>
 
+<template>
+  <article class="vote-card-v2" :aria-busy="disabled">
+    <header class="vote-card-v2__meta">
+      <span class="vote-card-v2__badge">Stelling #{{ issue.id }}</span>
+      <ReportMenu :key="issue.id" :submit="handleReport" success-message="Bedankt voor je melding." />
+    </header>
+    <div class="vote-card-v2__question">
+      <p class="vote-card-v2__eyebrow">Eén vraag. Twee kanten.</p>
+      <h2>{{ issue.title }}</h2>
+      <p v-if="issue.description" class="vote-card-v2__description">{{ issue.description }}</p>
+    </div>
+
+    <template v-if="!answered">
+      <div v-if="auth.isLoggedIn" class="vote-card-v2__choices">
+        <button class="vote-choice vote-choice--against" type="button" :disabled="disabled" @click="emit('vote', 'disagree')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 13V3H3v10h4Zm0-9h9a2 2 0 0 1 2 1.7l1 7a2 2 0 0 1-2 2.3h-4l1 5-1 1-6-8" /></svg>
+          <strong>Tegen</strong><span>Ik ben het oneens</span>
+        </button>
+        <button class="vote-choice vote-choice--for" type="button" :disabled="disabled" @click="emit('vote', 'agree')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11v10H3V11h4Zm0 9h9a2 2 0 0 0 2-1.7l1-7a2 2 0 0 0-2-2.3h-4l1-5-1-1-6 8" /></svg>
+          <strong>Voor</strong><span>Ik ben het eens</span>
+        </button>
+      </div>
+      <div v-else class="vote-card-v2__login">
+        <p>Log in om je mening te geven en de uitslag te bekijken.</p>
+        <NuxtLink class="vote-card-v2__primary" to="/inloggen">Inloggen om te stemmen →</NuxtLink>
+        <NuxtLink to="/registreren">Nog geen account? Registreren</NuxtLink>
+      </div>
+      <p v-if="disabled" class="vote-card-v2__status" role="status">Je stem wordt opgeslagen…</p>
+      <button v-if="showSkip" class="vote-card-v2__text-button" type="button" :disabled="disabled" @click="emit('skip')">Deze stelling overslaan →</button>
+    </template>
+
+    <section v-else class="vote-card-v2__results" aria-live="polite" aria-atomic="true">
+      <p class="vote-card-v2__confirmation">✓ Je hebt {{ choiceLabel }} gestemd</p>
+      <h3>Zo denken de deelnemers</h3>
+      <div class="vote-card-v2__bar" role="img" :aria-label="`${percentages.disagree}% tegen, ${percentages.agree}% voor, ${percentages.neutral}% historisch neutraal`">
+        <span class="against" :style="{ width: `${percentages.disagree}%` }" />
+        <span class="neutral" :style="{ width: `${percentages.neutral}%` }" />
+        <span class="for" :style="{ width: `${percentages.agree}%` }" />
+      </div>
+      <div class="vote-card-v2__numbers">
+        <p class="against-text"><strong>{{ percentages.disagree }}%</strong>Tegen · {{ counts.disagree }}</p>
+        <p class="for-text"><strong>{{ percentages.agree }}%</strong>Voor · {{ counts.agree }}</p>
+      </div>
+      <p v-if="counts.neutral" class="vote-card-v2__note">{{ counts.neutral }} historische neutrale stemmen ({{ percentages.neutral }}%) blijven meegeteld.</p>
+      <p class="vote-card-v2__note">{{ total }} {{ total === 1 ? 'stem' : 'stemmen' }} van WDNL-deelnemers. Deze uitslag is geen representatieve peiling van Nederland.</p>
+      <button v-if="showSkip" class="vote-card-v2__primary" type="button" :disabled="disabled" @click="emit('skip')">Volgende stelling →</button>
+    </section>
+
+    <details class="vote-card-v2__background" :open="answered">
+      <summary>Argumenten en achtergrond <span aria-hidden="true">＋</span></summary>
+      <IssueArgumentsList :groups="issue.arguments" />
+      <div v-if="issue.more_info" class="vote-card-v2__context"><h3>De context</h3><p>{{ issue.more_info }}</p></div>
+      <IssuePartyStances :stances="issue.party_stances" />
+      <a v-if="issue.url && /^https?:\/\//.test(issue.url)" :href="issue.url" target="_blank" rel="noopener noreferrer">Bekijk de oorspronkelijke bron ↗</a>
+      <p v-else class="vote-card-v2__note">Bij deze oudere stelling is nog geen directe bronlink vastgelegd.</p>
+    </details>
+    <div v-if="showShare" class="vote-card-v2__share"><ShareDropdown @select="emit('share', $event)" /></div>
+  </article>
+</template>
+
 <style scoped>
-.issue-card {
-  display: grid;
-  gap: 1.75rem;
-  padding: 1.75rem;
-  border-radius: 1.1rem;
-  background: #ffffff;
-  box-shadow: 0 35px 70px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 35, 71, 0.1);
-  width: min(100%, 1000px);
-  margin: 0 auto;
-  box-sizing: border-box;
-  color: var(--color-text-dark);
-}
-
-.issue-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.issue-card__title-group {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.issue-card__counter {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--color-orange);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.issue-card__title {
-  margin: 0;
-  font-size: 1.6rem;
-  color: var(--color-midnight);
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.issue-card__report {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.issue-card__description {
-  margin: 0;
-  line-height: 1.7;
-  color: var(--color-text-dark);
-  min-height: 3.2rem;
-  word-break: break-word;
-}
-
-.issue-card__description--empty {
-  visibility: hidden;
-}
-
-.issue-card__more-info {
-  margin-top: -0.25rem;
-}
-
-.issue-card__more-info-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  border-radius: 999px;
-  padding-inline: 1.15rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.issue-card__more-info-link::after {
-  content: \"→\";
-  font-size: 1rem;
-  transition: transform 0.2s ease;
-}
-
-.issue-card__more-info-link:hover::after,
-.issue-card__more-info-link:focus-visible::after {
-  transform: translateX(2px);
-}
-
-.issue-card__results {
-  display: grid;
-  gap: 0.75rem;
-  padding: 1.1rem;
-  border-radius: 0.9rem;
-  background: linear-gradient(150deg, #002e63, #003f7d);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: 9rem;
-}
-
-.issue-card__results-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-weight: 600;
-  color: #f9fafb;
-}
-
-.issue-card__results-title {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.issue-card__results-total {
-  font-size: 0.9rem;
-  color: rgba(249, 250, 251, 0.75);
-}
-
-.issue-card__results-bar {
-  display: flex;
-  width: 100%;
-  height: 0.75rem;
-  border-radius: 9999px;
-  overflow: hidden;
-  background-color: rgba(249, 250, 251, 0.25);
-}
-
-.issue-card__results-segment {
-  display: inline-block;
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.issue-card__results-segment--agree {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.issue-card__results-segment--neutral {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
-}
-
-.issue-card__results-segment--disagree {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-.issue-card__results-list {
-  display: grid;
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.issue-card__results-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  color: rgba(249, 250, 251, 0.95);
-}
-
-.issue-card__results-item--agree .issue-card__results-label {
-  color: #22c55e;
-}
-
-.issue-card__results-item--neutral .issue-card__results-label {
-  color: #8ab7ff;
-}
-
-.issue-card__results-item--disagree .issue-card__results-label {
-  color: #fb7185;
-}
-
-.issue-card__results-label {
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.issue-card__results-value {
-  color: rgba(249, 250, 251, 0.8);
-}
-
-.issue-card__footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-}
-
-.issue-card__button {
-  flex: 1 1 160px;
-  padding: 0.8rem 1.1rem;
-  border-radius: 0.85rem;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  color: #ffffff;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-}
-
-.issue-card__button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.issue-card__button:not(:disabled):hover,
-.issue-card__button:not(:disabled):focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.35);
-}
-
-.issue-card__share {
-  flex: 1 1 160px;
-  display: flex;
-}
-
-.issue-card__share :deep(.share-dropdown) {
-  flex: 1 1 auto;
-}
-
-.issue-card__share :deep(.issue-card__button) {
-  width: 100%;
-  min-height: 40px;
-}
-
-@media (max-width: 640px) {
-  .issue-card {
-    padding: 1.5rem;
-  }
-
-  .issue-card__footer {
-    flex-direction: column;
-  }
-
-  .issue-card__button,
-  .issue-card__share {
-    flex: 1 1 auto;
-    width: 100%;
-  }
-}
-
-.issue-card__button--agree {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.issue-card__button--neutral {
-  background: linear-gradient(135deg, #003f7d, #002347);
-  color: var(--color-text-light);
-  border: 1px solid rgba(249, 250, 251, 0.2);
-}
-
-.issue-card__button--disagree {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-.issue-card__button--skip {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
-  color: #f4f4f5;
-  border: none;
-}
-
-.issue-card__button--share {
-  background: linear-gradient(135deg, #ff8e00, #fd7702);
-  color: var(--color-midnight);
-  box-shadow: 0 18px 36px rgba(255, 142, 0, 0.35);
-  display: none !important;
-}
-
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1600;
-  display: grid;
-  place-items: center;
-  padding: 1.5rem;
-}
-
-.modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(2px);
-}
-
-.modal__dialog {
-  position: relative;
-  width: min(420px, 100%);
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(238, 241, 246, 0.97));
-  box-shadow: 0 24px 48px rgba(0, 26, 77, 0.28);
-  border: 1px solid rgba(0, 63, 125, 0.35);
-  padding: 1.75rem;
-  display: grid;
-  gap: 1.25rem;
-}
-
-.modal__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.modal__title {
-  margin: 0;
-  font-size: 1.35rem;
-  color: var(--color-primary, #003366);
-}
-
-.modal__close {
-  border: none;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 999px;
-  width: 2.2rem;
-  height: 2.2rem;
-  font-size: 1.5rem;
-  color: var(--color-accent, #ff5003);
-  cursor: pointer;
-  box-shadow: 0 6px 14px rgba(0, 26, 77, 0.18);
-}
-
-.modal__close:hover,
-.modal__close:focus-visible {
-  background: rgba(255, 80, 3, 0.2);
-}
-
-.modal__body {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.modal__intro {
-  margin: 0;
-  color: #1f2937;
-  line-height: 1.6;
-}
-
-.modal__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-}
-
-.modal__secondary,
-.modal__primary {
-  border-radius: 999px;
-  padding: 0.6rem 1.4rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.modal__secondary {
-  background: rgba(15, 23, 42, 0.05);
-  color: #0f172a;
-}
-
-.modal__secondary:hover,
-.modal__secondary:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.15);
-}
-
-.modal__primary {
-  background: linear-gradient(
-    130deg,
-    var(--color-accent, #ff5003),
-    var(--color-primary, #003366)
-  );
-  color: #fff;
-  box-shadow: 0 12px 24px rgba(0, 35, 71, 0.35);
-}
-
-.modal__primary:hover,
-.modal__primary:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 28px rgba(0, 35, 71, 0.42);
-}
+.vote-card-v2 { color: #001f4d; background: #fff; width: 100%; max-width: 720px; padding: clamp(1.25rem, 4vw, 2.5rem); border: 1px solid #dce3ee; border-radius: 20px; box-shadow: 0 6px 28px #001f4d06; display: grid; gap: 1.5rem; box-sizing: border-box; }
+.vote-card-v2__meta { display: flex; justify-content: space-between; align-items: center; }.vote-card-v2__badge { color: #0057b8; background: #eaf1ff; font-size: .75rem; font-weight: 700; border-radius: 30px; padding: .45rem .8rem; }
+.vote-card-v2__question { text-align: center; }.vote-card-v2__eyebrow { color: #586980; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }.vote-card-v2 h2 { color: #001f4d; font-size: clamp(1.5rem, 4vw, 2.1rem); line-height: 1.22; letter-spacing: -.035em; margin: .9rem 0; }.vote-card-v2__description { color: #526277; font-size: .95rem; line-height: 1.65; max-width: 55ch; margin: auto; }
+.vote-card-v2__choices { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }.vote-choice { display: grid; justify-items: center; gap: .5rem; border: 1px solid transparent; border-radius: 15px; padding: 1.5rem .8rem; cursor: pointer; min-height: 150px; font: inherit; transition: border-color .15s, transform .15s; }.vote-choice svg { width: 32px; height: 32px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linejoin: round; }.vote-choice strong { font-size: 1.35rem; }.vote-choice span { font-size: .8rem; }.vote-choice--against { background: #fff0f3; color: #be0025; }.vote-choice--for { background: #edf3ff; color: #0057b8; }.vote-choice:hover:not(:disabled) { border-color: currentColor; transform: translateY(-2px); }
+.vote-card-v2__primary { display: flex; justify-content: center; align-items: center; gap: .5rem; width: 100%; background: #001f4d; color: white; min-height: 48px; padding: .8rem 1rem; border: 0; border-radius: 10px; font: inherit; font-weight: 700; cursor: pointer; box-sizing: border-box; text-decoration: none; }.vote-card-v2__primary:hover { background: #0057b8; text-decoration: none; }.vote-card-v2__text-button { min-height: 44px; font: inherit; font-size: .85rem; font-weight: 600; border: 0; background: transparent; color: #526277; cursor: pointer; }.vote-card-v2 button:disabled { opacity: .55; cursor: wait; }.vote-card-v2 :focus-visible { outline: 3px solid #0057b8; outline-offset: 4px; }
+.vote-card-v2__results { text-align: center; }.vote-card-v2__confirmation { color: #24743b; font-size: .85rem; font-weight: 600; }.vote-card-v2 h3 { color: #001f4d; margin: 1.1rem 0; }.vote-card-v2__bar { display: flex; height: 22px; background: #edf0f5; border-radius: 20px; overflow: hidden; }.against { background: #e1062e; }.for { background: #0057b8; }.neutral { background: #8794a5; }.vote-card-v2__numbers { display: flex; justify-content: space-between; }.vote-card-v2__numbers p { display: grid; text-align: left; font-size: .8rem; }.vote-card-v2__numbers p:last-child { text-align: right; }.vote-card-v2__numbers strong { font-size: 1.8rem; letter-spacing: -.04em; }.against-text { color: #c50025; }.for-text { color: #0057b8; }.vote-card-v2__note { font-size: .78rem; line-height: 1.6; color: #586980; margin: .5rem 0 1rem; }
+.vote-card-v2__background { border-top: 1px solid #e3e9f1; padding-top: 1rem; }.vote-card-v2__background summary { cursor: pointer; font-weight: 700; font-size: .9rem; min-height: 44px; display: flex; align-items: center; justify-content: space-between; }.vote-card-v2__background[open] summary { margin-bottom: 1rem; }.vote-card-v2__context p { color: #526277; line-height: 1.7; white-space: pre-line; }.vote-card-v2__share { display: flex; justify-content: flex-end; }.vote-card-v2__login { display: grid; gap: 1rem; text-align: center; font-size: .9rem; }.vote-card-v2__status { text-align: center; color: #526277; }
+@media (prefers-reduced-motion: reduce) { .vote-choice { transition: none; }.vote-choice:hover:not(:disabled) { transform: none; } }
 </style>

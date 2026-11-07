@@ -1,4 +1,5 @@
 <script setup lang="ts">
+definePageMeta({ alias: "/kompas" });
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const siteName = "Wat Denkt Nederland";

@@ -1626,9 +1626,9 @@ const issueDirectoryState = reactive({
 
 const issueDirectoryBounds = computed(() => {
   if (!issueDirectoryState.motions.length) return null;
-  const first = issueDirectoryState.motions[0].number;
+  const first = issueDirectoryState.motions[0]!.number;
   const last =
-    issueDirectoryState.motions[issueDirectoryState.motions.length - 1].number;
+    issueDirectoryState.motions[issueDirectoryState.motions.length - 1]!.number;
   return {
     first,
     last,
@@ -1811,8 +1811,8 @@ const newPartyForm = reactive({
   logoPreview: null as string | null,
 });
 
-function setEditPartyLogoInput(el: HTMLInputElement | null) {
-  editPartyLogoInput.value = el;
+function setEditPartyLogoInput(el: Element | import("vue").ComponentPublicInstance | null) {
+  editPartyLogoInput.value = el instanceof HTMLInputElement ? el : null;
 }
 
 let newPartyLogoObjectUrl: string | null = null;
@@ -2296,8 +2296,8 @@ async function handleIssueDirectoryUpload(event: Event) {
 
   motions.sort((a, b) => a.number - b.number);
   issueDirectoryState.motions = motions;
-  issueDirectoryState.start = String(motions[0].number);
-  issueDirectoryState.end = String(motions[motions.length - 1].number);
+  issueDirectoryState.start = String(motions[0]!.number);
+  issueDirectoryState.end = String(motions[motions.length - 1]!.number);
   issueDirectoryState.error = null;
 
   input.value = "";
@@ -2375,8 +2375,8 @@ async function prepareIssueImportFromDirectory() {
     return;
   }
 
-  const firstNumber = selected[0].number;
-  const lastNumber = selected[selected.length - 1].number;
+  const firstNumber = selected[0]!.number;
+  const lastNumber = selected[selected.length - 1]!.number;
 
   issueImportState.fileName = `Mapimport motie${firstNumber}-motie${lastNumber} (${selected.length} moties)`;
   issueImportState.issues = aggregatedIssues;
@@ -2527,13 +2527,13 @@ function extractMotionNumber(relativePath: string): number | null {
   const normalized = relativePath.replace(/\\/g, "/");
   const segments = normalized.split("/");
   if (segments.length < 2) return null;
-  const directoryName = segments[segments.length - 2];
-  const fileName = segments[segments.length - 1];
+  const directoryName = segments[segments.length - 2]!;
+  const fileName = segments[segments.length - 1]!;
   const directoryMatch = directoryName.match(/^motie(\d+)$/i);
   const fileMatch = fileName.match(/^motie(\d+)\.json$/i);
   if (!directoryMatch || !fileMatch) return null;
-  const directoryNumber = Number.parseInt(directoryMatch[1], 10);
-  const fileNumber = Number.parseInt(fileMatch[1], 10);
+  const directoryNumber = Number.parseInt(directoryMatch[1]!, 10);
+  const fileNumber = Number.parseInt(fileMatch[1]!, 10);
   if (!Number.isFinite(directoryNumber) || directoryNumber !== fileNumber)
     return null;
   return directoryNumber;
@@ -2545,11 +2545,11 @@ function toMotionNumber(value: string): number | null {
   return parsed;
 }
 
-function isArgumentPayload(value: unknown): value is Record<string, unknown> {
+function isArgumentPayload(value: unknown): value is AdminArgumentUpsertPayload {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
   return (
-    typeof candidate.side === "string" && typeof candidate.body === "string"
+    (candidate.side === "pro" || candidate.side === "con") && typeof candidate.body === "string"
   );
 }
 

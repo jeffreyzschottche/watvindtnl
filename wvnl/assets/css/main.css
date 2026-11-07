@@ -1,6 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 :root {
   --color-midnight: #002347;
@@ -738,3 +735,8 @@ a:focus {
      text-stroke: 1px rgba(0,0,0,.35);
   */
 }
+
+/* V2 semantic tokens. Legacy names remain until each page has migrated. */
+:root { --wdnl-navy: #001f4d; --wdnl-blue: #0057b8; --wdnl-red: #e1062e; --wdnl-background: #f5f7fa; --wdnl-surface: #fff; --wdnl-text: #001f4d; --wdnl-muted: #526277; --wdnl-border: #dce3ee; --wdnl-success: #24743b; --wdnl-warning: #805700; --wdnl-error: #be0025; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 9999; background: #001f4d; color: #fff; padding: .8rem 1rem; border-radius: 8px; }.skip-link:focus { top: 1rem; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }

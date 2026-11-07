@@ -20,6 +20,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: "/registreren" });
 import registerScreen from "~/components/registerScreen.vue";
 const { isLoggedIn } = storeToRefs(useAuthStore());
 const router = useRouter();

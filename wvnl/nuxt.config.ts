@@ -3,6 +3,8 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
+      demoAds: process.env.DEMO_ADS === "1",
+      adsEnabled: process.env.ADS_ENABLED === "1",
       apiBase:
         process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",
     },
@@ -14,20 +16,13 @@ export default defineNuxtConfig({
         {
           name: "viewport",
           content:
-            "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
-        },
-      ],
-      script: [
-        {
-          src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2932017576194299",
-          async: true,
-          crossorigin: "anonymous",
+            "width=device-width, initial-scale=1.0, viewport-fit=cover",
         },
       ],
     },
   },
   ssr: false,
   modules: ["@pinia/nuxt", "@nuxt/devtools"],
-  css: ["../assets/css/main.css"],
+  css: ["~~/assets/css/main.css"],
   devtools: { enabled: true },
 });

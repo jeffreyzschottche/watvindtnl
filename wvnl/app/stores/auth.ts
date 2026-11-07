@@ -2,6 +2,7 @@
 import { defineStore } from "pinia";
 import { useCookie } from "#imports";
 import type { User } from "~/types/User";
+import { apiFetch } from "~/services/apiFetch";
 import { useApi } from "~/composables/useApi";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -18,13 +19,24 @@ export const useAuthStore = defineStore("auth", () => {
   ) {
     token.value = newToken;
     user.value = newUser;
-    useCookie("token", { maxAge }).value = newToken; // client cookie (niet HttpOnly)
+    useCookie("token", { maxAge, sameSite: "strict", secure: !import.meta.dev }).value = newToken; // client cookie (niet HttpOnly)
   }
 
-  function logout() {
+  function clearSession() {
     token.value = null;
     user.value = null;
     useCookie("token").value = null;
+  }
+
+  async function logout() {
+    const savedToken = token.value;
+    clearSession();
+    if (!savedToken) return;
+    try {
+      await apiFetch("/logout", { method: "POST", headers: { Accept: "application/json", Authorization: `Bearer ${savedToken}` } });
+    } catch {
+      // Local session is cleared even when revocation cannot reach the server.
+    }
   }
 
   /** Herstel sessie uit cookie → haalt /me op als token bestaat */
@@ -35,7 +47,7 @@ export const useAuthStore = defineStore("auth", () => {
       token.value = saved;
       user.value = await api.get<User>("/me");
     } catch {
-      logout();
+      clearSession();
     }
   }
 

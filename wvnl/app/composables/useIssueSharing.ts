@@ -12,7 +12,7 @@ export type SharePlatform =
   | "clipboard";
 
 export type ShareableIssue = Pick<IssueWithArguments, "id" | "title"> & {
-  votes?: IssueWithArguments["votes"];
+  user_vote?: IssueWithArguments["user_vote"];
 };
 
 export interface ShareIssueOptions {
@@ -94,18 +94,7 @@ export function useIssueSharing() {
       return explicit;
     }
 
-    const currentUserId = user.value?.id;
-    if (!currentUserId || !issue.votes) {
-      return null;
-    }
-
-    const { agree = [], disagree = [], neutral = [] } = issue.votes;
-
-    if (agree.includes(currentUserId)) return "agree";
-    if (disagree.includes(currentUserId)) return "disagree";
-    if (neutral.includes(currentUserId)) return "neutral";
-
-    return null;
+    return issue.user_vote ?? null;
   }
 
   function composeShareMessage(

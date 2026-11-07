@@ -48,15 +48,15 @@ export interface IssueWithArguments {
   news_article?: IssueNewsLink | null;
   party_stances: IssuePartyStances;
   reports: ReportCounts;
-  votes: {
-    agree: number[];
-    disagree: number[];
-    neutral: number[];
-  };
+  votes: IssueVoteCounts | null;
+  user_vote: IssueVoteOption | null;
   arguments: IssueArgumentsGroup;
   created_at: string | null;
   updated_at: string | null;
 }
+
+export interface IssueVoteCounts { agree: number; disagree: number; neutral: number; }
+export type NewIssueVoteOption = "agree" | "disagree";
 
 export type IssueVoteOption = "agree" | "disagree" | "neutral";
 
@@ -64,6 +64,8 @@ export interface IssueVoteResponse {
   status: string;
   vote: IssueVoteOption;
   voted_issue_ids: number[];
+  votes: IssueVoteCounts;
+  user_vote: IssueVoteOption;
 }
 
 export interface UserVoteHistoryItem {

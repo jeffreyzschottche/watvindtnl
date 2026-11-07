@@ -283,6 +283,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: "/profiel" });
 import { computed, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";

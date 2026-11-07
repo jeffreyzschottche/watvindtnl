@@ -29,7 +29,7 @@ export async function apiFetch<T>(
   init?: RequestInit
 ): Promise<T> {
   const base = useRuntimeConfig().public.apiBase || "http://localhost:8000/api";
-  const res = await fetch(`${base}${endpoint}`, init);
+  const res = await fetch(`${base}${endpoint}`, { ...init, signal: init?.signal ?? AbortSignal.timeout(15000) });
 
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const payload = isJson ? await res.json() : await res.text();

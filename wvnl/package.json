@@ -7,24 +7,33 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "check": "npm run test && npm run typecheck && npm run build",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@capacitor/android": "^7.4.3",
-    "@capacitor/cli": "^7.4.3",
-    "@capacitor/core": "^7.4.3",
-    "@capacitor/ios": "^7.4.3",
+    "@capacitor/android": "7.6.10",
+    "@capacitor/cli": "7.6.10",
+    "@capacitor/core": "7.6.10",
+    "@capacitor/ios": "7.6.10",
     "@pinia/nuxt": "^0.11.2",
-    "altcha": "^2.2.4",
-    "nuxt": "^4.1.2",
-    "nuxt-gtag": "^4.1.0",
+    "nuxt": "4.6.4",
     "pinia": "^3.0.3",
-    "vue": "^3.5.22",
-    "vue-router": "^4.5.1"
+    "vue": "3.5.45",
+    "vue-router": "5.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.14",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0",
+    "vue-tsc": "3.3.14"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
   }
 }

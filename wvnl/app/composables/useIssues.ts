@@ -8,6 +8,7 @@ import type {
   IssueVoteResponse,
   IssueWithArguments,
 } from "~/types/issues";
+import { applyVoteResult } from "~/utils/voting";
 import { translateErrorMessage } from "~/utils/translateErrorMessage";
 
 export function useIssues() {
@@ -116,7 +117,7 @@ export function useIssues() {
 
   async function vote(vote: IssueVoteOption) {
     const issue = activeIssue.value;
-    if (!issue) return;
+    if (!issue || issue.user_vote || actionPending.value) return false;
 
     actionPending.value = true;
     error.value = null;
@@ -125,16 +126,14 @@ export function useIssues() {
         `/issues/${issue.id}/vote`,
         { vote }
       );
-      if (auth.user.value) {
+      if (auth.user) {
         auth.updateUser({
-          ...auth.user.value,
+          ...auth.user,
           voted_issue_ids: response.voted_issue_ids,
         });
       }
-      issues.value.splice(activeIndex.value, 1);
-      if (activeIndex.value >= issues.value.length) {
-        activeIndex.value = Math.max(issues.value.length - 1, 0);
-      }
+      issues.value[activeIndex.value] = applyVoteResult(issue, response);
+      return true;
   } catch (err: unknown) {
     error.value = translateErrorMessage(err, {
       fallback: "Stemmen is niet gelukt.",
@@ -145,6 +144,13 @@ export function useIssues() {
   }
 
   function skip() {
+    if (actionPending.value) return;
+    if (activeIssue.value?.user_vote) {
+      issues.value.splice(activeIndex.value, 1);
+      if (activeIndex.value >= issues.value.length) activeIndex.value = 0;
+      if (!issues.value.length) void loadPending();
+      return;
+    }
     if (issues.value.length <= 1) {
       error.value = null;
       return;
@@ -177,10 +183,9 @@ function shuffleIssues<T>(items: readonly T[]): T[] {
   const shuffled = items.slice();
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(Math.random() * (index + 1));
-    [shuffled[index], shuffled[swapIndex]] = [
-      shuffled[swapIndex],
-      shuffled[index],
-    ];
+    const current = shuffled[index] as T;
+    shuffled[index] = shuffled[swapIndex] as T;
+    shuffled[swapIndex] = current;
   }
   return shuffled;
 }

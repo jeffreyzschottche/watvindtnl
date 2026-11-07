@@ -4,8 +4,7 @@
       <header class="issues-page__header">
         <h1>Openstaande moties</h1>
         <p>
-          Geef aan hoe jij over de volgende stellingen denkt. Kies voor, tegen,
-          neutraal of sla over als je het nog niet weet.
+          Geef aan hoe jij over de volgende stellingen denkt. Kies tegen of voor, of sla over als je het nog niet weet.
         </p>
       </header>
 
@@ -47,6 +46,7 @@
           Vernieuw
         </button>
       </div>
+      <AdSlot v-if="activeIssue?.user_vote" />
     </div>
     <IssueDetailModal
       v-if="isModalOpen"
@@ -64,8 +64,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: "/spel" });
 import { computed, onMounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
+import AdSlot from "~/components/common/AdSlot.vue";
 import IssueDetailModal from "~/components/issues/IssueDetailModal.vue";
 import IssueVoteCard from "~/components/issues/IssueVoteCard.vue";
 import { useIssues } from "~/composables/useIssues";
@@ -193,26 +195,12 @@ async function handleModalVote(choice: IssueVoteOption) {
   modalError.value = null;
 
   try {
-    const inPending = issues.value.some((item) => item.id === issue.id);
-    if (inPending) {
-      await vote(choice);
-      closeModal();
-      return;
-    }
-
-    const response = await voteOnIssue(
-      issue.id,
-      choice,
-      token.value ?? undefined
-    );
-    if (user.value) {
-      auth.updateUser({
-        ...user.value,
-        voted_issue_ids: response.voted_issue_ids,
-      });
-    }
-    const updated = applyUserVote(issue, user.value?.id ?? null, choice);
+    const response = await voteOnIssue(issue.id, choice, token.value ?? undefined);
+    if (user.value) auth.updateUser({ ...user.value, voted_issue_ids: response.voted_issue_ids });
+    const updated = { ...issue, votes: response.votes, user_vote: response.user_vote };
     modalIssue.value = updated;
+    const index = issues.value.findIndex((item) => item.id === issue.id);
+    if (index >= 0) issues.value[index] = updated;
   } catch (err: unknown) {
     modalError.value = translateErrorMessage(err, {
       fallback: "Stemmen is niet gelukt.",
@@ -275,30 +263,6 @@ async function handleShare(
   await shareIssue(issue, { path: route.path, platform });
 }
 
-function applyUserVote(
-  issue: IssueWithArguments,
-  userId: number | null,
-  vote: IssueVoteOption
-): IssueWithArguments {
-  if (!userId) return issue;
-
-  const updatedVotes = {
-    agree: [...(issue.votes?.agree ?? [])],
-    disagree: [...(issue.votes?.disagree ?? [])],
-    neutral: [...(issue.votes?.neutral ?? [])],
-  };
-
-  updatedVotes.agree = updatedVotes.agree.filter((id) => id !== userId);
-  updatedVotes.disagree = updatedVotes.disagree.filter((id) => id !== userId);
-  updatedVotes.neutral = updatedVotes.neutral.filter((id) => id !== userId);
-
-  updatedVotes[vote].push(userId);
-
-  return {
-    ...issue,
-    votes: updatedVotes,
-  };
-}
 </script>
 
 <style scoped>
