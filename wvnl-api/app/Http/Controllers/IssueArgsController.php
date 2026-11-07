@@ -16,20 +16,14 @@ class IssueArgsController extends Controller
      */
     public function index(Request $request)
     {
-        // Wil je pagina’s? uncomment de paginate variant (en return->toArray()):
-        // $perPage = max(1, min((int)$request->query('per_page', 100), 200));
-        // $paginator = Issue::with(['arguments' => function ($q) {
-        //     $q->orderBy('side')->orderBy('created_at');
-        // }])->orderBy('created_at', 'desc')->paginate($perPage);
-        // $data = $paginator->getCollection()->map(fn($i) => $this->serializeIssue($i))->values();
-        // return response()->json([
-        //     'data' => $data,
-        //     'meta' => [
-        //         'current_page' => $paginator->currentPage(),
-        //         'last_page'    => $paginator->lastPage(),
-        //         'total'        => $paginator->total(),
-        //     ],
-        // ]);
+        $filters = $request->validate([
+            'search' => ['sometimes', 'nullable', 'string', 'max:120'],
+            'answered' => ['sometimes', 'in:all,yes,no'],
+        ]);
+        $search = trim((string) ($filters['search'] ?? ''));
+        $answered = $filters['answered'] ?? 'all';
+        $viewer = $request->user('sanctum');
+        abort_if($answered !== 'all' && !$viewer, 401);
 
         $limit = (int) $request->query('limit', 200);
         $offset = (int) $request->query('offset', 0);
@@ -42,7 +36,20 @@ class IssueArgsController extends Controller
                 $q->orderBy('side')->orderBy('created_at');
             },
             'newsArticle',
-        ])->orderBy('created_at', 'desc')
+        ])->when($search !== '', fn ($q) => $q->where('title', 'like', '%'.$search.'%'))
+            ->when($answered === 'yes', function ($q) use ($viewer) {
+                $q->where(function ($votes) use ($viewer) {
+                    foreach (['agree', 'disagree', 'neutral'] as $choice) {
+                        $votes->orWhereJsonContains('votes->'.$choice, (int) $viewer->id);
+                    }
+                });
+            })
+            ->when($answered === 'no', function ($q) use ($viewer) {
+                foreach (['agree', 'disagree', 'neutral'] as $choice) {
+                    $q->where(fn ($votes) => $votes->whereNull('votes->'.$choice)->orWhereJsonDoesntContain('votes->'.$choice, (int) $viewer->id));
+                }
+            })
+            ->orderBy('created_at', 'desc')->orderByDesc('id')
             ->skip($offset)
             ->take($limit)
             ->get();

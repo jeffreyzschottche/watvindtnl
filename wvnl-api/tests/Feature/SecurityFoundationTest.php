@@ -184,4 +184,30 @@ class SecurityFoundationTest extends TestCase
         $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])->assertOk();
         $this->assertNotNull($user->tokens()->first()->expires_at);
     }
+
+    public function test_catalogue_search_is_applied_before_pagination(): void
+    {
+        $this->issue(['title' => 'Meer betaalbare woningen']);
+        $this->issue(['title' => 'Een andere vraag']);
+        $this->getJson('/api/issues-args?search=woningen&limit=1')->assertOk()->assertJsonCount(1)->assertJsonPath('0.title', 'Meer betaalbare woningen');
+        $this->getJson('/api/issues-args?search=missing')->assertOk()->assertExactJson([]);
+    }
+
+    public function test_catalogue_filters_require_login_and_use_only_own_votes(): void
+    {
+        $user = User::factory()->create();
+        $answered = $this->issue(['votes' => ['agree' => [$user->id], 'disagree' => [], 'neutral' => []]]);
+        $unanswered = $this->issue();
+        $this->getJson('/api/issues-args?answered=yes')->assertUnauthorized();
+        Sanctum::actingAs($user);
+        $this->getJson('/api/issues-args?answered=yes')->assertOk()->assertJsonCount(1)->assertJsonPath('0.id', $answered->id)->assertJsonPath('0.votes.agree', 1);
+        $this->getJson('/api/issues-args?answered=no')->assertOk()->assertJsonCount(1)->assertJsonPath('0.id', $unanswered->id)->assertJsonPath('0.votes', null);
+    }
+
+    public function test_slug_detail_resolves_without_disclosing_political_identities(): void
+    {
+        $issue = $this->issue(['slug' => 'test-slug', 'votes' => ['agree' => [918273], 'disagree' => [], 'neutral' => []]]);
+        $this->getJson('/api/statements/test-slug')->assertOk()->assertJsonPath('id', $issue->id)->assertJsonPath('votes', null)->assertDontSee('918273');
+        $this->getJson('/api/statements/does-not-exist')->assertNotFound();
+    }
 }

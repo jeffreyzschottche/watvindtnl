@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/issues-args', [IssueArgsController::class, 'index']);
+Route::get('/statements/{issue:slug}', [IssueArgsController::class, 'show']);
 Route::get('/issues-args/{issue}', [IssueArgsController::class, 'show']);
 Route::get('/news-articles', [NewsArticleController::class, 'index']);
 Route::get('/news-articles/{slug}', [NewsArticleController::class, 'show']);
