@@ -33,7 +33,7 @@ class AuthController extends Controller
         $user->refresh();
 
         return response()->json([
-            'token' => $user->createToken('mobile')->plainTextToken,
+            'token' => $user->createToken('mobile', ['*'], now()->addDays(max(1, (int) config('wdnl.token_days', 14))))->plainTextToken,
             'user' => $user,
             'message' => 'We hebben je een e-mail gestuurd met een bevestigingslink. Bevestig je e-mailadres om te kunnen inloggen.',
         ], 201);
@@ -54,9 +54,15 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'token' => $user->createToken('mobile')->plainTextToken,
+            'token' => $user->createToken('mobile', ['*'], now()->addDays(max(1, (int) config('wdnl.token_days', 14))))->plainTextToken,
             'user' => $user,
         ]);
+    }
+
+    public function logout(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()?->delete();
+        return response()->json(['message' => 'Uitgelogd.']);
     }
 
     public function me(): JsonResponse

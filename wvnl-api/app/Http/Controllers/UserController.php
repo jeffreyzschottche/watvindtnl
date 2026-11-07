@@ -24,9 +24,10 @@ class UserController extends Controller
             ], 422);
         }
 
-        $user->update([
-            'password' => Hash::make($r->validated('password')),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($user, $r) {
+            $user->update(['password' => Hash::make($r->validated('password'))]);
+            $user->tokens()->delete();
+        });
 
         return response()->json(['message' => 'Password updated']);
     }

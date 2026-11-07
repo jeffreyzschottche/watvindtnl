@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__ . '/../routes/api.php'
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->api(prepend: [\App\Http\Middleware\ApiSecurityHeaders::class], append: ['throttle:api']);
         $middleware->alias([
             'admin.account' => \App\Http\Middleware\EnsureAdminAccount::class,
         ]);

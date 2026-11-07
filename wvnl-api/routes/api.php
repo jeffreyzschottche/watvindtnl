@@ -14,30 +14,27 @@ use App\Http\Controllers\Admin\AdminPoliticalPartyController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PoliticalCompassController;
 use App\Http\Controllers\NewsArticleController;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
 
-Route::get('/questions', [QuestionController::class, 'index']);
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
-Route::post('/reset-password', [PasswordResetController::class, 'reset']);
-Route::post('/contact', ContactController::class);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->middleware('throttle:password-reset');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:password-reset');
+Route::post('/contact', ContactController::class)->middleware('throttle:contact');
 
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::patch('/users/{user}', [UserController::class, 'update']);
     Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
     Route::get('/me/votes', [UserIssueController::class, 'history']);
     Route::get('/me/political-compass', [PoliticalCompassController::class, 'show']);
-    Route::post('/me/political-compass', [PoliticalCompassController::class, 'store']);
-    Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote']);
+    Route::post('/me/political-compass', [PoliticalCompassController::class, 'store'])->middleware('throttle:reports');
+    Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote'])->middleware('throttle:voting');
     Route::post('/issues/{issue}/report', [ReportController::class, 'reportIssue']);
     Route::post('/arguments/{argument}/report', [ReportController::class, 'reportArgument']);
-    Route::post('/issues/{issue}/news-article', [NewsArticleController::class, 'generateForIssue']);
 });
 
 Route::get('/issues-args', [IssueArgsController::class, 'index']);
@@ -46,7 +43,8 @@ Route::get('/news-articles', [NewsArticleController::class, 'index']);
 Route::get('/news-articles/{slug}', [NewsArticleController::class, 'show']);
 Route::get('/issues/{issue}/news-article', [NewsArticleController::class, 'showByIssue']);
 
-Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum', 'admin.account', 'throttle:admin'])->prefix('admin')->group(function () {
+    Route::post('/issues/{issue}/news-article', [NewsArticleController::class, 'generateForIssue'])->middleware('throttle:reports');
     Route::get('/issues', [AdminIssueController::class, 'index']);
     Route::get('/reports', [AdminIssueController::class, 'reports']);
     Route::post('/issues', [AdminIssueController::class, 'store']);
@@ -62,34 +60,4 @@ Route::middleware(['auth:sanctum', 'admin.account'])->prefix('admin')->group(fun
     Route::get('/political-parties', [AdminPoliticalPartyController::class, 'index']);
     Route::post('/political-parties', [AdminPoliticalPartyController::class, 'store']);
     Route::patch('/political-parties/{politicalParty}', [AdminPoliticalPartyController::class, 'update']);
-});
-
-
-use Illuminate\Support\Facades\Mail;
-
-Route::get('/test-mail', function () {
-    Mail::raw('Dit is een testmail vanaf WDNL via Mailtrap.', function ($m) {
-        $m->to('any@recipient.test')  // mag eender welk adres zijn
-            ->subject('WDNL Mailtrap Test');
-    });
-
-    return response()->json(['sent' => true]);
-});
-
-Route::get('/run-news-articles-migration', function () {
-    $migrationFile = 'database/migrations/2025_10_09_000000_create_news_articles_table.php';
-    $migrationPath = database_path('migrations/2025_10_09_000000_create_news_articles_table.php');
-
-    if (! File::exists($migrationPath)) {
-        return response()->json(['status' => 'skipped', 'reason' => 'Migration file niet gevonden'], 404);
-    }
-
-    Artisan::call('migrate', [
-        '--path' => $migrationFile,
-        '--force' => true,
-    ]);
-
-    File::delete($migrationPath);
-
-    return response()->json(['status' => 'ok', 'file_deleted' => true]);
 });

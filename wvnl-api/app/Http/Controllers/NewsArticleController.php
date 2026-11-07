@@ -41,40 +41,13 @@ class NewsArticleController extends Controller
     public function show(string $slug)
     {
         $article = NewsArticle::with('issue')->where('slug', $slug)->first();
-        if (!$article) {
-            $issue = Issue::where('news_article_slug', $slug)
-                ->orWhere('slug', $slug)
-                ->first();
-
-            if (!$issue) {
-                abort(404);
-            }
-
-            try {
-                $article = $this->service->ensureArticleForIssue($issue);
-            } catch (RuntimeException $exception) {
-                return response()->json([
-                    'message' => $exception->getMessage(),
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-            $article->loadMissing('issue');
-        }
-
+        abort_unless($article, 404);
         return response()->json($this->serializeArticle($article));
     }
 
     public function showByIssue(Issue $issue)
     {
-        try {
-            $article = $this->service->ensureArticleForIssue($issue);
-        } catch (RuntimeException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $article->loadMissing('issue');
-
+        $article = $issue->newsArticle()->with('issue')->firstOrFail();
         return response()->json($this->serializeArticle($article));
     }
 

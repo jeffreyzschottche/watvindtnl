@@ -14,7 +14,7 @@ class UserIssueController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = $request->user()->fresh();
         $voted = array_map('intval', (array) ($user->voted_issue_ids ?? []));
 
         $limit = (int) $request->query('limit', 200);
@@ -29,6 +29,13 @@ class UserIssueController extends Controller
             },
             'newsArticle',
         ])
+            ->where(function ($query) use ($user) {
+                $query->whereNull('votes')->orWhere(function ($buckets) use ($user) {
+                    foreach (['agree', 'disagree', 'neutral'] as $choice) {
+                        $buckets->whereJsonDoesntContain('votes->'.$choice, (int) $user->id);
+                    }
+                });
+            })
             ->when(!empty($voted), fn($query) => $query->whereNotIn('id', $voted))
             ->orderBy('created_at', 'desc')
             ->skip($offset)
@@ -94,48 +101,36 @@ class UserIssueController extends Controller
     public function vote(Request $request, Issue $issue)
     {
         $validated = $request->validate([
-            'vote' => ['required', Rule::in(['agree', 'disagree', 'neutral'])],
+            'vote' => ['required', Rule::in(['agree', 'disagree'])],
         ]);
 
         $user = $request->user();
+        abort_unless($user->hasVerifiedEmail(), 403, 'Bevestig eerst je e-mailadres.');
         $vote = $validated['vote'];
 
-        $this->recordVote($issue, (int) $user->id, $vote);
-        $this->rememberUserVote($user, (int) $issue->id);
+        // Lock user first for all statements; then issue, consistently across requests.
+        // Transitional protection until the normalized votes table has its unique constraint.
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($user, $issue, $vote) {
+            $lockedUser = User::query()->lockForUpdate()->findOrFail($user->id);
+            $lockedIssue = Issue::query()->lockForUpdate()->findOrFail($issue->id);
+            $voted = array_map('intval', (array) ($lockedUser->voted_issue_ids ?? []));
+            $buckets = $lockedIssue->votes ?? ['agree' => [], 'disagree' => [], 'neutral' => []];
+            $existing = \App\Support\IssueResults::choice($lockedIssue, $lockedUser);
+            abort_if($existing !== null || in_array((int) $issue->id, $voted, true), 409, 'Je hebt al op deze stelling gestemd.');
 
-        return response()->json([
-            'status' => 'ok',
-            'vote' => $vote,
-            'voted_issue_ids' => $user->voted_issue_ids ?? [],
-        ]);
-    }
+            $buckets[$vote] = array_values(array_unique(array_merge((array) ($buckets[$vote] ?? []), [(int) $user->id])));
+            $lockedIssue->votes = $buckets;
+            $lockedIssue->save();
+            $lockedUser->voted_issue_ids = [...$voted, (int) $issue->id];
+            $lockedUser->save();
 
-    protected function recordVote(Issue $issue, int $userId, string $bucket): void
-    {
-        $votes = $issue->votes ?? ['agree' => [], 'disagree' => [], 'neutral' => []];
-
-        foreach (['agree', 'disagree', 'neutral'] as $key) {
-            $votes[$key] = array_values(array_filter(
-                array_map('intval', $votes[$key] ?? []),
-                fn ($id) => $id !== $userId
-            ));
-        }
-
-        $votes[$bucket] = array_values(array_unique(array_merge($votes[$bucket] ?? [], [$userId])));
-
-        $issue->votes = $votes;
-        $issue->save();
-    }
-
-    protected function rememberUserVote(User $user, int $issueId): void
-    {
-        $voted = array_map('intval', (array) ($user->voted_issue_ids ?? []));
-
-        if (!in_array($issueId, $voted, true)) {
-            $voted[] = $issueId;
-            $user->voted_issue_ids = array_values(array_unique($voted));
-            $user->save();
-        }
+            return response()->json([
+                'status' => 'ok',
+                'vote' => $vote,
+                'voted_issue_ids' => $lockedUser->voted_issue_ids,
+                ...\App\Support\IssueResults::forViewer($lockedIssue, $lockedUser),
+            ]);
+        }, 3);
     }
 
     protected function serializeIssue(Issue $issue, Collection $partyMap): array
@@ -153,11 +148,7 @@ class UserIssueController extends Controller
             'news_article' => $this->serializeNewsArticle($issue->newsArticle),
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),
             'reports' => ReportReasons::normalize($issue->reports ?? []),
-            'votes' => [
-                'agree' => array_values(array_map('intval', $votes['agree'] ?? [])),
-                'disagree' => array_values(array_map('intval', $votes['disagree'] ?? [])),
-                'neutral' => array_values(array_map('intval', $votes['neutral'] ?? [])),
-            ],
+            ...\App\Support\IssueResults::forViewer($issue, request()->user('sanctum')),
             'arguments' => [
                 'pro' => $issue->arguments
                     ->where('side', 'pro')

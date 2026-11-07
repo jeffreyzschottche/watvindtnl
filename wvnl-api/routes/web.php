@@ -18,4 +18,4 @@ Route::get('/verification', function () {
 })->name('verification.notice');
 
 Route::get('/password-reset', [PasswordResetController::class, 'show'])->name('password.reset');
-Route::post('/password-reset', [PasswordResetController::class, 'reset']);
+Route::post('/password-reset', [PasswordResetController::class, 'reset'])->middleware('throttle:password-reset');

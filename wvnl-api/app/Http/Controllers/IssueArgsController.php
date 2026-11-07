@@ -94,11 +94,7 @@ class IssueArgsController extends Controller
             'news_article' => $this->serializeNewsArticle($issue->newsArticle),
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),
             'reports' => ReportReasons::normalize($issue->reports ?? []),
-            'votes' => [
-                'agree' => array_values(array_map('intval', $votes['agree'] ?? [])),
-                'disagree' => array_values(array_map('intval', $votes['disagree'] ?? [])),
-                'neutral' => array_values(array_map('intval', $votes['neutral'] ?? [])),
-            ],
+            ...\App\Support\IssueResults::forViewer($issue, request()->user('sanctum')),
             'arguments' => [
                 'pro' => $issue->arguments
                     ->where('side', 'pro')

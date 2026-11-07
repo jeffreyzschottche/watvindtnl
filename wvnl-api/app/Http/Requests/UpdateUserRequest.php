@@ -35,7 +35,7 @@ class UpdateUserRequest extends FormRequest
             'gender' => ['sometimes', 'in:male,female,unspecified'],
             'education_level' => ['sometimes', 'nullable', 'in:mbo,hbo,universiteit,overig'],
             'political_preference' => ['sometimes', 'nullable', 'in:links,midden,rechts,geen'],
-            'premium' => ['sometimes', 'boolean'],
+            'premium' => ['prohibited'],
         ];
     }
 }

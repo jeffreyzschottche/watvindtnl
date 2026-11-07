@@ -34,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'premium',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'secret_url_pw'];
 
     protected $casts = [
         'voted_issue_ids' => 'array',
