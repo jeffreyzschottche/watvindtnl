@@ -22,7 +22,7 @@ export const faqItems = [
   {
     question: "Waar komen de stellingen vandaan?",
     answer:
-      "De huidige stellingen zijn gebaseerd op politieke moties. Bij een stelling vind je de beschikbare context, argumenten en broninformatie. Heb je een onjuistheid gevonden? Gebruik de meldknop bij de stelling of neem contact op.",
+      "Stellingen kunnen gebaseerd zijn op officiële moties, actuele gebeurtenissen of maatschappelijke vragen van de WDNL-redactie. We vermelden de herkomst en beschikbare broninformatie. De vraag en argumenten zijn onze uitleg; een nieuwsbron onderschrijft die niet automatisch. Heb je een onjuistheid gevonden? Gebruik de meldknop bij de stelling of neem contact op.",
   },
   {
     question: "Kan ik een stem veranderen?",

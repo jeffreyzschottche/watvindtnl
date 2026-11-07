@@ -556,3 +556,6 @@ p {
     scroll-behavior: auto !important;
   }
 }
+
+/* An explicit user preference also disables decorative CSS motion. */
+[data-motion="off"] *, [data-motion="off"] *::before, [data-motion="off"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

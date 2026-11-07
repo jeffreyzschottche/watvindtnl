@@ -4,6 +4,11 @@
       <header class="issues-page__header">
         <h1>Wat denk jij?</h1>
         <p>Tegen of voor. Neem de tijd voor jouw mening.</p>
+        <span v-if="auth.isLoggedIn" class="issues-page__personal-count"
+          ><span aria-hidden="true">✦</span>
+          {{ auth.user?.voted_issue_ids?.length ?? 0 }} stellingen beantwoord
+          door jou</span
+        >
       </header>
 
       <div v-if="loading" class="issues-page__state">
@@ -38,6 +43,13 @@
         v-else-if="!activeIssue && !loading && !error"
         class="issues-page__state issues-page__state--success"
       >
+        <img
+          class="issues-page__empty-art"
+          src="/illustrations/dutch-neighbours-v1.jpg"
+          alt=""
+          width="1536"
+          height="1024"
+        />
         <h2>Je bent helemaal bij!</h2>
         <p>Er staan momenteel geen onbeantwoorde kwesties voor je klaar.</p>
         <button type="button" class="issues-page__retry" @click="loadPending">
@@ -361,5 +373,24 @@ async function handleShare(
   color: inherit;
   font-weight: 700;
   text-decoration: underline;
+}
+.issues-page__personal-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid #dae5f5;
+  border-radius: 20px;
+  background: #eef4ff;
+  color: #0057b8;
+  font-size: 0.72rem;
+  padding: 0.45rem 0.85rem;
+  margin-top: 0.75rem;
+}
+.issues-page__empty-art {
+  display: block;
+  width: min(320px, 100%);
+  height: auto;
+  margin: 0 auto 1.3rem;
+  border-radius: 18px;
 }
 </style>

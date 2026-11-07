@@ -28,6 +28,11 @@ class Issue extends Model
         'published_at' => 'datetime',
     ];
 
+    public function contentMetadata(): HasOne
+    {
+        return $this->hasOne(StatementMetadata::class, 'issue_id');
+    }
+
     public function arguments()
     {
         return $this->hasMany(Argument::class);

@@ -25,6 +25,9 @@ class CmsContentService
             'party_stances' => array_merge(['agree' => [], 'disagree' => [], 'neutral' => []], $issue->party_stances ?? []),
             'arguments' => collect(['pro', 'con'])->mapWithKeys(fn ($side) => [$side => $issue->arguments->where('side', $side)->sortBy('id')->map(fn ($arg) => ['body' => $arg->body, 'sources' => $arg->sources ?? []])->values()->all()])->all(),
             'motion_id' => $meta?->motion_id,
+            'origin_kind' => $meta?->origin_kind ?? ($meta?->motion_id ? 'motion' : 'editorial'),
+            'source_name' => $meta?->source_name,
+            'source_title' => $meta?->source_title,
             'source_date' => $meta?->source_date,
             'revision' => $meta?->revision ?? 0,
         ]);
@@ -96,14 +99,18 @@ class CmsContentService
 
     public function saveStatement(array $payload, ?int $actor = null): array
     {
+        $payload['origin_kind'] ??= ! empty($payload['motion_id']) ? 'motion' : 'editorial';
         $data = Validator::make($payload, [
             'slug' => ['required', 'string', 'max:180', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:4000'],
             'more_info' => ['nullable', 'string', 'max:20000'],
-            'url' => ['required', 'url:http,https', 'max:2048'],
-            'source_date' => ['required', 'date_format:Y-m-d', 'before_or_equal:today'],
-            'motion_id' => ['nullable', 'integer', 'exists:wdnl_motions,id'],
+            'origin_kind' => ['sometimes', Rule::in(['editorial', 'news', 'motion'])],
+            'source_name' => [Rule::requiredIf(($payload['origin_kind'] ?? '') === 'news'), 'nullable', 'string', 'max:255'],
+            'source_title' => ['nullable', 'string', 'max:500'],
+            'url' => [Rule::requiredIf(in_array($payload['origin_kind'] ?? '', ['news', 'motion'], true)), 'nullable', 'url:http,https', 'max:2048'],
+            'source_date' => ['required_with:url', 'nullable', 'date_format:Y-m-d', 'before_or_equal:today'],
+            'motion_id' => ['required_if:origin_kind,motion', 'nullable', 'integer', 'exists:wdnl_motions,id'],
             'revision' => ['nullable', 'integer', 'min:0'],
             'reviewed' => ['required', 'accepted'],
             'content_hash' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/'],
@@ -111,18 +118,23 @@ class CmsContentService
             'arguments.pro' => ['required', 'array', 'size:4'],
             'arguments.con' => ['required', 'array', 'size:4'],
             'arguments.*.*.body' => ['required', 'string', 'max:4000'],
-            'arguments.*.*.sources' => ['present', 'array', 'min:1', 'max:10'],
+            'arguments.*.*.sources' => ['present', 'array', 'min:'.(($payload['origin_kind'] ?? 'editorial') === 'editorial' ? '0' : '1'), 'max:10'],
             'arguments.*.*.sources.*' => ['required', 'url:http,https', 'max:2048'],
             'party_stances' => ['nullable', 'array:agree,disagree,neutral'],
             'party_stances.*' => ['array', 'max:100'],
             'party_stances.*.*' => ['integer', 'exists:political_parties,id'],
             'votes' => ['prohibited'], 'reports' => ['prohibited'], 'user_id' => ['prohibited'],
         ])->validate();
-        foreach (['title', 'description', 'more_info'] as $field) {
+        foreach (['title', 'description', 'more_info', 'source_name', 'source_title'] as $field) {
             if (isset($data[$field]) && strip_tags($data[$field]) !== $data[$field]) {
                 throw ValidationException::withMessages([$field => ['Gebruik gewone tekst, zonder HTML.']]);
             }
         }
+        $data['origin_kind'] ??= ! empty($data['motion_id']) ? 'motion' : 'editorial';
+        $data['source_name'] ??= null;
+        $data['source_title'] ??= null;
+        $data['url'] ??= null;
+        $data['source_date'] ??= null;
         $allBodies = [];
         foreach (['pro', 'con'] as $side) {
             $data['arguments'][$side] = array_map(function ($arg) use (&$allBodies) {
@@ -158,7 +170,7 @@ class CmsContentService
                 'slug' => $data['slug'], 'title' => $data['title'], 'description' => $data['description'],
                 'more_info' => $data['more_info'] ?? null, 'url' => $data['url'], 'party_stances' => $stances,
             ];
-            $content = $attributes + ['arguments' => $data['arguments'], 'motion_id' => $data['motion_id'] ?? null, 'source_date' => $data['source_date']];
+            $content = $attributes + ['arguments' => $data['arguments'], 'motion_id' => $data['motion_id'] ?? null, 'source_date' => $data['source_date'], 'origin_kind' => $data['origin_kind'], 'source_name' => $data['source_name'], 'source_title' => $data['source_title']];
             if ($before && collect($content)->every(fn ($v, $k) => $before[$k] == $v)) {
                 return $before + ['unchanged' => true];
             }
@@ -181,6 +193,7 @@ class CmsContentService
             }
             DB::table('wdnl_statement_metadata')->updateOrInsert(['issue_id' => $issue->id], [
                 'motion_id' => $data['motion_id'] ?? null, 'source_date' => $data['source_date'],
+                'origin_kind' => $data['origin_kind'], 'source_name' => $data['source_name'], 'source_title' => $data['source_title'],
                 'verified_at' => now(), 'revision' => ($before['revision'] ?? 0) + 1,
                 'created_at' => DB::table('wdnl_statement_metadata')->where('issue_id', $issue->id)->value('created_at') ?? now(),
                 'updated_at' => now(),

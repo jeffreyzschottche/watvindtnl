@@ -76,3 +76,7 @@ Bestaande Coolify-instructies: `../COOLIFY-DOCKER.md`. [Deployment](docs/DEPLOYM
 ### Content beheren vanuit ZschotCMS
 
 Partijen, stellingen, argumenten en moties zijn lokaal te beheren via [WatDenktNederland in ZschotCMS](http://localhost:3100/projects/watdenktnederland/integrations/5). Het paneel heeft een partijseed, officiële motieophaling en een atomische contentimport. Zie [docs/ZSCHOTCMS.md](docs/ZSCHOTCMS.md) voor gebruik, API-contract, veilige live-koppeling en herstel.
+
+De CMS-editor ondersteunt eigen stellingen, nieuwsaanleidingen en moties. De gedeelde web/app-interface gebruikt GSAP voor korte animaties en confetti na een bevestigde stem. Animaties volgen reduced-motion en kunnen via de footer uit. [Illustratie, generatieprompt en animatiekeuzes](docs/ASSETS.md).
+
+Mobiele webassets bouwen en naar beide native projecten kopiëren: `npm run build:mobile` (Nuxt generate + Capacitor copy). Stel vóór een device-/releasebuild een vanaf het device bereikbare `NUXT_PUBLIC_API_BASE_URL` in; `localhost:8000` op een fysieke telefoon verwijst naar de telefoon zelf. Deze opdracht maakt geen gesigneerde native binary. Voor de webserver blijft `npm run build` de juiste opdracht.

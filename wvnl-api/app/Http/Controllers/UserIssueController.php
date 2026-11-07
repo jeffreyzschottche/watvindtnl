@@ -28,6 +28,7 @@ class UserIssueController extends Controller
                 $query->orderBy('side')->orderBy('created_at');
             },
             'newsArticle',
+            'contentMetadata',
         ])
             ->where(function ($query) use ($user) {
                 $query->whereNull('votes')->orWhere(function ($buckets) use ($user) {
@@ -144,6 +145,7 @@ class UserIssueController extends Controller
             'url' => $issue->url,
             'description' => $issue->description,
             'more_info' => $issue->more_info,
+            'source' => \App\Support\StatementSource::forIssue($issue),
             'news_article_slug' => $issue->news_article_slug,
             'news_article' => $this->serializeNewsArticle($issue->newsArticle),
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),

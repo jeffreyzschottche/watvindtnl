@@ -33,3 +33,9 @@ De drie userreferenties bepalen kleur, logo-concept, website-layout en mobiele n
 ## Uitgevoerde keuze: ZschotCMS-contentbeheer
 
 De bestaande CMS-modules van Allergie-ID en Spot & Find zijn als referentie geïnspecteerd. WDNL gebruikt dezelfde Integration/Action-registratie, versleutelde serverconfiguratie en projectgebonden acties. Eén centrale Laravel-content-API beheert partijen, stellingen/argumenten en officiële bronmoties voor alle clients. Geen databasecredentials in het CMS; afzonderlijke contenttokens kunnen geen appaccounts of stemmen lezen. Een begrensde officiële motieophaling vereist geen LLM/worker en publiceert niets. Zware PDF/OCR/LLM-verwerking blijft buiten deze handmatige beheerstap en wordt niet via een publieke GET gestart. Contract, grenzen en uitrol: [ZSCHOTCMS.md](ZSCHOTCMS.md).
+
+## Interactie en maatschappelijke stellingen
+
+GSAP 3.15.1 verzorgt korte paginareveals en stemfeedback in de gedeelde Nuxt/Capacitor-client. Geen extra confetti-dependency: één lokaal GSAP-component animeert uitsluitend na een bevestigde stem. Systeemvoorkeur en een gedeelde, bewaarde gebruikersvoorkeur kunnen alle decoratieve beweging uitschakelen. Details: [ASSETS.md](ASSETS.md).
+
+De contentgrens ondersteunt onafhankelijke redactionele vragen en nieuwsaanleidingen naast gekoppelde moties. `StatementMetadata` draagt herkomst en bronlabels; publieke serialisatie bevat uitsluitend broninformatie. Het CMS haalt geen nieuwsartikelen op. De bronvalidatie hangt af van de gekozen herkomst, terwijl versiecontrole, stembehoud en de gate op acht verschillende argumenten blijven bestaan.

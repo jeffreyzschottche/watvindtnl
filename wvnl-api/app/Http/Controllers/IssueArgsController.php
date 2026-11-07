@@ -36,6 +36,7 @@ class IssueArgsController extends Controller
                 $q->orderBy('side')->orderBy('created_at');
             },
             'newsArticle',
+            'contentMetadata',
         ])->when($search !== '', fn ($q) => $q->where('title', 'like', '%'.$search.'%'))
             ->when($answered === 'yes', function ($q) use ($viewer) {
                 $q->where(function ($votes) use ($viewer) {
@@ -74,6 +75,7 @@ class IssueArgsController extends Controller
                 $q->orderBy('side')->orderBy('created_at');
             },
             'newsArticle',
+            'contentMetadata',
         ]);
 
         $partyMap = $this->loadPartyMap(collect([$issue]));
@@ -97,6 +99,7 @@ class IssueArgsController extends Controller
             'url' => $issue->url,
             'description' => $issue->description,
             'more_info' => $issue->more_info,
+            'source' => \App\Support\StatementSource::forIssue($issue),
             'news_article_slug' => $issue->news_article_slug,
             'news_article' => $this->serializeNewsArticle($issue->newsArticle),
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),

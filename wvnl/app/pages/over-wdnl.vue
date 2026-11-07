@@ -12,14 +12,14 @@ useSeoMeta({
       <p class="eyebrow">Achter WatDenktNederland</p>
       <h1>Meer begrip begint<br />bij een goede vraag.</h1>
       <p>
-        Politiek raakt ons allemaal. Maar een eigen mening vormen hoeft niet
+        Wat er in Nederland gebeurt, raakt ons allemaal. Maar een eigen mening vormen hoeft niet
         ingewikkeld te zijn.
       </p>
     </header>
     <div class="info-body">
       <h2>Ruimte voor jouw perspectief</h2>
       <p>
-        WatDenktNederland maakt politieke onderwerpen toegankelijk. Je leest een
+        WatDenktNederland maakt politieke en maatschappelijke onderwerpen toegankelijk. Je leest een
         stelling, bekijkt de argumenten van beide kanten en kiest wat jij vindt.
         Daarna ontdek je hoe andere deelnemers erover denken.
       </p>

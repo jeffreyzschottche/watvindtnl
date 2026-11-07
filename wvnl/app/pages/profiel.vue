@@ -33,7 +33,7 @@ useSeoMeta({
         Uitloggen →
       </button>
     </header>
-    <div class="profile-home__identity">
+    <div class="profile-home__identity" data-reveal>
       <span class="profile-home__avatar">{{
         name.slice(0, 1).toUpperCase()
       }}</span>
@@ -46,7 +46,7 @@ useSeoMeta({
         ><span>Beantwoorde stellingen</span>
       </div>
     </div>
-    <div class="profile-home__grid">
+    <div class="profile-home__grid" data-reveal>
       <NuxtLink to="/mijn-stemmen"
         ><span class="profile-home__icon"><AppIcon name="grid" /></span>
         <h2>Mijn stemmen</h2>
@@ -67,7 +67,7 @@ useSeoMeta({
       ></NuxtLink>
     </div>
     <h2 class="profile-home__subheading">Je account beheren</h2>
-    <div class="profile-home__settings">
+    <div class="profile-home__settings" data-reveal>
       <NuxtLink to="/profiel/instellingen?tab=profile"
         ><AppIcon name="user" /><span
           ><strong>Persoonlijke gegevens</strong

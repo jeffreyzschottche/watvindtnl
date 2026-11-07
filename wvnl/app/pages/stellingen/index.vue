@@ -3,7 +3,12 @@ import AppIcon from "~/components/ui/AppIcon.vue";
 import { fetchIssuesWithArguments } from "~/services/issues";
 import type { IssueWithArguments } from "~/types/issues";
 const auth = useAuthStore();
-const search = ref("");
+const route = useRoute();
+const search = ref(
+  typeof route.query.zoeken === "string"
+    ? route.query.zoeken.slice(0, 120)
+    : "",
+);
 const filter = ref<"all" | "yes" | "no">("all");
 const items = ref<IssueWithArguments[]>([]);
 const loading = ref(true);
@@ -64,12 +69,12 @@ onBeforeUnmount(() => {
 useSeoMeta({
   title: "Alle stellingen | WatDenktNederland",
   description:
-    "Ontdek politieke stellingen, lees beide kanten en geef je mening.",
+    "Ontdek politieke en maatschappelijke stellingen, lees beide kanten en geef je mening.",
 });
 </script>
 <template>
   <section class="catalogue container">
-    <header class="catalogue__heading">
+    <header class="catalogue__heading" data-reveal>
       <p class="eyebrow">Ontdek beide kanten</p>
       <h1>Waar denk jij over na?</h1>
       <p>Zoek een onderwerp dat je raakt. Lees, denk en stem mee.</p>
@@ -135,8 +140,18 @@ useSeoMeta({
         :key="item.id"
         :to="`/stellingen/${item.slug}`"
         class="statement-row"
+        data-lift
+        data-reveal
         ><div>
-          <span class="statement-row__topic">Politiek</span>
+          <span class="statement-row__topic">{{
+            item.source?.kind === "news"
+              ? "In het nieuws"
+              : item.source?.kind === "editorial"
+                ? "Samenleving"
+                : item.source?.kind === "motion"
+                  ? "Motie"
+                  : "Stelling"
+          }}</span>
           <h2>{{ item.title }}</h2>
           <p>{{ item.description }}</p>
         </div>

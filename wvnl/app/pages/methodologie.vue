@@ -33,10 +33,27 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
       </p>
       <h2>Bronnen en argumenten</h2>
       <p>
-        De huidige stellingen zijn gebaseerd op politieke moties. We tonen de
-        beschikbare achtergrond, argumenten en bronverwijzingen. Een
-        vereenvoudigde stelling is niet hetzelfde als de volledige officiële
-        motie. Controleer daarom ook de oorspronkelijke bron.
+        Stellingen kunnen ontstaan uit officiële moties, actuele gebeurtenissen
+        of eigen maatschappelijke vragen van de WDNL-redactie. Bij iedere
+        stelling tonen we de vastgelegde herkomst en beschikbare bronverwijzing.
+        Een vereenvoudigde stelling is onze formulering. Controleer voor de
+        volledige context ook de oorspronkelijke bron.
+      </p>
+      <h2>Nieuws als aanleiding</h2>
+      <p>
+        Een nieuwsbericht kan aanleiding zijn voor een maatschappelijke vraag.
+        WDNL formuleert de stelling en argumenten zelf en verwijst naar de
+        oorspronkelijke nieuwsbron. Een bronverwijzing betekent geen
+        samenwerking of goedkeuring door die redactie. We nemen niet automatisch
+        volledige nieuwsartikelen of foto's over.
+      </p>
+      <h2>Redactie en hulpmiddelen</h2>
+      <p>
+        De redactie beheert stellingen en controleert de beschikbare bronnen.
+        Bij het begrijpelijk formuleren kan AI als hulpmiddel worden gebruikt.
+        AI-tekst is geen officiële uitspraak of bewijs van een partijstandpunt;
+        officiële partijstemmen moeten afzonderlijk naar een motie herleidbaar
+        zijn.
       </p>
       <h2>Partijen en het politieke kompas</h2>
       <p>

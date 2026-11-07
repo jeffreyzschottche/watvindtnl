@@ -114,6 +114,36 @@ class CmsContentTest extends TestCase
         $this->assertSame('Een correctie via het oude beheerpaneel.', $issue->fresh()->description);
     }
 
+    public function test_editorial_statement_without_motion_or_external_source_is_publishable_and_identifiable(): void
+    {
+        $this->token();
+        $payload = $this->statementPayload('eigen-stelling');
+        $payload['origin_kind'] = 'editorial';
+        unset($payload['url'], $payload['source_date']);
+        foreach (['pro', 'con'] as $side) {
+            foreach ($payload['arguments'][$side] as &$arg) {
+                $arg['sources'] = [];
+            }
+        }
+        unset($arg);
+        $this->postJson('/api/cms/content/statements', $payload)->assertOk()->assertJsonPath('origin_kind', 'editorial')->assertJsonPath('motion_id', null);
+        $this->getJson('/api/statements/eigen-stelling')->assertOk()->assertJsonPath('source.kind', 'editorial')->assertJsonPath('source.url', null)->assertJsonPath('votes', null);
+    }
+
+    public function test_news_statement_requires_attribution_and_shows_its_source_without_fabricating_party_votes(): void
+    {
+        $this->token();
+        $payload = $this->statementPayload('nieuwsstelling');
+        $payload['origin_kind'] = 'news';
+        $this->postJson('/api/cms/content/statements', $payload)->assertUnprocessable();
+        $payload['source_name'] = 'Voorbeeldredactie';
+        $payload['source_title'] = 'Een fictieve brontitel uitsluitend voor deze test';
+        $this->postJson('/api/cms/content/statements', $payload)->assertOk();
+        $this->getJson('/api/statements/nieuwsstelling')->assertOk()->assertJsonPath('source.kind', 'news')->assertJsonPath('source.name', 'Voorbeeldredactie')->assertJsonPath('source.published_at', '2026-01-01')->assertJsonPath('party_stances.agree', []);
+        unset($payload['url']);
+        $this->postJson('/api/cms/content/statements', $payload)->assertUnprocessable();
+    }
+
     public function test_content_validation_requires_review_eight_distinct_arguments_sources_and_safe_urls(): void
     {
         $this->token();
@@ -121,7 +151,7 @@ class CmsContentTest extends TestCase
             $payload = $this->statementPayload();
             match ($fault) {
                 'reviewed' => $payload['reviewed'] = false,
-                'sources' => $payload['arguments']['pro'][0]['sources'] = [],
+                'sources' => $payload['arguments']['pro'][0]['sources'] = ['javascript:alert(1)'],
                 'duplicate' => $payload['arguments']['pro'][0]['body'] = $payload['arguments']['con'][0]['body'],
                 'size' => array_pop($payload['arguments']['con']),
                 'url' => $payload['url'] = 'javascript:alert(1)',

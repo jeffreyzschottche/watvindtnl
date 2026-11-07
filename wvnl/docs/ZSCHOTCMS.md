@@ -112,3 +112,15 @@ Ze hergebruiken `Integration`, `Action`, versleutelde configuratie, projectscopi
 Rollback van alleen code: CMS-koppeling uitschakelen/ontkoppelen en oude code terugzetten. Dit hoeft geen appcontent te verwijderen. De nieuwe migratie verwijdert bij `down()` uitsluitend haar vier nieuwe tabellen; maak vóór zo’n rollback eerst een export van tokens/bronmoties/metadata/audits. Voer geen algemene rollback/reset uit op een live database. Een redactionele correctie kan met de audit-voorversie en de actuele revision worden hersteld; zet nooit een oude volledige issue-rij terug over actuele stemmen.
 
 Officiële bron: [Tweede Kamer OData API](https://opendata.tweedekamer.nl/documentatie/odata-api). Partijcontrole en historische naamkeuzes: [PARTY_AUDIT_2026-11-07.md](PARTY_AUDIT_2026-11-07.md).
+
+## Eigen stellingen en nieuwsaanleidingen
+
+De editor bevat nu **Eigen maatschappelijke stelling**, **Stelling naar aanleiding van nieuws** en **Stelling bij een officiële motie**. Dit is handmatig contentbeheer: er worden geen externe nieuwsartikelen gescrapet, geïmporteerd of door een LLM herschreven.
+
+- `origin_kind`: `editorial`, `news` of `motion`. Nieuwe eigen stellingen vereisen geen motie of externe bron. De acht verschillende argumenten en expliciete redactionele review blijven verplicht; bronlinks per argument zijn bij eigen stellingen optioneel. Voeg bij feitelijke claims wel controleerbare bronnen toe.
+- Nieuws vereist de naam van de bron/redactie (`source_name`), bron-URL en brondatum. `source_title` is optioneel. Bij nieuws/moties blijven bron-URL’s voor argumenten verplicht. Een motiestelling vereist een bestaande `motion_id`.
+- Drie aanvullende, nullable velden in `wdnl_statement_metadata` worden toegevoegd met `2026_11_08_000000_add_editorial_sources_to_wdnl_statements.php`. Bestaande inhoud en stemmen worden niet herschreven. Gebruik deze migratie ook bij een uitrol van deze uitbreiding.
+- De publieke API geeft `source.kind/name/title/url/published_at/verified_at` mee. Web en app tonen een eigen-stelling-, nieuws- of motielabel en de bronverwijzing. Oude inhoud zonder vastgelegde herkomst blijft `legacy`; er wordt geen nieuwe herkomst verzonnen. Metadata wordt in dezelfde querybatch eager geladen.
+- Homepage, FAQ en methodologie leggen uit dat WDNL eigen stellingen bij maatschappelijke onderwerpen en nieuws kan maken. Een verwijzing suggereert geen samenwerking of goedkeuring door een nieuwsredactie.
+
+Voor publicatie blijft de redactie verantwoordelijk voor inhoud en passende hergebruikrechten. Deze UI voegt geen licentie voor een externe nieuwsbron toe. Er zijn bij deze uitbreiding geen voorbeeldstellingen in de echte database geplaatst.

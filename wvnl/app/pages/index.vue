@@ -6,7 +6,7 @@ import type { IssueWithArguments } from "~/types/issues";
 useSeoMeta({
   title: "WatDenktNederland — Nederland heeft een mening. Jij ook.",
   description:
-    "Stem op politieke stellingen, ontdek beide kanten en bekijk hoe andere WDNL-deelnemers denken. Eén vraag. Twee kanten.",
+    "Stem op politieke en maatschappelijke stellingen, ontdek beide kanten en bekijk hoe andere WDNL-deelnemers denken. Eén vraag. Twee kanten.",
 });
 const preview = ref<IssueWithArguments[]>([]);
 onMounted(async () => {
@@ -47,25 +47,40 @@ const steps = [
       />
       <div class="home-hero__shade" />
       <div class="container home-hero__content">
-        <p class="home-hero__eyebrow"><span /> Wat denkt Nederland?</p>
-        <h1>Nederland heeft<br />een mening.<br /><span>Jij ook.</span></h1>
-        <p class="home-hero__lead">
-          Stem op wat jou bezighoudt. Ontdek beide kanten.<br
-            class="desktop-break"
-          />
-          En leer jezelf een beetje beter kennen.
-        </p>
-        <div class="home-hero__actions">
-          <NuxtLink class="button button-red" to="/spel"
-            >Begin met stemmen <AppIcon name="arrow" :size="18" /></NuxtLink
-          ><NuxtLink class="home-hero__secondary" to="/kompas"
-            >Ontdek jouw kompas <AppIcon name="arrow" :size="16"
-          /></NuxtLink>
+        <div class="home-hero__copy" data-reveal>
+          <p class="home-hero__eyebrow"><span /> Wat denkt Nederland?</p>
+          <h1>Nederland heeft<br />een mening.<br /><span>Jij ook.</span></h1>
+          <p class="home-hero__lead">
+            Stem op wat jou bezighoudt. Ontdek beide kanten.<br
+              class="desktop-break"
+            />
+            En leer jezelf een beetje beter kennen.
+          </p>
+          <div class="home-hero__actions">
+            <NuxtLink class="button button-red" to="/spel"
+              >Begin met stemmen <AppIcon name="arrow" :size="18" /></NuxtLink
+            ><NuxtLink class="home-hero__secondary" to="/kompas"
+              >Ontdek jouw kompas <AppIcon name="arrow" :size="16"
+            /></NuxtLink>
+          </div>
+          <p class="home-hero__note">
+            <AppIcon name="check" :size="15" /> Gratis stemmen
+            <span>·</span> Geen politieke voorkennis nodig
+          </p>
         </div>
-        <p class="home-hero__note">
-          <AppIcon name="check" :size="15" /> Gratis stemmen <span>·</span> Geen
-          politieke voorkennis nodig
-        </p>
+        <aside v-if="preview[0]" class="hero-question" data-reveal>
+          <span class="hero-question__badge"
+            ><AppIcon name="chat" :size="15" /> Een vraag om over na te
+            denken</span
+          >
+          <p>{{ preview[0].title }}</p>
+          <NuxtLink :to="`/stellingen/${preview[0].slug}`"
+            >Wat vind jij? <AppIcon name="arrow" :size="18"
+          /></NuxtLink>
+          <span class="hero-question__footnote"
+            >Eerst jouw mening. Daarna de uitslag.</span
+          >
+        </aside>
       </div>
       <span class="home-hero__edition">Jouw stem. Jouw perspectief.</span>
     </section>
@@ -96,24 +111,41 @@ const steps = [
       </div>
     </section>
 
-    <section class="container home-section">
+    <section class="container home-section" data-reveal>
       <header class="home-section__heading">
         <div>
           <p class="eyebrow">Van mening verschillen mag</p>
           <h2>Wat vind jij?</h2>
-          <p>Politieke keuzes beginnen met een goede vraag.</p>
+          <p>Over politiek, het nieuws en alles wat ons samen raakt.</p>
         </div>
         <NuxtLink to="/stellingen" class="home-text-link"
           >Bekijk alle stellingen <AppIcon name="arrow" :size="18"
         /></NuxtLink>
       </header>
+      <nav class="home-topics" aria-label="Ontdek een onderwerp">
+        <NuxtLink
+          v-for="topic in ['Wonen', 'Zorg', 'Klimaat', 'Onderwijs']"
+          :key="topic"
+          :to="{ path: '/stellingen', query: { zoeken: topic.toLowerCase() } }"
+          >{{ topic }} <span aria-hidden="true">↗</span></NuxtLink
+        >
+      </nav>
       <div v-if="preview.length" class="home-statements">
         <NuxtLink
           v-for="item in preview"
           :key="item.id"
           :to="`/stellingen/${item.slug}`"
           class="home-statement"
-          ><span class="home-statement__label">Politiek</span>
+          data-lift
+          ><span class="home-statement__label">{{
+            item.source?.kind === "news"
+              ? "In het nieuws"
+              : item.source?.kind === "editorial"
+                ? "Samenleving"
+                : item.source?.kind === "motion"
+                  ? "Motie"
+                  : "Stelling"
+          }}</span>
           <h3>{{ item.title }}</h3>
           <p>{{ item.description }}</p>
           <span class="home-statement__action"
@@ -128,7 +160,7 @@ const steps = [
       </div>
     </section>
 
-    <section class="home-how">
+    <section class="home-how" data-reveal>
       <div class="container">
         <header class="home-section__heading home-section__heading--center">
           <p class="eyebrow">Zo eenvoudig werkt het</p>
@@ -136,7 +168,7 @@ const steps = [
           <p>Je hoeft geen expert te zijn om mee te praten.</p>
         </header>
         <div class="home-steps">
-          <article v-for="(step, index) in steps" :key="step.title">
+          <article v-for="(step, index) in steps" :key="step.title" data-lift>
             <div class="home-steps__icon">
               <AppIcon :name="step.icon" :size="25" /><span
                 >0{{ index + 1 }}</span
@@ -149,7 +181,40 @@ const steps = [
       </div>
     </section>
 
-    <section class="container home-section">
+    <section class="home-conversation" data-reveal>
+      <div class="container home-conversation__grid">
+        <div class="home-conversation__art">
+          <img
+            src="/illustrations/dutch-neighbours-v1.jpg"
+            width="1536"
+            height="1024"
+            alt=""
+            loading="lazy"
+          />
+          <span class="home-conversation__bubble"
+            >Een ander perspectief begint bij luisteren.</span
+          >
+        </div>
+        <div class="home-conversation__copy">
+          <p class="eyebrow">Van het Binnenhof tot jouw buurt</p>
+          <h2>Niet alleen politiek.<br />Ook wat jou bezighoudt.</h2>
+          <p>
+            Wonen, zorg, het nieuws of een vraag uit het dagelijks leven. Er is
+            altijd meer dan één kant aan een verhaal.
+          </p>
+          <p class="home-conversation__sources">
+            Onze redactie maakt stellingen bij officiële moties, actuele
+            gebeurtenissen en maatschappelijke vragen. Bij de stelling zie je de
+            herkomst en beschikbare bron.
+          </p>
+          <NuxtLink to="/methodologie" class="home-text-link"
+            >Zo maken we de stellingen <AppIcon name="arrow" :size="17"
+          /></NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <section class="container home-section" data-reveal>
       <div class="home-compass">
         <div class="home-compass__copy">
           <p class="eyebrow">Een beter beeld van jezelf</p>
@@ -182,7 +247,7 @@ const steps = [
       </div>
     </section>
 
-    <section class="container home-faq">
+    <section class="container home-faq" data-reveal>
       <div>
         <p class="eyebrow">Even helder</p>
         <h2>Misschien vraag<br />je je af…</h2>
@@ -198,7 +263,7 @@ const steps = [
         </details>
       </div>
     </section>
-    <section class="container home-final">
+    <section class="container home-final" data-reveal>
       <div>
         <h2>En, wat denk jij?</h2>
         <p>Er is ruimte voor jouw mening.</p>
@@ -242,6 +307,10 @@ const steps = [
   z-index: -2;
 }
 .home-hero__content {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 3rem;
+  align-items: center;
   padding-block: 65px 58px;
 }
 .home-hero__eyebrow {
@@ -399,7 +468,6 @@ const steps = [
 }
 .home-statement:hover {
   border-color: #9abce7;
-  transform: translateY(-3px);
   text-decoration: none;
 }
 .home-statement__label {
@@ -764,6 +832,139 @@ const steps = [
   }
   .home-final .button {
     width: 100%;
+  }
+}
+
+.hero-question {
+  padding: 1.6rem;
+  border: 1px solid #ffffffb3;
+  background: #ffffffee;
+  color: #001f4d;
+  border-radius: 22px 22px 22px 5px;
+  box-shadow: 0 15px 45px #001f4d20;
+  backdrop-filter: blur(10px);
+}
+.hero-question__badge {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.64rem;
+  color: #0057b8;
+}
+.hero-question > p {
+  font-size: 1.18rem;
+  font-weight: 750;
+  line-height: 1.45;
+  margin: 1.2rem 0;
+  letter-spacing: -0.025em;
+}
+.hero-question > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 9px;
+  padding: 0.8rem 1rem;
+  background: #0057b8;
+  color: #fff;
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+.hero-question__footnote {
+  display: block;
+  font-size: 0.62rem;
+  color: #63738a;
+  margin-top: 0.85rem;
+}
+.home-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: -0.25rem 0 1.7rem;
+}
+.home-topics a {
+  font-size: 0.74rem;
+  background: #f5f7fa;
+  border: 1px solid #e1e7f0;
+  border-radius: 30px;
+  padding: 0.55rem 0.9rem;
+  color: #435570;
+  text-decoration: none;
+}
+.home-topics a span {
+  color: #0057b8;
+  margin-left: 0.55rem;
+}
+.home-topics a:hover {
+  border-color: #0057b8;
+  background: #edf4ff;
+}
+.home-conversation {
+  background: #f5f7fa;
+  border-block: 1px solid #e9eef5;
+  padding-block: 40px;
+}
+.home-conversation__grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+.home-conversation__art {
+  position: relative;
+  min-width: 0;
+}
+.home-conversation__art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 22px;
+}
+.home-conversation__bubble {
+  display: block;
+  margin: -0.5rem auto 0;
+  position: relative;
+  width: fit-content;
+  max-width: 90%;
+  background: white;
+  border: 1px solid #e0e7f1;
+  border-radius: 20px 20px 20px 4px;
+  padding: 0.7rem 1rem;
+  font-size: 0.69rem;
+  font-weight: 650;
+  color: #0057b8;
+}
+.home-conversation__copy h2 {
+  font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+  line-height: 1.15;
+  margin: 0.7rem 0 1.1rem;
+}
+.home-conversation__copy > p:not(.eyebrow) {
+  color: #526277;
+  line-height: 1.8;
+  font-size: 0.9rem;
+}
+.home-conversation__copy .home-conversation__sources {
+  font-size: 0.78rem !important;
+  color: #63738a !important;
+}
+@media (max-width: 900px) {
+  .hero-question {
+    display: none;
+  }
+  .home-hero__content {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .home-conversation__grid {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+  }
+  .home-conversation {
+    padding-block: 25px 40px;
+  }
+  .home-conversation__copy h2 br {
+    display: none;
   }
 }
 </style>

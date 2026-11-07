@@ -1,3 +1,12 @@
+export interface IssueSource {
+  kind: "editorial" | "news" | "motion" | "legacy";
+  name: string | null;
+  title: string | null;
+  url: string | null;
+  published_at: string | null;
+  verified_at: string | null;
+}
+
 import type { ReportCounts } from "~/types/reports";
 
 export interface IssueNewsLink {
@@ -44,6 +53,7 @@ export interface IssueWithArguments {
   url: string | null;
   description: string | null;
   more_info: string | null;
+  source?: IssueSource;
   news_article_slug?: string | null;
   news_article?: IssueNewsLink | null;
   party_stances: IssuePartyStances;
@@ -55,7 +65,11 @@ export interface IssueWithArguments {
   updated_at: string | null;
 }
 
-export interface IssueVoteCounts { agree: number; disagree: number; neutral: number; }
+export interface IssueVoteCounts {
+  agree: number;
+  disagree: number;
+  neutral: number;
+}
 export type NewIssueVoteOption = "agree" | "disagree";
 
 export type IssueVoteOption = "agree" | "disagree" | "neutral";
