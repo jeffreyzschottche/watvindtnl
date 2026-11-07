@@ -1,6 +1,6 @@
 # WatDenktNederland
 
-Nuxt/Vue-webclient met Capacitor iOS/Android en een centrale Laravel-API in `../wvnl-api`. V2 wordt incrementeel ontwikkeld op branch `refactor`. De huidige veilige basis is geen afgeronde V2-release. [Voortgang en testbewijs](docs/PROGRESS.md), [audit](docs/CURRENT_STATE.md), [architectuur](docs/ARCHITECTURE.md) en [migratieplan](docs/MIGRATION_PLAN.md).
+Nuxt/Vue-webclient met Capacitor iOS/Android en een centrale Laravel-API in `../wvnl-api`. V2 wordt incrementeel ontwikkeld op branch `refactor`. De gedeelde huisstijl en eenvoudige navigatie zijn vernieuwd. De volledige V2-release is nog niet afgerond. [De vier hoofdtaken en werkende routes](docs/UX.md). [Voortgang en testbewijs](docs/PROGRESS.md), [audit](docs/CURRENT_STATE.md), [architectuur](docs/ARCHITECTURE.md) en [migratieplan](docs/MIGRATION_PLAN.md).
 
 ## Lokaal starten
 

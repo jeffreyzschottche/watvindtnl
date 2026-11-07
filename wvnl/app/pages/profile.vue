@@ -2,13 +2,9 @@
   <div class="page" v-if="isLoggedIn">
     <section class="page-hero page-hero--profile">
       <div class="container narrow">
-        <h1 class="page-hero__title">
-          <span class="page-hero__accent page-hero__accent--blue">Mijn</span>
-          <span class="page-hero__accent page-hero__accent--red">profiel</span>
-        </h1>
+        <h1 class="page-hero__title">Instellingen</h1>
         <p class="page-hero__subtitle">
-          Beheer je gegevens, blader door je stemgeschiedenis en houd je
-          wachtwoord up-to-date.
+          Je gegevens en beveiliging, overzichtelijk op één plek.
         </p>
       </div>
     </section>
@@ -42,9 +38,6 @@
           </span>
         </button>
       </nav>
-      <p v-if="!hasCompassAccess" class="profile-compass-notice" role="status">
-        {{ politicalCompassMaintenanceMessage }}
-      </p>
 
       <div class="profile__card">
         <div class="profile__content">
@@ -283,7 +276,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ alias: "/profiel" });
+definePageMeta({ alias: "/profiel/instellingen", middleware: "auth" });
 import { computed, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { AGE_CATEGORIES, type AgeCategory, type User } from "~/types/User";
@@ -302,9 +295,9 @@ const politicalCompassMaintenanceMessage =
 const hasCompassAccess = computed(() => Boolean(user.value?.premium));
 
 const tabDefinitions = [
-  { key: "profile", label: "Profiel" },
+  { key: "profile", label: "Gegevens" },
   { key: "votes", label: "Stemgeschiedenis" },
-  { key: "security", label: "Wachtwoord" },
+  { key: "security", label: "Beveiliging" },
   { key: "compass", label: "Politiek kompas" },
 ] as const;
 
@@ -325,7 +318,7 @@ const tabs = computed<Tab[]>(() =>
       };
     }
     return tab;
-  })
+  }),
 );
 
 const activeTab = ref<TabKey>("profile");
@@ -411,7 +404,7 @@ watch(
     hydrateFromUser(value);
     loadingProfile.value = false;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -442,7 +435,7 @@ watch(
       activeTab.value = match.key;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(activeTab, async (tab) => {
@@ -459,7 +452,7 @@ watch(
       router.replace("/login");
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onMounted(() => {
@@ -583,276 +576,74 @@ const description =
 </script>
 
 <style scoped>
-.page-hero--profile {
-  background-image: linear-gradient(
-      135deg,
-      rgba(0, 51, 102, 0.12),
-      rgba(255, 80, 3, 0.2)
-    ),
-    url("/images/stockvault-cheese147191.webp");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  min-height: min(48vh, 420px);
-  position: relative;
-  isolation: isolate;
-  padding: 0;
-}
-
-.page-hero--profile::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(0, 0, 0, 0.2) 45%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
-  z-index: -2;
-}
-
-.page-hero--profile::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at center,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.35) 100%
-  );
-  z-index: -1;
-}
-
-.page-hero--profile .container {
-  position: relative;
-  z-index: 1;
-  padding-inline: 1.25rem;
-}
-
-.page-hero__title {
-  margin: 0;
-  font-size: clamp(2.4rem, 4vw, 3.2rem);
-  display: flex;
-  gap: 0.65rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.page-hero__accent {
-  display: inline-block;
-  padding: 0.1rem 0.35rem;
-  border-radius: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.page-hero__accent--blue {
-  background: rgba(0, 51, 102, 0.92);
-}
-
-.page-hero__accent--red {
-  background: rgba(255, 80, 3, 0.92);
-}
-
-.page-hero__subtitle {
-  margin: 0.75rem auto 0;
-  max-width: 58ch;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
 .profile {
-  margin-top: clamp(2rem, 5vw, 4rem);
-  padding-bottom: 4rem;
+  padding-bottom: 3rem;
 }
-
 .profile-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 0;
-  margin-bottom: 1.75rem;
-}
-
-.profile-compass-notice {
-  margin: -0.35rem 0 1.85rem;
-  padding: 0.85rem 1.1rem;
-  border-radius: 16px;
-  border: 1px dashed rgba(0, 61, 165, 0.45);
-  background: rgba(0, 61, 165, 0.08);
-  color: rgba(8, 32, 67, 0.95);
-  font-weight: 600;
-  text-align: center;
-}
-
-.profile-tab {
-  appearance: none;
-  background: rgba(255, 142, 0, 0.18);
-  border: 2px solid rgba(255, 142, 0, 0.45);
-  border-radius: 999px;
-  padding: 0.65rem 1.65rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #a54800;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
-    color 0.2s ease, transform 0.2s ease;
+  margin-bottom: 1.5rem;
 }
-
-.profile-tab__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+.profile-tab {
+  border: 1px solid #dce3ee;
+  background: #fff;
+  color: #63738a;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.78rem;
+  min-height: 44px;
 }
-
-.profile-tab__status {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #a54800;
-  padding: 0.125rem 0.45rem;
-  border-radius: 999px;
-  background: rgba(255, 142, 0, 0.2);
-}
-
-.profile-tab:not(.is-disabled):is(:hover, :focus-visible) {
-  border-color: #ff8e00;
-  background-color: rgba(255, 142, 0, 0.3);
-  box-shadow: 0 10px 24px rgba(255, 142, 0, 0.22);
-  outline: none;
-  transform: translateY(-1px);
-}
-
-.profile-tab.is-disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-  border-style: dashed;
-  border-color: rgba(255, 142, 0, 0.25);
-  box-shadow: none;
-  background: rgba(248, 145, 55, 0.1);
-  color: rgba(16, 24, 40, 0.6);
-  transition: none;
-}
-
-.profile-tab.is-disabled .profile-tab__status {
-  background: rgba(255, 111, 0, 0.14);
-  color: rgba(255, 111, 0, 0.9);
-}
-
 .profile-tab.is-active {
-  color: #ffffff;
-  border-color: #ff8e00;
-  background-color: #ff8e00;
-  box-shadow: 0 15px 30px rgba(255, 142, 0, 0.35);
+  background: #001f4d;
+  color: #fff;
+  border-color: #001f4d;
 }
-
-.profile-tab.is-active .profile-tab__label {
-  text-shadow: none;
+.profile-tab.is-disabled {
+  opacity: 0.5;
 }
-
-.profile__content {
-  padding: 2.5rem clamp(1.5rem, 4vw, 3rem);
+.profile-tab__status {
+  margin-left: 0.5rem;
+  font-size: 0.6rem;
 }
-
-.profile-panel {
-  display: block;
+.profile__card {
+  background: #fff;
+  border: 1px solid #dce3ee;
+  border-radius: 16px;
+  padding: 1.5rem;
 }
-
-.profiel-opslaan {
-  margin-top: 2em;
-}
-
-.profile-panel :deep(.profile-panel-section) {
-  display: block;
-  width: 100%;
-  padding: clamp(1.5rem, 4vw, 2.75rem);
-  border-radius: calc(var(--border-radius) + 4px);
-  border: 1px solid rgba(12, 20, 38, 0.08);
-  background: #ffffff;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
-}
-
-.profile-panel-section--maintenance {
-  border-style: dashed;
-  border-color: rgba(12, 20, 38, 0.18);
-  background: rgba(250, 250, 250, 0.95);
-  text-align: center;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.profile-panel-section--maintenance h2 {
-  margin: 0;
-}
-
-.profile-panel-section--maintenance p {
-  margin: 0;
-  color: rgba(15, 23, 42, 0.75);
-}
-
 .profile-form {
-  margin: 0 auto;
+  box-shadow: none;
+  border: 0;
+  padding: 0.5rem;
 }
-
 .profile-loading {
-  margin: 1rem 0 0;
-  color: var(--color-muted);
-  font-weight: 500;
+  color: #63738a;
+  font-size: 0.9rem;
 }
-
-.alert {
-  margin: 0;
-  padding: 0.85rem 1.1rem;
-  border-radius: 12px;
-  font-weight: 600;
+.profile-panel-section--maintenance {
+  padding: 1.5rem;
+  color: #63738a;
 }
-
-.alert + .alert {
-  margin-top: 0.75rem;
+.profile-panel-section--maintenance h2 {
+  font-size: 1.4rem;
+  color: #001f4d;
 }
-
-.alert--error {
-  background: rgba(255, 80, 3, 0.08);
-  border: 1px solid rgba(255, 80, 3, 0.35);
-  color: var(--color-accent);
-}
-
-.alert--success {
-  background: rgba(0, 148, 94, 0.08);
-  border: 1px solid rgba(0, 148, 94, 0.35);
-  color: #087443;
-}
-
 .profile-redirect {
-  min-height: 60vh;
-  display: grid;
-  place-items: center;
-  color: var(--color-muted);
-  font-weight: 500;
+  padding: 3rem;
   text-align: center;
-  padding: 3rem 1.5rem;
+  color: #63738a;
 }
-
-@media (max-width: 768px) {
-  .profile {
-    margin-top: 2rem;
+@media (max-width: 720px) {
+  .profile__card {
+    padding: 1rem;
   }
-
-  .profile__content {
-    padding: 2rem 1.25rem;
-  }
-
   .profile-tabs {
-    justify-content: center;
+    gap: 0.4rem;
+  }
+  .profile-tab {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.73rem;
   }
 }
 </style>

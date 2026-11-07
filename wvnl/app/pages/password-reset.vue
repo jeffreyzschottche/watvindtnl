@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: "/wachtwoord-resetten" });
 import { translateErrorMessage } from "~/utils/translateErrorMessage";
 const title = "Nieuw wachtwoord instellen | Wat Denkt Nederland";
 const description =
@@ -129,10 +130,10 @@ const state = ref<"form" | "invalid" | "error" | "success">(
   routeStatus.value === "invalid"
     ? "invalid"
     : routeStatus.value === "error"
-    ? "error"
-    : token.value && emailFromQuery.value
-    ? "form"
-    : "invalid"
+      ? "error"
+      : token.value && emailFromQuery.value
+        ? "form"
+        : "invalid",
 );
 
 const serverMessage = ref(routeMessage.value);
@@ -204,7 +205,7 @@ async function onSubmit() {
   background: linear-gradient(
     135deg,
     rgba(0, 51, 102, 0.1),
-    rgba(255, 80, 3, 0.08)
+    rgba(225, 6, 46, 0.08)
   );
 }
 
@@ -212,7 +213,7 @@ async function onSubmit() {
   background: #fff;
   border-radius: 1.5rem;
   padding: 2.5rem;
-  box-shadow: 0 24px 60px rgba(0, 26, 77, 0.18);
+  box-shadow: var(--shadow-soft);
   border: 1px solid rgba(0, 51, 102, 0.12);
   display: grid;
   gap: 1.75rem;
@@ -249,8 +250,8 @@ async function onSubmit() {
 }
 
 .reset-card__state--error {
-  border-color: rgba(255, 80, 3, 0.45);
-  background: rgba(255, 80, 3, 0.08);
+  border-color: rgba(225, 6, 46, 0.45);
+  background: rgba(225, 6, 46, 0.08);
 }
 
 .reset-card__state--success {
@@ -265,7 +266,7 @@ async function onSubmit() {
   border-radius: 999px;
   background: linear-gradient(
     130deg,
-    var(--color-accent, #ff5003),
+    var(--color-accent, #e1062e),
     var(--color-primary, #003366)
   );
   color: #fff;

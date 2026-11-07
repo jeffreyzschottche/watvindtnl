@@ -1,8 +1,15 @@
 <template>
   <form class="form form-card auth-form" @submit.prevent="onSubmit">
     <header class="form-header">
-      <h2>Registreren</h2>
-      <p>Vul je gegevens in en maak je account compleet.</p>
+      <img
+        src="/brand/wdnl-mark-concept.svg"
+        alt=""
+        width="42"
+        height="48"
+        style="margin: 0 auto 0.5rem"
+      />
+      <h1>Jouw mening begint hier.</h1>
+      <p>Maak een account en stem mee.</p>
     </header>
 
     <fieldset class="form-fieldset">
@@ -19,7 +26,12 @@
 
       <label>
         <span>E-mailadres</span>
-        <input v-model="form.email" type="email" autocomplete="email" required />
+        <input
+          v-model="form.email"
+          type="email"
+          autocomplete="email"
+          required
+        />
       </label>
 
       <label>
@@ -129,7 +141,9 @@
 
       <div class="form-option">
         <input id="cookies" v-model="acceptsCookies" type="checkbox" />
-        <label for="cookies">Ik ga akkoord met het gebruik van cookies (optioneel).</label>
+        <label for="cookies"
+          >Ik ga akkoord met het gebruik van cookies (optioneel).</label
+        >
       </div>
     </fieldset>
 
@@ -141,7 +155,7 @@
       </button>
       <p class="form-subtext">
         Al een account?
-        <NuxtLink to="/login">Inloggen</NuxtLink>
+        <NuxtLink to="/inloggen">Inloggen</NuxtLink>
       </p>
     </div>
   </form>
@@ -247,7 +261,7 @@ async function onSubmit() {
 
 <style scoped>
 .auth-form {
-  margin-top: 3rem;
+  margin-top: 0;
 }
 .form-option {
   display: flex;
@@ -273,21 +287,21 @@ async function onSubmit() {
 }
 
 .form-option--error {
-  outline: 2px solid rgba(255, 80, 3, 0.65);
+  outline: 2px solid rgba(225, 6, 46, 0.65);
   border-radius: 12px;
   padding: 0.75rem;
-  background: rgba(255, 80, 3, 0.08);
+  background: rgba(225, 6, 46, 0.08);
 }
 
 .form-option__error {
   margin: -0.35rem 0 0.85rem 2.4rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #ff5003;
+  color: #e1062e;
 }
 
 .form-option__required {
-  color: #ff5003;
+  color: #e1062e;
   font-size: 0.8rem;
   font-weight: 600;
   margin-left: 0.35rem;

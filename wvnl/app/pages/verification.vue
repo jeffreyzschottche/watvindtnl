@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: "/email-verifieren" });
 const title = "E-mailadres verifiëren | Wat Denkt Nederland";
 const description =
   "Controleer de status van je e-mailverificatie voor je Wat Denkt Nederland-account en ga snel verder naar de loginpagina.";
@@ -87,7 +88,7 @@ onMounted(() => {
   background: linear-gradient(
     135deg,
     rgba(0, 51, 102, 0.12),
-    rgba(255, 80, 3, 0.1)
+    rgba(225, 6, 46, 0.1)
   );
 }
 
@@ -96,7 +97,7 @@ onMounted(() => {
   border-radius: 1.5rem;
   padding: 2.5rem;
   text-align: center;
-  box-shadow: 0 24px 60px rgba(0, 26, 77, 0.18);
+  box-shadow: var(--shadow-soft);
   border: 1px solid rgba(0, 51, 102, 0.12);
   display: grid;
   gap: 1.25rem;
@@ -122,7 +123,7 @@ onMounted(() => {
 }
 
 .verification-card--error {
-  border-color: rgba(255, 80, 3, 0.55);
+  border-color: rgba(225, 6, 46, 0.55);
 }
 
 .verification-card__hint {
@@ -139,7 +140,7 @@ onMounted(() => {
   border-radius: 999px;
   background: linear-gradient(
     130deg,
-    var(--color-accent, #ff5003),
+    var(--color-accent, #e1062e),
     var(--color-primary, #003366)
   );
   color: #fff;

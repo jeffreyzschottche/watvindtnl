@@ -9,6 +9,8 @@ import type { ReportCounts, ReportReason } from "~/types/reports";
 interface IssueListParams {
   limit?: number;
   offset?: number;
+  search?: string;
+  answered?: "all" | "yes" | "no";
 }
 
 interface IssueReportResponse {
@@ -40,6 +42,8 @@ function buildListQuery(params?: IssueListParams): string {
     searchParams.set("offset", String(params.offset));
   }
 
+  if (params?.search) searchParams.set("search", params.search);
+  if (params?.answered) searchParams.set("answered", params.answered);
   const query = searchParams.toString();
   return query ? `?${query}` : "";
 }
@@ -47,7 +51,7 @@ function buildListQuery(params?: IssueListParams): string {
 export function fetchPendingIssues(
   token?: string,
   params?: IssueListParams,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<IssueWithArguments[]> {
   const query = buildListQuery(params);
   return apiFetch<IssueWithArguments[]>(`/issues/pending${query}`, {
@@ -58,7 +62,7 @@ export function fetchPendingIssues(
 
 export function fetchIssuesWithArguments(
   params?: IssueListParams,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<IssueWithArguments[]> {
   const query = buildListQuery(params);
   return apiFetch<IssueWithArguments[]>(`/issues-args${query}`, init);
@@ -67,7 +71,7 @@ export function fetchIssuesWithArguments(
 export function fetchIssueWithArguments(
   issueId: number,
   token?: string,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<IssueWithArguments> {
   return apiFetch<IssueWithArguments>(`/issues-args/${issueId}`, {
     ...init,
@@ -79,7 +83,7 @@ export function voteOnIssue(
   issueId: number,
   vote: IssueVoteOption,
   token?: string,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<IssueVoteResponse> {
   const headers = buildHeaders(token, init?.headers ?? undefined);
   if (!headers.has("Content-Type"))
@@ -97,7 +101,7 @@ export function reportIssue(
   issueId: number,
   reason: ReportReason,
   token?: string,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<IssueReportResponse> {
   const headers = buildHeaders(token, init?.headers ?? undefined);
   if (!headers.has("Content-Type"))
@@ -115,7 +119,7 @@ export function reportArgument(
   argumentId: number,
   reason: ReportReason,
   token?: string,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<ArgumentReportResponse> {
   const headers = buildHeaders(token, init?.headers ?? undefined);
   if (!headers.has("Content-Type"))
@@ -127,4 +131,14 @@ export function reportArgument(
     headers,
     body: JSON.stringify({ reason }),
   });
+}
+
+export function fetchIssueBySlug(
+  slug: string,
+  token?: string,
+): Promise<IssueWithArguments> {
+  return apiFetch<IssueWithArguments>(
+    `/statements/${encodeURIComponent(slug)}`,
+    { headers: buildHeaders(token) },
+  );
 }

@@ -1,13 +1,26 @@
 <template>
   <form class="form form-card auth-form" @submit.prevent="onSubmit">
     <header class="form-header">
-      <h2>Inloggen</h2>
-      <p>Voer je e-mailadres en wachtwoord in om verder te gaan.</p>
+      <img
+        class="auth-mark"
+        src="/brand/wdnl-mark-concept.svg"
+        alt=""
+        width="42"
+        height="48"
+      />
+      <h1>Welkom terug.</h1>
+      <p>Log in en ontdek wat jij ervan vindt.</p>
     </header>
 
     <label>
       <span>E-mailadres</span>
-      <input v-model="email" type="email" autocomplete="email" required />
+      <input
+        v-model="email"
+        type="email"
+        placeholder="jij@voorbeeld.nl"
+        autocomplete="email"
+        required
+      />
     </label>
 
     <label>
@@ -15,6 +28,7 @@
       <input
         v-model="password"
         type="password"
+        placeholder="Je wachtwoord"
         autocomplete="current-password"
         required
       />
@@ -28,11 +42,15 @@
       </button>
       <p class="form-subtext">
         Nog geen account?
-        <NuxtLink to="/register">Registreren</NuxtLink>
+        <NuxtLink to="/registreren">Registreren</NuxtLink>
       </p>
       <p class="form-subtext">
         Wachtwoord vergeten?
-        <button type="button" class="form-subtext__link" @click="openForgotPassword">
+        <button
+          type="button"
+          class="form-subtext__link"
+          @click="openForgotPassword"
+        >
           Reset aanvragen
         </button>
       </p>
@@ -64,7 +82,7 @@ async function onSubmit() {
   loading.value = true;
   try {
     await login(email.value, password.value);
-    router.push("/");
+    router.push("/spel");
   } catch (e: any) {
     error.value = translateErrorMessage(e, { fallback: "Inloggen mislukt" });
   } finally {
@@ -79,7 +97,10 @@ function openForgotPassword() {
 
 <style scoped>
 .auth-form {
-  margin-top: 3rem;
+  margin-top: 0;
+}
+.auth-mark {
+  margin: 0 auto 0.6rem;
 }
 .form-subtext__link {
   appearance: none;

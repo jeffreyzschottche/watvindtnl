@@ -2,10 +2,8 @@
   <section class="issues-page">
     <div class="issues-page__container">
       <header class="issues-page__header">
-        <h1>Openstaande moties</h1>
-        <p>
-          Geef aan hoe jij over de volgende stellingen denkt. Kies tegen of voor, of sla over als je het nog niet weet.
-        </p>
+        <h1>Wat denk jij?</h1>
+        <p>Tegen of voor. Neem de tijd voor jouw mening.</p>
       </header>
 
       <div v-if="loading" class="issues-page__state">
@@ -37,7 +35,7 @@
       </p>
 
       <div
-        v-else-if="!activeIssue"
+        v-else-if="!activeIssue && !loading && !error"
         class="issues-page__state issues-page__state--success"
       >
         <h2>Je bent helemaal bij!</h2>
@@ -154,7 +152,7 @@ watch(
     modalIssueId.value = parsed;
     void loadIssueForModal(parsed);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onMounted(() => {
@@ -195,9 +193,21 @@ async function handleModalVote(choice: IssueVoteOption) {
   modalError.value = null;
 
   try {
-    const response = await voteOnIssue(issue.id, choice, token.value ?? undefined);
-    if (user.value) auth.updateUser({ ...user.value, voted_issue_ids: response.voted_issue_ids });
-    const updated = { ...issue, votes: response.votes, user_vote: response.user_vote };
+    const response = await voteOnIssue(
+      issue.id,
+      choice,
+      token.value ?? undefined,
+    );
+    if (user.value)
+      auth.updateUser({
+        ...user.value,
+        voted_issue_ids: response.voted_issue_ids,
+      });
+    const updated = {
+      ...issue,
+      votes: response.votes,
+      user_vote: response.user_vote,
+    };
     modalIssue.value = updated;
     const index = issues.value.findIndex((item) => item.id === issue.id);
     if (index >= 0) issues.value[index] = updated;
@@ -256,13 +266,12 @@ function retryModal() {
 
 async function handleShare(
   issue: IssueWithArguments | null,
-  platform: SharePlatform
+  platform: SharePlatform,
 ) {
   if (!issue) return;
 
   await shareIssue(issue, { path: route.path, platform });
 }
-
 </script>
 
 <style scoped>
@@ -271,18 +280,18 @@ async function handleShare(
   justify-content: center;
   padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
   background: #f8fafc;
-  min-height: 100vh;
+  min-height: 70vh;
 }
 
 .issues-page__container {
-  width: min(1200px, 100%);
+  width: min(720px, 100%);
   display: grid;
   gap: 2rem;
 }
 
 .issues-page__header h1 {
   margin: 0 0 0.5rem;
-  font-size: 2rem;
+  font-size: 1.65rem;
   color: var(--color-primary);
 }
 
@@ -304,7 +313,7 @@ async function handleShare(
     rgba(255, 255, 255, 0.95),
     rgba(238, 241, 246, 0.9)
   );
-  box-shadow: 0 18px 36px rgba(0, 28, 70, 0.12);
+  box-shadow: var(--shadow-soft);
   color: #101828;
   border: 1px solid rgba(0, 51, 102, 0.12);
 }
@@ -329,17 +338,23 @@ async function handleShare(
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(130deg, var(--color-orange), var(--color-orange-hover));
+  background: linear-gradient(
+    130deg,
+    var(--color-orange),
+    var(--color-orange-hover)
+  );
   color: var(--color-midnight);
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .issues-page__retry:hover,
 .issues-page__retry:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 18px 32px rgba(253, 119, 2, 0.35);
+  box-shadow: var(--shadow-soft);
 }
 
 .issues-page__auth-link {

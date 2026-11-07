@@ -9,3 +9,9 @@ GET me/votes blijft eigen geschiedenis; de legacy updated_at is geen betrouwbare
 Login/register/reset/contact/read/write/admin limieten via config/wdnl.php; standaard API-cap plus specifieke limiter. POST logout trekt huidige token in. Nieuwe tokens verlopen standaard na 14 dagen, configureerbaar via AUTH_TOKEN_DAYS; bestaande tokens worden niet massaal ingetrokken. Wachtwoordverandering/reset trekt alle tokens in. Premium kan niet via profielpayload worden gewijzigd. GET nieuws leest bestaande publicatie, geen LLM-generatie. Generatie alleen beschermd adminpad tot queuepipeline bestaat. Hulproutes test-mail/run-migration verwijderd.
 
 M2: versieerbare resources, cursor-meta, expliciete consent- en privacyroutes, genormaliseerde vote-query, gevalideerde sources en permissies. OpenAPI/schema CI nog open.
+
+## Eenvoudige catalogus en detailroutes
+
+`GET /issues-args?search=...&answered=all|yes|no&limit=24&offset=0` zoekt server-side in titels (maximaal 120 tekens) vóór paginering. Eigen stemfilters vereisen Sanctum-authenticatie; unauthenticated krijgt 401. Resultaatcontract blijft counts-na-eigen-stem, geen politieke identiteiten. Sortering op created_at en id geeft stabiele volgorde binnen de huidige offsetoplossing. Cursorpagination blijft de genormaliseerde datamijlpaal.
+
+`GET /statements/{slug}` geeft dezelfde veilige detailresource. Onbekende slug geeft 404. Frontend `/stellingen/[slug]` gebruikt dezelfde stemactie en kaart als `/spel`; geen tweede stemimplementatie.

@@ -48,3 +48,13 @@ ZschotCMS-contract ontbreekt. Stripe/RevenueCat/storeproductconfig, gecertificee
 M2 start met schema-/migratieinventarisatie plus een echte versleutelde backup en geïsoleerde restoretest; daarna pas nieuwe vote-/consenttabellen en idempotente backfill. Het bestaande SQL-bestand geldt niet als restorebewijs. Het totale V2-programma is nog niet afgerond.
 
 Lokale HTTP-smokecheck na M1: publieke issue-GET geeft HTTP200, votes=null, user_vote=null en private/no-store. Browseropslag en echte devices nog niet volledig getest.
+
+## Vervolg: zichtbare huisstijl en eenvoud
+
+Op gebruikersverzoek de productnavigatie teruggebracht tot vier taken, zie UX.md. Nieuwe witte header/footer met gereconstrueerd molenlogo, navy/blauw/rood tokens, nieuwe homepage met bestaande Nederlandse foto en echte API-preview, compacte authpagina's, eenvoudiger kompas, profielstart, geschiedenis en instellingen. Oude fotobanners verwijderd uit ondersteunende pagina's.
+
+Werkend stellingenoverzicht met server-side zoeken en eigen stemfilters, detailroutes op slug en hetzelfde stemcomponent. De API retourneert daarbij geen individuele stemidentiteiten. FAQ, methodologie en wachtwoord-vergeten toegevoegd; bestaande URLs blijven werken. Geen nieuwe betaal-/privacyfunctionaliteit als afgerond gepresenteerd.
+
+Backend na catalogusuitbreiding: 23 tests, 101 assertions, geslaagd. Eerste ontwerpcontrole: 12 browserchecks desktop/mobiel geslaagd, typecheck en build geslaagd. Laatste nav/lege-toestandaanpassing krijgt eindcontrole hieronder. Bestaande localhost:3000 met echte read-only content gecontroleerd: juiste nieuwe homepage, drie stellingen, geen pageerrors.
+
+Eindcontrole zichtbare ontwerpstap: 23 backendtests / 101 assertions, 10 Vitest-tests, 12 desktop/mobiele browsertests plus 2 aanvullende profielbeveiligingschecks. Typecheck, Nuxt-productiebuild, Prettier-check op gewijzigde bronnen en git diff --check geslaagd. De twee aanvullende profielbeveiligingschecks zijn ook geslaagd. Geen databasemigratie of inhoudelijke seed/import uitgevoerd.
