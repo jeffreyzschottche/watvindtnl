@@ -65,3 +65,16 @@ Verkoop staat lokaal uit. Er is geen echte Stripe-betaling, betaalde modelaanroe
 - [DeepSeek API en prijzen](https://api-docs.deepseek.com/quick_start/pricing/), [Chat Completions](https://api-docs.deepseek.com/api/create-chat-completion/).
 - [Stripe fulfillment](https://docs.stripe.com/checkout/fulfillment.md?ui=full-page), [webhookverificatie](https://docs.stripe.com/events/manage-webhook-endpoints).
 - [Dompdf](https://github.com/dompdf/dompdf); gecontroleerde stabiele packages: Dompdf 3.1.6 en Stripe PHP 22.1.0. Composer-audit meldde na installatie geen kwetsbaarheden.
+
+
+## Tijdelijke lokale rapportknop — 8 november 2026
+
+Een opvallende paarse/geel gestreepte **BROUW MIJN DEV-RAPPORT** staat alleen tijdens `nuxt dev` voor het toegestane demo-account. In het spel staat hij op ruime desktops naast de kaart, op mobiel erboven; ook de rapportpagina heeft de knop.
+
+De API vereist gezamenlijk `APP_ENV=local`, `WDNL_DEV_REPORTS_ENABLED=true` en het ingelogde account met exact de ingestelde `WDNL_DEV_REPORT_EMAIL` (standaard `appdemo@mail.com`). De lokale flag is aangezet; `.env.example` heeft bewust `false`. Geen flags of gebruikersgegevens uit de client kunnen deze controle vervangen. De productiebuild toont de knop niet en start geen dev-accessaanvraag; de server weigert generatie én PDF-toegang in productie, zelfs met een per ongeluk ingeschakelde flag.
+
+`GET /api/me/reports/dev-access` geeft uitsluitend beschikbaarheid. `POST /api/me/reports/dev` met een UUID `request_key` maakt synchroon een echte A4-PDF van de eigen actuele antwoorden met code-toelichting. Geen minimumstemmen voor deze ontwikkelpreview, geen ontbrekende antwoorden verzonnen. Een aanvraagherhaling hergebruikt de preview. Maximaal zes generatieverzoeken per minuut.
+
+Het resultaat is met een DEV-watermerk gemarkeerd, één uur geldig en versleuteld opgeslagen in de servercache. Er worden geen order, betaling, betaalde modelaanroep of kostenmeting gemaakt. Bekijken/downloaden via `/api/me/reports/dev/{uuid}` en `/pdf` vereist opnieuw dezelfde local/demo-controle en eigenaar. De rapportpagina opent via `?dev_report=...`; verlopen voorbeelden zijn niet meer opvraagbaar. De knop hoort niet in een distributie-/storebuild: `import.meta.dev` is daar false. Er is geen schemawijziging nodig.
+
+Nieuwe én bestaande neutrale stemmen worden in actuele rapporten als **Neutraal** weergegeven, niet meer als historisch. Zij tellen mee als antwoord en in de totaalverdeling, maar niet als richting voor partijovereenkomsten.

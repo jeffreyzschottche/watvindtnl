@@ -9,7 +9,7 @@ const date = computed(() =>
 );
 const sides = [
   { key: "disagree" as const, label: "Tegen", color: "#E1062E" },
-  { key: "neutral" as const, label: "Historisch neutraal", color: "#8193aa" },
+  { key: "neutral" as const, label: "Neutraal", color: "#8193aa" },
   { key: "agree" as const, label: "Voor", color: "#0057B8" },
 ];
 </script>
@@ -19,6 +19,9 @@ const sides = [
     class="report-sheet"
     aria-label="Jouw persoonlijke stemrapport"
   >
+    <p v-if="report.is_development" class="report-sheet__dev">
+      🧪 DEV-RAPPORT · GEEN AANKOOP · TIJDELIJK
+    </p>
     <header>
       <strong>WatDenkt<span>Nederland</span></strong
       ><span>JOUW MENING, BIJ ELKAAR</span>
@@ -39,7 +42,7 @@ const sides = [
     <div
       class="report-sheet__bar"
       role="img"
-      :aria-label="`${snapshot.counts.disagree} tegen, ${snapshot.counts.agree} voor en ${snapshot.counts.neutral} historisch neutraal`"
+      :aria-label="`${snapshot.counts.disagree} tegen, ${snapshot.counts.agree} voor en ${snapshot.counts.neutral} neutraal`"
     >
       <span
         v-for="side in sides"
@@ -100,6 +103,13 @@ const sides = [
     0 7px 0 #e5edf8,
     0 22px 60px #001f4d0a;
   color: #001f4d;
+}
+.report-sheet__dev {
+  padding: 0.75rem;
+  border: 2px dashed #987300;
+  background: #fff5c4;
+  color: #594000;
+  font-weight: 800;
 }
 .report-sheet header {
   display: flex;

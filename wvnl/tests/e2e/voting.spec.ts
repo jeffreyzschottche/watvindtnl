@@ -77,7 +77,10 @@ async function setup(page: Page, fail = false) {
           vote: choice,
           user_vote: choice,
           voted_issue_ids: [...votes],
-          votes: { agree: 64, disagree: 36, neutral: 0 },
+          votes:
+            choice === "neutral"
+              ? { agree: 1, disagree: 0, neutral: 1 }
+              : { agree: 64, disagree: 36, neutral: 0 },
         },
         headers,
       });
@@ -213,4 +216,31 @@ test("motion opt out is shared with the vote card and survives a reload", async 
     page.getByRole("heading", { name: "Zo denken de deelnemers" }),
   ).toBeVisible();
   await expect(page.getByTestId("vote-confetti")).toHaveCount(0);
+});
+
+test("neutral is saved as its own choice and the result waits for manual next", async ({
+  page,
+}) => {
+  const { votes } = await setup(page);
+  await page.goto("/spel");
+  const title = page.locator(".vote-card-v2 h2");
+  await expect(title).toBeVisible();
+  const original = await title.textContent();
+  await page
+    .getByRole("button", { name: "Neutraal Maakt me niet uit / geen voorkeur" })
+    .click();
+  await expect(
+    page.getByText("Je hebt neutraal gestemd", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.locator(".vote-card-v2__numbers .neutral-text"),
+  ).toContainText("50%");
+  await expect(
+    page.locator(".vote-card-v2__numbers .neutral-text"),
+  ).toContainText("Neutraal · 1");
+  await expect(page.locator(".vote-card-v2")).not.toContainText("historisch");
+  await expect(title).toHaveText(original!);
+  expect(votes).toHaveLength(1);
+  await page.getByRole("button", { name: "Volgende stelling" }).click();
+  await expect(title).not.toHaveText(original!);
 });

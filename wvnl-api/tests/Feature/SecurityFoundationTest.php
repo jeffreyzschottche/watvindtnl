@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\NewsArticleService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -77,11 +78,23 @@ class SecurityFoundationTest extends TestCase
         $this->getJson('/api/issues/pending')->assertOk()->assertExactJson([]);
     }
 
-    public function test_new_neutral_or_invalid_votes_are_rejected(): void
+    public function test_neutral_is_a_real_saved_vote_and_excluded_from_the_pending_feed(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $issue = $this->issue();
+        $this->postJson('/api/issues/'.$issue->id.'/vote', ['vote' => 'neutral'])->assertOk()->assertJsonPath('vote', 'neutral')->assertJsonPath('user_vote', 'neutral')->assertJsonPath('votes.neutral', 1);
+        $this->assertSame([$user->id], $issue->fresh()->votes['neutral']);
+        $this->getJson('/api/me/votes')->assertOk()->assertJsonPath('0.vote', 'neutral');
+        $this->getJson('/api/issues/pending')->assertExactJson([]);
+        $this->postJson('/api/issues/'.$issue->id.'/vote', ['vote' => 'agree'])->assertConflict();
+    }
+
+    public function test_invalid_votes_are_rejected(): void
     {
         Sanctum::actingAs(User::factory()->create());
         $issue = $this->issue();
-        foreach (['neutral', 'anything', '', 1] as $vote) {
+        foreach (['anything', '', 1] as $vote) {
             $this->postJson('/api/issues/'.$issue->id.'/vote', ['vote' => $vote])->assertUnprocessable();
         }
         $this->assertSame([], $issue->fresh()->votes['agree']);
@@ -171,7 +184,7 @@ class SecurityFoundationTest extends TestCase
     {
         $user = User::factory()->create();
         $user->createToken('one');
-        $token = \Illuminate\Support\Facades\Password::createToken($user);
+        $token = Password::createToken($user);
         $this->postJson('/api/reset-password', ['email' => $user->email, 'token' => $token, 'password' => 'Changed12345!', 'password_confirmation' => 'Changed12345!'])->assertOk();
         $this->assertSame(0, $user->tokens()->count());
     }

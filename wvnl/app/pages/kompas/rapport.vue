@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Capacitor } from "@capacitor/core";
+import DevReportButton from "~/components/reports/DevReportButton.vue";
 import ReportSheet from "~/components/reports/ReportSheet.vue";
 import type { ReportOverview, VoteReport } from "~/types/voteReports";
 definePageMeta({ middleware: "auth", alias: "/profiel/mijn-kompas" });
@@ -72,7 +73,11 @@ async function load() {
       typeof route.query.order === "string"
         ? route.query.order
         : overview.value.orders.find((o) => o.status === "ready")?.id;
-    if (id) await openReport(id);
+    if (import.meta.dev && typeof route.query.dev_report === "string") {
+      report.value = await api.get<VoteReport>(
+        `/me/reports/dev/${encodeURIComponent(route.query.dev_report)}`,
+      );
+    } else if (id) await openReport(id);
   } catch {
     error.value =
       "Je rapporten konden niet worden geladen. Probeer het opnieuw.";
@@ -113,20 +118,25 @@ async function download() {
   error.value = "";
   try {
     const base = useRuntimeConfig().public.apiBase;
-    const response = await fetch(`${base}/me/reports/${report.value.id}/pdf`, {
-      headers: {
-        Accept: "application/pdf",
-        Authorization: `Bearer ${auth.token}`,
+    const response = await fetch(
+      `${base}/me/reports/${report.value.is_development ? "dev/" : ""}${report.value.id}/pdf`,
+      {
+        headers: {
+          Accept: "application/pdf",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        signal: AbortSignal.timeout(20000),
       },
-      signal: AbortSignal.timeout(20000),
-    });
+    );
     if (!response.ok)
       throw new Error("Download niet beschikbaar. Probeer het opnieuw.");
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "WDNL-stemrapport.pdf";
+    link.download = report.value.is_development
+      ? "WDNL-DEV-stemrapport.pdf"
+      : "WDNL-stemrapport.pdf";
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (e) {
@@ -143,7 +153,7 @@ onBeforeUnmount(() => {
   disposed = true;
   clearTimeout(timer);
 });
-watch(() => route.query.order, load);
+watch(() => [route.query.order, route.query.dev_report], load);
 useSeoMeta({
   title: "Mijn stemrapport | WatDenktNederland",
   robots: "noindex, nofollow",
@@ -165,6 +175,7 @@ useSeoMeta({
         >€ 1,99 <small>per nieuw rapport</small></span
       >
     </header>
+    <DevReportButton />
     <p v-if="loading" role="status">Je rapporten worden geladen…</p>
     <p v-if="error" role="alert" class="form-error">{{ error }}</p>
     <button
@@ -327,6 +338,10 @@ useSeoMeta({
             Download PDF ↓
           </button>
         </div>
+        <p v-if="report.is_development" class="reports-page__hint">
+          Gratis lokaal devrapport · vervalt na één uur · geen aankoop of
+          AI-kosten.
+        </p>
         <ReportSheet
           v-if="report.status === 'ready'"
           :report="report"

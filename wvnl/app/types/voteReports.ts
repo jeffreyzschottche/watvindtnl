@@ -30,6 +30,8 @@ export type ReportSnapshot = {
   limits: string[];
 };
 export type VoteReport = {
+  is_development?: boolean;
+  expires_at?: string;
   id: string;
   status:
     | "pending"

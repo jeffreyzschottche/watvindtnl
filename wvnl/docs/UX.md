@@ -4,7 +4,7 @@ Bijgesteld op verzoek van de gebruiker: de uitgebreide V2-paginalijst blijft een
 
 ## Vier hoofdtaken
 
-1. **Stemmen** — `/spel`: één vraag, tegen links/voor rechts, uitslag blijft tot handmatig volgende.
+1. **Stemmen** — `/spel`: één vraag, tegen links/voor rechts en een aparte neutrale keuze eronder; uitslag blijft tot handmatig volgende.
 2. **Ontdekken** — `/stellingen`: zoeken en, na inloggen, alle/niet-beantwoord/beantwoord. `/stellingen/[slug]` geeft hetzelfde stemcomponent met context en argumenten.
 3. **Jezelf begrijpen** — `/kompas`: overzichtelijke uitleg. Nieuwe betaalde versie nog niet te koop; geen verzonnen scores, claims of checkout.
 4. **Account beheren** — `/profiel`: twee hoofdkaarten voor Mijn stemmen en Mijn kompas, daaronder gegevens/beveiliging/privacy-informatie.
@@ -29,7 +29,7 @@ De principes uit [Laws of UX](https://lawsofux.com/) dienen als ontwerphouvast. 
 
 | Principe | Concrete toepassing |
 | --- | --- |
-| Hick's Law / Choice Overload | Vier hoofdtaken; twee gelijkwaardige stemkeuzes. Eén duidelijke primaire actie per stap. Rapporteren en delen krijgen een rustige secundaire stijl. |
+| Hick's Law / Choice Overload | Vier hoofdtaken; tegen/voor en een duidelijke neutrale keuze. Eén duidelijke primaire actie per stap. Rapporteren en delen krijgen een rustige secundaire stijl. |
 | Fitts's Law | Minimaal 44 px hoge stem-, meld-, deel-, filter-, zoekwis- en animatieknoppen. Het hele stellingkaartje is aanklikbaar. |
 | Jakob's Law | Logo naar home, herkenbare zoekbalk, vaste mobiele tabs, expliciete labels en terugkerende knopstijlen. Actieve accountsectie blijft gemarkeerd bij instellingen. |
 | Chunking / Common Region / Proximity | Profiel, stemmen en kompas zijn aparte groepen. Context, bronnen en partijinformatie staan bij hun stelling in een uitklapbaar blok. |

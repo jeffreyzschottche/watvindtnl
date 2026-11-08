@@ -250,3 +250,27 @@ test("report purchase is separate, consent is explicit and existing PDF download
   ).toHaveCount(0);
   expect(trackers).toEqual([]);
 });
+
+test("production build hides development generation even if the API claims access", async ({
+  page,
+}) => {
+  await mock(page);
+  let devRequests = 0;
+  await page.route("**/api/me/reports/dev-access", async (route) => {
+    devRequests++;
+    await route.fulfill({ json: { available: true } });
+  });
+  await page.goto("/spel");
+  await expect(page.locator(".vote-card-v2 h2")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /BROUW MIJN DEV-RAPPORT/ }),
+  ).toHaveCount(0);
+  await page.goto("/profiel/mijn-kompas");
+  await expect(
+    page.getByRole("heading", { name: "Mijn stemrapporten." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /BROUW MIJN DEV-RAPPORT/ }),
+  ).toHaveCount(0);
+  expect(devRequests).toBe(0);
+});

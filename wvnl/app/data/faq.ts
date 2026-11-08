@@ -2,7 +2,7 @@ export const faqItems = [
   {
     question: "Hoe werkt stemmen op WDNL?",
     answer:
-      "Je krijgt één stelling te zien. Lees de toelichting en argumenten en kies tegen of voor. Daarna zie je de uitslag van de deelnemers. Je gaat zelf verder met de knop Volgende stelling.",
+      "Je krijgt één stelling te zien. Lees de toelichting en argumenten en kies tegen, voor of neutraal. Daarna zie je de uitslag van de deelnemers. Je gaat zelf verder met de knop Volgende stelling.",
   },
   {
     question: "Zijn de uitslagen representatief voor Nederland?",
@@ -27,6 +27,6 @@ export const faqItems = [
   {
     question: "Kan ik een stem veranderen?",
     answer:
-      "Een uitgebrachte stem staat vast. Je kunt wel je eigen stemgeschiedenis bekijken. We bewaren oude neutrale stemmen uit de eerdere versie; bij nieuwe stellingen kies je tegen of voor.",
+      "Een uitgebrachte stem staat vast. Je kunt wel je eigen stemgeschiedenis bekijken. Je kunt tegen, voor of neutraal kiezen. Neutraal betekent geen voorkeur / maakt me niet uit, en telt als een beantwoorde stelling.",
   },
 ];

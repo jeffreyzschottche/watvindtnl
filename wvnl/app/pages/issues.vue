@@ -3,13 +3,15 @@
     <div class="issues-page__container">
       <header class="issues-page__header">
         <h1>Wat denk jij?</h1>
-        <p>Tegen of voor. Neem de tijd voor jouw mening.</p>
+        <p>Tegen, voor of neutraal. Neem de tijd voor jouw mening.</p>
         <span v-if="auth.isLoggedIn" class="issues-page__personal-count"
           ><span aria-hidden="true">✦</span>
           {{ auth.user?.voted_issue_ids?.length ?? 0 }} stellingen beantwoord
           door jou</span
         >
       </header>
+
+      <DevReportButton floating />
 
       <div v-if="loading" class="issues-page__state">
         Even geduld, we laden de moties...
@@ -78,6 +80,7 @@
 definePageMeta({ alias: "/spel" });
 import { computed, onMounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
+import DevReportButton from "~/components/reports/DevReportButton.vue";
 import DemoAdDialog from "~/components/common/DemoAdDialog.vue";
 import AdSlot from "~/components/common/AdSlot.vue";
 import IssueDetailModal from "~/components/issues/IssueDetailModal.vue";

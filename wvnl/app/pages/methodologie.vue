@@ -25,11 +25,13 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
         eigen keuze maken. Je bepaalt daarna zelf wanneer je doorgaat naar de
         volgende stelling.
       </p>
-      <h2>Oude neutrale stemmen</h2>
+      <h2>Neutraal of geen voorkeur</h2>
       <p>
-        In de eerdere versie kon je neutraal stemmen. Die historische stemmen
-        blijven bewaard en staan apart in de uitslag. Bij nieuwe stemmen kies je
-        tegen of voor.
+        Je kunt tegen, voor of neutraal stemmen. Neutraal betekent dat je geen
+        voorkeur aangeeft of dat het onderwerp je niet uitmaakt. Deze keuze telt
+        mee in het totaal en krijgt een eigen percentage. Bij
+        partijvergelijkingen gebruiken we neutraal niet als keuze vóór of tegen.
+        Bestaande neutrale stemmen blijven gewoon bewaard.
       </p>
       <h2>Bronnen en argumenten</h2>
       <p>

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Issue;
+use App\Models\NewsArticle;
 use App\Models\PoliticalParty;
 use App\Models\User;
+use App\Support\IssueResults;
+use App\Support\ReportReasons;
+use App\Support\StatementSource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Support\ReportReasons;
 
 class UserIssueController extends Controller
 {
@@ -37,7 +41,7 @@ class UserIssueController extends Controller
                     }
                 });
             })
-            ->when(!empty($voted), fn($query) => $query->whereNotIn('id', $voted))
+            ->when(! empty($voted), fn ($query) => $query->whereNotIn('id', $voted))
             ->orderBy('created_at', 'desc')
             ->skip($offset)
             ->take($limit)
@@ -46,7 +50,7 @@ class UserIssueController extends Controller
         $partyMap = $this->loadPartyMap($issues);
 
         $data = $issues
-            ->map(fn($issue) => $this->serializeIssue($issue, $partyMap))
+            ->map(fn ($issue) => $this->serializeIssue($issue, $partyMap))
             ->values();
 
         return response()->json($data);
@@ -79,7 +83,7 @@ class UserIssueController extends Controller
                     }
                 }
 
-                if (!$choice) {
+                if (! $choice) {
                     return null;
                 }
 
@@ -102,7 +106,7 @@ class UserIssueController extends Controller
     public function vote(Request $request, Issue $issue)
     {
         $validated = $request->validate([
-            'vote' => ['required', Rule::in(['agree', 'disagree'])],
+            'vote' => ['required', Rule::in(['agree', 'disagree', 'neutral'])],
         ]);
 
         $user = $request->user();
@@ -111,12 +115,12 @@ class UserIssueController extends Controller
 
         // Lock user first for all statements; then issue, consistently across requests.
         // Transitional protection until the normalized votes table has its unique constraint.
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($user, $issue, $vote) {
+        return DB::transaction(function () use ($user, $issue, $vote) {
             $lockedUser = User::query()->lockForUpdate()->findOrFail($user->id);
             $lockedIssue = Issue::query()->lockForUpdate()->findOrFail($issue->id);
             $voted = array_map('intval', (array) ($lockedUser->voted_issue_ids ?? []));
             $buckets = $lockedIssue->votes ?? ['agree' => [], 'disagree' => [], 'neutral' => []];
-            $existing = \App\Support\IssueResults::choice($lockedIssue, $lockedUser);
+            $existing = IssueResults::choice($lockedIssue, $lockedUser);
             abort_if($existing !== null || in_array((int) $issue->id, $voted, true), 409, 'Je hebt al op deze stelling gestemd.');
 
             $buckets[$vote] = array_values(array_unique(array_merge((array) ($buckets[$vote] ?? []), [(int) $user->id])));
@@ -129,7 +133,7 @@ class UserIssueController extends Controller
                 'status' => 'ok',
                 'vote' => $vote,
                 'voted_issue_ids' => $lockedUser->voted_issue_ids,
-                ...\App\Support\IssueResults::forViewer($lockedIssue, $lockedUser),
+                ...IssueResults::forViewer($lockedIssue, $lockedUser),
             ]);
         }, 3);
     }
@@ -145,17 +149,17 @@ class UserIssueController extends Controller
             'url' => $issue->url,
             'description' => $issue->description,
             'more_info' => $issue->more_info,
-            'source' => \App\Support\StatementSource::forIssue($issue),
+            'source' => StatementSource::forIssue($issue),
             'news_article_slug' => $issue->news_article_slug,
             'news_article' => $this->serializeNewsArticle($issue->newsArticle),
             'party_stances' => $this->serializePartyStances($issue->party_stances ?? null, $partyMap),
             'reports' => ReportReasons::normalize($issue->reports ?? []),
-            ...\App\Support\IssueResults::forViewer($issue, request()->user('sanctum')),
+            ...IssueResults::forViewer($issue, request()->user('sanctum')),
             'arguments' => [
                 'pro' => $issue->arguments
                     ->where('side', 'pro')
                     ->values()
-                    ->map(fn($a) => [
+                    ->map(fn ($a) => [
                         'id' => $a->id,
                         'body' => $a->body,
                         'sources' => $a->sources ?? [],
@@ -166,7 +170,7 @@ class UserIssueController extends Controller
                 'con' => $issue->arguments
                     ->where('side', 'con')
                     ->values()
-                    ->map(fn($a) => [
+                    ->map(fn ($a) => [
                         'id' => $a->id,
                         'body' => $a->body,
                         'sources' => $a->sources ?? [],
@@ -180,9 +184,9 @@ class UserIssueController extends Controller
         ];
     }
 
-    protected function serializeNewsArticle(?\App\Models\NewsArticle $article): ?array
+    protected function serializeNewsArticle(?NewsArticle $article): ?array
     {
-        if (!$article) {
+        if (! $article) {
             return null;
         }
 
@@ -202,7 +206,7 @@ class UserIssueController extends Controller
                 $stances = $issue->party_stances ?? [];
 
                 return collect($stances)
-                    ->flatMap(fn($list) => array_map('intval', (array) $list))
+                    ->flatMap(fn ($list) => array_map('intval', (array) $list))
                     ->filter();
             })
             ->unique()
@@ -228,6 +232,7 @@ class UserIssueController extends Controller
             $result[$key] = array_values(array_filter(array_map(
                 function ($id) use ($partyMap) {
                     $party = $partyMap->get($id);
+
                     return $party ? $this->serializeParty($party) : null;
                 },
                 $ids

@@ -121,3 +121,16 @@ Geen backend-, CMS-, database- of dependencywijziging in deze ontwerpstap. Besta
 - [x] Echte lokale CMS→WDNL-keten voor lezen/opslaan/kostencalculator gecontroleerd; geen politieke data naar CMS. Browser op 1440/390/320 pixels zonder pageerrors of paginabrede overflow. A4-voorbeeld met pdfinfo op één pagina en visueel gecontroleerd. Mobiele webassets opnieuw gegenereerd/gekopieerd; geen native signing, fysieke-devicecontrole of store-release.
 
 Zie REPORTS.md, PAYMENTS.md, ADS.md en ZSCHOTCMS.md voor configuratie, beperkingen en herstelbeleid. Stripe-keys/webhook, duurzame reportworker, echte sandboxbetalingen, native IAP, inhoudelijke bron-/dimensiekwaliteit en juridische/privacyreview blijven releasevoorwaarden. Deelrefunds/disputen en operationeel herstel vereisen nog een expliciete policy/test. Deze stap claimt geen volledige V2-releasegereedheid.
+
+
+## Neutraal stemmen en tijdelijke devrapporten — 8 november 2026
+
+- [x] Neutraal / maakt me niet uit / geen voorkeur als volwaardige derde keuze hersteld in de gedeelde stemkaart én backendvalidatie. Wordt opgeslagen, telt mee als antwoord, krijgt eigen percentage/aantal, staat in geschiedenis en verdwijnt uit de pending feed. Dubbele stemmen en e-mailverificatie blijven gecontroleerd.
+- [x] Verwarrende tekst over historische neutrale stemmen verwijderd uit de actuele uitslag en nieuwe rapporten/PDF. FAQ en methodologie aangepast. Neutraal levert geen politieke richting of partijovereenkomst op.
+- [x] Opvallende tijdelijke devknop in spel en rapportpagina, alleen met Nuxt dev + expliciet toegestane lokale demo-account. API vereist local environment, aangezette serverflag en exact geconfigureerd demo-e-mailadres. Lokale flag aangezet, voorbeeldconfig standaard uit.
+- [x] Echte eenpagina-PDF van eigen actuele antwoorden, code-only zonder minimumstemmen/fictieve inhoud, geen betaal- of LLM-aanroep. Encrypted cache, TTL één uur, idempotente aanvraagkey en rate limit. Geen nieuwe tabellen, orders of kostenmetingen. Bekijken en downloaden blijven eigenaar-/omgeving-gecontroleerd.
+- [x] 53 backendtests / 337 assertions geslaagd: neutraal opslaan/feeduitsluiting, behoud/duplicate rejection, productieblokkade ondanks actieve flag, niet-demo geweigerd, eigenaarcontrole, encryptie, expiratie en geen betaal/modelrecords. 10 unit tests/typecheck geslaagd; productiebuild geslaagd.
+- [x] 36 Playwright desktop/mobiel geslaagd: neutrale stem + eigen percentage + handmatig volgende, bestaande flows, en devknop afwezig zonder dev-accessrequests in productiebuild.
+- [x] Echte lokale browsercontrole met appdemo@mail.com op 1440/390/320 pixels: neutrale knop, devknop, generatie, rapportweergave en PDF-download werken zonder pageerrors/overflow. Geen stemmen gewijzigd, geen aankoop of betaalde modelaanroep gestart. pdfinfo bevestigt één A4-pagina. Tijdelijke testsessie ingetrokken; previewcache vervalt vanzelf.
+
+De ontwikkelknop is geen productiebetaalomzeiling. Normale rapportverkoop blijft apart beveiligd. Voor bestaande geïnstalleerde native apps is een nieuwe build nodig; de devknop wordt niet opgenomen als zichtbare bediening in de productiebuild.

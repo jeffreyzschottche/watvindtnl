@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Cms\ContentController;
 use App\Http\Controllers\Cms\ReportSettingsController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DevelopmentReportController;
 use App\Http\Controllers\IssueArgsController;
 use App\Http\Controllers\NewsArticleController;
 use App\Http\Controllers\PoliticalCompassController;
@@ -30,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
     Route::get('/me/votes', [UserIssueController::class, 'history']);
+    Route::get('/me/reports/dev-access', [DevelopmentReportController::class, 'access']);
+    Route::post('/me/reports/dev', [DevelopmentReportController::class, 'store'])->middleware('throttle:6,1');
+    Route::get('/me/reports/dev/{id}', [DevelopmentReportController::class, 'show'])->whereUuid('id');
+    Route::get('/me/reports/dev/{id}/pdf', [DevelopmentReportController::class, 'download'])->whereUuid('id');
     Route::get('/me/reports', [VoteReportController::class, 'index']);
     Route::get('/me/reports/{id}', [VoteReportController::class, 'show']);
     Route::get('/me/reports/{id}/pdf', [VoteReportController::class, 'download'])->middleware('throttle:reports');

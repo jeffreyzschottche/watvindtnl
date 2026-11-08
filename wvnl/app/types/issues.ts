@@ -70,7 +70,7 @@ export interface IssueVoteCounts {
   disagree: number;
   neutral: number;
 }
-export type NewIssueVoteOption = "agree" | "disagree";
+export type NewIssueVoteOption = IssueVoteOption;
 
 export type IssueVoteOption = "agree" | "disagree" | "neutral";
 

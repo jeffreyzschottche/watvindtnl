@@ -177,6 +177,19 @@ async function handleReport(reason: ReportReason) {
           </svg>
           <strong>Voor</strong><span>Ik ben het eens</span>
         </button>
+        <button
+          class="vote-choice vote-choice--neutral"
+          type="button"
+          :disabled="disabled"
+          @click="choose('neutral')"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M8 12h8" />
+          </svg>
+          <strong>Neutraal</strong
+          ><span>Maakt me niet uit / geen voorkeur</span>
+        </button>
       </div>
       <div v-else class="vote-card-v2__login">
         <p>Log in om je mening te geven en de uitslag te bekijken.</p>
@@ -216,7 +229,7 @@ async function handleReport(reason: ReportReason) {
       <div
         class="vote-card-v2__bar"
         role="img"
-        :aria-label="`${percentages.disagree}% tegen, ${percentages.agree}% voor, ${percentages.neutral}% historisch neutraal`"
+        :aria-label="`${percentages.disagree}% tegen, ${percentages.agree}% voor, ${percentages.neutral}% neutraal`"
       >
         <span class="against" :style="{ width: `${percentages.disagree}%` }" />
         <span class="neutral" :style="{ width: `${percentages.neutral}%` }" />
@@ -227,15 +240,14 @@ async function handleReport(reason: ReportReason) {
           <strong>{{ percentages.disagree }}%</strong>Tegen ·
           {{ counts.disagree }}
         </p>
+        <p class="neutral-text">
+          <strong>{{ percentages.neutral }}%</strong>Neutraal ·
+          {{ counts.neutral }}
+        </p>
         <p class="for-text">
           <strong>{{ percentages.agree }}%</strong>Voor · {{ counts.agree }}
         </p>
       </div>
-      <p v-if="counts.neutral" class="vote-card-v2__note">
-        {{ counts.neutral }} historische neutrale stemmen ({{
-          percentages.neutral
-        }}%) blijven meegeteld.
-      </p>
       <p class="vote-card-v2__note">
         {{ total }} {{ total === 1 ? "stem" : "stemmen" }} van WDNL-deelnemers.
         Deze uitslag is geen representatieve peiling van Nederland.
@@ -450,6 +462,10 @@ async function handleReport(reason: ReportReason) {
   text-align: left;
   font-size: 0.8rem;
 }
+.vote-card-v2__numbers .neutral-text {
+  text-align: center;
+  color: #526277;
+}
 .vote-card-v2__numbers p:last-child {
   text-align: right;
 }
@@ -582,5 +598,25 @@ async function handleReport(reason: ReportReason) {
   .vote-choice span {
     font-size: 0.72rem;
   }
+}
+.vote-choice.vote-choice--neutral {
+  grid-column: 1 / -1;
+  min-height: 90px;
+  padding: 1rem;
+  gap: 0.2rem;
+  color: #445671;
+  background: linear-gradient(145deg, #f8f9fc, #edf1f7);
+  border-color: #d6deea;
+  box-shadow: 0 4px 0 #d8e0ec;
+}
+.vote-choice--neutral svg {
+  width: 25px;
+  height: 25px;
+}
+.vote-choice--neutral strong {
+  font-size: 1rem;
+}
+.vote-choice--neutral span {
+  font-size: 0.76rem;
 }
 </style>

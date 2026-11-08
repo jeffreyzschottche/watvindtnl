@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'dev_enabled' => (bool) env('WDNL_DEV_REPORTS_ENABLED', false),
+    'dev_email' => env('WDNL_DEV_REPORT_EMAIL', 'appdemo@mail.com'),
     'openai_key' => env('OPENAI_API_KEY'),
     'deepseek_key' => env('DEEPSEEK_API_KEY'),
     'stripe_secret' => env('STRIPE_SECRET_KEY'),
