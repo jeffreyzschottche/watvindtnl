@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdSlot from "~/components/common/AdSlot.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 import MotionScene from "~/components/art/MotionScene.vue";
 import { faqItems } from "~/data/faq";
@@ -179,6 +180,9 @@ function origin(item: IssueWithArguments) {
       </div>
     </section>
 
+    <div class="container home-ad">
+      <AdSlot placement="home-tussen-secties" compact />
+    </div>
     <section class="how-section">
       <div class="container">
         <header class="section-heading section-heading--center" data-reveal>
@@ -252,12 +256,15 @@ function origin(item: IssueWithArguments) {
             Jouw keuzes.<br />Jouw verhaal.<br /><span>Jouw kompas.</span>
           </h2>
           <p>
-            Losse antwoorden vertellen samen meer. Ontdek straks welke waarden
-            terugkomen in jouw standpunten.
+            Losse antwoorden vertellen samen meer. Bekijk je keuzes samen in een
+            helder persoonlijk stemrapport.
           </p>
           <NuxtLink to="/kompas" class="button button-white"
             >Ontdek het kompas <AppIcon name="arrow" :size="18" /></NuxtLink
-          ><small>Het vernieuwde rapport is in ontwikkeling.</small>
+          ><small
+            >€1,99 per nieuw rapport. Eerdere rapporten blijven
+            beschikbaar.</small
+          >
         </div>
         <div class="compass-feature__art"><MotionScene kind="compass" /></div>
       </div>
@@ -297,6 +304,9 @@ function origin(item: IssueWithArguments) {
 </template>
 
 <style scoped>
+.home-ad {
+  padding-bottom: 3rem;
+}
 .home-v3 {
   background: #fff;
   overflow: clip;

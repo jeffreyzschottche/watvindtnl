@@ -1,6 +1,15 @@
 <script setup lang="ts">
 definePageMeta({ alias: "/kompas" });
 import MotionScene from "~/components/art/MotionScene.vue";
+import type { ReportProduct } from "~/types/voteReports";
+const product = ref<ReportProduct | null>(null);
+onMounted(async () => {
+  try {
+    product.value = await useApi().get<ReportProduct>("/reports/product");
+  } catch {
+    /* Product remains honestly unavailable. */
+  }
+});
 import AppIcon from "~/components/ui/AppIcon.vue";
 useSeoMeta({
   title: "Jouw politieke kompas | WatDenktNederland",
@@ -14,27 +23,34 @@ useSeoMeta({
       <p class="eyebrow">Jouw persoonlijke richting</p>
       <h1>Leer jezelf<br /><span>beter kennen.</span></h1>
       <p class="compass-page__lead">
-        Wat zeggen jouw keuzes samen? Het politieke kompas helpt je straks de
-        waarden en thema’s achter je antwoorden te ontdekken.
+        Wat zeggen jouw keuzes samen? Je persoonlijke stemrapport bundelt je
+        antwoorden in een helder A4-overzicht met tellingen en toelichting.
       </p>
       <ul>
         <li>
-          <AppIcon name="check" :size="18" /> Inzicht in je eigen standpunten
+          <AppIcon name="check" :size="18" /> Een overzicht van je vastgelegde
+          antwoorden
         </li>
         <li>
-          <AppIcon name="check" :size="18" /> Uitleg bij overeenkomsten met
-          partijen
+          <AppIcon name="check" :size="18" /> Partijovereenkomsten waar
+          voldoende brondata bestaat
         </li>
         <li>
-          <AppIcon name="check" :size="18" /> Een helder persoonlijk rapport
+          <AppIcon name="check" :size="18" /> Een vast persoonlijk A4-rapport
+          als PDF
         </li>
       </ul>
-      <NuxtLink to="/spel" class="button button-red"
-        >Begin met stemmen <AppIcon name="arrow" :size="18"
+      <NuxtLink to="/profiel/mijn-kompas" class="button button-red"
+        >Bekijk jouw rapportmogelijkheden <AppIcon name="arrow" :size="18"
       /></NuxtLink>
       <p class="compass-page__status">
-        Het vernieuwde kompas is in ontwikkeling. Het rapport wordt straks
-        eenmalig €1,99; het is nu nog niet te koop.
+        €1,99 per nieuw rapport. Een gekocht rapport blijft beschikbaar; later
+        opnieuw laten maken is een nieuwe aankoop.
+        {{
+          product?.checkout_available
+            ? ""
+            : "De verkoop wordt nog voorbereid; je kunt nu niet betalen."
+        }}
       </p>
     </section>
     <aside class="compass-page__art" data-reveal>
@@ -50,7 +66,9 @@ useSeoMeta({
       <p>
         Een politiek profiel is een hulpmiddel om over je eigen keuzes na te
         denken. Het is geen psychologische test of stemadvies. We leggen uit
-        welke antwoorden worden gebruikt en hoe overeenkomsten worden berekend.
+        welke antwoorden worden gebruikt en hoe beschikbare overeenkomsten
+        worden berekend. De verhouding voor/tegen is op zichzelf geen
+        links-rechtsscore.
       </p>
       <NuxtLink to="/methodologie">Lees meer over onze werkwijze →</NuxtLink>
     </section>

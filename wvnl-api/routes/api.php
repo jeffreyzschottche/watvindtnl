@@ -1,27 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\PasswordResetController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\IssueArgsController;
-use App\Http\Controllers\UserIssueController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Admin\AdminArgumentController;
 use App\Http\Controllers\Admin\AdminIssueController;
 use App\Http\Controllers\Admin\AdminPoliticalPartyController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Cms\ContentController;
+use App\Http\Controllers\Cms\ReportSettingsController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\PoliticalCompassController;
+use App\Http\Controllers\IssueArgsController;
 use App\Http\Controllers\NewsArticleController;
-
+use App\Http\Controllers\PoliticalCompassController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserIssueController;
+use App\Http\Controllers\VoteReportController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->middleware('throttle:password-reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:password-reset');
 Route::post('/contact', ContactController::class)->middleware('throttle:contact');
-
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -30,6 +30,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
     Route::get('/me/votes', [UserIssueController::class, 'history']);
+    Route::get('/me/reports', [VoteReportController::class, 'index']);
+    Route::get('/me/reports/{id}', [VoteReportController::class, 'show']);
+    Route::get('/me/reports/{id}/pdf', [VoteReportController::class, 'download'])->middleware('throttle:reports');
+    Route::post('/me/reports/orders', [VoteReportController::class, 'store'])->middleware('throttle:reports');
     Route::get('/me/political-compass', [PoliticalCompassController::class, 'show']);
     Route::post('/me/political-compass', [PoliticalCompassController::class, 'store'])->middleware('throttle:reports');
     Route::post('/issues/{issue}/vote', [UserIssueController::class, 'vote'])->middleware('throttle:voting');
@@ -65,17 +69,27 @@ Route::middleware(['auth:sanctum', 'admin.account', 'throttle:admin'])->prefix('
 
 // Separate content-only credentials: never accept an ordinary app/admin login here.
 Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])->group(function () {
-    Route::get('/', [\App\Http\Controllers\Cms\ContentController::class, 'overview']);
-    Route::get('/statements', [\App\Http\Controllers\Cms\ContentController::class, 'statements']);
-    Route::get('/statements/{issue}', [\App\Http\Controllers\Cms\ContentController::class, 'statement']);
-    Route::get('/motions', [\App\Http\Controllers\Cms\ContentController::class, 'motions']);
+    Route::get('/', [ContentController::class, 'overview']);
+    Route::get('/statements', [ContentController::class, 'statements']);
+    Route::get('/statements/{issue}', [ContentController::class, 'statement']);
+    Route::get('/motions', [ContentController::class, 'motions']);
     Route::middleware('cms.content:write')->group(function () {
-        Route::post('/parties/seed', [\App\Http\Controllers\Cms\ContentController::class, 'seedParties']);
-        Route::post('/parties', [\App\Http\Controllers\Cms\ContentController::class, 'saveParty']);
-        Route::patch('/parties/{party}', [\App\Http\Controllers\Cms\ContentController::class, 'saveParty']);
-        Route::post('/statements', [\App\Http\Controllers\Cms\ContentController::class, 'saveStatement']);
-        Route::post('/motions', [\App\Http\Controllers\Cms\ContentController::class, 'saveMotion']);
-        Route::post('/import', [\App\Http\Controllers\Cms\ContentController::class, 'import']);
-        Route::post('/motions/sync', [\App\Http\Controllers\Cms\ContentController::class, 'syncMotions'])->middleware('throttle:cms-motion-sync');
+        Route::post('/parties/seed', [ContentController::class, 'seedParties']);
+        Route::post('/parties', [ContentController::class, 'saveParty']);
+        Route::patch('/parties/{party}', [ContentController::class, 'saveParty']);
+        Route::post('/statements', [ContentController::class, 'saveStatement']);
+        Route::post('/motions', [ContentController::class, 'saveMotion']);
+        Route::post('/import', [ContentController::class, 'import']);
+        Route::post('/motions/sync', [ContentController::class, 'syncMotions'])->middleware('throttle:cms-motion-sync');
     });
+});
+
+Route::get('/reports/product', [VoteReportController::class, 'product']);
+Route::post('/reports/stripe-webhook', [VoteReportController::class, 'webhook']);
+
+Route::prefix('cms/reports')->middleware(['cms.content:read,reports', 'throttle:admin'])->group(function () {
+    Route::get('/settings', [ReportSettingsController::class, 'show']);
+    Route::get('/stats', [ReportSettingsController::class, 'stats']);
+    Route::post('/estimate', [ReportSettingsController::class, 'estimate']);
+    Route::post('/settings', [ReportSettingsController::class, 'save'])->middleware('cms.content:write,reports');
 });

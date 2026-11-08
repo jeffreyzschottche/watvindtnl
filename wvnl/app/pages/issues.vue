@@ -56,7 +56,8 @@
           Vernieuw
         </button>
       </div>
-      <AdSlot v-if="activeIssue?.user_vote" />
+      <AdSlot v-if="!loading && activeIssue" placement="spel-onder-stelling" />
+      <DemoAdDialog :open="adBreak.open.value" @close="adBreak.close" />
     </div>
     <IssueDetailModal
       v-if="isModalOpen"
@@ -77,6 +78,7 @@
 definePageMeta({ alias: "/spel" });
 import { computed, onMounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
+import DemoAdDialog from "~/components/common/DemoAdDialog.vue";
 import AdSlot from "~/components/common/AdSlot.vue";
 import IssueDetailModal from "~/components/issues/IssueDetailModal.vue";
 import IssueVoteCard from "~/components/issues/IssueVoteCard.vue";
@@ -126,6 +128,7 @@ const {
 } = issuesState;
 
 const auth = useAuthStore();
+const adBreak = useAdBreak();
 const { isLoggedIn, user, token } = storeToRefs(auth);
 
 const notifications = useNotificationStore();
@@ -189,7 +192,7 @@ function handleVote(choice: IssueVoteOption) {
 }
 
 function handleSkip() {
-  skip();
+  adBreak.next(Boolean(activeIssue.value?.user_vote), skip);
 }
 
 async function handleModalVote(choice: IssueVoteOption) {

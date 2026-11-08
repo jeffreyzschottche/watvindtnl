@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdSlot from "~/components/common/AdSlot.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 import { fetchIssuesWithArguments } from "~/services/issues";
 import type { IssueWithArguments } from "~/types/issues";
@@ -144,6 +145,7 @@ useSeoMeta({
             : `${items.length} ${items.length === 1 ? "stelling" : "stellingen"} in beeld${more ? " · Meer beschikbaar" : ""}`
       }}
     </p>
+    <AdSlot class="catalogue__ad" placement="overzicht" compact />
     <p v-if="error" role="alert" class="form-error">
       {{ error }}
       <button type="button" @click="load()">Opnieuw proberen</button>
@@ -214,6 +216,9 @@ useSeoMeta({
 .catalogue__heading > p:last-child {
   color: #63738a;
   font-size: 0.95rem;
+}
+.catalogue__ad {
+  margin: 1rem 0 1.5rem;
 }
 .catalogue__controls {
   position: relative;

@@ -4,19 +4,13 @@
       <div>
         <h2>Politiek kompas</h2>
         <p>
-          Analyseer je stemgedrag en ontdek welke politieke richting en partij
-          bij je passen.
+          Bekijk je eerdere analyse. Nieuwe stemrapporten vind je in je
+          rapportbibliotheek.
         </p>
       </div>
-      <button
-        v-if="overview && overview.can_generate"
-        type="button"
-        class="button"
-        :disabled="generating"
-        @click="generateCompass"
+      <NuxtLink to="/profiel/mijn-kompas" class="button"
+        >Nieuw stemrapport · €1,99</NuxtLink
       >
-        {{ generating ? "Bezig..." : "Genereer nieuw kompas" }}
-      </button>
     </header>
 
     <p v-if="loading" class="compass__status">Bezig met laden...</p>
@@ -28,19 +22,9 @@
         {{ successMessage }}
       </p>
 
-      <p v-if="overview && !overview.can_generate" class="compass__hint">
-        <template v-if="overview.vote_count < overview.minimum_votes">
-          Je hebt nog {{ votesNeeded }}
-          {{ votesNeeded === 1 ? "stem" : "stemmen" }} nodig om een kompas te
-          genereren. Stem op een issue om te starten.
-        </template>
-        <template v-else>
-          Je kunt één keer per dag een nieuw kompas genereren.
-          <template v-if="overview.next_available_at">
-            Volgende mogelijkheid:
-            {{ formatDateTime(overview.next_available_at) }}.
-          </template>
-        </template>
+      <p class="compass__hint">
+        Dit zijn analyses uit de eerdere versie. Een nieuw stemrapport is een
+        afzonderlijke aankoop; je eerdere analyses blijven hier bewaard.
       </p>
 
       <div v-if="overview && overview.latest" class="compass-card">
@@ -122,8 +106,8 @@
       <div v-else class="compass-empty">
         <h3>Nog geen politieke analyse</h3>
         <p>
-          Zodra je voldoende hebt gestemd kun je hier een politiek kompas
-          genereren en jouw profiel bekijken.
+          Je hebt geen analyse uit de eerdere versie. Bekijk je mogelijkheden
+          voor een nieuw stemrapport via de knop hierboven.
         </p>
       </div>
 
@@ -165,7 +149,7 @@ const api = useApi();
 
 const loading = ref(true);
 const error = ref<string | null>(null);
-const generating = ref(false);
+
 const successMessage = ref<string | null>(null);
 const overview = ref<PoliticalCompassOverview | null>(null);
 
@@ -213,7 +197,7 @@ async function loadOverview(options: { keepSuccess?: boolean } = {}) {
 
   try {
     overview.value = await api.get<PoliticalCompassOverview>(
-      "/me/political-compass"
+      "/me/political-compass",
     );
   } catch (err: unknown) {
     error.value = translateErrorMessage(err, {
@@ -221,33 +205,6 @@ async function loadOverview(options: { keepSuccess?: boolean } = {}) {
     });
   } finally {
     loading.value = false;
-  }
-}
-
-async function generateCompass() {
-  if (generating.value) return;
-  if (!overview.value) return;
-
-  const hasMinimumVotes =
-    overview.value.vote_count >= overview.value.minimum_votes;
-  if (!overview.value.can_generate || !hasMinimumVotes) {
-    return;
-  }
-
-  generating.value = true;
-  error.value = null;
-  successMessage.value = null;
-
-  try {
-    await api.post<PoliticalCompassEntry>("/me/political-compass");
-    successMessage.value = "Nieuw politiek kompas gegenereerd.";
-    await loadOverview({ keepSuccess: true });
-  } catch (err: unknown) {
-    error.value = translateErrorMessage(err, {
-      fallback: "Kon geen nieuw politiek kompas genereren.",
-    });
-  } finally {
-    generating.value = false;
   }
 }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
+import AdSlot from "~/components/common/AdSlot.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 const auth = useAuthStore();
 const name = computed(() => auth.user?.username || auth.user?.name || "Welkom");
@@ -54,16 +55,12 @@ useSeoMeta({
         <span class="profile-home__arrow"
           >Bekijk je stemgeschiedenis
           <AppIcon name="arrow" :size="16" /></span></NuxtLink
-      ><NuxtLink
-        :to="
-          auth.user?.premium ? '/profiel/instellingen?tab=compass' : '/kompas'
-        "
+      ><NuxtLink :to="'/profiel/mijn-kompas'"
         ><span class="profile-home__icon"><AppIcon name="compass" /></span>
         <h2>Mijn kompas</h2>
         <p>Ontdek meer over je politieke standpunten.</p>
         <span class="profile-home__arrow"
-          >{{ auth.user?.premium ? "Bekijk je kompas" : "Ontdek het kompas" }}
-          <AppIcon name="arrow" :size="16" /></span
+          >Bekijk je rapporten <AppIcon name="arrow" :size="16" /></span
       ></NuxtLink>
     </div>
     <h2 class="profile-home__subheading">Je account beheren</h2>
@@ -85,9 +82,13 @@ useSeoMeta({
         ><AppIcon name="chevron" :size="17"
       /></NuxtLink>
     </div>
+    <AdSlot class="profile-home__ad" placement="profiel-overzicht" compact />
   </section>
 </template>
 <style scoped>
+.profile-home__ad {
+  margin-top: 2rem;
+}
 .profile-home {
   max-width: 900px;
   padding-block: 48px 65px;

@@ -1,0 +1,212 @@
+diff --git a/backend/app/Integrations/Apps/Wdnl/ContentIntegration.php b/backend/app/Integrations/Apps/Wdnl/ContentIntegration.php
+--- a/backend/app/Integrations/Apps/Wdnl/ContentIntegration.php
++++ b/backend/app/Integrations/Apps/Wdnl/ContentIntegration.php
+@@ -50,6 +50,10 @@
+ 
+         return [
+             new Action('overview', 'Overzicht'),
++            new Action('report_settings', 'Rapportinstellingen'),
++            new Action('report_stats', 'Rapportkosten'),
++            new Action('save_report_settings', 'Rapportinstellingen opslaan', input: $payload, mutates: true),
++            new Action('estimate_report_cost', 'Rapportkosten schatten', input: $payload),
+             new Action('list_statements', 'Stellingen', input: $page),
+             new Action('get_statement', 'Stelling openen', input: [Field::number('id', 'ID')->required()]),
+             new Action('list_motions', 'Moties', input: $page),
+@@ -128,6 +132,11 @@
+         return $this->request($i, 'post', '/motions/sync', ['limit' => $limit]);
+     }
+ 
++    protected function actionReportSettings(ProjectIntegration $i): array { return $this->request($i, 'get', '/settings', [], 'reports'); }
++    protected function actionReportStats(ProjectIntegration $i): array { return $this->request($i, 'get', '/stats', [], 'reports'); }
++    protected function actionSaveReportSettings(ProjectIntegration $i, array $input): array { return $this->request($i, 'post', '/settings', $input['payload'], 'reports'); }
++    protected function actionEstimateReportCost(ProjectIntegration $i, array $input): array { return $this->request($i, 'post', '/estimate', $input['payload'], 'reports'); }
++
+     private function page(array $input): array
+     {
+         $page = isset($input['page']) ? $this->id(['id' => $input['page']]) : 1;
+@@ -145,7 +154,7 @@
+         return $id;
+     }
+ 
+-    private function raw(ProjectIntegration $i, string $method, string $path, array $data = [])
++    private function raw(ProjectIntegration $i, string $method, string $path, array $data = [], string $scope = 'content')
+     {
+         $this->require($i, 'api_base', 'admin_token');
+         $base = rtrim($i->setting('api_base'), '/');
+@@ -158,12 +167,12 @@
+             throw new IntegrationException('De API-URL mag geen inloggegevens, query of fragment bevatten.');
+         }
+ 
+-        return $this->http()->withOptions(['allow_redirects' => false])->withToken($i->setting('admin_token'))->{$method}($base.'/cms/content'.$path, $data);
++        return $this->http()->withOptions(['allow_redirects' => false])->withToken($i->setting('admin_token'))->{$method}($base.'/cms/'.$scope.$path, $data);
+     }
+ 
+-    private function request(ProjectIntegration $i, string $method, string $path, array $data = []): array
++    private function request(ProjectIntegration $i, string $method, string $path, array $data = [], string $scope = 'content'): array
+     {
+-        $response = $this->raw($i, $method, $path, $data);
++        $response = $this->raw($i, $method, $path, $data, $scope);
+         if ($response->status() === 422) {
+             $errors = collect($response->json('errors', []))->map(fn ($m, $f) => $f.': '.implode(' ', (array) $m))->implode('; ');
+             throw new IntegrationException('WDNL: '.($errors ?: 'De content voldoet niet aan de validatie.'));
+diff --git a/frontend/components/panels/WdnlContentPanel.vue b/frontend/components/panels/WdnlContentPanel.vue
+--- a/frontend/components/panels/WdnlContentPanel.vue
++++ b/frontend/components/panels/WdnlContentPanel.vue
+@@ -1,4 +1,5 @@
+ <script setup lang="ts">
++import WdnlReportPanel from './WdnlReportPanel.vue';
+ import type { Integration } from '~/types/Cms';
+ 
+ type Party = { id: number; name: string; abbreviation: string; slug: string; website_url: string | null };
+@@ -8,7 +9,7 @@
+ type Page<T> = { data: T[]; current_page: number; last_page: number; total: number };
+ const props = defineProps<{ integration: Integration }>();
+ const api = useIntegrationAction<any>(() => props.integration);
+-const tab = ref<'parties' | 'statements' | 'motions'>('statements');
++const tab = ref<'parties' | 'statements' | 'motions' | 'reports'>('statements');
+ const parties = ref<Party[]>([]);
+ const stats = ref({ statements_count: 0, motions_count: 0 });
+ const statements = ref<Page<Pick<Statement, 'id' | 'title' | 'slug'>>>({ data: [], current_page: 1, last_page: 1, total: 0 });
+@@ -34,6 +35,7 @@
+ }
+ async function load(page = 1) {
+   localError.value = '';
++  if (tab.value === 'reports') return;
+   if (tab.value === 'parties') return overview();
+   const result = await api.run(tab.value === 'statements' ? 'list_statements' : 'list_motions', { search: search.value, page });
+   if (result) {
+@@ -108,14 +110,15 @@
+       <p class="mt-1 text-sm text-slate-500">Eigen stellingen, nieuwsaanleidingen en officiële moties. Beheer hier de inhoud voor website, iOS en Android.</p>
+       <p class="mt-2 text-xs text-slate-500">{{ parties.length }} partijen/groepen · {{ stats.statements_count }} stellingen · {{ stats.motions_count }} gekoppelde bronmoties</p>
+       <div class="mt-4 flex flex-wrap gap-2" aria-label="Contentsoort">
+-        <button v-for="item in [{ key: 'statements', label: 'Stellingen' }, { key: 'parties', label: 'Partijen' }, { key: 'motions', label: 'Moties' }]" :key="item.key" class="btn-secondary" :class="{ 'bg-indigo-50 border-indigo-300': tab === item.key }" :disabled="busy" @click="changeTab(item.key as typeof tab)">{{ item.label }}</button>
++        <button v-for="item in [{ key: 'statements', label: 'Stellingen' }, { key: 'parties', label: 'Partijen' }, { key: 'motions', label: 'Moties' }, { key: 'reports', label: 'Rapporten & kosten' }]" :key="item.key" class="btn-secondary" :class="{ 'bg-indigo-50 border-indigo-300': tab === item.key }" :disabled="busy" @click="changeTab(item.key as typeof tab)">{{ item.label }}</button>
+       </div>
+     </div>
+     <ErrorAlert :message="api.error.value || localError" />
+     <p v-if="flash" role="status" class="rounded-lg bg-emerald-50 p-4 text-sm text-emerald-800">{{ flash }}</p>
+     <p v-if="busy" role="status" class="text-sm text-slate-500">Bezig…</p>
+ 
+-    <template v-if="tab === 'parties'">
++    <WdnlReportPanel v-if="tab === 'reports'" :integration="integration" />
++    <template v-else-if="tab === 'parties'">
+       <div class="flex flex-wrap gap-2">
+         <button class="btn-primary" :disabled="busy" @click="partyDraft = { name: '', abbreviation: '', slug: '', website_url: '' }">Partij toevoegen</button>
+         <button class="btn-secondary" :disabled="busy" @click="seedParties">Partijen seeden / bijwerken</button>
+@@ -150,7 +153,7 @@
+       <div class="flex items-center justify-between gap-3 text-sm"><button class="btn-secondary" :disabled="busy || (tab === 'statements' ? statements.current_page : motions.current_page) <= 1" @click="load((tab === 'statements' ? statements.current_page : motions.current_page) - 1)">Vorige</button><span>{{ tab === 'statements' ? statements.current_page : motions.current_page }} / {{ tab === 'statements' ? statements.last_page : motions.last_page }}</span><button class="btn-secondary" :disabled="busy || (tab === 'statements' ? statements.current_page >= statements.last_page : motions.current_page >= motions.last_page)" @click="load((tab === 'statements' ? statements.current_page : motions.current_page) + 1)">Volgende</button></div>
+     </template>
+ 
+-    <details class="card p-5"><summary class="cursor-pointer text-sm font-semibold">Contentbestand importeren / seeden</summary><p class="my-3 text-sm text-slate-500">Plak een JSON-object met parties, motions en/of statements. Maximaal 50 partijen, 25 moties en 25 stellingen per batch. Bij één fout wordt de hele batch teruggedraaid. Voor een wijziging aan een bestaande stelling/motie is de actuele revision nodig.</p><label class="label" for="wdnl-import">JSON-content</label><textarea id="wdnl-import" v-model="importText" rows="8" class="input font-mono text-xs" placeholder='{"parties": [], "motions": [], "statements": []}' /><button class="btn-primary mt-3" :disabled="busy || !importText.trim()" @click="importContent">Content importeren</button></details>
++    <details v-if="tab !== 'reports'" class="card p-5"><summary class="cursor-pointer text-sm font-semibold">Contentbestand importeren / seeden</summary><p class="my-3 text-sm text-slate-500">Plak een JSON-object met parties, motions en/of statements. Maximaal 50 partijen, 25 moties en 25 stellingen per batch. Bij één fout wordt de hele batch teruggedraaid. Voor een wijziging aan een bestaande stelling/motie is de actuele revision nodig.</p><label class="label" for="wdnl-import">JSON-content</label><textarea id="wdnl-import" v-model="importText" rows="8" class="input font-mono text-xs" placeholder='{"parties": [], "motions": [], "statements": []}' /><button class="btn-primary mt-3" :disabled="busy || !importText.trim()" @click="importContent">Content importeren</button></details>
+ 
+     <AppModal :open="!!partyDraft" :title="partyDraft?.id ? 'Partij wijzigen' : 'Partij toevoegen'" @close="partyDraft = null">
+       <form v-if="partyDraft" class="space-y-4" @submit.prevent="saveParty"><ErrorAlert :message="api.error.value" /><label class="block"><span class="label">Volledige naam</span><input v-model="partyDraft.name" required maxlength="255" class="input" /></label><label class="block"><span class="label">Afkorting</span><input v-model="partyDraft.abbreviation" required maxlength="20" class="input" /></label><label class="block"><span class="label">Vaste slug</span><input v-model="partyDraft.slug" required :disabled="!!partyDraft.id" pattern="[a-z0-9]+(-[a-z0-9]+)*" class="input" /></label><p class="text-xs text-slate-500">Een nieuwe fractie of naamswijziging krijgt een apart record. Zo houden oude moties de historische naam.</p><label class="block"><span class="label">Website (optioneel)</span><input v-model="partyDraft.website_url" type="url" class="input" /></label><button class="btn-primary" :disabled="busy">Partij opslaan</button></form>
+diff --git a/frontend/components/panels/WdnlReportPanel.vue b/frontend/components/panels/WdnlReportPanel.vue
+new file mode 100644
+--- /dev/null
++++ b/frontend/components/panels/WdnlReportPanel.vue
+@@ -0,0 +1,80 @@
++<script setup lang="ts">
++import type { Integration } from '~/types/Cms';
++type Settings = { provider: string; model: string; ai_enabled: boolean; max_iterations: number; max_output_tokens: number; max_input_bytes: number; max_cost_eur: number; input_usd_per_million: number; output_usd_per_million: number; usd_to_eur: number; pricing_multiplier: number; pricing_verified_on: string; minimum_votes: number; renew_after_votes: number };
++type Config = { settings: Settings; revision: number; models: Record<string, string[]>; price_presets: Record<string,{ input:number; output:number }>; credentials: Record<string, boolean>; sales_enabled: boolean; price_cents: number };
++type Stats = { completed_reports: number; attempts: number; unknown_usage_attempts: number; input_tokens: number; output_tokens: number; total_eur: number; average_eur: number | null };
++const props = defineProps<{ integration: Integration }>();
++const api = useIntegrationAction<unknown>(() => props.integration);
++const config = ref<Config | null>(null);
++const draft = ref<Settings | null>(null);
++const stats = ref<Stats | null>(null);
++const estimate = ref<{ estimated_eur: number; within_budget: boolean } | null>(null);
++const inputTokens = ref(10000);
++const outputTokens = ref(1500);
++const flash = ref('');
++const euro = (v: number) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(v);
++const fields = [
++  { key: 'max_iterations', label: 'Maximaal aantal pogingen', min: 1, max: 3, step: 1 },
++  { key: 'max_cost_eur', label: 'Maximaal AI-budget per rapport (€)', min: .001, max: .20, step: .001 },
++  { key: 'max_output_tokens', label: 'Outputlimiet per poging (inclusief redeneren)', min: 300, max: 4000, step: 100 },
++  { key: 'max_input_bytes', label: 'Maximale invoergrootte (bytes)', min: 4000, max: 64000, step: 1000 },
++  { key: 'input_usd_per_million', label: 'Inputprijs (USD per miljoen tokens)', min: .001, max: 100, step: .001 },
++  { key: 'output_usd_per_million', label: 'Outputprijs (USD per miljoen tokens)', min: .001, max: 500, step: .001 },
++  { key: 'usd_to_eur', label: 'Rekenkoers: 1 USD in EUR (handmatig)', min: .1, max: 3, step: .01 },
++  { key: 'pricing_multiplier', label: 'Veiligheidsfactor voor budgetreservering', min: 1, max: 3, step: .05 },
++  { key: 'minimum_votes', label: 'Minimaal aantal stemmen voor een rapport', min: 10, max: 200, step: 1 },
++  { key: 'renew_after_votes', label: 'Nieuwe stemmen vóór een updatevoorstel', min: 10, max: 200, step: 1 },
++] as const;
++function changeProvider() {
++  if (!draft.value || !config.value) return;
++  draft.value.model = config.value.models[draft.value.provider]?.[0] || '';
++  changeModel();
++}
++function changeModel() {
++  if (!draft.value) return;
++  const rates = config.value?.price_presets[draft.value.model];
++  if (rates) [draft.value.input_usd_per_million, draft.value.output_usd_per_million] = [rates.input, rates.output];
++  estimate.value = null;
++}
++async function load() {
++  const result = await api.run('report_settings') as Config | null;
++  if (!result) return;
++  config.value = result;
++  draft.value = { ...result.settings };
++  stats.value = await api.run('report_stats') as Stats | null;
++}
++async function save() {
++  if (!draft.value || !config.value) return;
++  const result = await api.run('save_report_settings', { payload: { ...draft.value, revision: config.value.revision } }) as Config | null;
++  if (result) { config.value = result; draft.value = { ...result.settings }; estimate.value = null; flash.value = 'Opgeslagen. Nieuwe aankopen gebruiken deze instellingen; eerdere rapporten blijven hetzelfde.'; }
++}
++async function calculate() {
++  estimate.value = await api.run('estimate_report_cost', { payload: { input_tokens: Number(inputTokens.value), output_tokens: Number(outputTokens.value) } }) as typeof estimate.value;
++}
++onMounted(load);
++</script>
++<template>
++  <section class="space-y-5">
++    <div class="card space-y-2 p-5"><h3 class="font-semibold">Eén aankoop, één vast rapport — € 1,99</h3><p class="text-sm text-slate-600">Opnieuw bekijken en downloaden blijft beschikbaar. Een nieuw rapport is een nieuwe aankoop. De applicatie maakt tellingen, grafieken en A4-opmaak; AI schrijft alleen korte toelichtingen.</p><p class="text-xs text-slate-500">Een updatevoorstel gebruikt het aantoonbare aantal nieuwe antwoorden. Er wordt geen politieke verschuiving verzonnen.</p></div>
++    <ErrorAlert :message="api.error.value" />
++    <p v-if="flash" role="status" class="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">{{ flash }}</p>
++    <p v-if="api.loading.value" role="status">Laden…</p>
++    <template v-if="draft && config">
++      <div class="grid gap-3 sm:grid-cols-3"><div class="card p-4"><p class="text-xs text-slate-500">Gegenereerde rapporten</p><strong class="text-2xl">{{ stats?.completed_reports ?? 0 }}</strong></div><div class="card p-4"><p class="text-xs text-slate-500">Gemiddelde AI-kosten per rapport</p><strong class="text-xl">{{ stats?.average_eur == null ? 'Nog geen metingen' : euro(stats.average_eur) }}</strong></div><div class="card p-4"><p class="text-xs text-slate-500">Berekende AI-kosten totaal</p><strong class="text-xl">{{ euro(stats?.total_eur ?? 0) }}</strong></div></div>
++      <p class="text-xs text-slate-500">Gebaseerd op ontvangen tokengebruik, ingestelde tarieven en rekenkoers; geen factuurbedrag of live valutakoers. Onbekend gebruik reserveert conservatief het maximale aanvraagbedrag. {{ stats?.unknown_usage_attempts ?? 0 }} pogingen met onbekend gebruik. Geen gebruikersgegevens of steminhoud zichtbaar in het CMS.</p>
++      <form class="card space-y-5 p-5" @submit.prevent="save">
++        <h3 class="font-semibold">Provider, model en kostenbegrenzing</h3>
++        <label class="flex items-start gap-2 text-sm"><input v-model="draft.ai_enabled" type="checkbox" class="mt-1" /><span>Korte AI-toelichting gebruiken na afzonderlijke toestemming. Zonder AI of bij een fout blijft de codeversie beschikbaar.</span></label>
++        <div class="grid gap-4 sm:grid-cols-2"><label><span class="label">LLM-provider</span><select v-model="draft.provider" class="input" @change="changeProvider"><option value="openai">OpenAI</option><option value="deepseek">DeepSeek</option></select></label><label><span class="label">Model</span><select v-model="draft.model" class="input" @change="changeModel"><option v-for="model in config.models[draft.provider]" :key="model">{{ model }}</option></select></label></div>
++        <p class="text-xs" :class="config.credentials[draft.provider] ? 'text-emerald-700' : 'text-amber-700'">{{ config.credentials[draft.provider] ? 'API-sleutel aanwezig in de WDNL-backend.' : 'API-sleutel ontbreekt. Voeg deze toe aan de beveiligde backendconfiguratie; de sleutel komt niet in het CMS of de app.' }}</p>
++        <p class="text-xs text-slate-500">Iteraties zijn maximaal toegestane herstelpogingen bij ongeldige tekst. Er wordt gestopt zodra één geldige tekst is ontvangen. Een time-out wordt niet blind opnieuw geprobeerd. €0,20 is een plafond, geen bedrag dat moet worden opgebruikt.</p>
++        <div class="grid gap-4 sm:grid-cols-2"><label v-for="field in fields" :key="field.key"><span class="label">{{ field.label }}</span><input v-model.number="draft[field.key]" type="number" required :min="field.min" :max="field.max" :step="field.step" class="input" /></label><label><span class="label">Tarieven gecontroleerd op</span><input v-model="draft.pricing_verified_on" type="date" required class="input" :max="new Date().toLocaleDateString('sv-SE')" /></label></div>
++        <p class="text-xs text-slate-500">Modelpresets: officiële tarieven gecontroleerd op 8 november 2026; DeepSeek gebruikt het hogere piektarief. Verifieer prijzen bij een modelwijziging. De budgetcontrole gebruikt deze tarieven; afwijkende providerfacturatie kan daarmee niet worden gegarandeerd.</p>
++        <button class="btn-primary" :disabled="api.loading.value">Rapportinstellingen opslaan</button>
++      </form>
++      <form class="card space-y-4 p-5" @submit.prevent="calculate"><h3 class="font-semibold">Kostenvoorbeeld zonder LLM-aanroep</h3><p class="text-xs text-slate-500">Gebruikt de opgeslagen instellingen, alle toegestane pogingen en de veiligheidsfactor. Grafieken en PDF-opmaak gebruiken geen LLM-tokens.</p><div class="grid gap-4 sm:grid-cols-2"><label><span class="label">Inputtokens</span><input v-model.number="inputTokens" type="number" min="0" max="100000" class="input" required /></label><label><span class="label">Outputtokens per poging</span><input v-model.number="outputTokens" type="number" min="0" max="4000" class="input" required /></label></div><button class="btn-secondary" :disabled="api.loading.value">Bereken kosten</button><p v-if="estimate" role="status" class="text-sm" :class="estimate.within_budget ? 'text-emerald-700' : 'text-red-700'">{{ euro(estimate.estimated_eur) }} · {{ estimate.within_budget ? 'Binnen het budget' : 'Boven het budget' }}</p></form>
++      <p class="rounded-lg bg-amber-50 p-4 text-sm text-amber-900">{{ config.sales_enabled ? 'Verkoop is aangezet in de backend; een bereikbare webhook en queueworker blijven vereist.' : 'Verkoop staat nog uit. Stripe-keys, webhook, worker en privacycontrole moeten vóór activering worden ingesteld. Native in-app aankopen wachten op de storeconfiguratie.' }}</p>
++    </template>
++    <button v-if="!api.loading.value" class="btn-secondary" @click="load">Instellingen en metingen vernieuwen</button>
++  </section>
++</template>
+diff --git a/backend/tests/Feature/WdnlContentTest.php b/backend/tests/Feature/WdnlContentTest.php
+--- a/backend/tests/Feature/WdnlContentTest.php
++++ b/backend/tests/Feature/WdnlContentTest.php
+@@ -40,6 +40,10 @@
+         Http::fake(['*' => Http::response(['ok' => true])]);
+         foreach ([
+             ['overview', [], 'GET', ''],
++            ['report_settings', [], 'GET', '#reports/settings'],
++            ['report_stats', [], 'GET', '#reports/stats'],
++            ['save_report_settings', ['payload' => ['model' => 'gpt-6-luna']], 'POST', '#reports/settings'],
++            ['estimate_report_cost', ['payload' => ['input_tokens' => 10000]], 'POST', '#reports/estimate'],
+             ['list_statements', ['search' => 'huur', 'page' => 2], 'GET', '/statements'],
+             ['get_statement', ['id' => 12], 'GET', '/statements/12'],
+             ['list_motions', [], 'GET', '/motions'],
+@@ -52,7 +56,7 @@
+             ['sync_motions', ['limit' => 10], 'POST', '/motions/sync'],
+         ] as [$action, $input, $method, $path]) {
+             $this->postJson($this->base.'/actions/'.$action, ['input' => $input])->assertOk();
+-            Http::assertSent(fn ($r) => $r->method() === $method && explode('?', $r->url())[0] === 'https://wdnl.test/api/cms/content'.$path && $r->hasHeader('Authorization', 'Bearer private-wdnl-token'));
++            Http::assertSent(fn ($r) => $r->method() === $method && explode('?', $r->url())[0] === 'https://wdnl.test/api/cms/'.(str_starts_with($path, '#reports') ? ltrim($path, '#') : 'content'.$path) && $r->hasHeader('Authorization', 'Bearer private-wdnl-token'));
+         }
+         $this->assertTrue(Activity::where('action', 'action.wdnl_content.seed_parties')->exists());
+         $this->assertTrue(Activity::where('action', 'action.wdnl_content.import_content')->exists());

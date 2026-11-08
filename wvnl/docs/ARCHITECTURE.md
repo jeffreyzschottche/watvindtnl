@@ -24,7 +24,7 @@ Genormaliseerde votes met unieke constraint en echte created_at voor nieuwe stem
 
 Web: HttpOnly secure sessie met CSRF; native: Sanctum tokens in keychain/keystore. Politieke consent is afzonderlijk, versieerbaar, intrekbaar en backend-verplicht. Geen persoonsgebonden stemdata naar advertenties. Kompasberekening deterministisch, uitleg en confidence apart; alleen optionele rapporttekst door LLM na passende toestemming en leverancierscontrole.
 
-Stripe web en RevenueCat native leveren events aan centrale entitlementledger. `political_compass_lifetime` is voorgestelde productbetekenis: levenslange toegang met begrensde hergeneratie. Webhook verwerkt idempotent, success redirect kent geen rechten toe. Geen checkout in native zolang storebeleid/configuratie niet geverifieerd is.
+Productbesluit 8 november 2026 vervangt lifetime: €1,99 koopt één vaste rapportsnapshot. Nieuwe generatie is een nieuwe aankoop; oude rapporten blijven downloadbaar. Stripe-webhooks vullen een centrale order-/eventadministratie, idempotent en zonder rechten via success-redirect. De nieuwe ReportOrder staat los van legacy premium. Code maakt tellingen en een A4-PDF; optionele providertekst heeft afzonderlijke consent en kostenbegrenzing. ZschotCMS beheert provider/model/pogingen/tarieven via aparte reportscopes en ziet uitsluitend geaggregeerde kosten. Zie REPORTS.md en PAYMENTS.md. RevenueCat/native consumable-rapportkredieten wachten op implementatie/configuratie; geen Stripe-checkout in native.
 
 ## ADR-005: referentieontwerp
 

@@ -4,15 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Services\PoliticalCompassService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\Response;
 
 class PoliticalCompassController extends Controller
 {
-    public function __construct(private readonly PoliticalCompassService $service)
-    {
-    }
+    public function __construct(private readonly PoliticalCompassService $service) {}
 
     public function show(Request $request)
     {
@@ -25,7 +20,7 @@ class PoliticalCompassController extends Controller
         $voteCount = count($voteIds);
         $minimumVotes = $this->service->minimumVotes();
 
-        $canGenerate = $voteCount >= $minimumVotes && $this->service->canGenerate($user);
+        $canGenerate = false; // Historical analyses remain readable; all new reports require a separate purchase.
         $nextAvailableAt = $voteCount >= $minimumVotes
             ? $this->service->nextAvailableAt($user)
             : null;
@@ -33,7 +28,7 @@ class PoliticalCompassController extends Controller
         return response()->json([
             'latest' => $latest ? $this->service->serializeCompass($latest) : null,
             'history' => $history
-                ->map(fn($item) => $this->service->serializeCompass($item))
+                ->map(fn ($item) => $this->service->serializeCompass($item))
                 ->values(),
             'can_generate' => $canGenerate,
             'next_available_at' => $nextAvailableAt?->toIso8601String(),
@@ -44,35 +39,6 @@ class PoliticalCompassController extends Controller
 
     public function store(Request $request)
     {
-        $user = $request->user();
-
-        $voteIds = array_map('intval', (array) ($user->voted_issue_ids ?? []));
-        $voteCount = count($voteIds);
-        $minimumVotes = $this->service->minimumVotes();
-
-        if ($voteCount < $minimumVotes) {
-            throw ValidationException::withMessages([
-                'votes' => "Je hebt minimaal {$minimumVotes} stemmen nodig voor een politiek kompas.",
-            ]);
-        }
-
-        if (!$this->service->canGenerate($user)) {
-            $next = $this->service->nextAvailableAt($user);
-
-            return response()->json([
-                'message' => 'Je kunt maximaal één keer per dag een politiek kompas genereren.',
-                'next_available_at' => $next?->toIso8601String(),
-            ], Response::HTTP_TOO_MANY_REQUESTS);
-        }
-
-        try {
-            $compass = $this->service->generate($user);
-        } catch (RuntimeException $exception) {
-            return response()->json([
-                'message' => $exception->getMessage(),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        return response()->json($this->service->serializeCompass($compass));
+        return response()->json(['message' => 'Een nieuw stemrapport is een afzonderlijke aankoop van €1,99. Eerdere rapporten blijven beschikbaar.', 'report_url' => '/profiel/mijn-kompas'], 409);
     }
 }

@@ -124,3 +124,13 @@ De editor bevat nu **Eigen maatschappelijke stelling**, **Stelling naar aanleidi
 - Homepage, FAQ en methodologie leggen uit dat WDNL eigen stellingen bij maatschappelijke onderwerpen en nieuws kan maken. Een verwijzing suggereert geen samenwerking of goedkeuring door een nieuwsredactie.
 
 Voor publicatie blijft de redactie verantwoordelijk voor inhoud en passende hergebruikrechten. Deze UI voegt geen licentie voor een externe nieuwsbron toe. Er zijn bij deze uitbreiding geen voorbeeldstellingen in de echte database geplaatst.
+
+## Rapporten & kosten — 8 november 2026
+
+Het extra tabblad **Rapporten & kosten** beheert de rapportprovider (OpenAI/DeepSeek), model, begrensde herstelpogingen, token-/bytegrenzen, tarieven/rekenkoers, maximaal €0,20 AI-budget en aantal nieuwe antwoorden vóór een updatevoorstel. De calculator doet geen LLM-aanroep. Tokenmetingen leveren geaggregeerde berekende kosten op; geen fictief gemiddelde zolang er geen rapporten zijn. Zie [REPORTS.md](REPORTS.md).
+
+Afzonderlijke `cms:reports:read` en `cms:reports:write`-rechten op `/api/cms/reports/settings`, `/stats` en `/estimate`. Bestaande contentsleutels krijgen geen extra bevoegdheden. `php artisan cms:content-token --reports --output=...` maakt bewust een nieuwe gecombineerde content-/rapportconfiguratietoken. De lokale WDNL-koppeling is hiermee opnieuw ingesteld; de token blijft server-side versleuteld opgeslagen. Rapportinhoud, individuele antwoorden en gebruikers gaan niet naar de CMS.
+
+Extra CMS-bestand: `frontend/components/panels/WdnlReportPanel.vue`; acties in bestaande ContentIntegration en parentpanel. De modeltariefpresets komen uit de centrale API. Wijzigingen vereisen een actuele revision en worden geaudit. Verkoop blijft lokaal uit tot Stripe/sandbox/worker/privacyconfiguratie klaar is. Echte native aankopen zijn nog niet aangesloten.
+
+Omdat de CMS-map geen Git-repository heeft, is de cumulatieve releasepatch voor deze rapportuitbreiding vastgelegd in `docs/integrations/zschotcms-reports.patch`. De patch is gecontroleerd tegen de oorspronkelijke vier bronbestanden en bevat geen credentials. Toepassen op een andere CMS-checkout vraagt dezelfde contentmodule als uitgangspunt; eerst `git apply --check` uitvoeren en lokale wijzigingen beoordelen. De lokale CMS-code is al aangepast: de patch daar niet opnieuw toepassen.

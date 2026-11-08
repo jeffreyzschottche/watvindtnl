@@ -4,6 +4,8 @@ Nuxt/Vue-webclient met Capacitor iOS/Android en een centrale Laravel-API in `../
 
 De interface gebruikt lokaal geladen Manrope (SIL OFL 1.1), transparante 3D-art en GSAP met pauzeren/reduced-motion. [Assetherkomst, prompts en fontlicentie](docs/ASSETS.md). [Toepassing van Laws of UX](docs/UX.md#laws-of-ux-toegepast--8-november-2026).
 
+Rapportbesluit: **€1,99 per nieuw A4-rapport**, eerder gekocht blijft downloadbaar. [CMS-instellingen, kostenbegrenzing en reportworker](docs/REPORTS.md), [Stripe-configuratie en native aankoopgrenzen](docs/PAYMENTS.md). Verkoop staat nog uit tot sandbox/configuratie gereed is. Demo-advertenties zijn zichtbaar in spel, overzicht, profiel en home; een voorbeeld opent via klik en een direct sluitbare pauze volgt na vijf afgeronde stemmen op handmatig Volgende. Zie [ADS.md](docs/ADS.md).
+
 ## Lokaal starten
 
 Benodigd: Node 24 LTS (zie `.nvmrc`), npm, PHP 8.3+, Composer, MySQL en een lokale mailopvang voor verificatie/reset. Redis is het doel voor productiequeues/cache/limiting; de huidige lokale backend kan database/filedrivers gebruiken.

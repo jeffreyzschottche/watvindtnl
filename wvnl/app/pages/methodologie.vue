@@ -68,6 +68,28 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
         <NuxtLink to="/contact">contact met ons opnemen</NuxtLink>. Kritisch
         blijven hoort erbij.
       </p>
+      <h2>Een persoonlijk stemrapport</h2>
+      <p>
+        Het rapport is een vast overzicht van je vastgelegde antwoorden op de
+        generatiedatum. Code telt de antwoorden, maakt de grafieken en vult de
+        A4-opmaak. Een korte AI-toelichting is optioneel en verandert geen
+        scores. De verhouding tussen voor en tegen zegt op zichzelf niets over
+        links of rechts.
+      </p>
+      <p>
+        Partijovereenkomsten verschijnen alleen vanaf tien verschillende,
+        redactioneel gecontroleerde motiekoppelingen per partij. Ontbrekende,
+        afwezige en neutrale partijstemmen worden niet ingevuld. Een
+        persoonlijkheidslabel of politieke aspositie wordt niet zonder een
+        gecontroleerde berekeningsmethode toegekend.
+      </p>
+      <p>
+        Een updatevoorstel benoemt uitsluitend aantoonbare nieuwe antwoorden
+        sinds je vorige rapport. Andere onderwerpen of meer antwoorden bewijzen
+        geen politieke verschuiving. Een nieuw rapport kost opnieuw €1,99;
+        eerder gekochte rapporten blijven beschikbaar om te bekijken en
+        downloaden.
+      </p>
     </div>
   </article>
 </template>

@@ -1,0 +1,2 @@
+# Release patches preserve the whitespace of their original diff context.
+docs/integrations/*.patch -whitespace

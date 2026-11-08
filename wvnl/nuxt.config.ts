@@ -3,7 +3,7 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      demoAds: process.env.DEMO_ADS === "1",
+      demoAds: process.env.DEMO_ADS === "1", // Local labelled placeholders; independent of live ads.
       adsEnabled: process.env.ADS_ENABLED === "1",
       apiBase:
         process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",

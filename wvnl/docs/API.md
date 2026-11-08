@@ -19,3 +19,9 @@ M2: versieerbare resources, cursor-meta, expliciete consent- en privacyroutes, g
 ## ZschotCMS-contentgrens (7 november 2026)
 
 `/api/cms/content` heeft een eigen beperkte bearer-token, los van app-/adminaccounts. Partijen, stellingen en bronmoties kunnen worden gelezen, gewijzigd en atomisch geïmporteerd. De API exporteert geen gebruikers, individuele stemmen of rapportages. Zie [ZSCHOTCMS.md](ZSCHOTCMS.md) voor alle routes, publicatievoorwaarden, revisions/contenthashes en live-configuratie.
+
+## Stemrapporten — 8 november 2026
+
+Publiek `GET /reports/product`: vaste prijs 199 EUR-cent, koop-/AI-beschikbaarheid en minimumstemmen. Auth: `GET /me/reports` (eigen aanvragen en aantoonbaar aantal nieuwe antwoorden), `GET /me/reports/{uuid}` (snapshot/narratief alleen bij klaar), `GET /me/reports/{uuid}/pdf` (eigen betaalde PDF), `POST /me/reports/orders` (UUID request_key, expliciete political_consent, optionele ai_consent en platform). Replays hergebruiken de aanvraag; bewust nieuwe request_key betekent afzonderlijke aankoop. Native checkout wordt geweigerd. Oude gratis `POST /me/political-compass` geeft 409 met verwijzing naar de afzonderlijke rapportaankoop; legacy historie is behouden.
+
+Stripe: `POST /reports/stripe-webhook`, SDK-signaturecheck, geen clientontgrendeling. Alleen passende bevestigde betaling maakt de order paid en dispatcht een reportjob. Success-redirect heeft geen rechtentoekenning. CMS: `GET/POST /cms/reports/settings`, `GET /cms/reports/stats`, `POST /cms/reports/estimate`, met afzonderlijke expliciete read/write-rechten. Geen rapportinhoud of individuele stemgegevens in CMS-responses. Details in REPORTS.md/PAYMENTS.md.
