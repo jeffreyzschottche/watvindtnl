@@ -6,6 +6,7 @@ use App\Models\Issue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -68,7 +69,7 @@ class DevelopmentReportsTest extends TestCase
         $user->update(['voted_issue_ids' => [$issue->id]]);
         $this->actingAs($user);
         $payload = ['request_key' => (string) Str::uuid()];
-        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
+        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'compass-v2.0')->assertJsonPath('snapshot.compass.version', 'compass-v2.0')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
         $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('id', $id);
         $this->getJson('/api/me/reports/dev/'.$id)->assertOk()->assertJsonPath('snapshot.entries.0.title', 'Mijn echte neutrale testantwoord');
         $pdf = $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertOk()->assertHeader('Content-Type', 'application/pdf');
@@ -140,5 +141,29 @@ class DevelopmentReportsTest extends TestCase
         $this->actingAs($this->demo())->postJson('/api/me/reports/dev', ['request_key' => (string) Str::uuid()])->assertUnprocessable();
         Http::assertSentCount(1);
         $this->assertDatabaseCount('wdnl_report_orders', 0);
+    }
+
+    public function test_old_cached_dev_layout_is_explicitly_rejected_without_model_calls(): void
+    {
+        $this->app->instance('env', 'local');
+        $user = $this->demo();
+        $id = (string) Str::uuid();
+        Cache::put('wdnl-dev-ai-report:'.$id, Crypt::encryptString(json_encode(['user_id' => (int) $user->id, 'report' => ['snapshot' => ['methodology_version' => 'vote-overview-v1']], 'pdf' => base64_encode('%PDF-old-preview')], JSON_THROW_ON_ERROR)), now()->addHour());
+        $this->actingAs($user)->getJson('/api/me/reports/dev/'.$id)->assertConflict()->assertJsonPath('message', 'Dit is een oude devrapportversie. Maak een nieuw devrapport voor de nieuwe kompasopmaak.');
+        $this->getJson('/api/me/reports/dev/'.$id.'/pdf')->assertConflict();
+        $this->actingAs(User::factory()->create())->getJson('/api/me/reports/dev/'.$id)->assertNotFound();
+        Http::assertNothingSent();
+    }
+
+    public function test_openai_schema_disallows_the_digits_that_the_server_also_rejects(): void
+    {
+        $this->app->instance('env', 'local');
+        $this->fakeResponse();
+        $this->actingAs($this->demo())->postJson('/api/me/reports/dev', ['request_key' => (string) Str::uuid()])->assertOk();
+        Http::assertSent(function ($request) {
+            $properties = $request['text']['format']['schema']['properties'];
+
+            return $properties['summary']['pattern'] === '^[^0-9<>:]{1,650}$' && $properties['reflection']['pattern'] === '^[^0-9<>:]{1,650}$' && str_contains($request['instructions'], 'Gebruik nergens cijfers');
+        });
     }
 }

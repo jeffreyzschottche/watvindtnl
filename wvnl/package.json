@@ -12,7 +12,8 @@
     "test": "vitest run",
     "check": "npm run test && npm run typecheck && npm run build",
     "test:e2e": "playwright test",
-    "build:mobile": "nuxt generate && cap copy"
+    "build:mobile": "nuxt generate && cap copy",
+    "test:dev-reports": "node tests/dev/report-loading.mjs"
   },
   "dependencies": {
     "@capacitor/android": "7.6.10",

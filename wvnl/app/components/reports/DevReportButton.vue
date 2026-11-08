@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth";
+import { reportGenerationError } from "~/utils/reportGenerationError";
 import type { VoteReport } from "~/types/voteReports";
 withDefaults(defineProps<{ floating?: boolean }>(), { floating: false });
 const auth = useAuthStore();
@@ -41,6 +42,11 @@ async function generate() {
       },
       { signal: AbortSignal.timeout(60000) },
     );
+    if (!report.snapshot?.compass) {
+      throw new Error(
+        "Je lokale API geeft nog de oude rapportversie terug. Herstart de backend om de nieuwe kompasopmaak te laden.",
+      );
+    }
     await navigateTo({
       path: "/kompas/rapport",
       query: { dev_report: report.id },
@@ -48,10 +54,7 @@ async function generate() {
     requestKey = "";
   } catch (e) {
     requestKey = "";
-    error.value =
-      e instanceof Error
-        ? e.message
-        : "Het devrapport kon niet worden gemaakt.";
+    error.value = reportGenerationError(e);
   } finally {
     pending.value = false;
   }
@@ -70,7 +73,7 @@ onBeforeUnmount(() => {
     :class="{ 'dev-report--floating': floating }"
     aria-label="Tijdelijke ontwikkeltool"
   >
-    <span class="dev-report__badge">ALLEEN LOCAL DEV</span>
+    <span class="dev-report__badge">ALLEEN LOCAL DEV · KOMPAS V2</span>
     <button
       class="dev-report__button"
       type="button"

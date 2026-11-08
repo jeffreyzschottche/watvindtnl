@@ -22,3 +22,13 @@ Nieuwe regressies: eigen stellingen zonder motie/bron; nieuws met verplichte bro
 Live lokaal: het bestaande backend-env-model was bij de controle `gpt-6-luna`; een echte generatie leverde 395 input- en 97 outputtokens. Een eerste generatie werd door de tekstvalidatie afgewezen; zichtbaar foutpad, geen codefallback of automatische retry. Een afzonderlijke diagnostische aanvraag slaagde zonder ruwe tekst/key te loggen. De geslaagde preview is op 1440/390/320px geopend en als één A4 gedownload. De testlogin is ingetrokken. Er zijn nul redactionele mappings in de lokale DB; het echte rapport toont dus correct ‘in opbouw’. Geen partijpercentages uit testdata worden als echte resultaten getoond.
 
 Webcheck (`npm run check`), CMS-typecheck/build en 5 CMS-koppeltests / 60 assertions geslaagd. CMS behoudt de reeds bekende niet-blokkerende Volar/Tailwind-waarschuwingen. Mobiele statische generatie en Capacitor-copy geslaagd; geen native binary/device-download- of storetest geclaimd.
+
+
+## Laden van tijdelijke rapporten
+
+Met een actieve Nuxt-devserver op poort 3000: `npm run test:dev-reports`. Zes afzonderlijke browserregressies met volledig onderschept API-verkeer, zonder echte gebruikersdata/modelkosten: een geldig devrapport bij falend overzicht, de paarse knop naar de nieuwe V2-weergave, een vertraagde oude aanvraag na een nieuwe selectie, een verlopen preview zonder achterblijvend vorig rapport, een oude cached layout en een verouderd generatieantwoord. Geen pageerrors.
+
+De pagina laadt het gekozen rapport onafhankelijk van het aankoopoverzicht en bewaakt alle antwoorden met dezelfde requestversie. Bij een nieuwe selectie wordt het vorige rapport verwijderd. 404/409 voor previews krijgen herstelbare meldingen. Alleen tijdelijke previews met de actuele snapshotversie zijn opvraagbaar; betaalde historische rapporten blijven ondersteund. De gerichte backendtests voor deze devflow: 9 tests / 69 assertions.
+
+
+Aanvulling generatie: `tests/report-generation.test.ts` controleert de zichtbare gecontroleerde 422-oorzaak, gesanitiseerde providerdiagnostiek, verborgen overige serverdetails en timeouts. 14 frontend-unitchecks totaal. `npm run test:dev-reports` bevat nu ook de profiel-alias en een afgewezen modelantwoord dat als echte servicefout zichtbaar moet zijn. Live generatie op /profiel/mijn-kompas: 18 antwoorden, Luna, 417 input-/102 outputtokens, circa €0,000093; actuele layout en PDF-download bevestigd, geen pageerrors. Geen betaalde purchase of stemmutatie.

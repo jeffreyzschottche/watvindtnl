@@ -101,3 +101,10 @@ De PDF blijft één A4 met selecteerbare tekst en scherpe SVG-art. Dompdf gebrui
 Een duidelijk gemarkeerd voorbeeld met fictieve antwoorden én fictieve partijen staat op `/examples/WDNL-kompas-voorbeeld.pdf`, gelinkt vanaf `/kompas`. Regenereren: `php scripts/design/render-compass-example.php` vanuit de frontend, met naastliggende geïnstalleerde backend. Dit script gebruikt geen accountgegevens, LLM of databasewrites. Native assets worden meegenomen met `npm run build:mobile`. Geen geïnstalleerde app-update of store-release wordt hierdoor automatisch uitgevoerd.
 
 Oudere gekochte snapshots worden niet opnieuw berekend of overschreven. Bewaarde v1-snapshots en PDF's blijven geldig. Nieuwe redactionele gewichten veranderen alleen volgende rapporten. Releasesequentie, lokale backup en rollback: MIGRATION_PLAN.md.
+
+
+### Generatievalidatie en foutmeldingen
+
+De OpenAI-tekstvelden hebben een strikt JSON-schema met pattern `^[^0-9<>:]{1,650}$`; dit sluit aan op de eigen validatie (geen cijfers/HTML/URL, begrensde lengte). De prompt vraagt expliciet geen cijfers, ook geen bestaande invoeraantallen, en maximaal vijfenveertig woorden per veld. Dit voorkomt de eerdere tegenstrijdigheid ‘geen nieuwe cijfers’ tegenover een validator die alle cijfers weigerde. Ondersteunde patroonvalidatie gecontroleerd in de [officiële OpenAI Structured Outputs-documentatie](https://developers.openai.com/api/docs/guides/structured-outputs). DeepSeek behoudt de eigen JSON-adapter en servervalidatie.
+
+De devknop gebruikt `reportGenerationError`: alleen gecontroleerde rapportserviceberichten bij 422 worden overgenomen uit rawMessage. Daardoor blijft bijvoorbeeld ‘OpenAI gaf rapporttekst…’ zichtbaar in plaats van ‘Controleer de invoer’. Onbekende debugdetails/5xx blijven vertaald. Geen automatische extra modelcall of stille fallback.

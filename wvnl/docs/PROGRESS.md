@@ -157,3 +157,21 @@ De ontwikkelknop is geen productiebetaalomzeiling. Normale rapportverkoop blijft
 - [x] Echte lokale Luna-preview (395 input, 97 output) en eenpagina-download gecontroleerd op 1440/390/320px, geen pageerrors/overflow. Eén eerder modelantwoord zichtbaar geweigerd door tekstvalidatie; afzonderlijke aanvraag slaagde. Geen automatische herstelcall/fallback, geen stemmen of aankoop gewijzigd. Tijdelijke QA-login ingetrokken.
 
 Nog nodig: redactionele weging van echte stellingen, validatie van die inhoudelijke methode, eerder beschreven betaal-/store-/privacyreleasecontroles. Deze stap levert de opmaak en werkende berekenings-/downloadketen; geen gefingeerd gevuld gebruikersprofiel.
+
+
+## Herstel laadflow tijdelijke rapporten — 8 november 2026
+
+- [x] Actieve lokale API bevestigd op compass-v2.0; het bestaande actuele demo-devrapport is opvraagbaar en toont de nieuwe kompasheader. Geen nieuwe modelaanroep nodig voor deze controle.
+- [x] Gekozen rapport onafhankelijk geladen van het aankoop-/rapportoverzicht. Een fout in dat overzicht blokkeert de devpreview/PDF niet meer. Gemeenschappelijke requestversie voorkomt dat trage oude aanvragen de nieuwe selectie of foutmelding overschrijven; vorige rapportweergave wordt bij navigatie gewist.
+- [x] Tijdelijke 404/409, verlopen sessies en rate limits krijgen concrete foutmeldingen. Oude tijdelijke layouts worden expliciet geweigerd; de paarse knop controleert het generatieantwoord vóór navigatie. Betaalde historische rapporten behouden hun v1-weergave.
+- [x] Zes dev-browserregressies geslaagd met geïsoleerde fixtures; negen backendtests / 69 assertions geslaagd voor productie-/eigenaarsblokkade, modelkeuze, versiecontrole en expiry. Frontend-unitchecks, typecheck en productiebuild geslaagd. Geen gebruikers-/stemwijzigingen of extra modelkosten.
+
+
+## Generatiefout achter ‘Controleer de invoer’ — 8 november 2026
+
+- [x] Screenshot van /profiel/mijn-kompas gekoppeld aan de werkelijk bewaarde mislukte generatieaanvragen: rapporttekst voldeed niet aan validatie. De prompt verbood alleen nieuwe cijfers, terwijl de validator alle cijfers afwees. Instructie nu expliciet zonder cijfers, ook bestaande invoeraantallen; OpenAI JSON-schema begrenst dezelfde tekens en lengte met een ondersteund pattern. Model/key onveranderd uit backend-env. Geen automatische extra herstelcalls of codefallback.
+- [x] Devknop toont de door de rapportservice gecontroleerde, gesanitiseerde 422-melding in plaats van de generieke formuliervertaling. Onbekende ruwe serverdetails blijven afgeschermd. Vier gerichte frontendtests toegevoegd; de aparte dev-browserchecks uitgebreid met deze regressie en de profiel-alias.
+- [x] Echte generatie met de paarse knop op exact /profiel/mijn-kompas geslaagd met 18 eigen antwoorden, gpt-6-luna, 417 input-/102 outputtokens en berekend €0,000093. Actuele compass-v2.0-header zichtbaar, geen pageerrors; PDF succesvol gedownload. Voldoende themagewichten ontbreken nog, dus geen type/percentages verzonnen. Tijdelijke QA-token direct ingetrokken.
+- [x] 14 frontend-unitchecks en typecheck geslaagd; 22 gerichte backendrapporttests / 179 assertions geslaagd. Bestaande 40 productie-browserflows waren na de laadflowfix geslaagd. Geen stemmen of betalingen gewijzigd.
+
+- [x] Afronding: zeven geïsoleerde dev-browserchecks geslaagd (inclusief de profiel-URL en echte 422-oorzaak), definitieve webbuild en mobiele assetgeneratie/Capacitor-copy geslaagd. De werkelijk gedownloade nieuwe PDF is één A4-pagina.

@@ -10,6 +10,8 @@ const route = useRoute();
 const overview = ref<ReportOverview | null>(null);
 const report = ref<VoteReport | null>(null);
 const loading = ref(true);
+const reportLoading = ref(false);
+const overviewError = ref("");
 const pending = ref(false);
 const error = ref("");
 const politicalConsent = ref(false);
@@ -41,50 +43,98 @@ const date = (value: string) =>
   new Intl.DateTimeFormat("nl-NL", { dateStyle: "medium" }).format(
     new Date(value),
   );
+function reportMessage(cause: unknown, development: boolean): string {
+  const status = (cause as { statusCode?: number } | null)?.statusCode;
+  if (status === 401)
+    return "Je sessie is verlopen. Log opnieuw in om je rapport te bekijken.";
+  if (development && status === 404)
+    return "Dit tijdelijke devrapport is verlopen of niet beschikbaar. Maak met de paarse knop een nieuw rapport.";
+  if (development && status === 409)
+    return "Dit is een oude devrapportversie. Maak met de paarse knop een nieuw rapport voor de nieuwe kompasopmaak.";
+  if (status === 429)
+    return "Even te veel aanvragen. Wacht een moment en probeer opnieuw.";
+  return development
+    ? "Je devrapport kon niet worden opgehaald. Controleer of de lokale API op poort 8000 draait en probeer opnieuw."
+    : "Dit rapport kon niet worden geladen. Probeer het opnieuw.";
+}
+async function fetchReport(id: string, development: boolean, request: number) {
+  if (disposed || request !== detailRequest) return;
+  reportLoading.value = true;
+  try {
+    const result = await api.get<VoteReport>(
+      `/me/reports/${development ? "dev/" : ""}${encodeURIComponent(id)}`,
+    );
+    if (disposed || request !== detailRequest) return;
+    if (development && !result.snapshot?.compass) {
+      error.value =
+        "Dit is een oude devrapportversie. Maak met de paarse knop een nieuw rapport voor de nieuwe kompasopmaak.";
+      return;
+    }
+    report.value = result;
+    if (
+      !development &&
+      ["pending", "paid", "generating"].includes(result.status) &&
+      polls++ < 30
+    ) {
+      timer = setTimeout(() => {
+        void fetchReport(id, false, request);
+      }, 3000);
+    }
+  } catch (cause) {
+    if (!disposed && request === detailRequest)
+      error.value = reportMessage(cause, development);
+  } finally {
+    if (!disposed && request === detailRequest) reportLoading.value = false;
+  }
+}
 async function openReport(id: string) {
   clearTimeout(timer);
   const request = ++detailRequest;
   error.value = "";
-  try {
-    const result = await api.get<VoteReport>(
-      `/me/reports/${encodeURIComponent(id)}`,
-    );
-    if (disposed || request !== detailRequest) return;
-    report.value = result;
-    if (
-      !disposed &&
-      ["pending", "paid", "generating"].includes(report.value.status) &&
-      polls++ < 30
-    )
-      timer = setTimeout(() => {
-        void openReport(id);
-      }, 3000);
-  } catch {
-    error.value = "Dit rapport kon niet worden geladen. Probeer het opnieuw.";
-  }
+  report.value = null;
+  await fetchReport(id, false, request);
 }
 async function load() {
   clearTimeout(timer);
+  const request = ++detailRequest;
   polls = 0;
   loading.value = true;
+  reportLoading.value = false;
   error.value = "";
-  try {
-    overview.value = await api.get<ReportOverview>("/me/reports");
-    const id =
-      typeof route.query.order === "string"
-        ? route.query.order
-        : overview.value.orders.find((o) => o.status === "ready")?.id;
-    if (import.meta.dev && typeof route.query.dev_report === "string") {
-      report.value = await api.get<VoteReport>(
-        `/me/reports/dev/${encodeURIComponent(route.query.dev_report)}`,
-      );
-    } else if (id) await openReport(id);
-  } catch {
-    error.value =
-      "Je rapporten konden niet worden geladen. Probeer het opnieuw.";
-  } finally {
-    loading.value = false;
-  }
+  overviewError.value = "";
+  overview.value = null;
+  report.value = null;
+  const development =
+    import.meta.dev && typeof route.query.dev_report === "string";
+  const id = development
+    ? String(route.query.dev_report)
+    : typeof route.query.order === "string"
+      ? route.query.order
+      : null;
+  const overviewTask = (async () => {
+    try {
+      const result = await api.get<ReportOverview>("/me/reports");
+      if (disposed || request !== detailRequest) return;
+      overview.value = result;
+      if (!id) {
+        const latest = result.orders.find((order) => order.status === "ready");
+        if (latest) await fetchReport(latest.id, false, request);
+      }
+    } catch (cause) {
+      if (!disposed && request === detailRequest) {
+        overviewError.value =
+          (cause as { statusCode?: number } | null)?.statusCode === 401
+            ? "Je sessie is verlopen. Log opnieuw in."
+            : "Het rapportoverzicht kon niet worden geladen. Je geopende rapport kun je hieronder wel bekijken als het beschikbaar is.";
+      }
+    } finally {
+      if (!disposed && request === detailRequest) loading.value = false;
+    }
+  })();
+  await Promise.allSettled([
+    overviewTask,
+    id ? fetchReport(id, development, request) : Promise.resolve(),
+  ]);
 }
 async function buy() {
   if (!canBuy.value || !politicalConsent.value || pending.value) return;
@@ -152,6 +202,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   disposed = true;
+  detailRequest++;
   clearTimeout(timer);
 });
 watch(() => [route.query.order, route.query.dev_report], load);
@@ -179,8 +230,12 @@ useSeoMeta({
     <DevReportButton />
     <p v-if="loading" role="status">Je rapporten worden geladen…</p>
     <p v-if="error" role="alert" class="form-error">{{ error }}</p>
+    <p v-if="overviewError" role="alert" class="form-error">
+      {{ overviewError }}
+    </p>
+    <p v-if="reportLoading" role="status">Je gekozen rapport wordt geladen…</p>
     <button
-      v-if="error"
+      v-if="error || overviewError"
       type="button"
       class="button button-secondary"
       @click="load"
@@ -327,66 +382,65 @@ useSeoMeta({
           </button>
         </section>
       </div>
-      <section v-if="report" class="reports-page__result">
-        <div class="reports-page__result-heading">
-          <div>
-            <h2>{{ statusLabels[report.status] }}</h2>
-            <p
-              v-if="
-                route.query.betaling === 'geannuleerd' &&
-                report.status === 'pending'
-              "
-            >
-              Je hebt de betaalpagina verlaten. Alleen een bevestigde betaling
-              ontgrendelt je rapport.
-            </p>
-            <p
-              v-if="['paid', 'generating'].includes(report.status)"
-              role="status"
-            >
-              Je antwoorden staan vast. Zodra de verwerking klaar is verschijnt
-              je rapport hier.
-            </p>
-            <p v-if="report.status === 'failed'">
-              Je eerdere betaling blijft geregistreerd. Neem contact op voor
-              herstel of terugbetaling; koop hiervoor geen tweede rapport.
-            </p>
-          </div>
-          <button
-            v-if="report.download_available"
-            class="button"
-            :disabled="pending"
-            @click="download"
-          >
-            Download PDF ↓
-          </button>
-        </div>
-        <p v-if="report.is_development" class="reports-page__hint">
-          Lokaal devrapport · OpenAI-model: {{ report.generation_model }} ·
-          vervalt na één uur. Geen rapportaankoop; wel API-tokenkosten.
-          <span v-if="report.generation_usage"
-            >{{ report.generation_usage.input_tokens }} inputtokens /
-            {{ report.generation_usage.output_tokens }} outputtokens · berekend
-            €{{ report.generation_usage.estimated_cost_eur.toFixed(5) }}.</span
-          >
-        </p>
-        <ReportSheet
-          v-if="report.status === 'ready'"
-          :report="report"
-        /><NuxtLink v-if="report.status === 'failed'" to="/contact"
-          >Neem contact op →</NuxtLink
-        ><button
-          v-if="['paid', 'generating', 'pending'].includes(report.status)"
-          class="button button-secondary"
-          @click="
-            polls = 0;
-            openReport(report.id);
-          "
-        >
-          Status vernieuwen
-        </button>
-      </section>
     </template>
+    <section v-if="report" class="reports-page__result">
+      <div class="reports-page__result-heading">
+        <div>
+          <h2>{{ statusLabels[report.status] }}</h2>
+          <p
+            v-if="
+              route.query.betaling === 'geannuleerd' &&
+              report.status === 'pending'
+            "
+          >
+            Je hebt de betaalpagina verlaten. Alleen een bevestigde betaling
+            ontgrendelt je rapport.
+          </p>
+          <p
+            v-if="['paid', 'generating'].includes(report.status)"
+            role="status"
+          >
+            Je antwoorden staan vast. Zodra de verwerking klaar is verschijnt je
+            rapport hier.
+          </p>
+          <p v-if="report.status === 'failed'">
+            Je eerdere betaling blijft geregistreerd. Neem contact op voor
+            herstel of terugbetaling; koop hiervoor geen tweede rapport.
+          </p>
+        </div>
+        <button
+          v-if="report.download_available"
+          class="button"
+          :disabled="pending"
+          @click="download"
+        >
+          Download PDF ↓
+        </button>
+      </div>
+      <p v-if="report.is_development" class="reports-page__hint">
+        Lokaal devrapport · OpenAI-model: {{ report.generation_model }} ·
+        vervalt na één uur. Geen rapportaankoop; wel API-tokenkosten.
+        <span v-if="report.generation_usage"
+          >{{ report.generation_usage.input_tokens }} inputtokens /
+          {{ report.generation_usage.output_tokens }} outputtokens · berekend
+          €{{ report.generation_usage.estimated_cost_eur.toFixed(5) }}.</span
+        >
+      </p>
+      <ReportSheet v-if="report.status === 'ready'" :report="report" /><NuxtLink
+        v-if="report.status === 'failed'"
+        to="/contact"
+        >Neem contact op →</NuxtLink
+      ><button
+        v-if="['paid', 'generating', 'pending'].includes(report.status)"
+        class="button button-secondary"
+        @click="
+          polls = 0;
+          openReport(report.id);
+        "
+      >
+        Status vernieuwen
+      </button>
+    </section>
   </section>
 </template>
 <style scoped>
