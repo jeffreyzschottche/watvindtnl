@@ -25,6 +25,7 @@ const canBuy = computed(
     !!overview.value &&
     overview.value.vote_count >= overview.value.product.minimum_votes &&
     overview.value.product.checkout_available &&
+    overview.value.compass_progress?.ready !== false &&
     !isNative.value,
 );
 const statusLabels: Record<VoteReport["status"], string> = {
@@ -209,8 +210,8 @@ useSeoMeta({
           </h2>
           <p>
             {{ overview.vote_count }} stellingen beantwoord. We bundelen je
-            antwoorden in een helder A4-overzicht met tellingen, voorbeelden en
-            beschikbare partijovereenkomsten.
+            antwoorden in jouw politieke kompas: een typekaart, gewogen
+            themascores, een economische as en beschikbare partijovereenkomsten.
           </p>
           <p>
             Dit rapport blijft bewaard. Later opnieuw downloaden kost niets; een
@@ -230,6 +231,28 @@ useSeoMeta({
             class="button"
             >Verder met stemmen →</NuxtLink
           >
+          <div
+            v-else-if="overview.compass_progress?.ready === false"
+            class="reports-page__hint"
+          >
+            <strong>Je kompas is nog in opbouw.</strong>
+            <p>
+              Voor een volledig rapport zijn meer antwoorden op redactioneel
+              gewogen stellingen nodig. Je kunt tot die tijd geen rapport kopen.
+            </p>
+            <ul>
+              <li
+                v-for="dimension in overview.compass_progress.dimensions"
+                :key="dimension.name"
+              >
+                {{ dimension.name }}: {{ dimension.compared }}/{{
+                  dimension.minimum
+                }}
+                benodigde gewogen antwoorden
+              </li>
+            </ul>
+            <NuxtLink to="/spel">Verder met stemmen →</NuxtLink>
+          </div>
           <p v-else-if="isNative" class="reports-page__hint">
             Nieuwe rapporten kopen in de app is nog niet beschikbaar. Eerder
             gekochte rapporten kun je hier wel bekijken.

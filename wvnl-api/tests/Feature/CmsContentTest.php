@@ -219,4 +219,22 @@ class CmsContentTest extends TestCase
         $this->getJson('/api/cms/content/statements')->assertOk()->assertJsonCount(20, 'data')->assertJsonPath('total', 26)->assertDontSee('918273');
         $this->getJson('/api/cms/content/statements?search=zoekterm')->assertOk()->assertJsonCount(1, 'data')->assertJsonPath('data.0.slug', 'uniek');
     }
+
+    public function test_compass_weights_are_validated_audited_and_preserved_by_older_cms_clients(): void
+    {
+        $this->token();
+        $payload = $this->statementPayload('weighted-statement');
+        $payload['compass_weights'] = ['social' => 2, 'economic' => -1];
+        $created = $this->postJson('/api/cms/content/statements', $payload)->assertOk()->assertJsonPath('compass_weights.social', 2)->json();
+        $this->assertStringContainsString('compass_weights', DB::table('wdnl_content_audits')->latest('id')->value('after'));
+        unset($payload['compass_weights']);
+        $payload['description'] = 'Een kleine neutrale toelichtingscorrectie.';
+        $payload['revision'] = $created['revision'];
+        $payload['content_hash'] = $created['content_hash'];
+        $this->postJson('/api/cms/content/statements', $payload)->assertOk()->assertJsonPath('compass_weights.economic', -1);
+        foreach ([['social' => 3], ['unknown' => 1], ['social' => 'bad'], ['social' => 1.5]] as $bad) {
+            $payload['compass_weights'] = $bad;
+            $this->postJson('/api/cms/content/statements', $payload)->assertUnprocessable();
+        }
+    }
 }

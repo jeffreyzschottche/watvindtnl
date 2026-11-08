@@ -25,6 +25,7 @@ class CmsContentService
             'party_stances' => array_merge(['agree' => [], 'disagree' => [], 'neutral' => []], $issue->party_stances ?? []),
             'arguments' => collect(['pro', 'con'])->mapWithKeys(fn ($side) => [$side => $issue->arguments->where('side', $side)->sortBy('id')->map(fn ($arg) => ['body' => $arg->body, 'sources' => $arg->sources ?? []])->values()->all()])->all(),
             'motion_id' => $meta?->motion_id,
+            'compass_weights' => $meta?->compass_weights ? json_decode($meta->compass_weights, true, flags: JSON_THROW_ON_ERROR) : [],
             'origin_kind' => $meta?->origin_kind ?? ($meta?->motion_id ? 'motion' : 'editorial'),
             'source_name' => $meta?->source_name,
             'source_title' => $meta?->source_title,
@@ -113,6 +114,8 @@ class CmsContentService
             'motion_id' => ['required_if:origin_kind,motion', 'nullable', 'integer', 'exists:wdnl_motions,id'],
             'revision' => ['nullable', 'integer', 'min:0'],
             'reviewed' => ['required', 'accepted'],
+            'compass_weights' => ['sometimes', 'array:social,progressive,international,green,economic'],
+            'compass_weights.*' => ['integer', 'between:-2,2'],
             'content_hash' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/'],
             'arguments' => ['required', 'array:pro,con'],
             'arguments.pro' => ['required', 'array', 'size:4'],
@@ -170,7 +173,10 @@ class CmsContentService
                 'slug' => $data['slug'], 'title' => $data['title'], 'description' => $data['description'],
                 'more_info' => $data['more_info'] ?? null, 'url' => $data['url'], 'party_stances' => $stances,
             ];
-            $content = $attributes + ['arguments' => $data['arguments'], 'motion_id' => $data['motion_id'] ?? null, 'source_date' => $data['source_date'], 'origin_kind' => $data['origin_kind'], 'source_name' => $data['source_name'], 'source_title' => $data['source_title']];
+            $weights = $data['compass_weights'] ?? ($before['compass_weights'] ?? []);
+            $weights = array_filter($weights, fn ($weight) => (int) $weight !== 0);
+            $weights = array_map('intval', $weights);
+            $content = $attributes + ['compass_weights' => $weights, 'arguments' => $data['arguments'], 'motion_id' => $data['motion_id'] ?? null, 'source_date' => $data['source_date'], 'origin_kind' => $data['origin_kind'], 'source_name' => $data['source_name'], 'source_title' => $data['source_title']];
             if ($before && collect($content)->every(fn ($v, $k) => $before[$k] == $v)) {
                 return $before + ['unchanged' => true];
             }
@@ -194,6 +200,7 @@ class CmsContentService
             DB::table('wdnl_statement_metadata')->updateOrInsert(['issue_id' => $issue->id], [
                 'motion_id' => $data['motion_id'] ?? null, 'source_date' => $data['source_date'],
                 'origin_kind' => $data['origin_kind'], 'source_name' => $data['source_name'], 'source_title' => $data['source_title'],
+                'compass_weights' => json_encode($weights, JSON_THROW_ON_ERROR),
                 'verified_at' => now(), 'revision' => ($before['revision'] ?? 0) + 1,
                 'created_at' => DB::table('wdnl_statement_metadata')->where('issue_id', $issue->id)->value('created_at') ?? now(),
                 'updated_at' => now(),

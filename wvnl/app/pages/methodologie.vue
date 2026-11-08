@@ -60,15 +60,49 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
       <h2>Partijen en het politieke kompas</h2>
       <p>
         Partijverwijzingen bij oudere stellingen worden nog gecontroleerd op
-        herkomst. Het vernieuwde politieke kompas is in ontwikkeling. We
-        presenteren nog geen gevalideerde partijmatches of politieke
-        persoonlijkheidsscores.
+        herkomst. Nieuwe partijovereenkomsten gebruiken alleen gecontroleerde
+        motiekoppelingen. Het politieke kompas gebruikt vaste, redactioneel
+        beheerde gewichten. De politieke types zijn een visuele samenvatting van
+        je antwoorden, geen wetenschappelijk gevalideerde persoonlijkheidstest.
       </p>
       <h2>Een fout gevonden?</h2>
       <p>
         Je kunt een onjuistheid melden bij een stelling of
         <NuxtLink to="/contact">contact met ons opnemen</NuxtLink>. Kritisch
         blijven hoort erbij.
+      </p>
+      <h2>Themascores en politieke types</h2>
+      <p>
+        De redactie kan per stelling vijf afwegingen vastleggen: sociaal
+        tegenover individueel, progressief tegenover behoudend, internationaal
+        tegenover nationaal, groen tegenover economische groei, en een
+        afzonderlijke economische links/rechts-as. Een gewicht van plus of min
+        één of twee bepaalt welke richting een VOOR-stem aangeeft en hoe zwaar
+        die meetelt. TEGEN keert de richting om. Neutraal telt als antwoord,
+        zonder richting.
+      </p>
+      <p>
+        Een score is vijftig maal één plus de gewogen gemiddelde richting.
+        Daardoor lopen scores van nul tot honderd; de tegenoverliggende kant
+        vult aan tot honderd. Zonder minimaal vijf verschillende, gewogen
+        stellingen of moties tonen we geen score. Stellingen bij dezelfde motie
+        tellen per thema één keer. We gebruiken bronnen van maximaal twee jaar
+        oud; bij bronloze eigen stellingen geldt de controledatum.
+      </p>
+      <p>
+        Voor een politiek type zijn minimaal tien gewogen antwoorden én scores
+        op alle vier de thema’s nodig. Het type volgt uit het dichtstbijzijnde
+        vaste presentatieprofiel. Het is geen psychologische diagnose. De
+        economische as wordt apart berekend en wordt nooit afgeleid van hoeveel
+        antwoorden voor of tegen waren. De gevoeligheidsrange toont wat er
+        gebeurt wanneer één antwoord wordt weggelaten; dit is geen statistisch
+        betrouwbaarheidsinterval.
+      </p>
+      <p>
+        Deze indeling en de minimumaantallen zijn redactionele productkeuzes en
+        nog niet wetenschappelijk gevalideerd. Ontbrekende of oude brondata
+        worden niet door AI ingevuld. Een volledig rapport kan pas worden
+        gekocht als de vereiste themadekking en economische as beschikbaar zijn.
       </p>
       <h2>Een persoonlijk stemrapport</h2>
       <p>

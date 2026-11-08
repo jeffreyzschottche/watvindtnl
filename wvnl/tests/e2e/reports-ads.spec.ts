@@ -56,7 +56,7 @@ const saved = {
   },
   narrative_source: "code",
 };
-async function mock(page: Page) {
+async function mock(page: Page, selected: Record<string, unknown> = saved) {
   await page.context().addCookies([
     {
       name: "token",
@@ -136,7 +136,7 @@ async function mock(page: Page) {
         },
       });
     if (url.pathname === `/api/me/reports/${reportId}`)
-      return route.fulfill({ headers, json: saved });
+      return route.fulfill({ headers, json: selected });
     if (url.pathname === `/api/me/reports/${reportId}/pdf`)
       return route.fulfill({
         headers: { ...headers, "Content-Type": "application/pdf" },
@@ -273,4 +273,144 @@ test("production build hides development generation even if the API claims acces
     page.getByRole("button", { name: /BROUW MIJN DEV-RAPPORT/ }),
   ).toHaveCount(0);
   expect(devRequests).toBe(0);
+});
+
+const compassFixture = {
+  version: "compass-v2.0",
+  status: "ready",
+  used_votes: 12,
+  minimum_per_dimension: 5,
+  type: {
+    id: "sociale-vernieuwer",
+    name: "De Sociale Vernieuwer",
+    icon: "people",
+    traits: ["Sociaal betrokken", "Toekomstgericht", "Gericht op duurzaamheid"],
+  },
+  dimensions: [
+    { id: "social", left: "Sociaal", right: "Individueel", icon: "people" },
+    {
+      id: "progressive",
+      left: "Progressief",
+      right: "Behoudend",
+      icon: "spark",
+    },
+    {
+      id: "international",
+      left: "Internationaal",
+      right: "Nationaal",
+      icon: "globe",
+    },
+    { id: "green", left: "Groen", right: "Economische groei", icon: "leaf" },
+  ].map((d) => ({
+    ...d,
+    percentage: 80,
+    opposite_percentage: 20,
+    compared: 10,
+    neutral: 2,
+    minimum: 5,
+    sensitivity: { min: 78, max: 89 },
+  })),
+  spectrum: {
+    id: "economic",
+    left: "Links",
+    right: "Rechts",
+    icon: "balance",
+    percentage: 60,
+    opposite_percentage: 40,
+    compared: 10,
+    neutral: 2,
+    minimum: 5,
+    sensitivity: { min: 55, max: 65 },
+  },
+  highlights: [
+    "Je antwoorden leggen vaker de nadruk op gezamenlijke voorzieningen.",
+    "Je antwoorden leggen vaker de nadruk op vernieuwing.",
+  ],
+};
+test("compass report has the reference layout, real score slots and a PDF download", async ({
+  page,
+}) => {
+  const selected = {
+    ...saved,
+    snapshot: {
+      ...saved.snapshot,
+      compass: compassFixture,
+      party_matches: [
+        {
+          name: "Volledige voorbeeldpartijnaam",
+          percentage: 80,
+          matched: 8,
+          compared: 10,
+        },
+      ],
+    },
+  };
+  await mock(page, selected);
+  await page.goto(`/kompas/rapport?order=${reportId}`);
+  const paper = page.getByRole("article", {
+    name: "Jouw persoonlijke stemrapport",
+  });
+  await expect(
+    paper.getByRole("heading", { name: "Jouw Politieke Kompas", exact: true }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("heading", { name: "De Sociale Vernieuwer", exact: true }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("img", { name: /Politieke types, De Sociale Vernieuwer/ }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("img", { name: /80% Sociaal, 20% Individueel/ }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("img", { name: /Economische as: 60% links, 40% rechts/ }),
+  ).toBeVisible();
+  await expect(paper.getByText("Volledige voorbeeldpartijnaam")).toBeVisible();
+  await expect(paper.locator("img[src*=logo_url]")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Download PDF" }),
+  ).toBeEnabled();
+  await page.getByRole("button", { name: "Download PDF" }).click();
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width + 1);
+  }
+});
+test("missing reviewed mappings show no invented political type or percentages", async ({
+  page,
+}) => {
+  const compass = {
+    ...compassFixture,
+    type: null,
+    status: "insufficient_data",
+    highlights: [],
+    used_votes: 0,
+    dimensions: compassFixture.dimensions.map((d) => ({
+      ...d,
+      percentage: null,
+      opposite_percentage: null,
+      compared: 0,
+      sensitivity: null,
+    })),
+    spectrum: {
+      ...compassFixture.spectrum,
+      percentage: null,
+      opposite_percentage: null,
+      compared: 0,
+      sensitivity: null,
+    },
+  };
+  await mock(page, { ...saved, snapshot: { ...saved.snapshot, compass } });
+  await page.goto(`/kompas/rapport?order=${reportId}`);
+  const paper = page.getByRole("article", {
+    name: "Jouw persoonlijke stemrapport",
+  });
+  await expect(
+    paper.getByRole("heading", { name: "Jouw kompas in opbouw" }),
+  ).toBeVisible();
+  await expect(paper.getByText(/Nog geen economische aspositie/)).toBeVisible();
+  await expect(paper.getByText(/Nog niet genoeg gegevens/)).toHaveCount(4);
+  await expect(paper.getByRole("img", { name: /80% Sociaal/ })).toHaveCount(0);
 });

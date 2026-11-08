@@ -47,7 +47,7 @@ class VoteReportController extends Controller
         $snapshot = $this->snapshots->build($request->user());
         $previous = ReportOrder::where('user_id', $request->user()->id)->where('status', 'ready')->latest('created_at')->first();
 
-        return ['product' => $this->product(), 'vote_count' => $snapshot['total'], 'comparison' => $this->snapshots->comparison($snapshot, $previous, $this->settings->current()['renew_after_votes']),
+        return ['compass_progress' => ['ready' => $snapshot['compass']['status'] === 'ready' && $snapshot['compass']['spectrum']['percentage'] !== null, 'used_votes' => $snapshot['compass']['used_votes'], 'dimensions' => array_map(fn ($d) => ['name' => $d['left'], 'compared' => $d['compared'], 'minimum' => $d['minimum']], [...$snapshot['compass']['dimensions'], $snapshot['compass']['spectrum']])], 'product' => $this->product(), 'vote_count' => $snapshot['total'], 'comparison' => $this->snapshots->comparison($snapshot, $previous, $this->settings->current()['renew_after_votes']),
             'orders' => ReportOrder::where('user_id', $request->user()->id)->latest('created_at')->limit(30)->get(['id', 'status', 'amount_cents', 'currency', 'created_at', 'ready_at', 'snapshot', 'checkout_url'])->map(fn ($o) => $this->serialize($o))->all()];
     }
 
@@ -66,6 +66,7 @@ class VoteReportController extends Controller
             $snapshot = $this->snapshots->build($request->user());
             $settings = $this->settings->current();
             abort_if($snapshot['total'] < $settings['minimum_votes'], 422, 'Beantwoord eerst minimaal '.$settings['minimum_votes'].' stellingen.');
+            abort_unless($snapshot['compass']['status'] === 'ready' && $snapshot['compass']['spectrum']['percentage'] !== null, 422, 'Je kompas is nog in opbouw. Er zijn meer antwoorden op gecontroleerd gewogen stellingen nodig voordat je een volledig rapport kunt kopen.');
             $order = ReportOrder::firstOrCreate(['user_id' => $request->user()->id, 'request_key' => $data['request_key']],
                 ['id' => (string) Str::uuid(), 'status' => 'pending', 'snapshot' => $snapshot, 'snapshot_hash' => $this->snapshots->fingerprint($snapshot), 'generation_settings' => $settings,
                     'ai_consent' => $data['ai_consent'], 'amount_cents' => 199, 'currency' => 'eur', 'consent_version' => 'report-v1']);

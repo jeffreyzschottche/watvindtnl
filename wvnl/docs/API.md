@@ -30,3 +30,11 @@ Stripe: `POST /reports/stripe-webhook`, SDK-signaturecheck, geen clientontgrende
 Neutraal hersteld: `POST /issues/{id}/vote` accepteert opnieuw `neutral` naast agree/disagree. Deze keuze heeft dezelfde verificatie, duplicate rejection, geschiedenis en feeduitsluiting. Alleen de eigen keuze en geaggregeerde telling worden teruggegeven.
 
 Lokale preview: `/me/reports/dev-access`, `POST /me/reports/dev`, `GET /me/reports/dev/{uuid}` en `/pdf`. Geauthenticeerd, expliciete lokale flag en uitsluitend het geconfigureerde demo-account; productie weigert genereren/downloaden. Encrypted cache met één uur TTL, geen betaaladministratie of LLM-call. Zie REPORTS.md.
+
+### Kompasvelden in rapportsnapshots
+
+`GET /api/me/reports` geeft nu ook `compass_progress: { ready, used_votes, dimensions: [{ name, compared, minimum }] }`. Aankoop van een nieuw volledig rapport vereist alle themascores, aparte economische as en minimumaantallen; anders 422, vóór order/checkout. Alleen de eigenaar ziet deze voortgang.
+
+Nieuwe `snapshot.compass` bevat `version`, `status`, nullable `type`, vier `dimensions`, aparte `spectrum`, `used_votes`, `evidence` en `highlights`. Dimensies bevatten nullable `percentage`/`opposite_percentage`, coverage en een niet-statistische leave-one-out `sensitivity`. Ontbrekende data is null, nooit een fictieve 50%. Historische snapshots zonder dit veld blijven leesbaar.
+
+CMS statement GET/save/import ondersteunt optioneel `compass_weights` met uitsluitend social/progressive/international/green/economic, gehele waarden −2…2. Afwezig bij een update behoudt bestaande weging; leeg/nul verwijdert haar expliciet. Publicatie blijft redactioneel gereviewd, revision/hash-gebonden en geaudit. Geen gebruikersdata of rapporten naar CMS.

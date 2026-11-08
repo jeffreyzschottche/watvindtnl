@@ -15,7 +15,30 @@ export type ReportEntry = {
   title: string;
   choice: "agree" | "disagree" | "neutral";
 };
+export type CompassDimension = {
+  id: string;
+  left: string;
+  right: string;
+  icon: string;
+  percentage: number | null;
+  opposite_percentage: number | null;
+  compared: number;
+  neutral: number;
+  minimum: number;
+  sensitivity: { min: number; max: number } | null;
+};
+export type CompassAnalysis = {
+  version: string;
+  status: "ready" | "insufficient_data";
+  type: { id: string; name: string; icon: string; traits: string[] } | null;
+  dimensions: CompassDimension[];
+  spectrum: CompassDimension;
+  used_votes: number;
+  minimum_per_dimension: number;
+  highlights: string[];
+};
 export type ReportSnapshot = {
+  compass?: CompassAnalysis;
   total: number;
   counts: Record<ReportEntry["choice"], number>;
   entries: ReportEntry[];
@@ -60,6 +83,11 @@ export type VoteReport = {
   narrative_source?: string;
 };
 export type ReportOverview = {
+  compass_progress?: {
+    ready: boolean;
+    used_votes: number;
+    dimensions: { name: string; compared: number; minimum: number }[];
+  };
   product: ReportProduct;
   vote_count: number;
   comparison: {

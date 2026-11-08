@@ -89,3 +89,15 @@ OPENAI_API_KEY=<je bestaande volledige OpenAI API-key>
 ```
 
 Voer na wijzigingen `php artisan config:clear` uit vanuit `wvnl-api`; herstart langlopende processen als die configuratie in het geheugen houden. Voor een ander ondersteund OpenAI-model verander je alleen `OPENAI_MODEL` voor de devknop; de modelnaam staat bij de knop. Een mislukte aanvraag kan al tokens hebben verbruikt. De betaald-rapportpipeline blijft het model uit het CMS gebruiken.
+
+## Visueel politiek kompas — 8 november 2026
+
+Nieuwe snapshots bevatten `compass` met berekende themascores, aparte economische as, type, kernpunten, dekking en gevoeligheid. `ReportSheet` en de server-PDF volgen het aangeleverde ontwerp: WDNL-header, turquoise typekaart, vectorwiel met negen types, scorebalken, maximaal vijf volledige partijnamen, inzichten en methodiek. Geen partijlogo's. De normale downloadknop blijft eigenaar-/betaalstatus-gecontroleerd; de paarse devknop blijft het ingestelde backend-OPENAI_MODEL gebruiken.
+
+De PDF blijft één A4 met selecteerbare tekst en scherpe SVG-art. Dompdf gebruikt ingebedde DejaVu Sans; de webinterface gebruikt lokale Manrope. Een begrensde compacte PDF-opmaak vangt maximale toelichtingen op; de renderer weigert onverwachte meerpagina-overflow. Externe resources, JS en PHP blijven uitgeschakeld. De webweergave stapelt op mobiel; de PDF behoudt de A4-compositie. Details/formule: COMPASS_ALGORITHM.md.
+
+**Configuratie vereist:** bestaande stellingen hebben niet automatisch gevalideerde themagewichten. Nieuwe CMS-invoervelden bij de stelling en de bestaande bulkimport ondersteunen `compass_weights`. Zonder voldoende dekking toont de devpreview 'Jouw kompas in opbouw', geen willekeurige percentages/type. Volledige rapportverkoop wordt ook server-side tegengehouden tot alle thema’s, economische as en minimumaantallen beschikbaar zijn. Normale verkoop blijft bovendien gesloten via de bestaande salesflag en externe configuratie.
+
+Een duidelijk gemarkeerd voorbeeld met fictieve antwoorden én fictieve partijen staat op `/examples/WDNL-kompas-voorbeeld.pdf`, gelinkt vanaf `/kompas`. Regenereren: `php scripts/design/render-compass-example.php` vanuit de frontend, met naastliggende geïnstalleerde backend. Dit script gebruikt geen accountgegevens, LLM of databasewrites. Native assets worden meegenomen met `npm run build:mobile`. Geen geïnstalleerde app-update of store-release wordt hierdoor automatisch uitgevoerd.
+
+Oudere gekochte snapshots worden niet opnieuw berekend of overschreven. Bewaarde v1-snapshots en PDF's blijven geldig. Nieuwe redactionele gewichten veranderen alleen volgende rapporten. Releasesequentie, lokale backup en rollback: MIGRATION_PLAN.md.

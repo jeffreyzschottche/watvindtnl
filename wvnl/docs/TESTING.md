@@ -11,3 +11,14 @@ Browserregressies: npm run test:e2e na npm run build. Playwright start/ruimt een
 Nieuwe regressies: eigen stellingen zonder motie/bron; nieuws met verplichte bronnaam/link/datum; publieke herkomstserialisatie; confetti bij beide stemkeuzes; geen confetti bij mislukking of reduced-motion; gedeelde animatievoorkeur na reload; geen externe artikelophaling bij bronweergave. API-tests blijven uitsluitend SQLite :memory:, browserfixtures uitsluitend op de tijdelijke testserver.
 
 `npm run build:mobile` is lokaal geslaagd: de statische index en nieuwe webassets staan in de Android-/iOS-projecten. Dit is een asset-/packagingcontrole; signing, simulator/device-WebView en store-binaries zijn niet getest.
+
+
+## Kompasrapport V2
+
+`CompassReportsTest` dekt de vaste formule, richting/gewicht, minimale dekking, neutrale/onbeoordeelde/oude data, deduplicatie van moties binnen én over thema’s, economische as los van de thema’s, PDF met maximale teksten/vijf partijen en behoud van legacy-PDF. CMS-tests dekken toegestane keys/gewichten, audit en behoud bij oudere clients. Rapporttests weigeren checkout bij ontbrekende themadekking. De hele backend: 65 tests / 407 assertions geslaagd.
+
+40 Playwrightchecks op desktop/mobiel geslaagd, inclusief de nieuwe typekaart, wheelasset, scores/spectrum, volledige partijnamen, PDF-knop, ontbrekende scores zonder verzonnen percentage/type en 320/390/1440px zonder overflow. De bestaande legacyrapport-, privacy-, stem- en productie-devblokkadechecks blijven behouden. De betaal-/rapportfixtures gebruiken geen echte aankopen of stemmen.
+
+Live lokaal: het bestaande backend-env-model was bij de controle `gpt-6-luna`; een echte generatie leverde 395 input- en 97 outputtokens. Een eerste generatie werd door de tekstvalidatie afgewezen; zichtbaar foutpad, geen codefallback of automatische retry. Een afzonderlijke diagnostische aanvraag slaagde zonder ruwe tekst/key te loggen. De geslaagde preview is op 1440/390/320px geopend en als één A4 gedownload. De testlogin is ingetrokken. Er zijn nul redactionele mappings in de lokale DB; het echte rapport toont dus correct ‘in opbouw’. Geen partijpercentages uit testdata worden als echte resultaten getoond.
+
+Webcheck (`npm run check`), CMS-typecheck/build en 5 CMS-koppeltests / 60 assertions geslaagd. CMS behoudt de reeds bekende niet-blokkerende Volar/Tailwind-waarschuwingen. Mobiele statische generatie en Capacitor-copy geslaagd; geen native binary/device-download- of storetest geclaimd.

@@ -37,6 +37,7 @@ class VoteReportsTest extends TestCase
         for ($i = 0; $i < $count; $i++) {
             $issue = Issue::create(['slug' => 'fixture-'.Str::uuid(), 'title' => 'Teststelling nummer '.$i, 'description' => 'Expliciete testfixture', 'votes' => ['agree' => $i % 2 ? [$u->id] : [], 'disagree' => $i % 2 ? [] : [$u->id], 'neutral' => []], 'party_stances' => []]);
             $ids[] = $issue->id;
+            DB::table('wdnl_statement_metadata')->insert(['issue_id' => $issue->id, 'verified_at' => now(), 'compass_weights' => json_encode(['social' => 1, 'progressive' => 1, 'international' => 1, 'green' => 1, 'economic' => 1]), 'created_at' => now(), 'updated_at' => now()]);
         }
         $u->update(['voted_issue_ids' => $ids]);
 
@@ -238,7 +239,18 @@ class VoteReportsTest extends TestCase
         $order->update(['status' => 'pending', 'paid_at' => null]);
         [$raw,$signature] = $this->event('checkout.session.completed', ['object' => 'checkout.session', 'id' => 'cs_bad', 'metadata' => ['wdnl_report_order' => $order->id], 'mode' => 'payment', 'payment_status' => 'paid', 'amount_total' => 1, 'currency' => 'eur', 'client_reference_id' => $order->id]);
         $this->call('POST', '/api/reports/stripe-webhook', [], [], [], ['CONTENT_TYPE' => 'application/json', 'HTTP_STRIPE_SIGNATURE' => $signature], $raw)->assertStatus(400);
-        $this->assertSame('pending',$order->fresh()->status);
-        $this->assertDatabaseCount('wdnl_report_payment_events',0);
+        $this->assertSame('pending', $order->fresh()->status);
+        $this->assertDatabaseCount('wdnl_report_payment_events', 0);
+    }
+
+    public function test_incomplete_compass_cannot_be_sold_and_progress_is_visible_to_its_owner(): void
+    {
+        $u = $this->user();
+        DB::table('wdnl_statement_metadata')->update(['compass_weights' => null]);
+        $this->partialMock(StripeReports::class, fn ($mock) => $mock->shouldReceive('available')->andReturn(true));
+        $this->actingAs($u)->getJson('/api/me/reports')->assertOk()->assertJsonPath('compass_progress.ready', false)->assertJsonPath('compass_progress.used_votes', 0);
+        $this->postJson('/api/me/reports/orders', ['request_key' => (string) Str::uuid(), 'political_consent' => true, 'ai_consent' => true, 'platform' => 'web'])->assertUnprocessable();
+        $this->assertDatabaseCount('wdnl_report_orders', 0);
+        Http::assertNothingSent();
     }
 }

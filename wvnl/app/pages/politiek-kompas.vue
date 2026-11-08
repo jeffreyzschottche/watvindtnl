@@ -24,12 +24,13 @@ useSeoMeta({
       <h1>Leer jezelf<br /><span>beter kennen.</span></h1>
       <p class="compass-page__lead">
         Wat zeggen jouw keuzes samen? Je persoonlijke stemrapport bundelt je
-        antwoorden in een helder A4-overzicht met tellingen en toelichting.
+        antwoorden in een visueel A4-rapport met je politieke type, themascores
+        en toelichting.
       </p>
       <ul>
         <li>
-          <AppIcon name="check" :size="18" /> Een overzicht van je vastgelegde
-          antwoorden
+          <AppIcon name="check" :size="18" /> Je politieke type en gewogen
+          themascores
         </li>
         <li>
           <AppIcon name="check" :size="18" /> Partijovereenkomsten waar
@@ -43,6 +44,16 @@ useSeoMeta({
       <NuxtLink to="/profiel/mijn-kompas" class="button button-red"
         >Bekijk jouw rapportmogelijkheden <AppIcon name="arrow" :size="18"
       /></NuxtLink>
+      <p>
+        <a
+          href="/examples/WDNL-kompas-voorbeeld.pdf"
+          download
+          class="compass-page__example"
+          >Download voorbeeldrapport (PDF) ↗</a
+        ><br /><small class="compass-page__example-note"
+          >Opmaakvoorbeeld met fictieve antwoorden en partijen.</small
+        >
+      </p>
       <p class="compass-page__status">
         €1,99 per nieuw rapport. Een gekocht rapport blijft beschikbaar; later
         opnieuw laten maken is een nieuwe aankoop.
@@ -111,6 +122,17 @@ useSeoMeta({
 }
 .compass-page li svg {
   color: #24743b;
+}
+.compass-page__example {
+  font-size: 0.85rem;
+  font-weight: 750;
+  color: #0057b8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.compass-page__example-note {
+  color: #63738a;
+  font-size: 0.7rem;
 }
 .compass-page__status {
   font-size: 0.75rem;

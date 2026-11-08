@@ -32,3 +32,12 @@ M7 Ads: gecertificeerde CMP, afzonderlijke demo/liveconfig, AdSense/AdMob-testun
 M8 Release: audits zonder blokkerende issues, load/security/E2E, encrypted restore, monitoring, CI/CD, juridische/contentgoedkeuring en releasechecklist.
 
 Per mijlpaal: tests + contract + documentatie + concreet bewijs. Ontbrekende credentials zijn configuratieblokkades, geen reden om nepfunctionaliteit als voltooid te presenteren.
+
+## Kompasrapport: additive themametadata — 8 november 2026
+
+1. Nieuwe migratie: `2026_11_08_020000_add_compass_weights_to_statement_metadata.php`, uitsluitend een nullable JSON-kolom. Eerst migreren, dan backend/frontend/CMS publiceren. Geen bestaande gebruikers-, stem-, stelling- of rapportrecords verwijderen/herberekenen.
+2. Voor de lokale MySQL-migratie is een consistente dump gemaakt met single-transaction/no-tablespaces, triggers en events, een tijdelijk 0600-optionfile zonder CLI-secret en gzip + Laravel Crypt. Deze omgeving heeft geen opgeslagen routines (gecontroleerd). De geïnstalleerde mysqldump 9.3 vroeg bij `--routines` een niet-ondersteunde INFORMATION_SCHEMA.LIBRARIES-tabel; die optie is uitsluitend na controle op nul routines overgeslagen. Gebruik bij een productiebackup een passende client en neem aanwezige routines wel mee.
+3. Lokale backup: `/tmp/wdnl-compass-v2/database-before.sql.gz.enc`, directory 0700, bestand 0600. Encryptie/decryptie en SHA-256-roundtrip gecontroleerd. Dit is geen uitgevoerde restoretest. Bewaar voor herstel de oorspronkelijke APP_KEY via secretbeheer. Voor langdurige bewaring moet deze tijdelijke lokale backup naar beheerde backupopslag; geen publiek downloadbestand of repositorybestand.
+4. Na de lokale migratie: 19 gebruikers, 4.598 stellingen, 31.887 argumenten en de volledige geordende vote-hash gelijk aan vóór de wijziging. Nul ingevulde kompaswegingen; geen politieke mappings of fictieve content in echte data geseed.
+5. Bij rollback eerst de vorige applicatieversies terugzetten; laat de extra nullable kolom staan. Export/backup eventuele nieuwe mappings voordat je de migratie later expliciet terugdraait. De `down` verwijdert alleen dit nieuwe veld, maar daarmee ook nieuw ingevulde wegingen. Een databaseherstel alleen in een geïsoleerde omgeving testen vóór cutover; nooit blind over de actuele database herstellen.
+6. Verifieer CMS→stelling→snapshot→PDF en eigenaar-/productieblokkades vóór verkoop. Betaalde historische snapshots/PDF's niet overschrijven. De CMS-editorwijziging staat tevens als toepasbare patch in `docs/integrations/zschotcms-compass.patch`.

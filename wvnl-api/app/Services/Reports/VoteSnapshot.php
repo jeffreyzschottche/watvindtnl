@@ -11,14 +11,14 @@ use Illuminate\Support\Facades\DB;
 /** A reproducible overview, not an inferred left/right personality or representative poll. */
 class VoteSnapshot
 {
-    public const VERSION = 'vote-overview-v1';
+    public const VERSION = CompassAnalysis::VERSION;
 
     public function build(User $user): array
     {
         $ids = array_values(array_unique(array_map('intval', (array) $user->voted_issue_ids)));
         abort_if(count($ids) > 20000, 422, 'Dit account vereist een grotere achtergrondexport.');
         $issues = Issue::whereIn('id', $ids)->get(['id', 'slug', 'title', 'votes', 'party_stances'])->keyBy('id');
-        $metadata = DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->whereNotNull('motion_id')->whereNotNull('verified_at')->get()->keyBy('issue_id');
+        $metadata = DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->whereNotNull('verified_at')->get()->keyBy('issue_id');
         $entries = [];
         $counts = ['agree' => 0, 'disagree' => 0, 'neutral' => 0];
         $matches = [];
@@ -70,8 +70,8 @@ class VoteSnapshot
         usort($ranked, fn ($a, $b) => ($b['percentage'] <=> $a['percentage']) ?: ($b['compared'] <=> $a['compared']) ?: strcmp($a['name'], $b['name']));
 
         return ['methodology_version' => self::VERSION, 'total' => count($entries), 'counts' => $counts, 'entries' => $entries,
-            'party_matches' => array_slice($ranked, 0, 3), 'generated_at' => now()->toIso8601String(),
-            'limits' => ['Partijovereenkomsten gebruiken alleen redactioneel gecontroleerde motiekoppelingen, vanaf tien vergelijkbare moties per partij.', 'De verhouding voor/tegen zegt op zichzelf niets over links/rechts. Er wordt geen politieke aspositie of psychologisch type afgeleid.']];
+            'party_matches' => array_slice($ranked, 0, 5), 'generated_at' => now()->toIso8601String(), 'compass' => app(CompassAnalysis::class)->build($entries, $metadata->all()),
+            'limits' => ['Partijovereenkomsten gebruiken alleen redactioneel gecontroleerde motiekoppelingen, vanaf tien vergelijkbare moties per partij.', 'De verhouding voor/tegen zegt op zichzelf niets over links/rechts. Thematische scores gebruiken uitsluitend redactioneel vastgelegde gewichten; types zijn een presentatie, geen psychologische diagnose.']];
     }
 
     public function fingerprint(array $snapshot): string

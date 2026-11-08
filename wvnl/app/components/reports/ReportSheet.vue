@@ -1,232 +1,893 @@
 <script setup lang="ts">
 import type { VoteReport } from "~/types/voteReports";
+import LegacyReportSheet from "./LegacyReportSheet.vue";
 const props = defineProps<{ report: VoteReport }>();
 const snapshot = computed(() => props.report.snapshot);
+const compass = computed(() => snapshot.value?.compass);
+const politicalType = computed(() => compass.value?.type);
 const date = computed(() =>
   new Intl.DateTimeFormat("nl-NL", { dateStyle: "long" }).format(
     new Date(snapshot.value?.generated_at || props.report.created_at),
   ),
 );
-const sides = [
-  { key: "disagree" as const, label: "Tegen", color: "#E1062E" },
-  { key: "neutral" as const, label: "Neutraal", color: "#8193aa" },
-  { key: "agree" as const, label: "Voor", color: "#0057B8" },
-];
 </script>
 <template>
+  <LegacyReportSheet v-if="!compass" :report="report" />
   <article
-    v-if="snapshot && report.narrative"
-    class="report-sheet"
+    v-else-if="snapshot && report.narrative"
+    class="compass-paper"
     aria-label="Jouw persoonlijke stemrapport"
   >
-    <p v-if="report.is_development" class="report-sheet__dev">
+    <p v-if="report.is_development" class="compass-paper__dev">
       🧪 DEV-RAPPORT · GEEN AANKOOP · TIJDELIJK
     </p>
-    <header>
-      <strong>WatDenkt<span>Nederland</span></strong
-      ><span>JOUW MENING, BIJ ELKAAR</span>
+    <header class="compass-paper__header">
+      <div class="compass-paper__brand">
+        <img
+          src="/brand/wdnl-mark-concept.svg"
+          alt=""
+          width="49"
+          height="56"
+        /><strong>WatDenkt<span>Nederland</span></strong>
+      </div>
+      <div>
+        <h2>Jouw Politieke Kompas</h2>
+        <p>Persoonlijk rapport op basis van jouw stemgedrag</p>
+        <span class="compass-paper__accent" />
+      </div>
+      <img
+        class="compass-paper__flag"
+        src="/report-art/flag.svg"
+        alt=""
+        width="130"
+        height="54"
+      />
     </header>
-    <section class="report-sheet__intro">
-      <p>{{ date }}</p>
-      <h2>Jouw stemoverzicht<span>.</span></h2>
-      <p>{{ report.narrative.summary }}</p>
+    <section class="compass-paper__hero" aria-label="Jouw politieke type">
+      <div class="compass-paper__hero-icon">
+        <img
+          :src="`/report-art/${politicalType?.id === 'sociale-vernieuwer' ? 'leaf' : politicalType?.icon || 'leaf'}-white.svg`"
+          alt=""
+          width="70"
+          height="70"
+        />
+      </div>
+      <div class="compass-paper__hero-copy">
+        <h3>{{ politicalType?.name || "Jouw kompas in opbouw" }}</h3>
+        <p>
+          {{
+            politicalType
+              ? report.narrative.summary
+              : "Je antwoorden staan vast. Voor je politieke type zijn meer antwoorden op redactioneel gewogen stellingen nodig."
+          }}
+        </p>
+      </div>
+      <div class="compass-paper__traits">
+        <h4>
+          {{ politicalType ? "Jouw politieke type" : "Jouw stemoverzicht" }}
+        </h4>
+        <ul>
+          <li
+            v-for="trait in politicalType?.traits || [
+              `${snapshot.total} beantwoorde stellingen`,
+              `${snapshot.counts.neutral} neutrale antwoorden`,
+              `${compass.used_votes} gewogen antwoorden`,
+            ]"
+            :key="trait"
+          >
+            <img
+              :src="`/report-art/${politicalType?.icon || 'leaf'}.svg`"
+              alt=""
+              width="23"
+              height="23"
+            />{{ trait }}
+          </li>
+        </ul>
+      </div>
+      <img class="compass-paper__wave" src="/report-art/wave.svg" alt="" />
     </section>
-    <div class="report-sheet__stats">
-      <div v-for="side in sides" :key="side.key">
-        <strong :style="{ color: side.color }">{{
-          snapshot.counts[side.key]
-        }}</strong
-        ><span>{{ side.label }}</span>
+    <div class="compass-paper__grid">
+      <section class="compass-card compass-card--wheel">
+        <h3>Jouw politieke persoonlijkheid</h3>
+        <span class="compass-paper__accent" />
+        <img
+          class="compass-paper__wheel"
+          :src="`/report-art/wheel-${politicalType?.id || 'pending'}.svg`"
+          :alt="
+            politicalType
+              ? `Politieke types, ${politicalType.name} uitgelicht`
+              : 'Politieke types; er is nog geen type uitgelicht'
+          "
+          width="480"
+          height="480"
+        />
+        <p class="compass-paper__caption">
+          {{
+            politicalType
+              ? `${politicalType.name} · een samenvatting van je antwoorden, geen psychologische diagnose.`
+              : "Nog geen type uitgelicht. Er zijn nog niet genoeg gewogen antwoorden over alle vier de thema’s."
+          }}
+        </p>
+      </section>
+      <div class="compass-paper__scores">
+        <section class="compass-card">
+          <h3>Jouw positie op het politieke spectrum</h3>
+          <span class="compass-paper__accent" />
+          <template v-if="compass.spectrum.percentage !== null"
+            ><div
+              class="compass-paper__spectrum"
+              role="img"
+              :aria-label="`Economische as: ${compass.spectrum.percentage}% links, ${compass.spectrum.opposite_percentage}% rechts`"
+            >
+              <span
+                class="compass-paper__you"
+                :style="{ left: `${100 - compass.spectrum.percentage}%` }"
+                >Jij</span
+              ><span
+                class="compass-paper__dot"
+                :style="{ left: `${100 - compass.spectrum.percentage}%` }"
+              />
+            </div>
+            <div class="compass-paper__axis-labels">
+              <strong>Links</strong><strong>Rechts</strong>
+            </div>
+            <p class="compass-paper__caption">
+              {{ compass.spectrum.compared }} gewogen antwoorden · economische
+              as
+            </p></template
+          >
+          <p v-else class="compass-paper__empty">
+            Nog geen economische aspositie: {{ compass.spectrum.compared }}/{{
+              compass.spectrum.minimum
+            }}
+            gewogen antwoorden. Voor/tegen is geen links/rechtsscore.
+          </p>
+        </section>
+        <section class="compass-card compass-card--themes">
+          <h3>Jouw scores op belangrijke thema’s</h3>
+          <span class="compass-paper__accent" />
+          <div
+            v-for="dimension in compass.dimensions"
+            :key="dimension.id"
+            class="compass-theme"
+          >
+            <div class="compass-theme__icon">
+              <img
+                :src="`/report-art/${dimension.icon}.svg`"
+                alt=""
+                width="25"
+                height="25"
+              />
+            </div>
+            <div class="compass-theme__body">
+              <div class="compass-theme__labels">
+                <span>{{ dimension.left }}</span
+                ><span>{{ dimension.right }}</span>
+              </div>
+              <template v-if="dimension.percentage !== null"
+                ><div
+                  class="compass-theme__track"
+                  role="img"
+                  :aria-label="`${dimension.percentage}% ${dimension.left}, ${dimension.opposite_percentage}% ${dimension.right}, gebaseerd op ${dimension.compared} gewogen antwoorden`"
+                >
+                  <span :style="{ width: `${dimension.percentage}%` }" /><i
+                    :style="{ left: `${dimension.percentage}%` }"
+                  />
+                </div>
+                <div class="compass-theme__percentages">
+                  <strong>{{ dimension.percentage }}%</strong
+                  ><strong>{{ dimension.opposite_percentage }}%</strong>
+                </div>
+                <p class="compass-paper__caption">
+                  {{ dimension.compared }} gewogen antwoorden<span
+                    v-if="dimension.sensitivity"
+                  >
+                    · gevoeligheid {{ dimension.sensitivity.min }}–{{
+                      dimension.sensitivity.max
+                    }}%</span
+                  >
+                </p></template
+              >
+              <template v-else
+                ><div
+                  class="compass-theme__track compass-theme__track--empty"
+                />
+                <p class="compass-paper__caption">
+                  Nog niet genoeg gegevens · {{ dimension.compared }}/{{
+                    dimension.minimum
+                  }}
+                  antwoorden
+                </p></template
+              >
+            </div>
+          </div>
+        </section>
+      </div>
+      <section class="compass-card">
+        <h3>Partijen die bij je passen</h3>
+        <span class="compass-paper__accent" />
+        <p class="compass-paper__subheading">
+          Overeenkomst bij officieel gekoppelde moties.
+        </p>
+        <ol v-if="snapshot.party_matches.length" class="compass-parties">
+          <li v-for="party in snapshot.party_matches" :key="party.name">
+            <div>
+              <strong>{{ party.name }}</strong>
+              <div class="compass-theme__track">
+                <span :style="{ width: `${party.percentage}%` }" />
+              </div>
+              <small>{{ party.matched }} van {{ party.compared }} moties</small>
+            </div>
+            <b>{{ party.percentage }}%</b>
+          </li>
+        </ol>
+        <p v-else class="compass-paper__empty">
+          Nog onvoldoende gecontroleerde motiekoppelingen. Voor een
+          partijovereenkomst zijn minimaal tien vergelijkbare moties per partij
+          nodig.
+        </p>
+        <p class="compass-paper__caption">
+          Overeenkomst in stemgedrag, geen stemadvies.
+        </p>
+      </section>
+      <div class="compass-paper__insights">
+        <section class="compass-card">
+          <h3>Wat typeert jou?</h3>
+          <span class="compass-paper__accent" />
+          <ul v-if="compass.highlights.length" class="compass-highlights">
+            <li v-for="line in compass.highlights" :key="line">
+              <span aria-hidden="true">✓</span>
+              <p>{{ line }}</p>
+            </li>
+          </ul>
+          <p v-else class="compass-paper__empty">
+            Je hebt {{ snapshot.total }} stellingen beantwoord:
+            {{ snapshot.counts.agree }} voor,
+            {{ snapshot.counts.disagree }} tegen en
+            {{ snapshot.counts.neutral }} neutraal. Thematische inzichten volgen
+            zodra voldoende gewogen antwoorden beschikbaar zijn.
+          </p>
+          <p class="compass-paper__reflection">
+            {{ report.narrative.reflection }}
+          </p>
+        </section>
+        <section class="compass-card compass-card--method">
+          <div class="compass-paper__info" aria-hidden="true">i</div>
+          <div>
+            <h3>Hoe dit rapport werkt</h3>
+            <p>
+              Scores volgen uit vaste, redactioneel gecontroleerde gewichten.
+              Neutraal telt mee als antwoord, zonder richting. Minimaal vijf
+              verschillende stellingen of moties per thema; voor een type ook
+              tien gewogen antwoorden. Gevoeligheid toont de score bij het
+              weglaten van één antwoord; dit is geen betrouwbaarheidsinterval.
+              Bronnen van maximaal twee jaar oud tellen mee; bij bronloze eigen
+              stellingen geldt de controledatum. Politieke types zijn een
+              visuele samenvatting.
+            </p>
+            <NuxtLink to="/methodologie"
+              >Bekijk de methode en beperkingen ↗</NuxtLink
+            >
+          </div>
+        </section>
       </div>
     </div>
-    <div
-      class="report-sheet__bar"
-      role="img"
-      :aria-label="`${snapshot.counts.disagree} tegen, ${snapshot.counts.agree} voor en ${snapshot.counts.neutral} neutraal`"
-    >
+    <footer class="compass-paper__footer">
       <span
-        v-for="side in sides"
-        :key="side.key"
-        :style="{
-          width: `${(100 * snapshot.counts[side.key]) / Math.max(1, snapshot.total)}%`,
-          background: side.color,
-        }"
-      />
-    </div>
-    <p class="report-sheet__note">
-      {{ snapshot.total }} vastgelegde antwoorden. Deze verhouding is geen
-      links-rechtsscore.
-    </p>
-    <h3>Een greep uit je laatste antwoorden</h3>
-    <ul class="report-sheet__votes">
-      <li v-for="entry in snapshot.entries.slice(-5)" :key="entry.id">
-        <NuxtLink :to="`/stellingen/${entry.slug}`">{{ entry.title }}</NuxtLink
-        ><strong>{{
-          { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" }[
-            entry.choice
-          ]
-        }}</strong>
-      </li>
-    </ul>
-    <h3>Overeenkomsten bij gekoppelde moties</h3>
-    <ul v-if="snapshot.party_matches.length" class="report-sheet__matches">
-      <li v-for="party in snapshot.party_matches" :key="party.name">
-        <strong>{{ party.name }} · {{ party.percentage }}%</strong
-        ><span
-          >{{ party.matched }} van {{ party.compared }} vergelijkbare
-          moties</span
-        >
-      </li>
-    </ul>
-    <p v-else class="report-sheet__note">
-      Nog onvoldoende gecontroleerde motiekoppelingen om een partijovereenkomst
-      te tonen.
-    </p>
-    <h3>Om over na te denken</h3>
-    <p>{{ report.narrative.reflection }}</p>
-    <footer>
-      Methode {{ snapshot.methodology_version }}. Geen stemadvies,
-      psychologische test of representatieve peiling.
-      <NuxtLink to="/methodologie">Lees hoe dit overzicht werkt.</NuxtLink>
+        ><strong>{{ snapshot.total }}</strong> beantwoorde stellingen<br /><small
+          >{{ compass.used_votes }} met bruikbare themagewichten ·
+          {{ snapshot.counts.neutral }} neutraal</small
+        ></span
+      ><span
+        >{{ compass.version }}<br /><small>{{ date }}</small></span
+      ><strong>WatDenktNederland<span>.nl</span></strong
+      ><img src="/report-art/flag.svg" alt="" />
     </footer>
   </article>
 </template>
 <style scoped>
-.report-sheet {
-  max-width: 795px;
+.compass-paper {
+  --ink: #001f4d;
+  --teal: #00877e;
+  --line: #dce4ed;
+  position: relative;
+  max-width: 1080px;
   margin: auto;
-  padding: clamp(1.3rem, 5vw, 3.3rem);
-  background: white;
-  border: 1px solid #dce3ee;
-  border-radius: 18px;
-  box-shadow:
-    0 7px 0 #e5edf8,
-    0 22px 60px #001f4d0a;
-  color: #001f4d;
+  padding: clamp(20px, 3.5vw, 38px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  color: var(--ink);
+  box-shadow: 0 18px 60px #001f4d0a;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
 }
-.report-sheet__dev {
-  padding: 0.75rem;
-  border: 2px dashed #987300;
-  background: #fff5c4;
-  color: #594000;
-  font-weight: 800;
+.compass-paper h2,
+.compass-paper h3,
+.compass-paper h4,
+.compass-paper p {
+  margin: 0;
 }
-.report-sheet header {
+.compass-paper h3 {
+  font-size: clamp(17px, 2vw, 23px);
+  font-weight: 850;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+}
+.compass-paper__header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-  justify-content: space-between;
+  position: relative;
+  gap: 24px;
   align-items: center;
+  padding: 0 0 26px;
 }
-.report-sheet header strong {
-  letter-spacing: -0.04em;
-  font-size: 1.15rem;
+.compass-paper__header > div:nth-child(2) {
+  border-left: 1px solid var(--line);
+  padding-left: 24px;
+  flex: 1;
+  min-width: 0;
 }
-.report-sheet header strong span {
+.compass-paper__header h2 {
+  font-size: clamp(22px, 3vw, 33px);
+  font-weight: 850;
+  line-height: 1.13;
+  letter-spacing: -0.055em;
+}
+.compass-paper__header p {
+  font-size: clamp(11px, 1.3vw, 15px);
+  margin-top: 6px;
+}
+.compass-paper__brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.compass-paper__brand strong {
+  font-size: clamp(12px, 1.8vw, 20px);
+  letter-spacing: -0.06em;
+  font-weight: 850;
+  white-space: nowrap;
+}
+.compass-paper__brand strong span {
   color: #0057b8;
 }
-.report-sheet header > span {
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  color: #526277;
+.compass-paper__accent {
+  display: block;
+  width: 43px;
+  height: 4px;
+  background: #e1062e;
+  border-radius: 5px;
+  margin: 13px 0 17px;
 }
-.report-sheet__intro {
-  background: #edf4ff;
-  border-radius: 17px;
-  padding: 1.4rem;
-  margin: 1.8rem 0 1.2rem;
+.compass-paper__header .compass-paper__accent {
+  margin: 13px 0 0;
 }
-.report-sheet__intro > p:first-child {
-  font-size: 0.7rem;
-  color: #526277;
+.compass-paper__flag {
+  position: absolute;
+  right: -56px;
+  top: -40px;
+  width: 100px;
+  opacity: 0.95;
+  pointer-events: none;
 }
-.report-sheet__intro h2 {
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-  margin: 0.4rem 0 1rem;
-}
-.report-sheet__intro h2 span {
-  color: #e1062e;
-}
-.report-sheet p {
-  font-size: 0.82rem;
-  line-height: 1.8;
-}
-.report-sheet__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  text-align: center;
-}
-.report-sheet__stats > div {
-  padding: 1rem 0.3rem;
-  background: #f6f8fb;
-  border-radius: 12px;
-  display: grid;
-}
-.report-sheet__stats strong {
-  font-size: 1.8rem;
-}
-.report-sheet__stats span {
-  font-size: 0.65rem;
-  color: #526277;
-}
-.report-sheet__bar {
+.compass-paper__hero {
   display: flex;
-  height: 18px;
+  align-items: center;
+  position: relative;
+  gap: 20px;
+  padding: 26px 24px;
+  border: 1px solid #d5eae7;
+  border-radius: 18px;
+  background: linear-gradient(112deg, #f0faf9, #e4f4f2);
+  margin-bottom: 20px;
+  isolation: isolate;
+}
+.compass-paper__hero-icon {
+  display: grid;
+  place-items: center;
+  width: 98px;
+  height: 108px;
+  flex-shrink: 0;
+  border-radius: 23px;
+  background: linear-gradient(135deg, #08aea2, #007f78);
+  box-shadow: inset 0 0 0 1px #ffffff55;
+}
+.compass-paper__hero-copy {
+  flex: 1;
+  min-width: 0;
+}
+.compass-paper__hero-copy h3 {
+  font-size: clamp(24px, 3.4vw, 37px);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.compass-paper__hero-copy p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.compass-paper__traits {
+  border-left: 1px solid #9bcfca;
+  padding-left: 20px;
+  flex: 0 0 215px;
+}
+.compass-paper__traits h4 {
+  background: #00887f;
+  color: white;
+  border-radius: 24px;
+  text-align: center;
+  padding: 7px 9px;
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.compass-paper__traits ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.compass-paper__traits li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.compass-paper__wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  z-index: -1;
+  border-bottom-left-radius: 18px;
+  pointer-events: none;
+}
+.compass-paper__grid {
+  display: grid;
+  grid-template-columns: 1fr 1.12fr;
+  gap: 18px;
+  align-items: start;
+}
+.compass-card {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 20px;
+  min-width: 0;
+  background: linear-gradient(145deg, #fff, #fbfcfd);
+}
+.compass-paper__scores,
+.compass-paper__insights {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.compass-paper__wheel {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: -5px auto -2px;
+}
+.compass-paper .compass-paper__caption {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #52677b;
+  margin-top: 5px;
+}
+.compass-paper__spectrum {
+  height: 19px;
   border-radius: 20px;
-  overflow: hidden;
-  margin: 1.3rem 0 0.7rem;
-  background: #f5f7fa;
+  background: linear-gradient(90deg, #0057b8, #aeb9ce, #e1062e);
+  position: relative;
+  margin: 44px 10px 10px;
 }
-.report-sheet__note {
-  color: #526277;
-  font-size: 0.72rem;
+.compass-paper__dot {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: #008c83;
+  border: 4px solid white;
+  border-radius: 50%;
+  top: -3px;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 5px #001f4d25;
 }
-.report-sheet h3 {
-  font-size: 1rem;
-  margin: 1.8rem 0 0.8rem;
+.compass-paper__you {
+  position: absolute;
+  top: -39px;
+  border-radius: 15px;
+  background: #008b82;
+  color: white;
+  padding: 3px 13px;
+  font-weight: 800;
+  font-size: 12px;
+  transform: translateX(-50%);
 }
-.report-sheet ul {
+.compass-paper__you:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: calc(50% - 5px);
+  border-top: 7px solid #008b82;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+.compass-paper__axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.compass-theme {
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e6ebf1;
+}
+.compass-theme:last-child {
+  padding-bottom: 0;
+  border: 0;
+}
+.compass-theme__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  height: 38px;
+  background: #eaf4f3;
+  border-radius: 10px;
+}
+.compass-theme__body {
+  min-width: 0;
+  flex: 1;
+}
+.compass-theme__labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.compass-theme__labels span:last-child {
+  text-align: right;
+}
+.compass-theme__track {
+  height: 10px;
+  background: #dce3e9;
+  border-radius: 15px;
+  position: relative;
+  margin: 10px 0 6px;
+}
+.compass-theme__track > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #009b8f, #00877f);
+  border-radius: inherit;
+}
+.compass-theme__track i {
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  top: -4px;
+  background: #00877f;
+  border: 4px solid white;
+  box-shadow: 0 1px 5px #001f4d30;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.compass-theme__track--empty {
+  background: #edf1f5;
+}
+.compass-theme__percentages {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.compass-paper .compass-paper__empty {
+  background: #f2f7f9;
+  border: 1px solid #e4ecef;
+  border-radius: 10px;
+  padding: 14px;
+  color: #52677b;
+  font-size: 12px;
+  line-height: 1.75;
+}
+.compass-paper__subheading {
+  font-size: 12px;
+  color: #52677b;
+  margin-bottom: 14px !important;
+}
+.compass-parties {
   padding: 0;
   margin: 0;
   list-style: none;
+  display: grid;
+  gap: 9px;
 }
-.report-sheet__votes li {
+.compass-parties li {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #e8edf5;
-  font-size: 0.74rem;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid #e5ebf1;
+  border-radius: 12px;
+  padding: 12px;
+  background: white;
 }
-.report-sheet__votes a {
+.compass-parties li > div {
+  flex: 1;
   min-width: 0;
 }
-.report-sheet__votes strong {
+.compass-parties strong {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.compass-parties b {
+  font-size: 23px;
+  letter-spacing: -0.06em;
   white-space: nowrap;
 }
-.report-sheet__matches li {
+.compass-parties small {
+  font-size: 10px;
+  color: #52677b;
+}
+.compass-parties .compass-theme__track {
+  margin: 8px 0 2px;
+  height: 9px;
+}
+.compass-highlights {
+  padding: 0;
+  margin: 0;
+  list-style: none;
   display: grid;
-  gap: 0.2rem;
-  margin-bottom: 0.6rem;
-  font-size: 0.75rem;
+  gap: 14px;
 }
-.report-sheet__matches span {
-  font-size: 0.68rem;
-  color: #526277;
+.compass-highlights li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
-.report-sheet footer {
-  margin-top: 2rem;
-  border-top: 1px solid #e4eaf3;
-  padding-top: 1rem;
-  color: #526277;
-  font-size: 0.62rem;
+.compass-highlights li > span {
+  flex: 0 0 23px;
+  line-height: 23px;
+  text-align: center;
+  border-radius: 50%;
+  background: #008b82;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
 }
-@media print {
-  .report-sheet {
-    box-shadow: none;
+.compass-highlights p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.compass-paper .compass-paper__reflection {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #52677b;
+  margin-top: 17px;
+}
+.compass-card--method {
+  display: flex;
+  gap: 13px;
+  background: #f5fbfa;
+}
+.compass-card--method h3 {
+  font-size: 18px;
+}
+.compass-card--method p {
+  font-size: 10px;
+  line-height: 1.7;
+  margin-top: 9px;
+}
+.compass-card--method a {
+  font-size: 10px;
+  font-weight: 800;
+  color: #00786f;
+  display: inline-block;
+  margin-top: 8px;
+}
+.compass-paper__info {
+  display: grid;
+  place-items: center;
+  background: #d5efeb;
+  border-radius: 9px;
+  width: 33px;
+  height: 37px;
+  flex-shrink: 0;
+  font-size: 24px;
+  color: #00877e;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+}
+.compass-paper__footer {
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 19px;
+  font-size: 11px;
+  position: relative;
+}
+.compass-paper__footer > span + span {
+  border-left: 1px solid var(--line);
+  padding-left: 18px;
+}
+.compass-paper__footer small {
+  font-size: 9px;
+  color: #52677b;
+}
+.compass-paper__footer > strong {
+  font-size: 14px;
+  letter-spacing: -0.04em;
+}
+.compass-paper__footer > strong > span {
+  color: #0057b8;
+}
+.compass-paper__footer > img {
+  position: absolute;
+  width: 100px;
+  right: -43px;
+  bottom: -40px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.compass-paper__dev {
+  padding: 8px 12px !important;
+  margin-bottom: 17px !important;
+  background: #fff5c4;
+  border: 1px dashed #987300;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #594000;
+}
+@media (max-width: 1050px) {
+  .compass-paper__hero {
+    flex-wrap: wrap;
+  }
+  .compass-paper__traits {
+    flex-basis: 100%;
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid #b9dcd8;
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .compass-paper__traits h4 {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .compass-paper__traits ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .compass-paper__traits li {
+    font-size: 11px;
+  }
+  .compass-paper__header {
+    gap: 17px;
+  }
+  .compass-paper__header > div:nth-child(2) {
+    padding-left: 17px;
+  }
+  .compass-card {
+    padding: 16px;
+  }
+}
+@media (max-width: 740px) {
+  .compass-paper__grid {
+    grid-template-columns: 1fr;
+  }
+  .compass-paper__header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .compass-paper__header > div:nth-child(2) {
+    flex-basis: 100%;
     border: 0;
     padding: 0;
+  }
+  .compass-paper__brand strong {
+    font-size: 19px;
+  }
+  .compass-paper__header h2 {
+    font-size: 29px;
+  }
+  .compass-paper__header p {
+    font-size: 12px;
+  }
+  .compass-paper__hero {
+    padding: 20px;
+    gap: 15px;
+  }
+  .compass-paper__hero-icon {
+    width: 67px;
+    height: 76px;
+    border-radius: 17px;
+  }
+  .compass-paper__hero-icon img {
+    width: 44px;
+    height: 44px;
+  }
+  .compass-paper__hero-copy h3 {
+    font-size: 26px;
+  }
+  .compass-paper__hero-copy p {
+    font-size: 12px;
+  }
+  .compass-paper__traits {
+    display: block;
+  }
+  .compass-paper__traits h4 {
+    display: inline-block;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  .compass-paper__traits ul {
+    display: grid;
+    gap: 9px;
+  }
+  .compass-paper__traits li {
+    font-size: 12px;
+  }
+  .compass-paper__wheel {
+    max-width: 440px;
+  }
+  .compass-paper__footer {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .compass-card h3 {
+    font-size: 21px;
+  }
+}
+@media (max-width: 380px) {
+  .compass-paper {
+    padding: 16px;
+  }
+  .compass-paper__hero {
+    padding: 16px;
+  }
+  .compass-paper__hero-copy {
+    flex-basis: 100%;
+  }
+  .compass-theme {
+    gap: 8px;
+  }
+  .compass-theme__icon {
+    flex-basis: 30px;
+    width: 30px;
+    height: 34px;
+  }
+  .compass-theme__labels {
+    font-size: 11px;
+  }
+  .compass-card {
+    padding: 14px;
+  }
+  .compass-paper__brand strong {
+    font-size: 17px;
+  }
+  .compass-paper__header h2 {
+    font-size: 26px;
+  }
+  .compass-paper__footer > span + span {
+    border: 0;
+    padding: 0;
+  }
+}
+@media print {
+  .compass-paper {
+    box-shadow: none;
+    border: 0;
+  }
+  .compass-paper__dev {
+    display: none;
   }
 }
 </style>
