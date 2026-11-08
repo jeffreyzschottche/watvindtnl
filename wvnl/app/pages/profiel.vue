@@ -274,4 +274,29 @@ useSeoMeta({
     font-size: 1.05rem;
   }
 }
+
+.profile-home__identity {
+  background: linear-gradient(125deg, #edf4ff, #f8fbff);
+  border-radius: 23px;
+  box-shadow: 0 5px 0 #e3ebf8;
+}
+.profile-home__avatar {
+  box-shadow: 4px 5px 0 #c4d7f2;
+  border: 2px solid #fff;
+  transform: rotate(-6deg);
+}
+.profile-home__grid > a {
+  border-radius: 23px;
+  box-shadow: 0 5px 0 #e5edf8;
+  background: linear-gradient(145deg, #fff, #f6f9ff);
+}
+.profile-home__grid > a:last-child {
+  background: linear-gradient(145deg, #fff, #fff6f8);
+  box-shadow: 0 5px 0 #f0e2e8;
+}
+.profile-home__icon {
+  border: 1px solid #dce7f6;
+  box-shadow: 3px 4px 0 #dae6f7;
+  transform: rotate(-7deg);
+}
 </style>

@@ -19,9 +19,29 @@ Legacy URLs blijven bereikbaar via aliases of de bestaande pagina's. Geen aparte
 
 ## Vormgeving
 
-Witte header en kaarten, #F5F7FA basis, #001F4D tekst, #0057B8 accenten, #E1062E hoofd-CTA. Rustige randen, lichte schaduwen, heldere typografie en lokale bestaande fotografie. Het gereconstrueerde molenlogo staat in de lokale ontwerpversie ter beoordeling; geen finale merkgoedkeuring of native app-icon-release aangenomen.
+Witte header en kaarten, #F5F7FA basis, #001F4D tekst, #0057B8 accenten, #E1062E hoofd-CTA. Manrope wordt lokaal geladen. Gelaagde oppervlakken, tactiele 3D-illustraties en rustige beweging geven karakter. Het gereconstrueerde molenlogo staat in de lokale ontwerpversie ter beoordeling; geen finale merkgoedkeuring of native app-icon-release aangenomen.
 
-Homepage: Nederlandse landschapshero, echte API-stellingen, kort proces, kompas, FAQ en compacte footer. Geen verzonnen deelnemersaantallen, actuele labels op historische content of percentages vóór stemmen. Authpagina's krijgen compacte formulieren zonder oude fotografische banners. Hoofdfunctionaliteit blijft hergebruikt.
+Homepage: lichtblauwe hero met Nederlands 3D-buurtje, echte API-stellingen, kort proces, kompasillustratie, FAQ en compacte footer. Geen verzonnen deelnemersaantallen, actuele labels op historische content of percentages vóór stemmen. Authpagina's krijgen compacte formulieren zonder oude fotografische banners. Hoofdfunctionaliteit blijft hergebruikt. Assetherkomst, prompts en fontlicentie staan in [ASSETS.md](ASSETS.md).
+
+## Laws of UX toegepast — 8 november 2026
+
+De principes uit [Laws of UX](https://lawsofux.com/) dienen als ontwerphouvast. Het zijn geen garantie op gebruiksgemak, prestatiecertificering of vervanging van gebruikersonderzoek. We passen ze toe in de bestaande gedeelde Nuxt/Capacitor-interface, zonder een extra uitlegscherm voor eindgebruikers toe te voegen.
+
+| Principe | Concrete toepassing |
+| --- | --- |
+| Hick's Law / Choice Overload | Vier hoofdtaken; twee gelijkwaardige stemkeuzes. Eén duidelijke primaire actie per stap. Rapporteren en delen krijgen een rustige secundaire stijl. |
+| Fitts's Law | Minimaal 44 px hoge stem-, meld-, deel-, filter-, zoekwis- en animatieknoppen. Het hele stellingkaartje is aanklikbaar. |
+| Jakob's Law | Logo naar home, herkenbare zoekbalk, vaste mobiele tabs, expliciete labels en terugkerende knopstijlen. Actieve accountsectie blijft gemarkeerd bij instellingen. |
+| Chunking / Common Region / Proximity | Profiel, stemmen en kompas zijn aparte groepen. Context, bronnen en partijinformatie staan bij hun stelling in een uitklapbaar blok. |
+| Cognitive Load | Argumenten en achtergrond openen niet automatisch na een stem. Een handmatig geopend blok blijft beschikbaar; de volgende stelling begint weer compact. |
+| Doherty Threshold | Directe ingedrukte/disabled feedback en laadmeldingen. Zoeken meldt laden, resultaat of fout; wissen herstelt focus. Geen claim van een gemeten responstijd onder 400 ms. |
+| Von Restorff Effect | Rode hoofd-CTA, rustige secundaire acties. Voor en tegen houden gelijke afmetingen en gelijkwaardige visuele nadruk. |
+| Peak-End Rule | Bevestiging en korte, identieke deelnameconfetti na een geslaagde stem; uitslag blijft staan tot bewust volgende. Geen nepbeloningen of afteltimers. |
+| Aesthetic-Usability Effect | Illustraties en diepte ondersteunen de hiërarchie. Tekst, contrast, focus en echte foutafhandeling blijven nodig; mooi alleen is onvoldoende. |
+
+Decoratieve beweging staat los van de taak: pauzeren kan bij de illustratie en in de footer, de keuze wordt bewaard, systeem-reduced-motion wordt gerespecteerd. Floatanimaties stoppen buiten beeld en in een verborgen tabblad. Toetsenbordgebruikers kunnen meld-/deelopties openen, met Escape sluiten en terugkeren naar de trigger. De mobiele tabbar benoemt de actieve sectie met `aria-current`.
+
+We vermijden het letterlijk toepassen van iedere wet: bijvoorbeeld een kunstmatig doelpercentage, schaarste of verplicht aantal keuzes levert bij politieke meningen ongewenste sturing op. Een volgende productcontrole hoort echte gebruikers te laten stemmen, zoeken en terugnavigeren; automatische tests bewijzen alleen het gecontroleerde gedrag.
 
 ## Verificatie en grenzen
 

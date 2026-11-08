@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-variable.ttf") format("truetype");
+}
+
 :root {
   --wdnl-navy: #001f4d;
   --wdnl-blue: #0057b8;
@@ -31,11 +39,11 @@
   --color-text: var(--wdnl-text);
   --color-muted: var(--wdnl-muted);
   --color-border: var(--wdnl-border);
-  --border-radius: 16px;
-  --shadow-soft: 0 5px 24px #001f4d06;
+  --border-radius: 20px;
+  --shadow-soft: 0 8px 0 #e9eef7, 0 20px 45px #001f4d07;
   --focus-ring: 0 0 0 3px #0057b833;
   font-family:
-    Inter,
+    Manrope,
     ui-sans-serif,
     -apple-system,
     BlinkMacSystemFont,
@@ -58,7 +66,7 @@ body {
   background: var(--wdnl-background);
   color: var(--wdnl-navy);
   min-height: 100vh;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -98,7 +106,7 @@ h3,
 h4 {
   line-height: 1.2;
   letter-spacing: -0.035em;
-  font-weight: 780;
+  font-weight: 800;
 }
 h1 {
   font-size: clamp(2rem, 4.5vw, 3.2rem);
@@ -161,15 +169,15 @@ p {
   gap: 0.65rem;
   min-height: 46px;
   padding: 0.85rem 1.4rem;
-  border-radius: 9px;
+  border-radius: 12px;
   border: 1px solid transparent;
   background: var(--wdnl-navy);
   color: white;
   font-size: 0.86rem;
-  font-weight: 680;
+  font-weight: 750;
   line-height: 1.2;
   text-decoration: none;
-  box-shadow: none;
+  box-shadow: 0 3px 0 #00153818;
   transition:
     background 0.15s,
     transform 0.15s;
@@ -466,9 +474,12 @@ p {
 }
 .info-body {
   border: 1px solid var(--wdnl-border);
-  border-radius: 16px;
+  border-radius: 22px;
   padding: 2rem;
   background: #fff;
+  box-shadow:
+    0 5px 0 #e6edf7,
+    0 14px 40px #001f4d05;
 }
 .info-body h2 {
   font-size: 1.3rem;
@@ -558,4 +569,40 @@ p {
 }
 
 /* An explicit user preference also disables decorative CSS motion. */
-[data-motion="off"] *, [data-motion="off"] *::before, [data-motion="off"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Shared surfaces keep the app and information pages in the same visual family. */
+.site-main {
+  background-image: radial-gradient(
+    ellipse at 85% 0%,
+    #e8f0ff60,
+    transparent 620px
+  );
+}
+.auth-heading h1 {
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+.form {
+  border-radius: 22px;
+  border-color: #dce5f2;
+}
+.faq-list summary::after {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #edf3ff;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+html[data-wdnl-motion="off"] {
+  scroll-behavior: auto;
+}

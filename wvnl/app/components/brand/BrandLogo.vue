@@ -23,7 +23,7 @@ withDefaults(defineProps<{ compact?: boolean }>(), { compact: false });
 }
 .wdnl-logo__name {
   font-size: 1.22rem;
-  font-weight: 850;
+  font-weight: 800;
   letter-spacing: -0.055em;
 }
 .wdnl-logo__name span {

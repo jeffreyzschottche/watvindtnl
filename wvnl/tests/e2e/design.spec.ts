@@ -146,6 +146,21 @@ test("catalogue searches and opens a dedicated statement page", async ({
   await expect(
     page.getByRole("heading", { name: fixtures[1]!.title }),
   ).toBeHidden();
+  await expect(page.locator(".catalogue__feedback")).toHaveText(
+    "1 stelling in beeld",
+  );
+  const clear = page.getByRole("button", { name: "Zoekopdracht wissen" });
+  expect((await clear.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await clear.click();
+  await expect(
+    page.getByRole("searchbox", { name: "Zoek een stelling" }),
+  ).toBeFocused();
+  await expect(page.locator(".catalogue__feedback")).toHaveText(
+    "2 stellingen in beeld",
+  );
+  await page
+    .getByRole("searchbox", { name: "Zoek een stelling" })
+    .fill("wonen");
   await page
     .getByRole("link", { name: /Hoe maken we wonen betaalbaar/ })
     .click();
@@ -198,6 +213,72 @@ test("account security stays inside the profile navigation", async ({
         .getByRole("navigation", { name: "Appnavigatie" })
         .getByRole("link", { name: "Profiel" }),
     ).toHaveClass(/tab-active/);
+    await expect(
+      page
+        .getByRole("navigation", { name: "Appnavigatie" })
+        .getByRole("link", { name: "Profiel" }),
+    ).toHaveAttribute("aria-current", "location");
   }
+  await noOverflow(page);
+});
+
+test("3D art uses a local font, responds to a mouse and can be paused", async ({
+  page,
+}, info) => {
+  await mockApi(page);
+  await page.goto("/");
+  const scene = page.locator('.hero [data-scene="neighbourhood"]');
+  await expect(scene).toHaveAttribute("data-animated", "true");
+  const artwork = scene.locator("img");
+  await expect(artwork).toHaveAttribute(
+    "src",
+    "/illustrations/dutch-island-v2.webp",
+  );
+  await expect
+    .poll(() => artwork.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+    .toBeGreaterThan(0);
+  const fontLoaded = await page.evaluate(async () => {
+    await document.fonts.ready;
+    return [...document.fonts].some(
+      (font) => font.family === "Manrope" && font.status === "loaded",
+    );
+  });
+  expect(fontLoaded).toBe(true);
+  if (info.project.name === "desktop") {
+    const box = (await scene.boundingBox())!;
+    await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.3);
+    await expect
+      .poll(() =>
+        scene
+          .locator("[data-parallax]")
+          .evaluate((el) => getComputedStyle(el).transform),
+      )
+      .toContain("matrix3d");
+  }
+  await scene.getByRole("button", { name: "Animatie pauzeren" }).click();
+  await expect(scene).toHaveAttribute("data-animated", "false");
+  await expect(page.locator("#main-content")).toHaveAttribute(
+    "data-motion",
+    "off",
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-wdnl-motion", "off");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await noOverflow(page);
+});
+
+test("compass 3D illustration remains usable with reduced motion", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/kompas");
+  const scene = page.locator('.compass-page__art [data-scene="compass"]');
+  await expect(scene).toHaveAttribute("data-animated", "false");
+  await expect(
+    scene.getByRole("button", { name: "Minder beweging actief" }),
+  ).toBeDisabled();
+  await expect(scene.locator("img")).toHaveAttribute(
+    "src",
+    "/illustrations/compass-v2.webp",
+  );
   await noOverflow(page);
 });

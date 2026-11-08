@@ -16,6 +16,11 @@ const error = ref("");
 const more = ref(false);
 let generation = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
+const searchInput = ref<HTMLInputElement | null>(null);
+function clearSearch() {
+  search.value = "";
+  searchInput.value?.focus();
+}
 async function load(append = false) {
   const request = ++generation;
   loading.value = true;
@@ -75,7 +80,10 @@ useSeoMeta({
 <template>
   <section class="catalogue container">
     <header class="catalogue__heading" data-reveal>
-      <p class="eyebrow">Ontdek beide kanten</p>
+      <p class="eyebrow">
+        <span class="catalogue__eyebrow-mark" aria-hidden="true">✦</span> Ontdek
+        beide kanten
+      </p>
       <h1>Waar denk jij over na?</h1>
       <p>Zoek een onderwerp dat je raakt. Lees, denk en stem mee.</p>
     </header>
@@ -84,11 +92,21 @@ useSeoMeta({
         ><AppIcon name="search" :size="20" /><span class="sr-only"
           >Zoek een stelling</span
         ><input
+          ref="searchInput"
           v-model="search"
           type="search"
           maxlength="120"
           placeholder="Zoek een stelling…"
       /></label>
+      <button
+        v-if="search"
+        type="button"
+        class="catalogue__clear"
+        aria-label="Zoekopdracht wissen"
+        @click="clearSearch"
+      >
+        <AppIcon name="close" :size="18" />
+      </button>
       <div
         v-if="auth.isLoggedIn"
         class="catalogue__filters"
@@ -112,6 +130,20 @@ useSeoMeta({
         >Liever één voor één? <span>Start het spel →</span></NuxtLink
       >
     </div>
+    <p
+      class="catalogue__feedback"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {{
+        loading
+          ? "Stellingen laden…"
+          : error
+            ? "Laden niet gelukt."
+            : `${items.length} ${items.length === 1 ? "stelling" : "stellingen"} in beeld${more ? " · Meer beschikbaar" : ""}`
+      }}
+    </p>
     <p v-if="error" role="alert" class="form-error">
       {{ error }}
       <button type="button" @click="load()">Opnieuw proberen</button>
@@ -184,7 +216,27 @@ useSeoMeta({
   font-size: 0.95rem;
 }
 .catalogue__controls {
+  position: relative;
   margin: 2rem 0 1.5rem;
+}
+.catalogue__clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  color: #526277;
+  background: #edf3ff;
+}
+.catalogue__feedback {
+  min-height: 1.6em;
+  font-size: 0.78rem;
+  color: #526277;
+  margin-bottom: 1rem;
 }
 .catalogue__search {
   display: flex;
@@ -194,6 +246,7 @@ useSeoMeta({
   border: 1px solid #d1dbe8;
   border-radius: 10px;
   padding: 0.5rem 1rem;
+  padding-right: 60px;
   color: #6d7f99;
 }
 .catalogue__search:focus-within {
@@ -222,7 +275,7 @@ useSeoMeta({
   color: #63738a;
   background: #fff;
   font-size: 0.75rem;
-  min-height: 40px;
+  min-height: 44px;
 }
 .catalogue__filters button[aria-pressed="true"] {
   background: #001f4d;
@@ -333,6 +386,61 @@ useSeoMeta({
   }
   .statement-row h2 {
     font-size: 0.9rem;
+  }
+}
+
+.catalogue__heading h1 {
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+.catalogue__eyebrow-mark {
+  display: grid;
+  place-items: center;
+  background: #e5efff;
+  border: 1px solid #d6e5fa;
+  border-radius: 10px;
+  width: 32px;
+  height: 34px;
+  font-size: 20px;
+  transform: rotate(-8deg);
+  box-shadow: 2px 3px 0 #cbdcf4;
+}
+.catalogue__search {
+  border-radius: 16px;
+  min-height: 58px;
+  box-shadow: 0 4px 0 #e8edf6;
+  background: #fff;
+}
+.statement-row {
+  border-radius: 19px;
+  box-shadow: 0 4px 0 #e8eef7;
+  padding: 1.35rem 1.4rem;
+  background: linear-gradient(120deg, #fff, #f9fbff);
+}
+.statement-row:nth-child(3n + 2) {
+  background: linear-gradient(120deg, #fff, #fff9fa);
+}
+.statement-row:nth-child(3n + 3) {
+  background: linear-gradient(120deg, #fff, #f6fbfa);
+}
+.statement-row h2 {
+  font-weight: 800;
+  font-size: 1.03rem;
+}
+.statement-row > svg:last-child {
+  padding: 9px;
+  width: 36px;
+  height: 36px;
+  background: #edf3ff;
+  border-radius: 50%;
+  color: #0057b8;
+}
+@media (max-width: 720px) {
+  .statement-row {
+    padding: 1.15rem;
+  }
+  .statement-row h2 {
+    font-size: 0.95rem;
   }
 }
 </style>

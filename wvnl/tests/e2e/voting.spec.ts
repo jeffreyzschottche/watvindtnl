@@ -104,6 +104,18 @@ test("result stays on the same statement until the user clicks next", async ({
   ).toBeHidden();
   const against = page.getByRole("button", { name: "Tegen Ik ben het oneens" });
   const support = page.getByRole("button", { name: "Voor Ik ben het eens" });
+  const background = page.locator(".vote-card-v2__background");
+  await expect(background).not.toHaveAttribute("open");
+  const report = page
+    .locator(".vote-card-v2__meta")
+    .getByRole("button", { name: "Rapporteer" });
+  expect((await report.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await report.click();
+  await expect(report).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".report-menu__option").first()).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(report).toBeFocused();
+  await expect(report).toHaveAttribute("aria-expanded", "false");
   expect((await against.boundingBox())!.x).toBeLessThan(
     (await support.boundingBox())!.x,
   );
@@ -112,6 +124,7 @@ test("result stays on the same statement until the user clicks next", async ({
     page.getByRole("heading", { name: "Zo denken de deelnemers" }),
   ).toBeVisible();
   await expect(title).toHaveText(original!);
+  await expect(background).not.toHaveAttribute("open");
   await expect(support).toBeHidden();
   await expect(page.getByText("64%", { exact: true })).toBeVisible();
   expect(votes).toHaveLength(1);

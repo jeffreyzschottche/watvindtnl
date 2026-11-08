@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ alias: "/kompas" });
+import MotionScene from "~/components/art/MotionScene.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 useSeoMeta({
   title: "Jouw politieke kompas | WatDenktNederland",
@@ -9,7 +10,7 @@ useSeoMeta({
 </script>
 <template>
   <div class="compass-page container">
-    <section class="compass-page__intro">
+    <section class="compass-page__intro" data-reveal>
       <p class="eyebrow">Jouw persoonlijke richting</p>
       <h1>Leer jezelf<br /><span>beter kennen.</span></h1>
       <p class="compass-page__lead">
@@ -36,23 +37,12 @@ useSeoMeta({
         eenmalig €1,99; het is nu nog niet te koop.
       </p>
     </section>
-    <aside class="compass-page__card">
-      <div class="compass-page__icon">
-        <AppIcon name="compass" :size="78" />
-      </div>
-      <span class="compass-page__tag">Jouw kompas</span>
-      <h2>Een profiel dat<br />begint bij jouw mening.</h2>
-      <p>
-        Geen goed of fout. Wel een beter beeld van wat jij belangrijk vindt.
-      </p>
-      <div class="compass-page__line">
-        <span>Jouw antwoorden</span><AppIcon name="arrow" :size="16" />
-      </div>
-      <div class="compass-page__line">
-        <span>Jouw waarden</span><AppIcon name="arrow" :size="16" />
-      </div>
-      <div class="compass-page__line">
-        <span>Jouw richting</span><AppIcon name="compass" :size="18" />
+    <aside class="compass-page__art" data-reveal>
+      <MotionScene kind="compass" priority />
+      <div class="compass-page__art-caption">
+        <span aria-hidden="true">✦</span
+        ><strong>Je eigen richting vinden.</strong
+        ><span>Dat begint bij jouw mening.</span>
       </div>
     </aside>
     <section class="compass-page__explain">
@@ -181,6 +171,58 @@ useSeoMeta({
   }
   .compass-page__explain {
     grid-column: auto;
+  }
+}
+
+.compass-page {
+  gap: 3rem;
+}
+.compass-page h1 {
+  font-weight: 800;
+  font-size: clamp(2.6rem, 5.2vw, 4.8rem);
+  letter-spacing: -0.06em;
+  line-height: 1.07;
+}
+.compass-page__art {
+  min-width: 0;
+}
+.compass-page__art-caption {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  color: #526d90;
+  font-size: 0.7rem;
+  margin-top: 1rem;
+}
+.compass-page__art-caption > strong {
+  font-size: 0.95rem;
+  color: #001f4d;
+}
+.compass-page__art-caption > span:first-child {
+  color: #0057b8;
+  font-size: 24px;
+}
+.compass-page__explain {
+  border-radius: 22px;
+  padding: 2rem;
+  border: 1px solid #dce7f5;
+  background: #f0f5fd;
+  box-shadow: 0 5px 0 #e5edf8;
+}
+@media (max-width: 720px) {
+  .compass-page {
+    gap: 2rem;
+  }
+  .compass-page h1 {
+    font-size: 3rem;
+  }
+  .compass-page__art {
+    max-width: 380px;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .compass-page__explain {
+    padding: 1.4rem;
   }
 }
 </style>

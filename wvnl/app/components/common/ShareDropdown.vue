@@ -6,22 +6,22 @@
     @keydown.esc.prevent="close"
   >
     <button
+      ref="trigger"
       class="issue-card__button--share"
       type="button"
       :class="triggerClass"
       :aria-expanded="isOpen"
-      aria-haspopup="menu"
+      :aria-controls="panelId"
       @click.stop="toggle"
     >
       {{ triggerLabel }}
     </button>
     <transition name="share-dropdown__transition">
-      <ul v-if="isOpen" class="share-dropdown__menu" role="menu">
-        <li v-for="option in computedOptions" :key="option.value" role="none">
+      <ul v-if="isOpen" :id="panelId" class="share-dropdown__menu">
+        <li v-for="option in computedOptions" :key="option.value">
           <button
             type="button"
             class="share-dropdown__option"
-            role="menuitem"
             @click="select(option.value)"
           >
             {{ option.label }}
@@ -48,7 +48,7 @@ const props = withDefaults(
     triggerLabel: "Deel",
     triggerClass:
       "issue-card__button issue-card__button--share issues-page__retry",
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -65,15 +65,24 @@ const DEFAULT_OPTIONS: ShareOption[] = [
 
 const isOpen = ref(false);
 const root = ref<HTMLElement | null>(null);
+const trigger = ref<HTMLButtonElement | null>(null);
+const panelId = useId();
 
 const computedOptions = computed(() => props.options ?? DEFAULT_OPTIONS);
 
-function toggle() {
+async function toggle() {
   isOpen.value = !isOpen.value;
+  if (isOpen.value) {
+    await nextTick();
+    root.value
+      ?.querySelector<HTMLButtonElement>(".share-dropdown__option")
+      ?.focus();
+  }
 }
 
 function close() {
   isOpen.value = false;
+  trigger.value?.focus();
 }
 
 function select(platform: SharePlatform) {
@@ -87,7 +96,7 @@ function handleDocumentClick(event: MouseEvent) {
   if (target && root.value?.contains(target)) {
     return;
   }
-  close();
+  isOpen.value = false;
 }
 
 onMounted(() => {
@@ -116,17 +125,13 @@ onBeforeUnmount(() => {
   gap: 0.4rem;
   padding: 0.75rem;
   border-radius: 1rem;
-  background: linear-gradient(
-    155deg,
-    rgba(0, 35, 71, 0.95),
-    rgba(0, 51, 102, 0.85)
-  );
+  background: #fff;
   min-width: 12rem;
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(249, 250, 251, 0.12);
+  box-shadow: 0 12px 35px #001f4d1a;
+  border: 1px solid #dce3ee;
   backdrop-filter: blur(6px);
   z-index: 100;
-  color: var(--color-text-light);
+  color: #001f4d;
 }
 
 .share-dropdown__option {
@@ -135,11 +140,15 @@ onBeforeUnmount(() => {
   padding: 0.6rem 0.9rem;
   border: none;
   border-radius: 0.7rem;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-text-light);
+  background: #f5f7fa;
+  color: #001f4d;
+  min-height: 44px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease,
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
     box-shadow 0.18s ease;
   display: flex;
   align-items: center;
@@ -148,15 +157,16 @@ onBeforeUnmount(() => {
 
 .share-dropdown__option:hover,
 .share-dropdown__option:focus {
-  background: rgba(255, 255, 255, 0.2);
+  background: #edf3ff;
   color: var(--color-orange);
-  transform: translateX(2px);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px #a8c2e4;
 }
 
 .share-dropdown__transition-enter-active,
 .share-dropdown__transition-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .share-dropdown__transition-enter-from,
@@ -176,7 +186,9 @@ onBeforeUnmount(() => {
   color: white;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .triggerClass:hover,
@@ -186,11 +198,12 @@ onBeforeUnmount(() => {
 }
 
 .issue-card__button--share {
-  background: linear-gradient(135deg, #ff8e00, #fd7702);
-  color: var(--color-midnight);
-  box-shadow: 0 18px 36px rgba(255, 142, 0, 0.35);
-  border-radius: 15px;
-  border: none;
+  background: #f5f7fa;
+  color: #526277;
+  border-radius: 12px;
+  border: 1px solid #dce3ee;
+  min-height: 44px;
+  padding: 0.55rem 1rem;
   cursor: pointer;
   font-weight: 700;
 }

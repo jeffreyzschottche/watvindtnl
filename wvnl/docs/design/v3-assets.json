@@ -1,0 +1,34 @@
+{
+  "created_at": "2026-11-08",
+  "generator": "Built-in image_gen.imagegen; imagegen skill; no CLI/API fallback",
+  "assets": [
+    {
+      "path": "public/illustrations/dutch-island-v2.webp",
+      "use": "Decorative homepage hero; not a replacement logo",
+      "width": 900,
+      "height": 1125,
+      "transparent": true,
+      "optimization": "cwebp -q 84 -m 6 -resize 900 0",
+      "original": "/Users/jeffreyzschottche/.codex/generated_images/01a1b77e-801b-73a1-bf81-24807bd38533/exec-093be878-5379-4d35-bed7-7619692680ed.png",
+      "prompt": "Use case: stylized-concept. Asset type: transparent 3D hero illustration for the Dutch consumer opinion platform WatDenktNederland. Primary request: one beautifully art-directed floating miniature Dutch neighbourhood island, as a premium playful digital sculpture. Subject: a tall elegant traditional navy blue windmill with cream sails, two charming narrow Amsterdam canal houses in cobalt and warm cream with small red doors, a tiny canal bridge and flowing blue canal, small red tulips and rounded trees. Two small thick empty speech bubbles in porcelain white and sky blue hover over the rooftops, suggesting different perspectives. Composition: one coherent isometric island sculpture viewed at a gentle three-quarter angle, framed fully with generous padding, vertical 4:5-ish composition, windmill upper centre, canal across lower foreground, all silhouettes fully inside canvas. Style: high-end editorial 3D art, satisfying rounded bevels, tactile matte ceramic, subtle glossy water and glass-like blue accents, soft studio daylight and delicate ambient occlusion, polished and charming but not a children's toy. Palette: deep navy #001F4D, rich royal blue #0057B8, porcelain/off-white, restrained balanced Dutch red #E1062E accents and muted fresh greens. No text, no letters, no party symbols, no UI screenshot, no charts, no hands or people, no voting thumbs, no logos, no watermark. Transparent background with genuine alpha, no background panel, no painted backdrop, soft small contact shadow only. The windmill is a decorative landscape element, not a logo redesign."
+    },
+    {
+      "path": "public/illustrations/compass-v2.webp",
+      "use": "Decorative homepage and compass-page illustration; not a generated report",
+      "width": 850,
+      "height": 850,
+      "transparent": true,
+      "optimization": "cwebp -q 85 -m 6 -resize 850 0",
+      "original": "/Users/jeffreyzschottche/.codex/generated_images/01a1b77e-801b-73a1-bf81-24807bd38533/exec-fdbd0033-2c9d-400c-ba6a-845d60a3ddda.png",
+      "prompt": "Use case: stylized-concept. Asset type: transparent decorative 3D art for the WatDenktNederland political compass webpage. Primary request: a gorgeous floating physical compass object in a premium modern editorial 3D illustration style. Subject: a thick rounded white porcelain compass body, rich cobalt-blue beveled outer ring, a clear slightly domed glass face, and one clean red-and-blue diamond compass needle balanced symmetrically at its pivot. Simple subtle embossed radial tick marks, no lettering or numbers. One small cobalt sphere and one tiny red rounded square float beside it, with two very thin orbit arcs integrated elegantly behind. Composition: centred three-quarter view, tilt toward viewer, complete object and accents fully inside canvas with generous padding, square image. Materials: matte ceramic, subtly glossy rich blue rim, realistic transparent glass highlights, soft studio light, refined ambient occlusion. Palette: navy #001F4D, royal blue #0057B8, Dutch red #E1062E, white, subtle light sky blue. Mood: curious, playful, premium, trustworthy consumer product. No text, no cardinal letters, no scores, no political party imagery, no personality claims, no hand, no logo, no watermark. True transparent alpha background, no background plane, no painted backdrop. This object is an illustration, not a UI control or a real report."
+    }
+  ],
+  "font": {
+    "family": "Manrope",
+    "file": "public/fonts/manrope-variable.ttf",
+    "weights": "200–800",
+    "license": "SIL Open Font License 1.1",
+    "license_file": "public/fonts/Manrope-OFL.txt",
+    "source": "https://github.com/google/fonts/tree/main/ofl/manrope"
+  }
+}

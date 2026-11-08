@@ -105,6 +105,7 @@ const showTabs = computed(
       :key="tab.to"
       :to="tab.to"
       :class="{ 'tab-active': activeTab(tab.to) }"
+      :aria-current="activeTab(tab.to) ? 'location' : undefined"
       ><AppIcon :name="tab.icon" /><span>{{ tab.label }}</span></NuxtLink
     >
   </nav>
@@ -155,7 +156,7 @@ const showTabs = computed(
 }
 .nav-cta {
   font-size: 0.8rem;
-  min-height: 41px;
+  min-height: 44px;
   border-radius: 8px;
   padding: 0.7rem 1rem;
 }
@@ -164,8 +165,8 @@ const showTabs = computed(
   background: #fff;
   border: 1px solid #dce3ee;
   border-radius: 9px;
-  width: 43px;
-  height: 43px;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   color: #001f4d;
@@ -236,5 +237,45 @@ const showTabs = computed(
     color: #0057b8;
     font-weight: 750;
   }
+}
+
+.desktop-navigation {
+  gap: 0.35rem;
+}
+.desktop-navigation .nav-link {
+  border-radius: 24px;
+  padding: 0.55rem 0.85rem;
+  transition:
+    color 0.2s,
+    background 0.2s;
+  font-weight: 750;
+}
+.desktop-navigation .nav-link:hover,
+.desktop-navigation .router-link-active {
+  color: #0057b8;
+  background: #edf3ff;
+  text-decoration: none;
+}
+.nav-cta {
+  border-radius: 12px;
+  box-shadow:
+    0 3px 0 #b30024,
+    0 7px 15px #e1062e0d;
+  font-size: 0.76rem;
+}
+.app-tabbar {
+  box-shadow: 0 -8px 35px #001f4d0a;
+}
+.app-tabbar .tab-active {
+  position: relative;
+}
+.app-tabbar .tab-active::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  width: 22px;
+  height: 3px;
+  border-radius: 4px;
+  background: #0057b8;
 }
 </style>

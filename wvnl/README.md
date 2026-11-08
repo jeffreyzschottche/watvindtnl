@@ -2,6 +2,8 @@
 
 Nuxt/Vue-webclient met Capacitor iOS/Android en een centrale Laravel-API in `../wvnl-api`. V2 wordt incrementeel ontwikkeld op branch `refactor`. De gedeelde huisstijl en eenvoudige navigatie zijn vernieuwd. De volledige V2-release is nog niet afgerond. [De vier hoofdtaken en werkende routes](docs/UX.md). [Voortgang en testbewijs](docs/PROGRESS.md), [audit](docs/CURRENT_STATE.md), [architectuur](docs/ARCHITECTURE.md) en [migratieplan](docs/MIGRATION_PLAN.md).
 
+De interface gebruikt lokaal geladen Manrope (SIL OFL 1.1), transparante 3D-art en GSAP met pauzeren/reduced-motion. [Assetherkomst, prompts en fontlicentie](docs/ASSETS.md). [Toepassing van Laws of UX](docs/UX.md#laws-of-ux-toegepast--8-november-2026).
+
 ## Lokaal starten
 
 Benodigd: Node 24 LTS (zie `.nvmrc`), npm, PHP 8.3+, Composer, MySQL en een lokale mailopvang voor verificatie/reset. Redis is het doel voor productiequeues/cache/limiting; de huidige lokale backend kan database/filedrivers gebruiken.

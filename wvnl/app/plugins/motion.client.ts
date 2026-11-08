@@ -5,6 +5,18 @@ export default defineNuxtPlugin((app) => {
     reduced.value = query.matches;
   };
   update();
+  const { enabled } = useMotionPreferences();
+  const stop = watch(
+    enabled,
+    (value) => {
+      document.documentElement.dataset.wdnlMotion = value ? "on" : "off";
+    },
+    { immediate: true },
+  );
   query.addEventListener("change", update);
-  app.vueApp.onUnmount(() => query.removeEventListener("change", update));
+  app.vueApp.onUnmount(() => {
+    stop();
+    query.removeEventListener("change", update);
+    delete document.documentElement.dataset.wdnlMotion;
+  });
 });

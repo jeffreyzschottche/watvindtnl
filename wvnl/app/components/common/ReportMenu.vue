@@ -1,14 +1,27 @@
 <template>
-  <div class="report-menu" :class="[`report-menu--${size}`]">
+  <div
+    ref="root"
+    class="report-menu"
+    :class="[`report-menu--${size}`]"
+    @keydown.esc="close"
+  >
     <button
       type="button"
+      ref="trigger"
       class="report-menu__trigger"
       :disabled="loading"
+      :aria-expanded="open"
+      :aria-controls="panelId"
       @click="toggle"
     >
       {{ buttonLabel }}
     </button>
-    <div v-if="open" class="report-menu__panel">
+    <div
+      v-if="open"
+      :id="panelId"
+      class="report-menu__panel"
+      :aria-busy="loading"
+    >
       <p class="report-menu__title">Waarom wil je dit rapporteren?</p>
       <ul class="report-menu__options">
         <li v-for="option in options" :key="option.value">
@@ -23,7 +36,12 @@
         </li>
       </ul>
     </div>
-    <p v-if="feedback" class="report-menu__feedback" :class="feedbackClass">
+    <p
+      v-if="feedback"
+      role="status"
+      class="report-menu__feedback"
+      :class="feedbackClass"
+    >
       {{ feedback.message }}
     </p>
   </div>
@@ -47,25 +65,43 @@ const props = withDefaults(
     successMessage: "Bedankt voor je melding.",
     errorMessage: "Er ging iets mis. Probeer het later opnieuw.",
     size: "md",
-  }
+  },
 );
 
 const open = ref(false);
+const root = ref<HTMLElement | null>(null);
+const trigger = ref<HTMLButtonElement | null>(null);
+const panelId = useId();
+function close() {
+  if (!open.value) return;
+  open.value = false;
+  trigger.value?.focus();
+}
+function outside(event: PointerEvent) {
+  if (event.target instanceof Node && !root.value?.contains(event.target))
+    open.value = false;
+}
+onMounted(() => document.addEventListener("pointerdown", outside));
+onBeforeUnmount(() => document.removeEventListener("pointerdown", outside));
 const loading = ref(false);
 const feedback = ref<{ type: "success" | "error"; message: string } | null>(
-  null
+  null,
 );
 
 const options = computed(() => REPORT_REASON_OPTIONS);
 
 const feedbackClass = computed(() =>
-  feedback.value ? `report-menu__feedback--${feedback.value.type}` : null
+  feedback.value ? `report-menu__feedback--${feedback.value.type}` : null,
 );
 
-function toggle() {
+async function toggle() {
   open.value = !open.value;
   if (open.value) {
     feedback.value = null;
+    await nextTick();
+    root.value
+      ?.querySelector<HTMLButtonElement>(".report-menu__option")
+      ?.focus();
   }
 }
 
@@ -78,7 +114,7 @@ async function handleSelect(reason: ReportReason) {
       type: "success",
       message: props.successMessage,
     };
-    open.value = false;
+    close();
   } catch (error) {
     const message = translateErrorMessage(error, {
       fallback: props.errorMessage,
@@ -97,6 +133,10 @@ async function handleSelect(reason: ReportReason) {
     };
   } finally {
     loading.value = false;
+    if (!open.value) {
+      await nextTick();
+      trigger.value?.focus();
+    }
   }
 }
 </script>
@@ -109,17 +149,20 @@ async function handleSelect(reason: ReportReason) {
 }
 
 .report-menu__trigger {
-  border: none;
-  background: linear-gradient(135deg, #ff8e00, #fd7702);
-  color: var(--color-midnight);
+  border: 1px solid #dce3ee;
+  background: #f5f7fa;
+  color: #526277;
   border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 0.45rem 1rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease,
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
     box-shadow 0.2s ease;
-  box-shadow: 0 8px 20px rgba(0, 51, 102, 0.18);
+  min-height: 44px;
   max-width: 125px;
   text-align: center;
 }
@@ -136,9 +179,9 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__trigger:not(:disabled):hover,
 .report-menu__trigger:not(:disabled):focus-visible {
-  color: var(--color-midnight);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(253, 119, 2, 0.35);
+  color: #0057b8;
+  background: #edf3ff;
+  border-color: #a8c2e4;
 }
 
 .report-menu__panel {
@@ -146,16 +189,12 @@ async function handleSelect(reason: ReportReason) {
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
-  width: min(320px, 90vw);
+  width: min(300px, calc(100vw - 64px));
   border-radius: 1rem;
-  background: linear-gradient(
-    145deg,
-    rgba(0, 35, 71, 0.95),
-    rgba(0, 51, 102, 0.85)
-  );
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  background: #fff;
+  box-shadow: 0 12px 35px #001f4d1a;
   padding: 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #dce3ee;
   z-index: 10;
 }
 
@@ -163,7 +202,7 @@ async function handleSelect(reason: ReportReason) {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-orange);
+  color: #001f4d;
 }
 
 .report-menu__options {
@@ -176,16 +215,20 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__option {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid #dce3ee;
+  background: #f5f7fa;
+  min-height: 44px;
   border-radius: 0.65rem;
   padding: 0.6rem 0.85rem;
   text-align: left;
   font-size: 0.9rem;
-  color: var(--color-text-light);
+  color: #001f4d;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    color 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .report-menu__option:disabled {
@@ -195,10 +238,9 @@ async function handleSelect(reason: ReportReason) {
 
 .report-menu__option:not(:disabled):hover,
 .report-menu__option:not(:disabled):focus-visible {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-  color: var(--color-orange);
-  transform: translateY(-1px);
+  background: #edf3ff;
+  border-color: #a8c2e4;
+  color: #0057b8;
 }
 
 .report-menu__feedback {

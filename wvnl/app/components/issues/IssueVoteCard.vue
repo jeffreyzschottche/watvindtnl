@@ -251,7 +251,7 @@ async function handleReport(reason: ReportReason) {
       </button>
     </section>
 
-    <details class="vote-card-v2__background" :open="answered">
+    <details :key="`background-${issue.id}`" class="vote-card-v2__background">
       <summary>
         Argumenten en achtergrond <span aria-hidden="true">＋</span>
       </summary>
@@ -485,6 +485,9 @@ async function handleReport(reason: ReportReason) {
 .vote-card-v2__background[open] summary {
   margin-bottom: 1rem;
 }
+.vote-card-v2__background[open] summary > span {
+  transform: rotate(45deg);
+}
 .vote-card-v2__context p {
   color: #526277;
   line-height: 1.7;
@@ -510,6 +513,74 @@ async function handleReport(reason: ReportReason) {
   }
   .vote-choice:hover:not(:disabled) {
     transform: none;
+  }
+}
+
+.vote-card-v2 {
+  border-radius: 26px;
+  border-color: #dce5f3;
+  box-shadow:
+    0 8px 0 #e3ebf7,
+    0 20px 50px #001f4d09;
+}
+.vote-card-v2__badge {
+  border: 1px solid #d7e5fa;
+  box-shadow: 0 3px 0 #dee8f8;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.vote-card-v2__eyebrow {
+  letter-spacing: 0.1em;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+.vote-card-v2 h2 {
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.vote-choice {
+  min-height: 163px;
+  border-radius: 20px;
+  position: relative;
+  border: 1px solid #dbe5f7;
+  box-shadow: 0 5px 0 #cfddf5;
+}
+.vote-choice--against {
+  border-color: #f3d3dc;
+  background: linear-gradient(145deg, #fff5f7, #ffe7ed);
+  box-shadow: 0 5px 0 #f0c7d1;
+}
+.vote-choice--for {
+  background: linear-gradient(145deg, #f1f6ff, #e0ecff);
+}
+.vote-choice svg {
+  width: 39px;
+  height: 39px;
+  filter: drop-shadow(2px 3px 0 #ffffffd9);
+}
+.vote-choice strong {
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+.vote-choice:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #cfddf5;
+}
+.vote-card-v2__primary {
+  border-radius: 13px;
+  box-shadow: 0 4px 0 #002e69;
+}
+@media (max-width: 420px) {
+  .vote-card-v2 {
+    padding: 1.25rem;
+    border-radius: 23px;
+  }
+  .vote-choice {
+    min-height: 145px;
+    padding-inline: 0.5rem;
+  }
+  .vote-choice span {
+    font-size: 0.72rem;
   }
 }
 </style>

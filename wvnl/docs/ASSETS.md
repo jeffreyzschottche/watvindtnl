@@ -18,6 +18,21 @@ GSAP 3.15.1 is exact vastgezet in package.json en de lockfile, gecontroleerd bij
 
 - Pagina-elementen komen kort in beeld via IntersectionObserver en GSAP; kaarten reageren op een muisaanwijzer. Animaties worden per route en unmount opgeruimd via context.revert.
 - Na een bevestigde nieuwe stem bewegen de uitslagbalk en bevestiging. Een korte confettianimatie viert deelname, identiek voor vóór en tegen. Mislukte stemmen en reeds beantwoorde stellingen starten geen confetti.
-- Geen autoplay, geluid, automatische volgende stelling, ongetoetste haptics of fictieve streaks. De persoonlijke teller gebruikt de bestaande accountgegevens.
+- Geen geluid, automatische volgende stelling, ongetoetste haptics of fictieve streaks. De persoonlijke teller gebruikt de bestaande accountgegevens. De decoratieve floatanimaties hieronder starten alleen bij ingeschakelde beweging en hebben een directe pauzeknop.
 - `prefers-reduced-motion` schakelt decoratieve beweging uit. Een aparte footerknop laat gebruikers animaties uitschakelen; deze functionele voorkeur wordt lokaal bewaard in de cookie `wdnl_motion` (maximaal een jaar).
 - Website en Capacitor iOS/Android gebruiken dezelfde Vue-componenten. `npm run build:mobile` genereert de statische app-entry en kopieert de nieuwe assets naar beide native projecten. Deze stap is lokaal geslaagd. Er is geen nieuwe native binary, App Store/Play Store-build of release gemaakt.
+
+## Nieuwe 3D-art — 8 november 2026
+
+- `public/illustrations/dutch-island-v2.webp`: 900 × 1125, circa 206 KiB, transparant Nederlands buurteiland voor de hero. Decoratief; de bestaande logo-identiteit wordt niet vervangen.
+- `public/illustrations/compass-v2.webp`: 850 × 850, circa 70 KiB, transparant keramiek/glazen kompas op home en kompaspagina. Geen echte score of voorbeeld van een berekend gebruikersrapport.
+- Beide zijn gemaakt met de ingebouwde `image_gen.imagegen`-tool via de imagegen-skill, zonder CLI/API-fallback. Definitieve prompts, originele bestanden en WebP-conversie staan in [design/v3-assets.json](design/v3-assets.json). Echte alpha behouden bij conversie met cwebp.
+- GSAP in `MotionScene.vue`: langzaam zweven en lichte pointerparallax via [quickTo](https://gsap.com/docs/v3/GSAP/gsap.quickTo/). Geen camera-afhankelijke toestemming, WebGL-scène of nieuwe runtime-library nodig.
+- IntersectionObserver en document visibility pauzeren floats buiten beeld/in verborgen tabs. Pauzeknop, globale voorkeur en reduced-motion stoppen decoratie; listeners, tweens en observers worden bij unmount opgeruimd. Content blijft leesbaar zonder beweging.
+- Hero-afbeelding laadt met hoge prioriteit en opgegeven afmetingen; illustraties verderop laden lazy. Transparante art wordt met CSS-chips en achtergrondlagen samengesteld, niet als afbeelding met ingebakken UI-tekst.
+
+## Lettertype en licentie
+
+Voorheen vermeldde CSS Inter zonder meegeleverd fontbestand; het daadwerkelijke font kon daardoor het lokale systeemfont zijn. Nu laadt `Manrope` als lokaal variable font, gewichten 200–800, met preload en `font-display: swap`. Geen Google Fonts CDN-aanvragen. De officiële TTF is ongewijzigd overgenomen uit [google/fonts/ofl/manrope](https://github.com/google/fonts/tree/main/ofl/manrope).
+
+Manrope is auteursrechtelijk beschermd en uitgegeven onder de **SIL Open Font License 1.1**. Die staat commercieel gebruik en bundeling in website/software toe. Bewaar bij distributie de copyrightmelding en licentietekst; het font mag niet op zichzelf worden verkocht. Het is geen publiek domein en de applicatiecode hoeft hierdoor niet onder de OFL te vallen. De officiële tekst staat lokaal in `public/fonts/Manrope-OFL.txt` en [bij de bron](https://raw.githubusercontent.com/google/fonts/main/ofl/manrope/OFL.txt). Beide bestanden gaan mee naar de mobiele projecten.
