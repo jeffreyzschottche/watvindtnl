@@ -2,6 +2,7 @@
 
 return [
     'dev_enabled' => (bool) env('WDNL_DEV_REPORTS_ENABLED', false),
+    'dev_model' => env('OPENAI_MODEL', 'gpt-6-luna'),
     'dev_email' => env('WDNL_DEV_REPORT_EMAIL', 'appdemo@mail.com'),
     'openai_key' => env('OPENAI_API_KEY'),
     'deepseek_key' => env('DEEPSEEK_API_KEY'),

@@ -134,3 +134,12 @@ Zie REPORTS.md, PAYMENTS.md, ADS.md en ZSCHOTCMS.md voor configuratie, beperking
 - [x] Echte lokale browsercontrole met appdemo@mail.com op 1440/390/320 pixels: neutrale knop, devknop, generatie, rapportweergave en PDF-download werken zonder pageerrors/overflow. Geen stemmen gewijzigd, geen aankoop of betaalde modelaanroep gestart. pdfinfo bevestigt één A4-pagina. Tijdelijke testsessie ingetrokken; previewcache vervalt vanzelf.
 
 De ontwikkelknop is geen productiebetaalomzeiling. Normale rapportverkoop blijft apart beveiligd. Voor bestaande geïnstalleerde native apps is een nieuwe build nodig; de devknop wordt niet opgenomen als zichtbare bediening in de productiebuild.
+
+
+## Paarse devknop gebruikt echte OpenAI-generatie — 8 november 2026
+
+- [x] Code-only preview vervangen door een echte Responses API-aanroep met backend-`OPENAI_MODEL` en bestaande `OPENAI_API_KEY`. Devselectie gaat vóór het CMS-model; `MOTION_OPENAI_MODEL` blijft voor oude motie-import. Key niet gewijzigd of naar de client gestuurd.
+- [x] Gedeelde provideradapter en tekstvalidatie voor betaalde en devrapporten, met behoud van de betaalde pipeline. GPT-4.1-mini krijgt geen ongeldige reasoning-optie. Devfouten zijn zichtbaar en leveren geen statisch vervangrapport op. Eén aanroep per aanvraagkey, geen automatische retries; budget-, token-, demoaccount- en productiecontroles behouden.
+- [x] Gebruikt model, daadwerkelijke tokens en berekende eurokosten zichtbaar bij het tijdelijke rapport; PDF-footer noemt het model en geen onjuiste gratis-AI-claim meer. Browser wacht maximaal zestig seconden op de begrensde serveraanroep. Cache versleuteld en één uur geldig; geen betaalorders of databasewijzigingen.
+- [x] 57 backendtests / 363 assertions, 10 frontendtests, typecheck, productiebuild en 36 desktop-/mobiele Playwrightchecks geslaagd, inclusief afwezige devknop en nul dev-accessrequests in productie. Extra checks voor env-model/key, CMS-override, providerfouten zonder fallback, herhaalde aanvraag zonder extra call en ontbrekende key.
+- [x] Eén echte klik met de bestaande lokale demoaccount en GPT-4.1-mini: 311 inputtokens, 168 outputtokens, berekend €0,000394. Eén A4-PDF gedownload. Rapportweergave op 1440/390/320 pixels zonder pageerrors of overflow. Geen stem of aankoop gedaan; tijdelijke testsessie ingetrokken. Dit bedrag is een berekening op basis van geconfigureerde tarieven, geen factuurcontrole.

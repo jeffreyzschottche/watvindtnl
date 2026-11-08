@@ -31,6 +31,13 @@ export type ReportSnapshot = {
 };
 export type VoteReport = {
   is_development?: boolean;
+  generation_model?: string;
+  generation_provider?: string;
+  generation_usage?: {
+    input_tokens: number;
+    output_tokens: number;
+    estimated_cost_eur: number;
+  };
   expires_at?: string;
   id: string;
   status:

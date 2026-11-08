@@ -11,7 +11,7 @@ class DevelopmentReportController extends Controller
 
     public function access(Request $request): array
     {
-        return ['available' => $this->reports->allowed($request->user())];
+        return ['available' => $this->reports->allowed($request->user()), 'model' => $this->reports->allowed($request->user()) ? $this->reports->model() : null];
     }
 
     public function store(Request $request): array

@@ -73,8 +73,19 @@ Een opvallende paarse/geel gestreepte **BROUW MIJN DEV-RAPPORT** staat alleen ti
 
 De API vereist gezamenlijk `APP_ENV=local`, `WDNL_DEV_REPORTS_ENABLED=true` en het ingelogde account met exact de ingestelde `WDNL_DEV_REPORT_EMAIL` (standaard `appdemo@mail.com`). De lokale flag is aangezet; `.env.example` heeft bewust `false`. Geen flags of gebruikersgegevens uit de client kunnen deze controle vervangen. De productiebuild toont de knop niet en start geen dev-accessaanvraag; de server weigert generatie én PDF-toegang in productie, zelfs met een per ongeluk ingeschakelde flag.
 
-`GET /api/me/reports/dev-access` geeft uitsluitend beschikbaarheid. `POST /api/me/reports/dev` met een UUID `request_key` maakt synchroon een echte A4-PDF van de eigen actuele antwoorden met code-toelichting. Geen minimumstemmen voor deze ontwikkelpreview, geen ontbrekende antwoorden verzonnen. Een aanvraagherhaling hergebruikt de preview. Maximaal zes generatieverzoeken per minuut.
+`GET /api/me/reports/dev-access` geeft beschikbaarheid en het model alleen aan het toegestane account. `POST /api/me/reports/dev` met een UUID `request_key` maakt synchroon een echte A4-PDF van de eigen actuele antwoorden met echte OpenAI-toelichting. De lokale knop gebruikt expliciet backend-`OPENAI_MODEL` en `OPENAI_API_KEY`, onafhankelijk van het CMS-model of de AI-flag voor betaalde rapporten. `MOTION_OPENAI_MODEL` bestuurt alleen de oude motie-import, niet deze knop. Geen minimumstemmen voor deze ontwikkelpreview, geen ontbrekende antwoorden verzonnen. Een aanvraagherhaling hergebruikt de preview. Maximaal zes generatieverzoeken per minuut.
 
-Het resultaat is met een DEV-watermerk gemarkeerd, één uur geldig en versleuteld opgeslagen in de servercache. Er worden geen order, betaling, betaalde modelaanroep of kostenmeting gemaakt. Bekijken/downloaden via `/api/me/reports/dev/{uuid}` en `/pdf` vereist opnieuw dezelfde local/demo-controle en eigenaar. De rapportpagina opent via `?dev_report=...`; verlopen voorbeelden zijn niet meer opvraagbaar. De knop hoort niet in een distributie-/storebuild: `import.meta.dev` is daar false. Er is geen schemawijziging nodig.
+Het resultaat is met een DEV-watermerk gemarkeerd, één uur geldig en versleuteld opgeslagen in de servercache. Er worden geen orders of betalingen gemaakt. Er is wél één betaalde OpenAI-aanroep per generatiekey, zonder automatische herstelpogingen. Het model, daadwerkelijke input-/outputtokens en berekende kosten worden in de tijdelijke preview getoond, buiten de betaalde rapportadministratie. De key blijft op de server. Fouten leveren een zichtbare melding op, geen codefallback. Alleen samengevatte tellingen, partijovereenkomsten en maximaal zes ingekorte eigen antwoorden gaan naar de provider; geen naam, e-mail of account-ID. Budget- en tokenlimieten blijven uit de CMS-instellingen komen. GPT-4.1-mini wordt voor deze devknop ondersteund zonder reasoning-parameter; GPT-6-modellen gebruiken de passende reasoning-instelling. Bekijken/downloaden via `/api/me/reports/dev/{uuid}` en `/pdf` vereist opnieuw dezelfde local/demo-controle en eigenaar. De rapportpagina opent via `?dev_report=...`; verlopen voorbeelden zijn niet meer opvraagbaar. De knop hoort niet in een distributie-/storebuild: `import.meta.dev` is daar false. Er is geen schemawijziging nodig.
 
 Nieuwe én bestaande neutrale stemmen worden in actuele rapporten als **Neutraal** weergegeven, niet meer als historisch. Zij tellen mee als antwoord en in de totaalverdeling, maar niet als richting voor partijovereenkomsten.
+
+
+Lokale backendconfig voor de bestaande GPT-4.1-mini-instelling (bewaar je bestaande volledige key):
+
+```dotenv
+OPENAI_MODEL=gpt-4.1-mini
+MOTION_OPENAI_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=<je bestaande volledige OpenAI API-key>
+```
+
+Voer na wijzigingen `php artisan config:clear` uit vanuit `wvnl-api`; herstart langlopende processen als die configuratie in het geheugen houden. Voor een ander ondersteund OpenAI-model verander je alleen `OPENAI_MODEL` voor de devknop; de modelnaam staat bij de knop. Een mislukte aanvraag kan al tokens hebben verbruikt. De betaald-rapportpipeline blijft het model uit het CMS gebruiken.

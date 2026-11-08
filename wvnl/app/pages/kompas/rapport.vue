@@ -339,8 +339,13 @@ useSeoMeta({
           </button>
         </div>
         <p v-if="report.is_development" class="reports-page__hint">
-          Gratis lokaal devrapport · vervalt na één uur · geen aankoop of
-          AI-kosten.
+          Lokaal devrapport · OpenAI-model: {{ report.generation_model }} ·
+          vervalt na één uur. Geen rapportaankoop; wel API-tokenkosten.
+          <span v-if="report.generation_usage"
+            >{{ report.generation_usage.input_tokens }} inputtokens /
+            {{ report.generation_usage.output_tokens }} outputtokens · berekend
+            €{{ report.generation_usage.estimated_cost_eur.toFixed(5) }}.</span
+          >
         </p>
         <ReportSheet
           v-if="report.status === 'ready'"

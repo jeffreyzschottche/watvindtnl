@@ -7,6 +7,7 @@ const api = useApi();
 const allowed = ref(false);
 const pending = ref(false);
 const error = ref("");
+const model = ref("");
 const isDevelopment = import.meta.dev;
 let check = 0;
 let disposed = false;
@@ -16,11 +17,13 @@ async function access() {
   allowed.value = false;
   if (!import.meta.dev || !auth.isLoggedIn) return;
   try {
-    const result = await api.get<{ available: boolean }>(
+    const result = await api.get<{ available: boolean; model?: string }>(
       "/me/reports/dev-access",
     );
-    if (!disposed && check === current)
+    if (!disposed && check === current) {
       allowed.value = result.available === true;
+      model.value = result.model || "OPENAI_MODEL";
+    }
   } catch {
     /* No dev control when the server does not explicitly allow it. */
   }
@@ -31,15 +34,20 @@ async function generate() {
   error.value = "";
   requestKey ||= crypto.randomUUID();
   try {
-    const report = await api.post<VoteReport>("/me/reports/dev", {
-      request_key: requestKey,
-    });
+    const report = await api.post<VoteReport>(
+      "/me/reports/dev",
+      {
+        request_key: requestKey,
+      },
+      { signal: AbortSignal.timeout(60000) },
+    );
     await navigateTo({
       path: "/kompas/rapport",
       query: { dev_report: report.id },
     });
     requestKey = "";
   } catch (e) {
+    requestKey = "";
     error.value =
       e instanceof Error
         ? e.message
@@ -76,11 +84,12 @@ onBeforeUnmount(() => {
       ><span>{{
         pending
           ? "Je eigen antwoorden worden opgemaakt"
-          : "Gratis · geen betaling · geen AI-kosten"
+          : "Geen rapportbetaling · wel OpenAI-tokenkosten"
       }}</span>
     </button>
     <p>
-      Echt A4-rapport van je demo-account. Verloopt na één uur. Deze knop
+      OpenAI-model: <strong>{{ model }}</strong> uit je backend-.env. Gebruikt
+      je bestaande OPENAI_API_KEY. Het rapport verloopt na één uur; de knop
       verdwijnt in de productiebuild.
     </p>
     <p v-if="error" role="alert">{{ error }}</p>
