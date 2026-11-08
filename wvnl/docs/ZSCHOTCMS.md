@@ -134,3 +134,12 @@ Afzonderlijke `cms:reports:read` en `cms:reports:write`-rechten op `/api/cms/rep
 Extra CMS-bestand: `frontend/components/panels/WdnlReportPanel.vue`; acties in bestaande ContentIntegration en parentpanel. De modeltariefpresets komen uit de centrale API. Wijzigingen vereisen een actuele revision en worden geaudit. Verkoop blijft lokaal uit tot Stripe/sandbox/worker/privacyconfiguratie klaar is. Echte native aankopen zijn nog niet aangesloten.
 
 Omdat de CMS-map geen Git-repository heeft, is de cumulatieve releasepatch voor deze rapportuitbreiding vastgelegd in `docs/integrations/zschotcms-reports.patch`. De patch is gecontroleerd tegen de oorspronkelijke vier bronbestanden en bevat geen credentials. Toepassen op een andere CMS-checkout vraagt dezelfde contentmodule als uitgangspunt; eerst `git apply --check` uitvoeren en lokale wijzigingen beoordelen. De lokale CMS-code is al aangepast: de patch daar niet opnieuw toepassen.
+
+
+## Kompasinhoud
+
+De knop **Basiswegingen bestaande stellingen seeden** staat in Stellingen en Rapporten. De CMS-actie `seed_compass` roept `POST /api/cms/content/compass/seed` aan met bestaande content-writecredentials. Reactie: reviewed, unchanged, skipped_existing, skipped_changed, missing, catalogue. Geen LLM, gebruikers-/stemwijzigingen of officiële bronverificatie. Alleen de exact gefingerprintte basisformuleringen worden aangevuld.
+
+De stellingeditor ondersteunt nu `compass_context` naast `compass_weights`: onderbouwing, gedeelde inhoudssleutel, onderwerpen en expliciete historische context. De backend zet reviewed_at en een actuele teksthash bij geautoriseerde publicatie met review. Een gedeelde sleutel mag alleen dezelfde inhoudelijke vraag/bronzaak groeperen. Tegenstrijdige keuzes op zulke dubbele vragen worden uit de analyse gehouden. Voor interpretatie en drempels: COMPASS_ALGORITHM.md.
+
+Reproduceerbare CMS-wijziging: `docs/integrations/zschotcms-compass-content.patch`, toe te passen na de eerdere rapport-/kompaspatches. Dit bestand bevat geen werkelijke credentials.

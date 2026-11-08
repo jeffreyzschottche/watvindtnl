@@ -72,7 +72,10 @@ class CompassReportsTest extends TestCase
     {
         [$u,$ids] = $this->fixtures(4);
         $snapshot = app(VoteSnapshot::class)->build($u);
-        $this->assertNull($snapshot['compass']['dimensions'][0]['percentage']);
+        $this->assertSame(100, $snapshot['compass']['dimensions'][0]['percentage']);
+        $this->assertTrue($snapshot['compass']['dimensions'][0]['provisional']);
+        DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->update(['compass_weights' => null]);
+        $this->assertNull(app(VoteSnapshot::class)->build($u)['compass']['dimensions'][0]['percentage']);
         [$u2] = $this->fixturesForAnotherUser();
         $c = app(VoteSnapshot::class)->build($u2)['compass'];
         $this->assertSame('ready', $c['status']);

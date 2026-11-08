@@ -73,36 +73,44 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
       </p>
       <h2>Themascores en politieke types</h2>
       <p>
-        De redactie kan per stelling vijf afwegingen vastleggen: sociaal
-        tegenover individueel, progressief tegenover behoudend, internationaal
-        tegenover nationaal, groen tegenover economische groei, en een
-        afzonderlijke economische links/rechts-as. Een gewicht van plus of min
-        één of twee bepaalt welke richting een VOOR-stem aangeeft en hoe zwaar
-        die meetelt. TEGEN keert de richting om. Neutraal telt als antwoord,
-        zonder richting.
+        Per stelling legt de redactie een richting en gewicht vast op
+        sociaal/individueel, progressief/behoudend, internationaal/nationaal,
+        groen/economische groei en een afzonderlijke economische
+        links/rechts-as. Deze weging is een inhoudelijke interpretatie van de
+        vraagtekst, geen automatisch bewijs voor een partijstandpunt. Je kunt de
+        onderbouwing in de gebruikte content terugvinden.
       </p>
       <p>
-        Een score is vijftig maal één plus de gewogen gemiddelde richting.
-        Daardoor lopen scores van nul tot honderd; de tegenoverliggende kant
-        vult aan tot honderd. Zonder minimaal vijf verschillende, gewogen
-        stellingen of moties tonen we geen score. Stellingen bij dezelfde motie
-        tellen per thema één keer. We gebruiken bronnen van maximaal twee jaar
-        oud; bij bronloze eigen stellingen geldt de controledatum.
+        Voor telt als plus één, tegen als min één; een positief of negatief
+        redactioneel gewicht bepaalt de richting. De score is vijftig maal één
+        plus de gewogen gemiddelde richting. Neutraal blijft in de
+        antwoordtelling, zonder richting. Dubbelen bij dezelfde vraag of motie
+        tellen één keer. Bij tegenstrijdige antwoorden op dubbele versies
+        sluiten we die vraag uit.
       </p>
       <p>
-        Voor een politiek type zijn minimaal tien gewogen antwoorden én scores
-        op alle vier de thema’s nodig. Het type volgt uit het dichtstbijzijnde
-        vaste presentatieprofiel. Het is geen psychologische diagnose. De
-        economische as wordt apart berekend en wordt nooit afgeleid van hoeveel
-        antwoorden voor of tegen waren. De gevoeligheidsrange toont wat er
-        gebeurt wanneer één antwoord wordt weggelaten; dit is geen statistisch
-        betrouwbaarheidsinterval.
+        Vanaf twee verschillende bruikbare antwoorden per thema tonen we een
+        voorlopige richtingsscore. Een vollediger profiel vraagt minimaal vijf
+        actuele antwoorden per thema en tien gewogen vragen in totaal.
+        Historische vragen kunnen na afzonderlijke inhoudelijke weging een
+        eerste indicatie geven; ze maken het profiel altijd voorlopig en zeggen
+        niets over actuele partijstandpunten.
       </p>
       <p>
-        Deze indeling en de minimumaantallen zijn redactionele productkeuzes en
-        nog niet wetenschappelijk gevalideerd. Ontbrekende of oude brondata
-        worden niet door AI ingevuld. Een volledig rapport kan pas worden
-        gekocht als de vereiste themadekking en economische as beschikbaar zijn.
+        Een voorlopig politiek type gebruikt minimaal acht gewogen vragen en
+        minstens twee beschikbare thema’s. De code kiest het dichtstbijzijnde
+        vaste presentatieprofiel op uitsluitend de beschikbare dimensies.
+        Ontbrekende scores worden niet ingevuld. Het type is geen psychologische
+        diagnose of wetenschappelijk gevalideerde indeling. De economische as
+        volgt uit eigen wegingen, nooit uit hoeveel keer je voor of tegen stemt.
+      </p>
+      <p>
+        De gevoeligheidsrange laat zien hoe de score verandert wanneer één
+        antwoord wordt weggelaten. Dit is geen statistisch
+        betrouwbaarheidsinterval. De wegingen, minimumaantallen en
+        presentatieprofielen zijn redactionele productkeuzes. De betaalde
+        verkoop blijft gesloten totdat de volledige vereiste dekking én de
+        overige releasevoorwaarden zijn bereikt.
       </p>
       <h2>Een persoonlijk stemrapport</h2>
       <p>

@@ -41,3 +41,14 @@ Per mijlpaal: tests + contract + documentatie + concreet bewijs. Ontbrekende cre
 4. Na de lokale migratie: 19 gebruikers, 4.598 stellingen, 31.887 argumenten en de volledige geordende vote-hash gelijk aan vóór de wijziging. Nul ingevulde kompaswegingen; geen politieke mappings of fictieve content in echte data geseed.
 5. Bij rollback eerst de vorige applicatieversies terugzetten; laat de extra nullable kolom staan. Export/backup eventuele nieuwe mappings voordat je de migratie later expliciet terugdraait. De `down` verwijdert alleen dit nieuwe veld, maar daarmee ook nieuw ingevulde wegingen. Een databaseherstel alleen in een geïsoleerde omgeving testen vóór cutover; nooit blind over de actuele database herstellen.
 6. Verifieer CMS→stelling→snapshot→PDF en eigenaar-/productieblokkades vóór verkoop. Betaalde historische snapshots/PDF's niet overschrijven. De CMS-editorwijziging staat tevens als toepasbare patch in `docs/integrations/zschotcms-compass.patch`.
+
+
+## Reviewcontext en eerste inhoudelijke basisweging
+
+Migratie `2026_11_08_030000_add_compass_review_context_to_statements.php` voegt uitsluitend nullable compass_reviewed_at en compass_context toe. Eerst database, daarna API/CMS/web publiceren. Het afzonderlijke reviewveld voorkomt dat interpretatie van de vraagtekst wordt voorgesteld als verificatie van originele bronnen of partijstemmen.
+
+Voor de lokale migratie/seed is een nieuwe consistente MySQL-dump gemaakt en versleuteld opgeslagen in `/tmp/wdnl-compass-content/database-before.sql.gz.enc` (directory 0700, bestand 0600). Gzip/encryptie/decryptie/SHA-256-roundtrip gecontroleerd; geen volledige database-restoretest. Credentials stonden alleen kort in een beperkt optionfile en zijn opgeruimd. Bewaar de oorspronkelijke APP_KEY via secretbeheer voor herstel en verplaats de tijdelijke backup naar beheerde opslag als langdurige bewaring nodig is.
+
+18 stellingmetadatarecords toegevoegd met controle op de exacte teksthash. Herhaling: 0 updates, 18 unchanged. Vóór/na gelijk: 19 gebruikers, 4.598 stellingen, 31.887 argumenten en de volledige geordende stemhash. Geen originele stelling, stem, partijpositie of argument herschreven. De nieuwe analyse herkent vier dubbele antwoorden en één tegenstrijdige groep; dit verandert de interpretatie, niet de opgeslagen geschiedenis.
+
+Rollback bij voorkeur vorige code terugzetten en de extra nullable velden behouden. Exporteer nieuwe metadata en auditinhoud vóór expliciete rollback; het verwijderen van de nieuwe reviewvelden maakt de bijbehorende historische wegingen onbruikbaar. Verwijder gesedeerde mappings uitsluitend gericht met controle op catalogue-versie en backup, zonder latere handmatige correcties te overschrijven. Betaalde snapshots/PDF’s worden niet herschreven.

@@ -414,3 +414,78 @@ test("missing reviewed mappings show no invented political type or percentages",
   await expect(paper.getByText(/Nog niet genoeg gegevens/)).toHaveCount(4);
   await expect(paper.getByRole("img", { name: /80% Sociaal/ })).toHaveCount(0);
 });
+
+test("historical reviewed answers show a provisional profile and real topics without invented missing scores", async ({
+  page,
+}) => {
+  const compass = {
+    ...compassFixture,
+    version: "compass-v2.1",
+    status: "provisional",
+    used_votes: 9,
+    historical_votes: 9,
+    duplicate_answers: 4,
+    conflicting_groups: 1,
+    type: {
+      ...compassFixture.type,
+      provisional: true,
+      based_on_dimensions: ["social", "international", "green"],
+    },
+    dimensions: compassFixture.dimensions.map((d) =>
+      d.id === "progressive"
+        ? {
+            ...d,
+            percentage: null,
+            opposite_percentage: null,
+            compared: 1,
+            early_minimum: 2,
+            sensitivity: null,
+          }
+        : { ...d, provisional: true, historical: 2 },
+    ),
+    topics: [
+      {
+        name: "Onderwijs & ontwikkeling",
+        count: 3,
+        agree: 2,
+        disagree: 1,
+        neutral: 0,
+      },
+    ],
+  };
+  await mock(page, { ...saved, snapshot: { ...saved.snapshot, compass } });
+  await page.goto(`/kompas/rapport?order=${reportId}`);
+  const paper = page.getByRole("article", {
+    name: "Jouw persoonlijke stemrapport",
+  });
+  await expect(
+    paper.getByRole("heading", {
+      name: "Voorlopig politiek type",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("heading", { name: "De Sociale Vernieuwer", exact: true }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("heading", { name: "Jouw onderwerpen", exact: true }),
+  ).toBeVisible();
+  await expect(
+    paper.getByText("Onderwijs & ontwikkeling", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    paper.getByText(/Nog niet genoeg gegevens · 1\/2/),
+  ).toBeVisible();
+  await expect(paper.getByRole("img", { name: /80% Progressief/ })).toHaveCount(
+    0,
+  );
+  await expect(
+    paper.getByText(/4 dubbele antwoorden eenmaal geteld/),
+  ).toBeVisible();
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width + 1);
+  }
+});

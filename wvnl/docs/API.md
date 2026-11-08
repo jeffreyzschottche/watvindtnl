@@ -38,3 +38,12 @@ Lokale preview: `/me/reports/dev-access`, `POST /me/reports/dev`, `GET /me/repor
 Nieuwe `snapshot.compass` bevat `version`, `status`, nullable `type`, vier `dimensions`, aparte `spectrum`, `used_votes`, `evidence` en `highlights`. Dimensies bevatten nullable `percentage`/`opposite_percentage`, coverage en een niet-statistische leave-one-out `sensitivity`. Ontbrekende data is null, nooit een fictieve 50%. Historische snapshots zonder dit veld blijven leesbaar.
 
 CMS statement GET/save/import ondersteunt optioneel `compass_weights` met uitsluitend social/progressive/international/green/economic, gehele waarden −2…2. Afwezig bij een update behoudt bestaande weging; leeg/nul verwijdert haar expliciet. Publicatie blijft redactioneel gereviewd, revision/hash-gebonden en geaudit. Geen gebruikersdata of rapporten naar CMS.
+
+
+### compass-v2.1
+
+Nieuwe `snapshot.compass` velden: status `ready|provisional|insufficient_data`; type.provisional en type.based_on_dimensions; historical_votes, unique_answers, duplicate_answers, conflicting_groups, topics. Dimensies hebben early_minimum (2), provisional en historical. Een enkele vraag levert geen percentage. Minimum (5) blijft de volledige dekkingsdrempel. Koopvalidatie vereist ook een niet-voorlopige economische as.
+
+CMS statement GET/save: compass_context met canonical_key, rationale, topics, historical, catalogue, basis en text_hash. compass_reviewed_at is servergegenereerd. De hash wordt bij gereviewd opslaan opnieuw berekend; oude mappings worden niet toegepast op gewijzigde tekst. De broncontrole via verified_at blijft afzonderlijk.
+
+`POST /api/cms/content/compass/seed` vereist content-read én content-write en is geaudit/idempotent. Alleen exact bekende bronformuleringen worden meegenomen; een bestaande eigen weging of gewijzigde tekst blijft behouden. Gewone app- of alleen-lezentokens kunnen dit niet starten.

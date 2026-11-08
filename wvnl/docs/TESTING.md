@@ -32,3 +32,13 @@ De pagina laadt het gekozen rapport onafhankelijk van het aankoopoverzicht en be
 
 
 Aanvulling generatie: `tests/report-generation.test.ts` controleert de zichtbare gecontroleerde 422-oorzaak, gesanitiseerde providerdiagnostiek, verborgen overige serverdetails en timeouts. 14 frontend-unitchecks totaal. `npm run test:dev-reports` bevat nu ook de profiel-alias en een afgewezen modelantwoord dat als echte servicefout zichtbaar moet zijn. Live generatie op /profiel/mijn-kompas: 18 antwoorden, Luna, 417 input-/102 outputtokens, circa €0,000093; actuele layout en PDF-download bevestigd, geen pageerrors. Geen betaalde purchase of stemmutatie.
+
+## Inhoudelijke kompasweging v2.1
+
+73 backendtests / 445 assertions: twee-versus-vijf dekking, historische indicatie, ontbrekende dimensies niet invullen, dubbele/tegenstrijdige groepen, gewijzigde teksthash, behoud eigen weging, seedherhaling, stemmen behouden, aparte bronverificatie en contentrechten. Extra aankoopbescherming voor een voorlopige economische as is daarna gecontroleerd in 13 rapporttests / 113 assertions.
+
+De nieuwe browserregressie controleert voorlopig type, echte onderwerpen, deduplicatie en een onberekende score op 1440/390/320px. De eerste ronde miste alleen de twee nieuwe verwachtingen doordat de tekst nog de volledige drempel vijf toonde; dit is gecorrigeerd naar de vroege drempel twee.
+
+CMS: 5 koppeltests / 62 assertions, inclusief de seedactie. Geen echte stemmen of betalingen via fixtures. Afzonderlijk live: achttien demo-antwoorden, een Luna-aanroep (586 input-/115 outputtokens), gevuld profiel en een A4-download; tijdelijke login ingetrokken. Geen fictieve inhoud als persoonlijke uitslag gepresenteerd.
+
+Afronding: 42 browserchecks geslaagd. Extra test controleert dat profielkenmerken geen ontbrekende dimensie invullen en een lage groene score niet als duurzaam kenmerk weergeven. Deze inhouds-/PDF-groep heeft 13 geslaagde tests / 59 assertions. Mobiele assetgeneratie en Capacitor-copy geslaagd; geen fysieke-device- of store-release geclaimd.

@@ -7,6 +7,7 @@ use App\Models\Issue;
 use App\Models\PoliticalParty;
 use App\Services\CmsContentService;
 use App\Services\CmsMotionSource;
+use App\Services\Reports\CompassEditorialSeed;
 use App\Support\PoliticalPartyCatalogue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -50,6 +51,11 @@ class ContentController extends Controller
     public function saveParty(Request $request, ?PoliticalParty $party = null)
     {
         return response()->json($this->content->saveParty($request->all(), $party?->id, $request->attributes->get('cms_token_id')));
+    }
+
+    public function seedCompass(Request $request)
+    {
+        return response()->json(app(CompassEditorialSeed::class)->run($request->attributes->get('cms_token_id')));
     }
 
     public function seedParties(Request $request)

@@ -69,7 +69,7 @@ class DevelopmentReportsTest extends TestCase
         $user->update(['voted_issue_ids' => [$issue->id]]);
         $this->actingAs($user);
         $payload = ['request_key' => (string) Str::uuid()];
-        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'compass-v2.0')->assertJsonPath('snapshot.compass.version', 'compass-v2.0')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
+        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'compass-v2.1')->assertJsonPath('snapshot.compass.version', 'compass-v2.1')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
         $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('id', $id);
         $this->getJson('/api/me/reports/dev/'.$id)->assertOk()->assertJsonPath('snapshot.entries.0.title', 'Mijn echte neutrale testantwoord');
         $pdf = $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertOk()->assertHeader('Content-Type', 'application/pdf');

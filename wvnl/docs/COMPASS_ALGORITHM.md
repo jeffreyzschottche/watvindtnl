@@ -1,4 +1,4 @@
-# Politiek kompas — compass-v2.0
+# Politiek kompas — compass-v2.1
 
 Nieuwe rapporten gebruiken `CompassAnalysis` en `VoteSnapshot`, niet de historische LLM-score uit `PoliticalCompassService`. De LLM schrijft uitsluitend twee korte toelichtingen bij al berekende feiten. Geen scores, partijstanden of politieke types worden door het model bepaald.
 
@@ -26,17 +26,23 @@ CMS-validatie accepteert uitsluitend de vijf sleutels en gehele waarden −2…2
 
 ## Berekening en dekking
 
-Voor dimensie d: `score = round(50 × (1 + Σ(w × choice) / Σ(abs(w))))`, `choice = +1` voor VOOR, `−1` voor TEGEN. De andere pool is `100 − score`. Neutraal blijft in de antwoordtelling, zonder richting, en vult geen ontbrekende score met 50 in. Ambigue historische stemrecords zijn uitgesloten.
+Voor dimensie d: `score = round(50 × (1 + Σ(w × choice) / Σ(abs(w))))`, `choice = +1` voor VOOR, `−1` voor TEGEN. De andere pool is `100 − score`. Neutraal blijft in de antwoordtelling, zonder richting. Geen score uit nul of één bruikbare vraag.
 
-Alleen redactioneel geverifieerde mappings tellen. De brondatum mag niet ouder zijn dan 730 dagen; voor bronloze eigen stellingen geldt de controledatum. Per dimensie telt dezelfde gekoppelde motie eenmaal; ongekoppelde stellingen tellen op ID. Minimaal vijf verschillende directionele stellingen/moties per dimensie, anders `null`. De snapshot bevat de gebruikte IDs, motiekoppelingen, gewichten en controledatums.
+Vanaf twee verschillende bruikbare vragen verschijnt een **voorlopige** richting. Een vollediger profiel vereist vijf actuele vragen per thema en tien gewogen vragen totaal. Historische, afzonderlijk gewogen vragen kunnen meetellen als indicatie; ze maken het profiel altijd voorlopig. De economische as heeft dezelfde dekkingseisen voor verkoop.
 
-Een type vereist vier beschikbare themascores en minstens tien verschillende bruikbare stellingen/moties over de dimensies samen. Dezelfde motie telt hierbij ook over verschillende thema’s eenmaal. Een volledig betaald rapport vereist daarnaast een beschikbare economische as. De API blokkeert aankoop vóór voldoende dekking; de lokale devpreview toont de ontbrekende data wel. Bestaande betaalde rapporten blijven toegankelijk.
+`compass_reviewed_at` en `compass_context` registreren de inhoudelijke weging afzonderlijk van `verified_at` (bron-/publicatiecontrole). Seeded legacywegingen zijn beredeneerde, door de coding agent aangebrachte interpretaties van de aanwezige tekst. Ze zijn geen menselijke wetenschappelijke validatie of controle van oorspronkelijke partijstemmen. Alle gesedeerde legacyitems zijn gemarkeerd als historisch. Ongewogen actuele items blijven zonder score; oude bronnen tellen alleen mee bij die expliciete historische aanduiding. Bestaande actuele geverifieerde mappings blijven ondersteund.
 
-De gevoeligheidsrange is het minimum/maximum bij één antwoord weglaten uit de gewogen score. Dit is **geen statistisch betrouwbaarheidsinterval** en geen bewijs van representativiteit.
+Dubbelen worden gegroepeerd op bronmotie of expliciete inhoudssleutel. Gelijke keuzes tellen één keer. Bij tegenstrijdige keuzes wordt de groep uitgesloten; we kiezen niet stilzwijgend een van de antwoorden. De totale stemhistorie blijft ongewijzigd zichtbaar, met aparte aantallen voor dubbelen/tegenstrijdigheden. Onderwerpverdelingen tellen unieke, consistente vragen; een vraag kan meerdere onderwerpen hebben.
+
+De score-snapshot bevat gebruikte IDs, canonieke sleutels, gewichten, onderbouwing, datum en historische context. Een SHA-256 van de beoordeelde titel/toelichting/achtergrond beschermt tegen hergebruik van oude wegingen na een tekstwijziging. Gewijzigde tekst vraagt nieuwe beoordeling.
+
+Een eerste type vereist acht gewogen vragen en twee beschikbare thema’s. Alleen beschikbare dimensies bepalen de afstand tot de profielpunten; er wordt geen fictieve middenpositie voor onbekende dimensies gebruikt. Een volledig type vereist alle vier de thema’s met actuele dekking; kopen vereist daarnaast een niet-voorlopige economische as. De API blokkeert daarvoor order/checkout; de devpreview toont wel de bestaande indicatie. Eerder gekochte snapshots blijven toegankelijk.
+
+Gevoeligheid is het minimum/maximum bij één antwoord weglaten. Dit is geen statistisch betrouwbaarheidsinterval of representativiteitsclaim.
 
 ## Types
 
-Het type is het dichtstbijzijnde onderstaande presentatieprofiel, met de kleinste som van gekwadrateerde verschillen over vier gelijkwaardige themascores. Bij een exact gelijkspel wint de eerste profielrij. De economische as bepaalt het type niet.
+Het type is het dichtstbijzijnde onderstaande presentatieprofiel, met de kleinste som van gekwadrateerde verschillen over de beschikbare gelijkwaardige themascores. Bij ontbrekende thema’s is het type altijd voorlopig. Bij een exact gelijkspel wint de eerste profielrij. De economische as bepaalt het type niet.
 
 | Type | Sociaal | Progressief | Internationaal | Groen |
 | --- | ---: | ---: | ---: | ---: |
@@ -57,3 +63,12 @@ Dit zijn expliciete redactionele productkeuzes, geen wetenschappelijk gevalideer
 Partijmatch: alleen officieel herleidbare, gecontroleerde motiekoppelingen; geen LLM-invulling, gebruikersvoorkeur of logo. Neutraal/afwezig/ambigue partijkeuzes uitgesloten. Minimaal tien verschillende vergelijkbare moties per partij. Percentage = overeenkomsten / vergeleken moties. Sorteer aflopend op percentage en coverage, dan op naam; maximaal vijf volledige partijnamen. Dit is overeenkomst in stemgedrag, geen stemadvies.
 
 Snapshot, optionele AI-tekst en PDF blijven versleuteld en eigenaarsgebonden. Web en PDF lezen dezelfde vaste snapshot. Bestaande `vote-overview-v1`-rapporten behouden hun data, opgeslagen PDF en oorspronkelijke weergave via `LegacyReportSheet` / `snapshot-v1`. Een nieuw rapport is een afzonderlijke aankoop van €1,99; geen lifetime-herberekeningen.
+
+
+## Basiswegingen en CMS
+
+ZschotCMS → WDNL → Stellingen / Rapporten → **Basiswegingen bestaande stellingen seeden** roept de content-write-route `/api/cms/content/compass/seed` aan. De versie `editorial-2026-11-08-v1` herkent uitsluitend achttien exact beoordeelde formuleringen (veertien inhoudelijke families). Dit is geen automatische classificatie van de hele catalogus. Procesvragen zonder heldere richting krijgen bewust geen asgewicht, wel onderwerpen.
+
+De seed bewaart aangepaste wegingen, slaat gewijzigde teksten over, is idempotent en audit alle wijzigingen. `verified_at`, motiekoppelingen, officiële partijposities, stemmen en gebruikers worden niet als onderdeel van deze seed gewijzigd. De editor laat onderbouwing, onderwerpen, gedeelde inhoudssleutel en historische context wijzigen. Publicatie met expliciete review blijft verplicht. Bronverificatie en inhoudelijke weging zijn afzonderlijke zaken.
+
+De kenmerken in de typekaart komen uit de sterkst uitslaande beschikbare dimensies met vaste, uitlegbare teksten. Het zijn geen standaardkenmerken die automatisch bij de archetypenaam worden geplakt. Een ontbrekende progressieve score kan dus geen kenmerk over vernieuwing opleveren; een lage groene score wordt niet als duurzaam kenmerk gepresenteerd.

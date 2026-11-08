@@ -80,6 +80,7 @@ Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])
     Route::get('/motions', [ContentController::class, 'motions']);
     Route::middleware('cms.content:write')->group(function () {
         Route::post('/parties/seed', [ContentController::class, 'seedParties']);
+        Route::post('/compass/seed', [ContentController::class, 'seedCompass']);
         Route::post('/parties', [ContentController::class, 'saveParty']);
         Route::patch('/parties/{party}', [ContentController::class, 'saveParty']);
         Route::post('/statements', [ContentController::class, 'saveStatement']);

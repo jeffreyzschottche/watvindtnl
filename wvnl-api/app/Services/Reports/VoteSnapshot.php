@@ -17,8 +17,8 @@ class VoteSnapshot
     {
         $ids = array_values(array_unique(array_map('intval', (array) $user->voted_issue_ids)));
         abort_if(count($ids) > 20000, 422, 'Dit account vereist een grotere achtergrondexport.');
-        $issues = Issue::whereIn('id', $ids)->get(['id', 'slug', 'title', 'votes', 'party_stances'])->keyBy('id');
-        $metadata = DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->whereNotNull('verified_at')->get()->keyBy('issue_id');
+        $issues = Issue::whereIn('id', $ids)->get(['id', 'slug', 'title', 'votes', 'party_stances', 'description', 'more_info'])->keyBy('id');
+        $metadata = DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->get()->keyBy('issue_id');
         $entries = [];
         $counts = ['agree' => 0, 'disagree' => 0, 'neutral' => 0];
         $matches = [];
@@ -40,9 +40,9 @@ class VoteSnapshot
             }
             $choice = $choices[0];
             $counts[$choice]++;
-            $entries[] = ['id' => $id, 'slug' => $issue->slug, 'title' => $issue->title, 'choice' => $choice];
+            $entries[] = ['id' => $id, 'slug' => $issue->slug, 'title' => $issue->title, 'choice' => $choice, 'content_hash' => hash('sha256', json_encode([$issue->title, $issue->description, $issue->more_info], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))];
             $motion = $metadata->get($id)?->motion_id;
-            if (! $motion || isset($seenMotions[$motion]) || $choice === 'neutral') {
+            if (! $motion || ! $metadata->get($id)?->verified_at || isset($seenMotions[$motion]) || $choice === 'neutral') {
                 continue;
             }
             $seenMotions[$motion] = true;

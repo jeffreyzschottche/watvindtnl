@@ -20,6 +20,9 @@ export type CompassDimension = {
   left: string;
   right: string;
   icon: string;
+  provisional?: boolean;
+  historical?: number;
+  early_minimum?: number;
   percentage: number | null;
   opposite_percentage: number | null;
   compared: number;
@@ -29,11 +32,29 @@ export type CompassDimension = {
 };
 export type CompassAnalysis = {
   version: string;
-  status: "ready" | "insufficient_data";
-  type: { id: string; name: string; icon: string; traits: string[] } | null;
+  status: "ready" | "provisional" | "insufficient_data";
+  type: {
+    id: string;
+    name: string;
+    icon: string;
+    traits: string[];
+    provisional?: boolean;
+    based_on_dimensions?: string[];
+  } | null;
   dimensions: CompassDimension[];
   spectrum: CompassDimension;
   used_votes: number;
+  historical_votes?: number;
+  unique_answers?: number;
+  duplicate_answers?: number;
+  conflicting_groups?: number;
+  topics?: {
+    name: string;
+    count: number;
+    agree: number;
+    disagree: number;
+    neutral: number;
+  }[];
   minimum_per_dimension: number;
   highlights: string[];
 };

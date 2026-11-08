@@ -253,4 +253,15 @@ class VoteReportsTest extends TestCase
         $this->assertDatabaseCount('wdnl_report_orders', 0);
         Http::assertNothingSent();
     }
+
+    public function test_provisional_economic_axis_cannot_be_sold_as_a_full_report(): void
+    {
+        $u = $this->user();
+        DB::table('wdnl_statement_metadata')->whereIn('issue_id', array_slice($u->voted_issue_ids, 2))->update(['compass_weights' => json_encode(['social' => 1, 'progressive' => 1, 'international' => 1, 'green' => 1])]);
+        $this->partialMock(StripeReports::class, fn ($mock) => $mock->shouldReceive('available')->andReturn(true));
+        $this->actingAs($u)->getJson('/api/me/reports')->assertOk()->assertJsonPath('compass_progress.ready', false);
+        $this->postJson('/api/me/reports/orders', ['request_key' => (string) Str::uuid(), 'political_consent' => true, 'ai_consent' => true, 'platform' => 'web'])->assertUnprocessable();
+        $this->assertDatabaseCount('wdnl_report_orders', 0);
+        Http::assertNothingSent();
+    }
 }

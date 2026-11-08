@@ -43,6 +43,13 @@ const date = computed(() =>
         height="54"
       />
     </header>
+    <p v-if="politicalType?.provisional" class="compass-paper__indication">
+      <strong>Voorlopige indicatie.</strong> Gebaseerd op
+      {{ compass.used_votes }} verschillende gewogen stellingen.
+      {{ compass.historical_votes || 0 }} hebben een historische context.
+      Beschikbare thema’s bepalen de indicatie; ontbrekende scores worden niet
+      ingevuld.
+    </p>
     <section class="compass-paper__hero" aria-label="Jouw politieke type">
       <div class="compass-paper__hero-icon">
         <img
@@ -64,7 +71,13 @@ const date = computed(() =>
       </div>
       <div class="compass-paper__traits">
         <h4>
-          {{ politicalType ? "Jouw politieke type" : "Jouw stemoverzicht" }}
+          {{
+            politicalType
+              ? politicalType.provisional
+                ? "Voorlopig politiek type"
+                : "Jouw politieke type"
+              : "Jouw antwoorden"
+          }}
         </h4>
         <ul>
           <li
@@ -104,7 +117,7 @@ const date = computed(() =>
         <p class="compass-paper__caption">
           {{
             politicalType
-              ? `${politicalType.name} · een samenvatting van je antwoorden, geen psychologische diagnose.`
+              ? `${politicalType.name}${politicalType.provisional ? " · voorlopig" : ""} · een samenvatting van je antwoorden, geen psychologische diagnose.`
               : "Nog geen type uitgelicht. Er zijn nog niet genoeg gewogen antwoorden over alle vier de thema’s."
           }}
         </p>
@@ -133,12 +146,14 @@ const date = computed(() =>
             </div>
             <p class="compass-paper__caption">
               {{ compass.spectrum.compared }} gewogen antwoorden · economische
-              as
+              as<span v-if="compass.spectrum.provisional">
+                · voorlopige indicatie</span
+              >
             </p></template
           >
           <p v-else class="compass-paper__empty">
             Nog geen economische aspositie: {{ compass.spectrum.compared }}/{{
-              compass.spectrum.minimum
+              compass.spectrum.early_minimum || compass.spectrum.minimum
             }}
             gewogen antwoorden. Voor/tegen is geen links/rechtsscore.
           </p>
@@ -179,7 +194,8 @@ const date = computed(() =>
                   ><strong>{{ dimension.opposite_percentage }}%</strong>
                 </div>
                 <p class="compass-paper__caption">
-                  {{ dimension.compared }} gewogen antwoorden<span
+                  {{ dimension.provisional ? "Voorlopig · " : ""
+                  }}{{ dimension.compared }} gewogen antwoorden<span
                     v-if="dimension.sensitivity"
                   >
                     · gevoeligheid {{ dimension.sensitivity.min }}–{{
@@ -194,7 +210,7 @@ const date = computed(() =>
                 />
                 <p class="compass-paper__caption">
                   Nog niet genoeg gegevens · {{ dimension.compared }}/{{
-                    dimension.minimum
+                    dimension.early_minimum || dimension.minimum
                   }}
                   antwoorden
                 </p></template
@@ -204,10 +220,24 @@ const date = computed(() =>
         </section>
       </div>
       <section class="compass-card">
-        <h3>Partijen die bij je passen</h3>
+        <h3>
+          {{
+            snapshot.party_matches.length
+              ? "Partijen die bij je passen"
+              : compass.topics?.length
+                ? "Jouw onderwerpen"
+                : "Partijen die bij je passen"
+          }}
+        </h3>
         <span class="compass-paper__accent" />
         <p class="compass-paper__subheading">
-          Overeenkomst bij officieel gekoppelde moties.
+          {{
+            snapshot.party_matches.length
+              ? "Overeenkomst bij officieel gekoppelde moties."
+              : compass.topics?.length
+                ? "Waar je eigen antwoorden over gaan. Dubbelen tellen één keer."
+                : "Overeenkomst bij officieel gekoppelde moties."
+          }}
         </p>
         <ol v-if="snapshot.party_matches.length" class="compass-parties">
           <li v-for="party in snapshot.party_matches" :key="party.name">
@@ -221,13 +251,29 @@ const date = computed(() =>
             <b>{{ party.percentage }}%</b>
           </li>
         </ol>
+        <ul v-else-if="compass.topics?.length" class="compass-topics">
+          <li v-for="topic in compass.topics" :key="topic.name">
+            <strong>{{ topic.name }}</strong
+            ><span
+              >{{ topic.count }}
+              {{ topic.count === 1 ? "stelling" : "stellingen" }}</span
+            ><small
+              >{{ topic.agree }} voor · {{ topic.disagree }} tegen ·
+              {{ topic.neutral }} neutraal</small
+            >
+          </li>
+        </ul>
         <p v-else class="compass-paper__empty">
           Nog onvoldoende gecontroleerde motiekoppelingen. Voor een
           partijovereenkomst zijn minimaal tien vergelijkbare moties per partij
           nodig.
         </p>
         <p class="compass-paper__caption">
-          Overeenkomst in stemgedrag, geen stemadvies.
+          {{
+            snapshot.party_matches.length
+              ? "Overeenkomst in stemgedrag, geen stemadvies."
+              : "Partijvergelijking volgt pas bij voldoende gecontroleerde officiële motiekoppelingen."
+          }}
         </p>
       </section>
       <div class="compass-paper__insights">
@@ -256,14 +302,15 @@ const date = computed(() =>
           <div>
             <h3>Hoe dit rapport werkt</h3>
             <p>
-              Scores volgen uit vaste, redactioneel gecontroleerde gewichten.
-              Neutraal telt mee als antwoord, zonder richting. Minimaal vijf
-              verschillende stellingen of moties per thema; voor een type ook
-              tien gewogen antwoorden. Gevoeligheid toont de score bij het
-              weglaten van één antwoord; dit is geen betrouwbaarheidsinterval.
-              Bronnen van maximaal twee jaar oud tellen mee; bij bronloze eigen
-              stellingen geldt de controledatum. Politieke types zijn een
-              visuele samenvatting.
+              Scores volgen uit vaste redactionele wegingen. Vanaf twee
+              verschillende antwoorden per thema tonen we een voorlopige
+              richting; voor een vollediger profiel zijn minimaal vijf actuele
+              antwoorden per thema nodig. Historische context blijft zichtbaar.
+              Dubbelen tellen eenmaal; tegenstrijdige antwoorden op dezelfde
+              vraag worden uitgesloten. Neutraal geeft geen richting. Een
+              voorlopig type gebruikt minstens acht gewogen vragen en twee
+              beschikbare thema’s. Gevoeligheid is geen statistisch
+              betrouwbaarheidsinterval.
             </p>
             <NuxtLink to="/methodologie"
               >Bekijk de methode en beperkingen ↗</NuxtLink
@@ -276,7 +323,15 @@ const date = computed(() =>
       <span
         ><strong>{{ snapshot.total }}</strong> beantwoorde stellingen<br /><small
           >{{ compass.used_votes }} met bruikbare themagewichten ·
-          {{ snapshot.counts.neutral }} neutraal</small
+          {{ snapshot.counts.neutral }} neutraal<span
+            v-if="compass.duplicate_answers"
+          >
+            · {{ compass.duplicate_answers }} dubbele antwoorden eenmaal
+            geteld</span
+          ><span v-if="compass.conflicting_groups">
+            · {{ compass.conflicting_groups }} tegenstrijdige groepen
+            uitgesloten</span
+          ></small
         ></span
       ><span
         >{{ compass.version }}<br /><small>{{ date }}</small></span
@@ -286,6 +341,36 @@ const date = computed(() =>
   </article>
 </template>
 <style scoped>
+.compass-paper__indication {
+  padding: 12px 16px;
+  background: #fff5dc;
+  border: 1px solid #ecd8a5;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.65;
+  margin-bottom: 16px !important;
+  color: #674c15;
+}
+.compass-topics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.compass-topics li {
+  border-bottom: 1px solid #e5ebf1;
+  padding-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px;
+  font-size: 12px;
+}
+.compass-topics small {
+  grid-column: 1/-1;
+  color: #52677b;
+  font-size: 10px;
+}
 .compass-paper {
   --ink: #001f4d;
   --teal: #00877e;
