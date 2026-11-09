@@ -66,3 +66,10 @@ Live: de daadwerkelijke paarse knop genereert `compass-poster-v4` via het bestaa
 Gedownloade PDF: pdfinfo bevestigt één A4 (595,28 × 841,89pt), circa 247 kB. Visueel beoordeeld: alle zes blokken, volledig logo, alle zestien wielsegmenten, volledige zinnen en footer op dezelfde pagina. De oorspronkelijke vectorrenderer verloor enkele segmenten; de gevalideerde printafbeeldingen voorkomen dat. Echte JSON/PDF/screenshots blijven privé onder /tmp, openbare voorbeelddata is fictief.
 
 Lokale verwijdering uitgevoerd op expliciet verzoek. Drie legacyrecords en 23 oude cache-items verwijderd, geen betaalorders aanwezig. Accounts en volledige stemhash voor/na identiek. Officiële bronseed is na correctie idempotent; laatste herhaling nul updates. Geen productiedatabase benaderd of gewijzigd.
+
+
+## Interactief webrapport
+
+14 frontend-unitchecks, typecheck en productiebuild geslaagd; 50 Playwrightchecks op desktop/mobiel en zeven geïsoleerde devregressies. Nieuw: segmentklik, toetsenbordfocus/pijltjestoetsen, dropdown, vorige/volgende en reset. De persoonlijke typekop en scores veranderen niet tijdens verkenning, er ontstaan geen API-POSTs. De antwoordmix gebruikt de echte bewaarde tellingen (ook nulwaarden). De tests controleren gelijke boven-/onderkolomhoogtes en 1440/390/320px zonder overflow.
+
+Reduced-motion en de gedeelde opt-out worden afzonderlijk gecontroleerd: inhoud en typebediening blijven beschikbaar, zonder tijdelijke GSAP-transforms. Een eerste testvergelijking begon vóór het asynchrone rapport geladen was; de test wacht nu op de vier aanwezige themascores. Geen willekeurige sleep of automatische retry toegevoegd. Screenshots met expliciet fictieve rapportdata visueel bekeken; echte gebruikersdata/modelcalls zijn niet gebruikt. PDF-rendercode is niet gewijzigd; pdfinfo op de bestaande download bevestigt één A4.

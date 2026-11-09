@@ -664,7 +664,7 @@ test("one-page compass poster uses the real logo, sixteen-type wheel and all req
     exact: true,
   });
   await expect(logo).toHaveAttribute("src", "/brand/wdnl-logo.png");
-  for (const selector of [".poster-logo", ".poster-wheel"]) {
+  for (const selector of [".poster-logo"]) {
     expect(
       await paper
         .locator(selector)
@@ -673,10 +673,187 @@ test("one-page compass poster uses the real logo, sixteen-type wheel and all req
         ),
     ).toBe(true);
   }
+  await expect(paper.locator(".type-wheel__sector")).toHaveCount(16);
   await page
     .getByText("Onderbouwing van jouw rapport", { exact: true })
     .click();
   await expect(page.locator(".poster-evidence[open]")).toBeVisible();
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width + 1);
+  }
+});
+
+async function posterPreview(page: Page) {
+  const { readFileSync } = await import("node:fs");
+  const fixture = JSON.parse(
+    readFileSync(
+      new URL(
+        "../../scripts/design/compass-poster-example.json",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  await mock(page, {
+    ...saved,
+    snapshot: fixture.snapshot,
+    narrative: fixture.narrative,
+  });
+  await page.goto(`/kompas/rapport?order=${reportId}`);
+  return {
+    fixture,
+    paper: page.getByRole("article", { name: "Jouw persoonlijke stemrapport" }),
+  };
+}
+
+test("type wheel supports click and keyboard exploration while the personal result stays fixed", async ({
+  page,
+}, testInfo) => {
+  const posts: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST" && request.url().includes("/api/"))
+      posts.push(request.url());
+  });
+  const { fixture, paper } = await posterPreview(page);
+  const own = fixture.snapshot.compass.type;
+  const heading = paper.locator(".poster-hero-copy h3");
+  await expect(paper.locator(".poster-percentages")).toHaveCount(4);
+  await expect(paper).toHaveAttribute("data-report-motion", "on");
+  const personalScores = await paper
+    .locator(".poster-percentages")
+    .allTextContents();
+  await paper
+    .getByRole("button", { name: "De Groene Vernieuwer bekijken", exact: true })
+    .click();
+  await expect(paper.locator(".type-explorer h4")).toHaveText(
+    "De Groene Vernieuwer",
+  );
+  await expect(paper.locator(".type-explorer__badge")).toHaveText(
+    "Een ander type ontdekken",
+  );
+  await expect(heading).toHaveText(own.name);
+  expect(await paper.locator(".poster-percentages").allTextContents()).toEqual(
+    personalScores,
+  );
+  await paper.getByRole("button", { name: "Terug naar mijn type" }).click();
+  await expect(paper.locator(".type-explorer h4")).toHaveText(own.name);
+  const sector = paper.getByRole("button", {
+    name: `${own.name} bekijken`,
+    exact: true,
+  });
+  await sector.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(
+    paper.getByRole("button", {
+      name: "De Groene Vernieuwer bekijken",
+      exact: true,
+    }),
+  ).toBeFocused();
+  await expect(
+    paper.getByRole("button", {
+      name: "De Groene Vernieuwer bekijken",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await paper
+    .getByRole("combobox", { name: "Bekijk een politiek type" })
+    .selectOption("internationale-verbinder");
+  await expect(paper.locator(".type-explorer h4")).toHaveText(
+    "De Internationale Verbinder",
+  );
+  await paper.getByRole("button", { name: "Volgend type bekijken" }).click();
+  await expect(paper.locator(".type-explorer h4")).toHaveText(
+    "De Praktische Hervormer",
+  );
+  await paper.getByRole("button", { name: "Terug naar mijn type" }).click();
+  if ((page.viewportSize()?.width || 0) > 650) {
+    await expect
+      .poll(() =>
+        paper
+          .locator(".poster-personality")
+          .evaluate((el) => getComputedStyle(el).transform),
+      )
+      .toBe("none");
+    const left = (await paper.locator(".poster-personality").boundingBox())!;
+    const right = (await paper.locator(".poster-scores").boundingBox())!;
+    expect(
+      Math.abs(left.y + left.height - right.y - right.height),
+    ).toBeLessThan(2);
+    await expect
+      .poll(() =>
+        paper
+          .locator(".poster-parties")
+          .evaluate((el) => getComputedStyle(el).transform),
+      )
+      .toBe("none");
+    const lowerLeft = (await paper.locator(".poster-parties").boundingBox())!;
+    const lowerRight = (await paper
+      .locator(".poster-interpretation")
+      .boundingBox())!;
+    expect(
+      Math.abs(
+        lowerLeft.y + lowerLeft.height - lowerRight.y - lowerRight.height,
+      ),
+    ).toBeLessThan(2);
+  }
+  await expect(
+    paper.getByRole("img", {
+      name: "8 voor, 2 tegen, 0 neutraal",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(posts).toEqual([]);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(paper).toHaveAttribute("data-report-motion", "off");
+  await paper.screenshot({
+    path: testInfo.outputPath("interactive-compass.png"),
+    animations: "disabled",
+  });
+});
+
+test("report exploration stays usable with reduced motion and the shared motion preference disabled", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const { paper } = await posterPreview(page);
+  await expect(paper).toHaveAttribute("data-report-motion", "off");
+  await paper
+    .getByRole("button", { name: "De Groene Vernieuwer bekijken", exact: true })
+    .click();
+  await expect(paper.locator(".type-explorer h4")).toHaveText(
+    "De Groene Vernieuwer",
+  );
+  expect(
+    await paper
+      .locator("[data-report-bar]")
+      .first()
+      .evaluate((el) => (el as HTMLElement).style.transform),
+  ).toBe("");
+  await expect(
+    paper.getByRole("heading", { name: "Wat typeert jou?" }),
+  ).toBeVisible();
+  await page
+    .context()
+    .addCookies([
+      { name: "wdnl_motion", value: "false", url: "http://localhost:3010" },
+    ]);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.reload();
+  await expect(paper).toHaveAttribute("data-report-motion", "off");
+  await paper
+    .getByRole("combobox", { name: "Bekijk een politiek type" })
+    .selectOption("groene-vernieuwer");
+  await expect(paper.locator(".type-explorer h4")).toHaveText(
+    "De Groene Vernieuwer",
+  );
+  expect(
+    await paper
+      .locator(".type-explorer__copy")
+      .evaluate((el) => (el as HTMLElement).style.transform),
+  ).toBe("");
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(

@@ -214,3 +214,13 @@ Nog nodig: overige inhoud wegen, originele bronnen/partijstemmen verifiëren, be
 - [x] Nieuwe korte AI-tekst met echte context en verplichte bronverwijzingen; complete zinnen, geen geforceerd afgebroken woorden. Provider/model/budget blijven zoals ingesteld. Definitieve live-aanvraag: Luna, 4.261 input-/165 outputtokens, berekend €0,000509.
 - [x] Werkelijke paarse knop → V4-interface → echte download gecontroleerd. Eén A4, circa 247 kB; visueel bekeken. 320/390px zonder paginabrede overflow, nul pageerrors, testsessie ingetrokken.
 - [x] Backend 87 tests/544 assertions; frontend 14 unitchecks, typecheck/build, 46 browserchecks en zeven geïsoleerde devregressies geslaagd. Mobiele statische generatie en Capacitor-copy naar iOS/Android geslaagd; daarna de serverbuild hersteld. Geen signing, device- of store-release geclaimd.
+
+
+## Rapport: witruimte en GSAP-interactie — 9 november 2026
+
+- [x] Webrapport: kaarten sluiten in hoogte op elkaar aan; grotere zestiensegmentencirkel en een profielbeschrijving benutten de ruimte onder het wiel. Partijrijen verdelen de beschikbare hoogte en de methodekaart bevat de echte verdeling voor/tegen/neutraal.
+- [x] Elk type is met klikken, pijltjestoetsen, keuzelijst of vorige/volgende te verkennen. De eigen uitslag en scores blijven vast; een expliciete terugknop herstelt de eigen typeweergave. Geen extra generatie, betaling of API-POST bij deze interacties.
+- [x] Bestaande GSAP-core gebruikt voor korte kaartopbouw, schaalanimaties van score-/partijbalken, een eenmalige wielintro en de wisselende profielbeschrijving. Alleen zichtbare kaarten worden geanimeerd. Contexten/observers worden bij wisseling en unmount opgeruimd; systeem-reduced-motion en de gedeelde animatievoorkeur werken ook hier.
+- [x] 14 frontend-unitchecks, typecheck/build, 50 browserchecks en zeven devregressies geslaagd. Klikken/toetsenbord, onveranderde uitslag, echte antwoordverdeling, gelijke kolomhoogtes, drie viewportbreedtes en beide bewegingsvoorkeuren gecontroleerd. Desktop-/mobiele fixture-screenshots visueel bekeken.
+- [x] Backend, stemgegevens, rapportberekening en PDF-generator blijven onaangeroerd. De bestaande PDF is opnieuw op precies één A4 gecontroleerd. Geen modelaanvraag of echte aankoop uitgevoerd.
+- [x] Mobiele statische generatie en Capacitor-copy naar iOS/Android geslaagd; daarna de webserverbuild hersteld. Geen native signing, device- of store-release geclaimd.

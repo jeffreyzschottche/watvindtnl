@@ -58,3 +58,10 @@ De PDF gebruikt ingebedde DejaVu Sans via Dompdf; web gebruikt lokale Manrope. H
 - Zestientypenwielen: `public/report-art/wheel-v4-*.svg`. Bron: `CompassTypes::ALL`; `php scripts/design/export-compass-types.php` exporteert de definitie voor `python3 scripts/design/generate-poster-art.py`. Bestaande pictogrammen en het merkasset worden hergebruikt.
 - Dompdf tekende enkele SVG-segmenten onjuist. Daarom zijn dezelfde SVG-wielen via de bestaande browserrenderer omgezet naar lokale print-PNG’s met `node scripts/design/rasterize-poster-art.mjs`; deze staan uitsluitend onder de backendrapport-assets. Geen modelaanroep of gebruikersgegevens in de afbeeldingen.
 - De eerdere 3D-illustratie is uit de actuele rapportcompositie gehaald. De openbare voorbeeld-PDF is zichtbaar fictief en precies één A4. De echte rapporttekst, type, scores en partijovereenkomsten zijn geen onderdeel van de logo-/wielafbeeldingen.
+
+
+## Interactief typewiel op het web
+
+`ReportTypeWheel.vue` tekent dezelfde zestien segmenten als native SVG met de bestaande pictogrammen en het WDNL-molenasset. De grotere ring gebruikt de beschikbare ruimte; namen en beschrijvingen staan in de toegankelijke typeverkenner. De statische printwielen blijven de PDF bedienen. Geen nieuw beeld, font, package of externe runtime toegevoegd.
+
+GSAP-contexten zijn aan de component-DOM gekoppeld en worden bij uitschakelen/unmount teruggedraaid; de bestaande `useMotionPreferences` blijft leidend. Referentie: [officiële gsap.context-documentatie](https://gsap.com/docs/v3/GSAP/gsap.context()/). Het rapport gebruikt korte eindige animaties, zonder voortdurende rotatie of verandering van gegevens.

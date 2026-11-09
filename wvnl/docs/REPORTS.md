@@ -147,3 +147,10 @@ Partijvergelijking: alleen bevestigde officiële moties en bekende, ondubbelzinn
 `OfficialCompassReferences` bevat vijf gecontroleerde openbare bronrecords. De bestaande CMS-knop voor basiswegingen past deze ook toe, alleen bij een overeenkomende tekst-/reviewhash en zaaknummer. Eigen afwijkende motiekoppelingen blijven behouden. Elke wijziging aan bronkoppeling/partijstemmen is geaudit; gebruikersstemmen worden niet gewijzigd. Publieke brongegevens: `wvnl-api/resources/content/compass-official-references.json`; documentatie: https://opendata.tweedekamer.nl/documentatie/odata-api. Moties zonder daadwerkelijke stemming krijgen geen gefabriceerde partijstemmen.
 
 Lokale opruiming op expliciet verzoek: drie legacy-kompasrecords en 23 oude preview-/generatiecache-items verwijderd; er waren geen betaalorders. Vooraf een privé versleuteld herstelbestand gemaakt. Accounts en de volledige hash van de historische stemmen zijn gelijk gebleven. Nieuwe definitieve devpreview is daarna opnieuw gemaakt. Er is geen productieomgeving benaderd of opgeschoond.
+
+
+## Interactie in de webweergave
+
+Het eigen type en de bewaarde scores zijn vast. Het webwiel biedt daarnaast een verkenning van alle zestien profielbeschrijvingen met klik-/toetsenbordbediening, een keuzelijst en terugkeer naar het eigen profiel. Een ander bekeken profiel krijgt expliciet het label ‘Een ander type ontdekken’; verkennen wijzigt geen rapport of aankoop. De echte telling voor/tegen/neutraal wordt compact in de methodekaart weergegeven.
+
+`useReportMotion` gebruikt de bestaande GSAP-core voor eenmalige opbouw van zichtbare kaarten, balken en wiel. `ReportTypeWheel` animeert de bekeken profielbeschrijving. De gedeelde animatievoorkeur en systeem-reduced-motion worden gerespecteerd; contexten en IntersectionObservers worden opgeruimd. De server-PDF blijft één statische A4 van de eigen bewaarde uitslag, onafhankelijk van het op de site bekeken andere type.

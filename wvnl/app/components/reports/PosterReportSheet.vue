@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import ReportTypeWheel from "./ReportTypeWheel.vue";
 import type { VoteReport } from "~/types/voteReports";
 const props = defineProps<{ report: VoteReport }>();
+const root = ref<HTMLElement | null>(null);
+const { enabled: reportMotionEnabled } = useReportMotion(
+  root,
+  () => props.report.id,
+);
 const snapshot = computed(() => props.report.snapshot!);
 const compass = computed(() => snapshot.value.compass!);
 const type = computed(() => compass.value.type);
@@ -13,10 +19,22 @@ const date = computed(() =>
 const highlights = computed(() => props.report.narrative?.highlights || []);
 const axis = computed(() => compass.value.spectrum);
 const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
+const answerMix = computed(() =>
+  (["agree", "disagree", "neutral"] as const).map((choice) => ({
+    choice,
+    label: label[choice].toLowerCase(),
+    count: snapshot.value.counts[choice],
+    percentage: snapshot.value.total
+      ? (100 * snapshot.value.counts[choice]) / snapshot.value.total
+      : 0,
+  })),
+);
 </script>
 <template>
   <article
+    ref="root"
     class="compass-poster"
+    :data-report-motion="reportMotionEnabled ? 'on' : 'off'"
     :style="{ '--type-color': color }"
     aria-label="Jouw persoonlijke stemrapport"
   >
@@ -37,7 +55,11 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
         <span class="poster-accent" />
       </div>
     </header>
-    <section class="poster-hero" aria-label="Jouw politieke type">
+    <section
+      data-report-reveal
+      class="poster-hero"
+      aria-label="Jouw politieke type"
+    >
       <div class="poster-type-icon">
         <img
           :src="`/report-art/${type?.icon || 'balance'}-white.svg`"
@@ -78,26 +100,17 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
       </div>
     </section>
     <div class="poster-grid">
-      <section class="poster-card poster-personality">
+      <section data-report-reveal class="poster-card poster-personality">
         <h3>Jouw politieke persoonlijkheid</h3>
-        <span class="poster-accent" /><img
-          class="poster-wheel"
-          :src="`/report-art/wheel-v4-${type?.id || 'pending'}.svg`"
-          :alt="
-            type
-              ? `Zestien politieke typen, ${type.name} uitgelicht`
-              : 'Zestien politieke typen; nog geen type uitgelicht'
-          "
-          width="620"
-          height="600"
+        <span class="poster-accent" />
+        <ReportTypeWheel
+          :type="type"
+          :catalogue="compass.type_catalogue || []"
+          :animate="reportMotionEnabled"
         />
-        <p class="poster-wheel-caption">
-          {{ type?.name || "Meer gewogen antwoorden nodig voor een type"
-          }}<span v-if="type?.provisional"> · voorlopige indicatie</span>
-        </p>
       </section>
       <div class="poster-scores">
-        <section class="poster-card">
+        <section data-report-reveal class="poster-card">
           <h3>Jouw positie op het politieke spectrum</h3>
           <span class="poster-accent" /><template
             v-if="axis.percentage !== null"
@@ -132,7 +145,7 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
             antwoorden.
           </p>
         </section>
-        <section class="poster-card">
+        <section data-report-reveal class="poster-card">
           <h3>Jouw scores op belangrijke thema’s</h3>
           <span class="poster-accent" />
           <div
@@ -157,7 +170,10 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
                   :aria-label="`${dimension.percentage}% ${dimension.left}, ${dimension.opposite_percentage}% ${dimension.right}${dimension.provisional ? ', voorlopig' : ''}`"
                 >
                   <div class="poster-track">
-                    <span :style="{ width: `${dimension.percentage}%` }" />
+                    <span
+                      data-report-bar
+                      :style="{ width: `${dimension.percentage}%` }"
+                    />
                   </div>
                   <div class="poster-between poster-percentages">
                     <strong>{{ dimension.percentage }}%</strong
@@ -184,7 +200,7 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
           </div>
         </section>
       </div>
-      <section class="poster-card poster-parties">
+      <section data-report-reveal class="poster-card poster-parties">
         <h3>Partijen die bij je passen</h3>
         <span class="poster-accent" />
         <p class="poster-caption">
@@ -198,7 +214,10 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
           <div>
             <h4>{{ party.name }}</h4>
             <div class="poster-track">
-              <span :style="{ width: `${party.percentage}%` }" />
+              <span
+                data-report-bar
+                :style="{ width: `${party.percentage}%` }"
+              />
             </div>
             <p class="poster-caption">
               {{ party.matched }} van {{ party.compared }} moties<span
@@ -233,17 +252,21 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
         </p>
       </section>
       <div class="poster-interpretation">
-        <section class="poster-card">
+        <section data-report-reveal class="poster-card">
           <h3>Wat typeert jou?</h3>
           <span class="poster-accent" />
           <ul class="poster-highlights">
-            <li v-for="(highlight, index) in highlights" :key="index">
+            <li
+              v-for="(highlight, index) in highlights"
+              :key="index"
+              data-report-point
+            >
               <span class="poster-check" aria-hidden="true">✓</span>
               <p>{{ highlight.text }}</p>
             </li>
           </ul>
         </section>
-        <section class="poster-card poster-method">
+        <section data-report-reveal class="poster-card poster-method">
           <span aria-hidden="true" class="poster-info">i</span>
           <div>
             <h3>Hoe dit rapport werkt</h3>
@@ -261,6 +284,34 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
               Kleine aantallen zijn voorlopig. Het type is een samenvatting,
               geen diagnose.
             </p>
+            <div v-if="snapshot.total" class="poster-answer-mix">
+              <h4>Verdeling van je {{ snapshot.total }} antwoorden</h4>
+              <div
+                class="poster-answer-mix__track"
+                role="img"
+                :aria-label="
+                  answerMix
+                    .map((part) => `${part.count} ${part.label}`)
+                    .join(', ')
+                "
+              >
+                <span
+                  v-for="part in answerMix"
+                  :key="part.choice"
+                  data-report-bar
+                  :class="`poster-answer-mix__part poster-answer-mix__part--${part.choice}`"
+                  :style="{ width: `${part.percentage}%` }"
+                />
+              </div>
+              <div class="poster-answer-mix__legend">
+                <span v-for="part in answerMix" :key="part.choice"
+                  ><i
+                    :class="`poster-answer-mix__dot--${part.choice}`"
+                    aria-hidden="true"
+                  /><strong>{{ part.count }}</strong> {{ part.label }}</span
+                >
+              </div>
+            </div>
             <NuxtLink to="/methodologie">Methode en beperkingen ↗</NuxtLink>
           </div>
         </section>
@@ -415,14 +466,14 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
 .poster-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0 1.2rem;
-  align-items: start;
+  gap: 1.1rem;
+  align-items: stretch;
 }
 .poster-card {
   border: 1px solid #dce3ec;
   border-radius: 14px;
   padding: 1.15rem;
-  margin-bottom: 1.15rem;
+  margin-bottom: 0;
 }
 .poster-card h3 {
   font-size: clamp(0.95rem, 1.8vw, 1.2rem);
@@ -431,19 +482,35 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
   margin: 0;
   font-weight: 800;
 }
-.poster-wheel {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-top: -0.6rem;
+.poster-personality {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
-.poster-wheel-caption {
-  text-align: center;
-  font-size: 0.65rem;
-  color: var(--type-color);
-  line-height: 1.5;
-  margin: -0.3rem 0 0;
+.poster-scores,
+.poster-interpretation {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
 }
+.poster-scores > .poster-card:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.poster-scores > .poster-card:last-child .poster-score {
+  flex: 1;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0;
+}
+.poster-interpretation > .poster-method {
+  flex: 1;
+}
+.poster-grid {
+  margin-bottom: 1.1rem;
+}
+
 .poster-between {
   display: flex;
   align-items: start;
@@ -526,7 +593,12 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
   font-size: 0.56rem;
   margin-top: 0.1rem;
 }
+.poster-parties {
+  display: flex;
+  flex-direction: column;
+}
 .poster-party {
+  flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -635,6 +707,59 @@ const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
   margin-top: 0.5rem;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+.poster-answer-mix {
+  margin-top: 0.9rem;
+  border-top: 1px solid #d8e9e8;
+  padding-top: 0.7rem;
+}
+.poster-answer-mix h4 {
+  margin: 0 0 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+.poster-answer-mix__track {
+  display: flex;
+  overflow: hidden;
+  height: 8px;
+  border-radius: 8px;
+  background: #dce4eb;
+}
+.poster-answer-mix__part {
+  display: block;
+  height: 100%;
+  flex-shrink: 0;
+}
+.poster-answer-mix__part--agree,
+.poster-answer-mix__dot--agree {
+  background: #0057b8;
+}
+.poster-answer-mix__part--disagree,
+.poster-answer-mix__dot--disagree {
+  background: #e1062e;
+}
+.poster-answer-mix__part--neutral,
+.poster-answer-mix__dot--neutral {
+  background: #8494a8;
+}
+.poster-answer-mix__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.8rem;
+  margin-top: 0.45rem;
+}
+.poster-answer-mix__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.6rem;
+  color: #425c72;
+}
+.poster-answer-mix__legend i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 0.05rem;
 }
 .poster-footer {
   display: grid;
