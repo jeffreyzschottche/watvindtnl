@@ -189,3 +189,17 @@ Nog nodig: redactionele weging van echte stellingen, validatie van die inhoudeli
 
 Nog nodig: overige inhoud wegen, originele bronnen/partijstemmen verifiëren, beoordeling door de redactie en toetsing van de heuristiek, actuele dekking en eerdere productie-/betalings-/privacyvoorwaarden. Dit is een eerste indicatie, geen bewezen persoonlijkheidstest.
 - [x] Afronding: alle 42 desktop-/mobiele browserchecks geslaagd. De drie profielkenmerken volgen uit de echt beschikbare scores, ook bij ontbrekende dimensies; gerichte inhouds-/PDF-tests hiervoor geslaagd. Voorbeeld en mobiele assets bijgewerkt. De tijdelijke persoonlijke preview is voor de beoordeling ververst met dezelfde AI-tekst, zonder extra modelcall.
+
+
+## Kompasrapport V3 — 9 november 2026
+
+- [x] Oorzaak onderzocht: slechts zes ingekorte titels en twee korte AI-tekstvelden; de eigen stemcontext ging grotendeels verloren.
+- [x] Begrensde analysecontext met unieke antwoorden, beschrijving/context en argumenten. De huidige demohistorie levert 13 bruikbare groepen uit 18 antwoorden; dubbelen en conflicterende groepen worden correct behandeld. Grote lijsten: vaste spreiding tot 40, expliciete dekking en achtergrond inkorten vóór antwoorden wegvallen. Geen identiteit naar de provider.
+- [x] Echte gestructureerde AI-analyse: inhoudelijke inzichten, vier concrete standpunten, optionele nuance en een reflectievraag. Server valideert verwijzingen/veldgrenzen en weigert verzonnen scores. AI mag geen motieven, diagnoses, veranderde opvattingen of partijstandpunten invullen. Referentievalidering is geen volledige semantische factcheck.
+- [x] Twee A4’s met 3D-art via de expliciet gevraagde imagegen-skill. Webweergave en echte PDF gebruiken dezelfde bewaarde gegevens. Selecteerbare tekst en codegrafieken; geen gegenereerde afbeelding met nepgegevens. Openbaar fictief voorbeeld bijgewerkt.
+- [x] Maximaal €0,20 blijft configureerbaar via CMS; provider/model blijven CMS-gestuurd voor betaalde rapporten en backend-env-gestuurd voor de paarse knop. Geen extra verplichte AI-rondes of beeldgeneratie per gebruiker. Eerlijke codevariant bij opt-out/fout in betaalde rapporten; devflow gebruikt geen verborgen fallback.
+- [x] Oude rapporten behouden, geen database-/seedmigratie of nieuwe dependencies. Nieuwe expliciete toestemmingstekst en methodologie; bron-PDF’s blijven bij de eigenaar.
+- [x] Backend: 82 tests / 493 assertions; extra stresstest met lange teksten en codevariant. Frontend: 14 unitchecks, typecheck/build en 44 browserchecks op desktop/mobiel.
+- [x] Definitieve live controle: POST 200 via de paarse knop, V3-interface zichtbaar, drie inzichten/vier standpunten, echte PDF-download met twee A4’s, 320/390px zonder horizontale overflow en nul pageerrors. Luna: 4.987 input-/450 outputtokens, berekend €0,000724. Tijdelijke QA-login ingetrokken; geen stemmen of aankopen gewijzigd.
+- [x] Zeven geïsoleerde devregressies en mobiele statische generatie/Capacitor-copy voor iOS en Android geslaagd. Geen native binary of fysieke-devicecheck geclaimd.
+- Extern/release: echte betalingen, native aankoopconfiguratie, providercontracten/juridische beoordeling, redactionele bronkwaliteit en fysieke-devicechecks blijven buiten deze rapportverbetering.

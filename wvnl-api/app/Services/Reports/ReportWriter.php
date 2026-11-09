@@ -10,8 +10,12 @@ class ReportWriter
 {
     public function __construct(private ReportSettings $settings) {}
 
-    public function fallback(): array
+    public function fallback(?array $snapshot = null): array
     {
+        if (isset($snapshot['analysis_context'])) {
+            return app(ReportInsights::class)->fallback($snapshot);
+        }
+
         return ['summary' => 'Dit rapport brengt je vastgelegde antwoorden bij elkaar. Elke stelling gaat over een eigen onderwerp; de verhouding tussen voor en tegen is geen links-rechtsscore.',
             'reflection' => 'Kijk welke onderwerpen je belangrijk vindt en lees beide kanten terug. Een nieuwe reeks antwoorden kan een aanleiding zijn om later opnieuw een overzicht te maken.'];
     }
@@ -21,13 +25,13 @@ class ReportWriter
         $s = $order->generation_settings;
         $key = config('wdnl_reports.'.$s['provider'].'_key');
         if (! $s['ai_enabled'] || ! $order->ai_consent || ! $key) {
-            return ['source' => 'code', 'text' => $this->fallback()];
+            return ['source' => 'code', 'text' => $this->fallback($order->snapshot)];
         }
         $narrator = app(ReportNarrator::class);
-        $prompt = $narrator->prompt($order->snapshot);
+        $prompt = $narrator->prompt($order->snapshot, (int) $s['max_input_bytes']);
         ['input' => $input, 'instructions' => $instructions] = $prompt;
         if (strlen($input) + strlen($instructions) > $s['max_input_bytes']) {
-            return ['source' => 'code', 'text' => $this->fallback()];
+            return ['source' => 'code', 'text' => $this->fallback($order->snapshot)];
         }
         $reserve = $this->settings->cost($s, strlen($input) + strlen($instructions) + 2048, (int) $s['max_output_tokens']);
         $existing = DB::table('wdnl_report_attempts')->where('order_id', $order->id);
@@ -49,7 +53,7 @@ class ReportWriter
                 if (! $response['successful'] || ! $response['complete'] || ! $usageKnown) {
                     throw new \RuntimeException('provider_response');
                 }
-                $data = $narrator->text($response['text']);
+                $data = $narrator->text($response['text'], $order->snapshot);
                 DB::table('wdnl_report_attempts')->where('id', $id)->update(['status' => 'succeeded', 'updated_at' => now()]);
 
                 return ['source' => $s['provider'], 'text' => $data];
@@ -62,6 +66,6 @@ class ReportWriter
             }
         }
 
-        return ['source' => 'code', 'text' => $this->fallback()];
+        return ['source' => 'code', 'text' => $this->fallback($order->snapshot)];
     }
 }

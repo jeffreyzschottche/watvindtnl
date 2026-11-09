@@ -334,8 +334,9 @@ useSeoMeta({
               v-if="overview.product.ai_available"
               class="reports-page__consent"
               ><input v-model="aiConsent" type="checkbox" /><span
-                >Ik wil ook een korte AI-toelichting. Hiervoor gaat een beperkte
-                samenvatting van mijn politieke antwoorden naar
+                >Ik wil een inhoudelijke AI-toelichting. Hiervoor gaan maximaal
+                veertig unieke politieke antwoorden met de stellingtekst en
+                beschikbare context, zonder mijn naam of e-mailadres, naar
                 {{
                   overview.product.ai_provider === "openai"
                     ? "OpenAI"

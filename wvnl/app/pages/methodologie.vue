@@ -116,9 +116,21 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
       <p>
         Het rapport is een vast overzicht van je vastgelegde antwoorden op de
         generatiedatum. Code telt de antwoorden, maakt de grafieken en vult de
-        A4-opmaak. Een korte AI-toelichting is optioneel en verandert geen
+        opmaak van het downloadbare PDF-rapport. Een inhoudelijke AI-toelichting
+        is optioneel en verbindt concrete antwoorden aan thema’s en afwegingen.
+        De toelichting verwijst naar de gebruikte antwoorden en verandert geen
         scores. De verhouding tussen voor en tegen zegt op zichzelf niets over
         links of rechts.
+      </p>
+      <p>
+        Voor de AI-toelichting worden maximaal veertig unieke, eenduidige
+        antwoorden met stellingtekst en beschikbare context gebruikt. Bij meer
+        antwoorden wordt een vaste spreiding door de volledige antwoordlijst
+        geselecteerd; het rapport vermeldt hoeveel antwoorden zijn gebruikt.
+        Dubbelen tellen eenmaal. Verschillende antwoorden op dezelfde vraag
+        worden niet als een eenduidig standpunt uitgelegd. De AI kent je redenen
+        niet en kan een antwoord verkeerd duiden; lees de bijbehorende stelling
+        terug. Neutraal geeft geen richting aan.
       </p>
       <p>
         Partijovereenkomsten verschijnen alleen vanaf tien verschillende,

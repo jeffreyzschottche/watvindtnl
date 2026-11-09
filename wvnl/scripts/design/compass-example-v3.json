@@ -1,0 +1,551 @@
+{
+  "snapshot": {
+    "demo": true,
+    "compass": {
+      "version": "compass-v2.1",
+      "type": {
+        "id": "idealist",
+        "provisional": false,
+        "based_on_dimensions": [
+          "social",
+          "progressive",
+          "international",
+          "green"
+        ],
+        "name": "De Idealist",
+        "icon": "flag",
+        "traits": [
+          "Sociale voorzieningen",
+          "Gericht op vernieuwing",
+          "Internationale samenwerking"
+        ]
+      },
+      "dimensions": [
+        {
+          "left": "Sociaal",
+          "right": "Individueel",
+          "icon": "people",
+          "id": "social",
+          "percentage": 91,
+          "opposite_percentage": 9,
+          "compared": 11,
+          "neutral": 1,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": {
+            "min": 90,
+            "max": 100
+          }
+        },
+        {
+          "left": "Progressief",
+          "right": "Behoudend",
+          "icon": "spark",
+          "id": "progressive",
+          "percentage": 91,
+          "opposite_percentage": 9,
+          "compared": 11,
+          "neutral": 1,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": {
+            "min": 90,
+            "max": 100
+          }
+        },
+        {
+          "left": "Internationaal",
+          "right": "Nationaal",
+          "icon": "globe",
+          "id": "international",
+          "percentage": 91,
+          "opposite_percentage": 9,
+          "compared": 11,
+          "neutral": 1,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": {
+            "min": 90,
+            "max": 100
+          }
+        },
+        {
+          "left": "Groen",
+          "right": "Economische groei",
+          "icon": "leaf",
+          "id": "green",
+          "percentage": 91,
+          "opposite_percentage": 9,
+          "compared": 11,
+          "neutral": 1,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": {
+            "min": 90,
+            "max": 100
+          }
+        }
+      ],
+      "spectrum": {
+        "left": "Links",
+        "right": "Rechts",
+        "icon": "balance",
+        "id": "economic",
+        "percentage": 91,
+        "opposite_percentage": 9,
+        "compared": 11,
+        "neutral": 1,
+        "historical": 0,
+        "minimum": 5,
+        "early_minimum": 2,
+        "provisional": false,
+        "sensitivity": {
+          "min": 90,
+          "max": 100
+        }
+      },
+      "used_votes": 11,
+      "historical_votes": 0,
+      "unique_answers": 12,
+      "duplicate_answers": 0,
+      "conflicting_groups": 0,
+      "topics": [],
+      "minimum_per_dimension": 5,
+      "early_minimum_per_dimension": 2,
+      "evidence": [
+        {
+          "issue_id": 1,
+          "canonical_key": "issue:1",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 2,
+          "canonical_key": "issue:2",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 4,
+          "canonical_key": "issue:4",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 5,
+          "canonical_key": "issue:5",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 6,
+          "canonical_key": "issue:6",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 7,
+          "canonical_key": "issue:7",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 8,
+          "canonical_key": "issue:8",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 9,
+          "canonical_key": "issue:9",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 10,
+          "canonical_key": "issue:10",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 11,
+          "canonical_key": "issue:11",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 12,
+          "canonical_key": "issue:12",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        }
+      ],
+      "status": "ready",
+      "highlights": [
+        "Je antwoorden leggen vaker de nadruk op gezamenlijke voorzieningen en sociale betrokkenheid.",
+        "Je antwoorden leggen vaker de nadruk op vernieuwing en maatschappelijke verandering.",
+        "Je antwoorden leggen vaker de nadruk op internationale samenwerking.",
+        "Je antwoorden leggen vaker de nadruk op milieu en duurzaamheid."
+      ]
+    },
+    "methodology_version": "compass-v2.1",
+    "total": 12,
+    "counts": {
+      "agree": 10,
+      "disagree": 1,
+      "neutral": 1
+    },
+    "entries": [
+      {
+        "id": 1,
+        "slug": "voorbeeld-1",
+        "title": "De overheid moet meer investeren in kleinere schoolklassen.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 2,
+        "slug": "voorbeeld-2",
+        "title": "De overheid moet strengere eisen stellen aan duurzame woningbouw.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 3,
+        "slug": "voorbeeld-3",
+        "title": "Openbaar vervoer moet betaalbaarder worden.",
+        "choice": "neutral",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 4,
+        "slug": "voorbeeld-4",
+        "title": "Nederland moet meer samenwerken met andere Europese landen.",
+        "choice": "disagree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 5,
+        "slug": "voorbeeld-5",
+        "title": "Er moet meer geld naar preventieve gezondheidszorg.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 6,
+        "slug": "voorbeeld-6",
+        "title": "Nieuwe bedrijventerreinen mogen niet ten koste gaan van natuurgebieden.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 7,
+        "slug": "voorbeeld-7",
+        "title": "Iedere inwoner moet dezelfde toegang tot publieke voorzieningen krijgen.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 8,
+        "slug": "voorbeeld-8",
+        "title": "De overheid moet meer ruimte bieden aan zelfstandig ondernemerschap.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 9,
+        "slug": "voorbeeld-9",
+        "title": "De overheid moet vaker investeren in culturele voorzieningen.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 10,
+        "slug": "voorbeeld-10",
+        "title": "Bij schaarse woningen moeten lokale inwoners voorrang krijgen.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 11,
+        "slug": "voorbeeld-11",
+        "title": "De overheid moet strengere regels stellen aan arbeidscontracten.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      },
+      {
+        "id": 12,
+        "slug": "voorbeeld-12",
+        "title": "Een nieuwe maatregel over toezicht op de uitvoering van beleid.",
+        "choice": "agree",
+        "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+      }
+    ],
+    "party_matches": [],
+    "generated_at": "2026-11-09T12:00:00+01:00",
+    "analysis_context": {
+      "version": 3,
+      "votes": [
+        {
+          "id": 1,
+          "slug": "voorbeeld-1",
+          "title": "De overheid moet meer investeren in kleinere schoolklassen.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 2,
+          "slug": "voorbeeld-2",
+          "title": "De overheid moet strengere eisen stellen aan duurzame woningbouw.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 3,
+          "slug": "voorbeeld-3",
+          "title": "Openbaar vervoer moet betaalbaarder worden.",
+          "choice": "neutral",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 4,
+          "slug": "voorbeeld-4",
+          "title": "Nederland moet meer samenwerken met andere Europese landen.",
+          "choice": "disagree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 5,
+          "slug": "voorbeeld-5",
+          "title": "Er moet meer geld naar preventieve gezondheidszorg.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 6,
+          "slug": "voorbeeld-6",
+          "title": "Nieuwe bedrijventerreinen mogen niet ten koste gaan van natuurgebieden.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 7,
+          "slug": "voorbeeld-7",
+          "title": "Iedere inwoner moet dezelfde toegang tot publieke voorzieningen krijgen.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 8,
+          "slug": "voorbeeld-8",
+          "title": "De overheid moet meer ruimte bieden aan zelfstandig ondernemerschap.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 9,
+          "slug": "voorbeeld-9",
+          "title": "De overheid moet vaker investeren in culturele voorzieningen.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 10,
+          "slug": "voorbeeld-10",
+          "title": "Bij schaarse woningen moeten lokale inwoners voorrang krijgen.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 11,
+          "slug": "voorbeeld-11",
+          "title": "De overheid moet strengere regels stellen aan arbeidscontracten.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        },
+        {
+          "id": 12,
+          "slug": "voorbeeld-12",
+          "title": "Een nieuwe maatregel over toezicht op de uitvoering van beleid.",
+          "choice": "agree",
+          "description": "Deze voorbeeldstelling gaat over de afweging tussen publieke voorzieningen en de inzet van middelen."
+        }
+      ],
+      "eligible_count": 12,
+      "included_count": 12,
+      "omitted_count": 0,
+      "excluded_conflicts": 0
+    }
+  },
+  "narrative": {
+    "analysis_version": 3,
+    "summary": "Je antwoorden verbinden publieke voorzieningen aan concrete keuzes bij onderwijs en zorg. Bij duurzame woningbouw kies je voor strengere eisen. Bij openbaar vervoer heb je geen richting aangegeven. Dit is een voorbeeld, geen analyse van een echte gebruiker.",
+    "reflection": "Welke afweging geeft voor jou de doorslag bij verschillende voorstellen?",
+    "insights": [
+      {
+        "heading": "Ruimte voor publieke voorzieningen",
+        "body": "Bij kleinere klassen en preventieve zorg kies je voor extra inzet van de overheid. Deze voorstellen verbinden publieke middelen aan toegankelijke voorzieningen.",
+        "evidence_ids": [1, 5]
+      },
+      {
+        "heading": "Duurzaamheid bij wonen en natuur",
+        "body": "Je kiest voor strengere eisen bij duurzame woningbouw. Ook wil je dat nieuwe bedrijventerreinen niet ten koste gaan van natuurgebieden.",
+        "evidence_ids": [2, 6]
+      },
+      {
+        "heading": "Geen richting bij openbaar vervoer",
+        "body": "Bij betaalbaarder openbaar vervoer heb je neutraal geantwoord. Uit dit antwoord volgt geen voorkeur voor of tegen het voorstel.",
+        "evidence_ids": [3]
+      }
+    ],
+    "positions": [
+      {
+        "statement_id": 1,
+        "interpretation": "Je kiest voor een kleinere klas als concrete investering in onderwijs."
+      },
+      {
+        "statement_id": 2,
+        "interpretation": "Je steunt strengere duurzaamheidseisen aan nieuwe woningen."
+      },
+      {
+        "statement_id": 4,
+        "interpretation": "Je stemt tegen het genoemde voorstel voor meer Europese samenwerking."
+      },
+      {
+        "statement_id": 3,
+        "interpretation": "Je geeft bij deze maatregel geen richting aan."
+      }
+    ],
+    "nuances": [
+      {
+        "heading": "Een keuze geldt per voorstel",
+        "body": "Extra overheidsinzet bij onderwijs gaat bij jou niet automatisch samen met meer Europese samenwerking. Dat zijn verschillende beleidsterreinen en afwegingen.",
+        "evidence_ids": [1, 4]
+      }
+    ],
+    "questions": [
+      {
+        "text": "Wat geeft voor jou de doorslag bij samenwerking op Europees niveau?",
+        "evidence_ids": [4]
+      }
+    ]
+  }
+}

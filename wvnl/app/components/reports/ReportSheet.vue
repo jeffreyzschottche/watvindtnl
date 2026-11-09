@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { VoteReport } from "~/types/voteReports";
 import LegacyReportSheet from "./LegacyReportSheet.vue";
+import InsightReportSheet from "./InsightReportSheet.vue";
 const props = defineProps<{ report: VoteReport }>();
 const snapshot = computed(() => props.report.snapshot);
 const compass = computed(() => snapshot.value?.compass);
@@ -12,7 +13,13 @@ const date = computed(() =>
 );
 </script>
 <template>
-  <LegacyReportSheet v-if="!compass" :report="report" />
+  <InsightReportSheet
+    v-if="
+      report.narrative?.analysis_version === 3 && snapshot?.analysis_context
+    "
+    :report="report"
+  />
+  <LegacyReportSheet v-else-if="!compass" :report="report" />
   <article
     v-else-if="snapshot && report.narrative"
     class="compass-paper"

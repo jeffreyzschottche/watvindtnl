@@ -223,7 +223,7 @@ test("report purchase is separate, consent is explicit and existing PDF download
   const buy = page.getByRole("button", { name: "Nieuw rapport kopen" });
   await expect(buy).toBeDisabled();
   const ai = page.getByRole("checkbox", {
-    name: /Ik wil ook een korte AI-toelichting/,
+    name: /Ik wil een inhoudelijke AI-toelichting/,
   });
   await expect(ai).not.toBeChecked();
   await page
@@ -482,6 +482,135 @@ test("historical reviewed answers show a provisional profile and real topics wit
   await expect(
     paper.getByText(/4 dubbele antwoorden eenmaal geteld/),
   ).toBeVisible();
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width + 1);
+  }
+});
+
+test("rich report ties AI insights to actual choices and remains readable on small screens", async ({
+  page,
+}) => {
+  const entries = [
+    {
+      id: 1,
+      slug: "schoolklassen",
+      title: "Meer investeren in kleinere schoolklassen.",
+      choice: "agree",
+      description: "Een concreet voorstel over onderwijs.",
+    },
+    {
+      id: 2,
+      slug: "woningbouw",
+      title: "Strengere eisen aan duurzame woningbouw.",
+      choice: "agree",
+    },
+    {
+      id: 3,
+      slug: "vervoer",
+      title: "Openbaar vervoer betaalbaarder maken.",
+      choice: "neutral",
+    },
+    {
+      id: 4,
+      slug: "europa",
+      title: "Meer Europese samenwerking.",
+      choice: "disagree",
+    },
+  ];
+  await mock(page, {
+    ...saved,
+    snapshot: {
+      ...saved.snapshot,
+      entries,
+      compass: compassFixture,
+      analysis_context: {
+        version: 3,
+        votes: entries,
+        eligible_count: 4,
+        included_count: 4,
+        omitted_count: 0,
+        excluded_conflicts: 0,
+      },
+    },
+    narrative: {
+      analysis_version: 3,
+      summary:
+        "Je steunt kleinere schoolklassen en strengere eisen aan duurzame woningbouw.",
+      reflection: "Je keuzes hebben ieder hun eigen context.",
+      insights: [
+        {
+          heading: "Toegankelijk onderwijs",
+          body: "Je steunt het voorstel voor kleinere klassen.",
+          evidence_ids: [1],
+        },
+        {
+          heading: "Duurzaamheid bij wonen",
+          body: "Je kiest voor strengere eisen bij woningbouw.",
+          evidence_ids: [2],
+        },
+        {
+          heading: "Geen richting bij vervoer",
+          body: "Bij dit voorstel heb je neutraal geantwoord.",
+          evidence_ids: [3],
+        },
+      ],
+      positions: entries.map((e) => ({
+        statement_id: e.id,
+        interpretation: "Je vastgelegde keuze bij deze concrete stelling.",
+      })),
+      nuances: [
+        {
+          heading: "Afwegingen verschillen per onderwerp",
+          body: "Je steunt onderwijsinvesteringen en stemt tegen meer Europese samenwerking.",
+          evidence_ids: [1, 4],
+        },
+      ],
+      questions: [
+        {
+          text: "Welke afweging weegt voor jou bij Europese samenwerking?",
+          evidence_ids: [4],
+        },
+      ],
+    },
+    narrative_source: "openai",
+  });
+  await page.goto(`/kompas/rapport?order=${reportId}`);
+  const paper = page.getByRole("article", {
+    name: "Jouw persoonlijke stemrapport",
+  });
+  await expect(
+    paper.getByRole("heading", { name: "Dit valt op bij jou" }),
+  ).toBeVisible();
+  await expect(
+    paper.getByText("Je steunt het voorstel voor kleinere klassen.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    paper.getByRole("heading", { name: "Dit zijn jouw standpunten" }),
+  ).toBeVisible();
+  await expect(paper.getByText("Neutraal", { exact: true })).toHaveCount(3);
+  await expect(
+    paper.getByRole("heading", {
+      name: "Welke afweging weegt voor jou bij Europese samenwerking?",
+    }),
+  ).toBeVisible();
+  await paper
+    .getByText("Hoe dit rapport tot stand komt", { exact: true })
+    .click();
+  await expect(
+    paper.getByText(/De AI-toelichting gebruikt 4 van 4 unieke/),
+  ).toBeVisible();
+  await expect(paper.locator('a[href="/stellingen/vervoer"]')).toHaveCount(2);
+  const art = paper.locator('img[src*="compass-sculpture-v3"]');
+  expect(
+    await art.evaluate(
+      (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+    ),
+  ).toBe(true);
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(

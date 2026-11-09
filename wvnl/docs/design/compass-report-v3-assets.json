@@ -1,0 +1,20 @@
+{
+  "created_on": "2026-11-09",
+  "skill": "imagegen",
+  "mode": "built-in image_gen",
+  "transparent_background": true,
+  "prompt": "Use case: stylized-concept. Asset type: transparent editorial illustration for a premium Dutch personal political compass PDF report, printed at about 45 mm wide. Create a beautifully crafted small sculptural still-life: an ivory ceramic compass standing slightly tilted, navy compass rose and a small turquoise glass needle, on an elegant miniature abstract Netherlands landscape base. A few restrained symbolic architectural forms, one simple Dutch windmill silhouette, one leaf and small joined geometric human shapes form a coherent sculpture, suggesting community, public choices, future and personal direction. Sophisticated modern consumer brand illustration, soft realistic 3D ceramic and frosted glass materials, exceptionally polished, refined restrained details. Color palette ivory white, deep navy #001F4D, rich teal #008F87, tiny accents Dutch blue #0057B8 and Dutch red #E1062E. Three-quarter front view, centered entire sculpture visible with comfortable transparent margins, ground contact shadow subtle and translucent. True transparent background. No words, letters, numbers, labels, logos, charts, maps with borders, flags of political parties, UI, page layout or watermark. This is a reusable artwork asset, not a generated report page.",
+  "purpose": "Reusable decorative illustration; all report text, numbers and charts are rendered by application code from frozen votes. Artwork is not a data visualization.",
+  "source_generation": "01a1b77e-801b-73a1-bf81-24807bd38533/exec-bf918fdb-7f2e-4215-a3e7-c305e643c545.png",
+  "outputs": [
+    {
+      "path": "public/illustrations/reports/compass-sculpture-v3.png",
+      "sha256": "4f2aca6566db7fa0cd30c40704ab45692ca217b7df4462dcb6d27a71067ab1db"
+    },
+    {
+      "path": "public/illustrations/reports/compass-sculpture-v3.webp",
+      "sha256": "301e757ad765872d7bdcb970ef02d5e9ab8561a1fa8bf24761825bed3a6b8fa1"
+    }
+  ],
+  "backend_copy": "../wvnl-api/resources/views/reports/art/compass-sculpture-v3.png"
+}

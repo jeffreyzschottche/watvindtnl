@@ -47,3 +47,10 @@ Nieuwe `snapshot.compass` velden: status `ready|provisional|insufficient_data`; 
 CMS statement GET/save: compass_context met canonical_key, rationale, topics, historical, catalogue, basis en text_hash. compass_reviewed_at is servergegenereerd. De hash wordt bij gereviewd opslaan opnieuw berekend; oude mappings worden niet toegepast op gewijzigde tekst. De broncontrole via verified_at blijft afzonderlijk.
 
 `POST /api/cms/content/compass/seed` vereist content-read én content-write en is geaudit/idempotent. Alleen exact bekende bronformuleringen worden meegenomen; een bestaande eigen weging of gewijzigde tekst blijft behouden. Gewone app- of alleen-lezentokens kunnen dit niet starten.
+
+
+### Rapportontwerp insight-v3
+
+Nieuwe order-/devsnapshots bevatten `analysis_context` met version=3, votes (eigen keuze, titel en begrensde context), eligible_count, included_count, omitted_count en excluded_conflicts. Deze extra informatie is uitsluitend beschikbaar via geauthenticeerde eigenaarsrapporten; niet via het CMS of de publieke API. Nieuwe bestellingen registreren consent_version=report-v3.
+
+`narrative` bevat analysis_version=3, analysis_origin=ai|code, summary, reflection, insights[{heading,body,evidence_ids}], positions[{statement_id,interpretation}], nuances[{heading,body,evidence_ids}] en questions[{text,evidence_ids}]. Alle AI-verwijzingen moeten in de bewaarde context voorkomen. Nieuwe devpreviews hebben layout_version=insight-v3; oudere tijdelijke previews geven 409. Oude gekochte rapporten blijven ondersteund. Het PDF-endpoint levert dezelfde gegevens als twee A4’s; downloaden maakt geen nieuwe modelaanvraag.

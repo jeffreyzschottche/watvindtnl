@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
     :class="{ 'dev-report--floating': floating }"
     aria-label="Tijdelijke ontwikkeltool"
   >
-    <span class="dev-report__badge">ALLEEN LOCAL DEV · KOMPAS V2</span>
+    <span class="dev-report__badge">ALLEEN LOCAL DEV · KOMPAS V3</span>
     <button
       class="dev-report__button"
       type="button"
@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
       }}</strong
       ><span>{{
         pending
-          ? "Je eigen antwoorden worden opgemaakt"
+          ? "Je antwoorden worden inhoudelijk geanalyseerd"
           : "Geen rapportbetaling · wel OpenAI-tokenkosten"
       }}</span>
     </button>

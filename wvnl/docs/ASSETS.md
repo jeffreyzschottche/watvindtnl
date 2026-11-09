@@ -41,4 +41,12 @@ Manrope is auteursrechtelijk beschermd en uitgegeven onder de **SIL Open Font Li
 
 `public/report-art/`: lokaal gemaakte SVG-vormen, negen typewielen plus een neutrale toestand, pictogrammen, vlaglint, spectrum en golf. Gebaseerd op de door de gebruiker aangeleverde rapportreferentie, met het reeds gebruikte WDNL-molenasset. Geen gedownloade partijlogo’s, externe iconenbundel of bitmap van een gebruikersrapport. Regenereren via `python3 scripts/design/generate-compass-art.py`. Voor de PDF staan dezelfde SVG's onder `wvnl-api/resources/views/reports/art`; na regenereren daar de overeenkomstige bestanden bijwerken (mark.svg komt uit het bestaande merkasset).
 
-De PDF gebruikt ingebedde DejaVu Sans via Dompdf; web gebruikt lokale Manrope. Het vaste openbare voorbeeld bevat expliciet fictieve antwoorden en partijen, met een zichtbare VOORBEELDRAPPORT-melding. De echte PDF wordt op de server opgebouwd uit de eigenaarsnapshot, niet door een schermafbeelding van de referentie te leveren.
+De PDF gebruikt ingebedde DejaVu Sans via Dompdf; web gebruikt lokale Manrope. Het openbare V3-voorbeeld bevat expliciet fictieve voorbeeldstellingen en antwoorden, met een zichtbare VOORBEELDRAPPORT-melding. De echte PDF wordt op de server opgebouwd uit de eigenaarsnapshot, niet door een schermafbeelding van de referentie te leveren.
+
+
+## Rapportillustratie V3 — 9 november 2026
+
+- Imagegen-skill met de ingebouwde `image_gen`-tool gebruikt; geen CLI-fallback of gegenereerde tekst/cijfers. Eenmalige decoratieve illustratie van een keramieken kompas met Nederlandse landschapselementen. Geen partijlogo’s.
+- `public/illustrations/reports/compass-sculpture-v3.webp` (circa 100 KiB) voor web en `compass-sculpture-v3.png` (900px, circa 742 KiB) voor de PDF. Alpha behouden bij verkleining/conversie met sips/cwebp. De identieke PNG is lokaal onder `wvnl-api/resources/views/reports/art` opgeslagen.
+- Definitieve prompt, toolmodus, bronbestand en SHA-256-hashes: [design/compass-report-v3-assets.json](design/compass-report-v3-assets.json). De politieke inhoud en grafieken worden afzonderlijk met code en de eigen bewaarde antwoorden opgebouwd.
+- Het openbare voorbeeld-PDF is twee A4’s, zichtbaar als fictief gemarkeerd. Geen echte gebruikersdata in `public/`, native assets of Git.

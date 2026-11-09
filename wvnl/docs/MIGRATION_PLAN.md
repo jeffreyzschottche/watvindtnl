@@ -52,3 +52,8 @@ Voor de lokale migratie/seed is een nieuwe consistente MySQL-dump gemaakt en ver
 18 stellingmetadatarecords toegevoegd met controle op de exacte teksthash. Herhaling: 0 updates, 18 unchanged. Vóór/na gelijk: 19 gebruikers, 4.598 stellingen, 31.887 argumenten en de volledige geordende stemhash. Geen originele stelling, stem, partijpositie of argument herschreven. De nieuwe analyse herkent vier dubbele antwoorden en één tegenstrijdige groep; dit verandert de interpretatie, niet de opgeslagen geschiedenis.
 
 Rollback bij voorkeur vorige code terugzetten en de extra nullable velden behouden. Exporteer nieuwe metadata en auditinhoud vóór expliciete rollback; het verwijderen van de nieuwe reviewvelden maakt de bijbehorende historische wegingen onbruikbaar. Verwijder gesedeerde mappings uitsluitend gericht met controle op catalogue-versie en backup, zonder latere handmatige correcties te overschrijven. Betaalde snapshots/PDF’s worden niet herschreven.
+
+
+## Rapport V3 — 9 november 2026
+
+Geen schemawijziging of nieuwe seedactie. De bestaande versleutelde JSON-snapshot krijgt alleen bij nieuwe generaties extra begrensde analysecontext; historische orders, rapporten en stemmen blijven behouden. De bestaande APP_KEY is ook voor deze rapporten nodig. Beide renderers behouden oude snapshots. Tijdelijke devpreviews zonder V3-analyse krijgen 409 en kunnen opnieuw worden gegenereerd. Alleen de devcache en kortlevende QA-sessie zijn tijdens de live controle geschreven; geen betaalorders of stemmen. Zie REPORTS.md voor kosten, gegevensminimalisatie en terugrol.

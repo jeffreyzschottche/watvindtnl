@@ -13,7 +13,7 @@ class VoteSnapshot
 {
     public const VERSION = CompassAnalysis::VERSION;
 
-    public function build(User $user): array
+    public function build(User $user, bool $withAnalysisContext = false): array
     {
         $ids = array_values(array_unique(array_map('intval', (array) $user->voted_issue_ids)));
         abort_if(count($ids) > 20000, 422, 'Dit account vereist een grotere achtergrondexport.');
@@ -69,9 +69,14 @@ class VoteSnapshot
         }
         usort($ranked, fn ($a, $b) => ($b['percentage'] <=> $a['percentage']) ?: ($b['compared'] <=> $a['compared']) ?: strcmp($a['name'], $b['name']));
 
-        return ['methodology_version' => self::VERSION, 'total' => count($entries), 'counts' => $counts, 'entries' => $entries,
+        $snapshot = ['methodology_version' => self::VERSION, 'total' => count($entries), 'counts' => $counts, 'entries' => $entries,
             'party_matches' => array_slice($ranked, 0, 5), 'generated_at' => now()->toIso8601String(), 'compass' => app(CompassAnalysis::class)->build($entries, $metadata->all()),
             'limits' => ['Partijovereenkomsten gebruiken alleen redactioneel gecontroleerde motiekoppelingen, vanaf tien vergelijkbare moties per partij.', 'De verhouding voor/tegen zegt op zichzelf niets over links/rechts. Thematische scores gebruiken uitsluitend redactioneel vastgelegde gewichten; types zijn een presentatie, geen psychologische diagnose.']];
+        if ($withAnalysisContext) {
+            $snapshot['analysis_context'] = app(ReportContext::class)->build($entries, $issues, $metadata);
+        }
+
+        return $snapshot;
     }
 
     public function fingerprint(array $snapshot): string

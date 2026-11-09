@@ -195,6 +195,8 @@ class VoteReportsTest extends TestCase
         $id = $this->postJson('/api/me/reports/orders', $payload)->assertOk()->assertJsonPath('amount_cents', 199)->json('id');
         $this->postJson('/api/me/reports/orders', $payload)->assertOk()->assertJsonPath('id', $id);
         $this->assertDatabaseCount('wdnl_report_orders', 1);
+        $this->assertSame('report-v3', ReportOrder::find($id)->consent_version);
+        $this->assertSame(3, ReportOrder::find($id)->snapshot['analysis_context']['version']);
         Issue::where('id', $user->voted_issue_ids[0])->update(['title' => 'Een latere redactionele wijziging']);
         $payload['request_key'] = (string) Str::uuid();
         $otherId = $this->postJson('/api/me/reports/orders', $payload)->assertOk()->json('id');

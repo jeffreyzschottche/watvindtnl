@@ -39,6 +39,16 @@ const jsonLd = {
     </section>
 
     <section class="container narrow page-section">
+      <h2>Een AI-toelichting bij je kompasrapport</h2>
+      <p>
+        Als je hiervoor afzonderlijk kiest, sturen we maximaal veertig unieke
+        politieke antwoorden met stellingtekst en beschikbare context naar de
+        bij het aanvragen genoemde provider, OpenAI of DeepSeek. Je naam en
+        e-mailadres worden niet meegestuurd. De antwoorden kunnen ook zonder
+        deze gegevens politieke opvattingen onthullen. De tekst wordt gebruikt
+        om je eigen antwoorden toe te lichten; cijfers worden door WDNL
+        berekend. Je kunt een rapport zonder AI-toelichting kiezen.
+      </p>
       <h2>Welke gegevens verzamelen we?</h2>
       <p>
         WDNL verwerkt uitsluitend gegevens die nodig zijn voor het aanbieden,

@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Validator;
 /** Shared provider request and validation for paid reports and genuine development previews. */
 class ReportNarrator
 {
-    public function prompt(array $snapshot): array
+    public function prompt(array $snapshot, int $maxInputBytes = 40000): array
     {
+        if (isset($snapshot['analysis_context'])) {
+            return app(ReportInsights::class)->prompt($snapshot, $maxInputBytes);
+        }
         $compass = $snapshot['compass'] ?? null;
         $facts = ['compass' => $compass ? ['type' => $compass['type']['name'] ?? null, 'provisional' => $compass['type']['provisional'] ?? true, 'topics' => $compass['topics'] ?? [], 'historical_votes' => $compass['historical_votes'] ?? 0, 'dimensions' => array_map(fn ($d) => ['theme' => $d['left'], 'score' => $d['percentage']], $compass['dimensions'])] : null, 'total' => $snapshot['total'], 'counts' => $snapshot['counts'], 'party_matches' => $snapshot['party_matches'],
             'examples' => array_map(fn ($e) => ['statement' => mb_substr($e['title'], 0, 180), 'choice' => $e['choice']], array_slice($snapshot['entries'], -6))];
@@ -23,7 +26,7 @@ class ReportNarrator
         $http = Http::withToken($key)->acceptJson()->timeout(35)->connectTimeout(8)->withOptions(['allow_redirects' => false]);
         if ($s['provider'] === 'openai') {
             $body = ['model' => $s['model'], 'store' => false, 'instructions' => $prompt['instructions'], 'input' => $prompt['input'], 'max_output_tokens' => (int) $s['max_output_tokens'],
-                'text' => ['format' => ['type' => 'json_schema', 'name' => 'report_text', 'strict' => true, 'schema' => ['type' => 'object', 'additionalProperties' => false, 'properties' => ['summary' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$'], 'reflection' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$']], 'required' => ['summary', 'reflection']]]]];
+                'text' => ['format' => ['type' => 'json_schema', 'name' => 'report_text', 'strict' => true, 'schema' => $prompt['schema'] ?? ['type' => 'object', 'additionalProperties' => false, 'properties' => ['summary' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$'], 'reflection' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$']], 'required' => ['summary', 'reflection']]]]];
             // GPT-4.1 is non-reasoning and rejects reasoning settings; GPT-6 supports them.
             if (str_starts_with($s['model'], 'gpt-6')) {
                 $body['reasoning'] = ['effort' => in_array($s['model'], ['gpt-6-astra', 'gpt-6.1-sol'], true) ? 'low' : 'none'];
@@ -47,8 +50,11 @@ class ReportNarrator
             'complete' => $complete, 'usage' => $known ? $usage : null, 'text' => $text];
     }
 
-    public function text(string $text): array
+    public function text(string $text, ?array $snapshot = null): array
     {
+        if (isset($snapshot['analysis_context'])) {
+            return app(ReportInsights::class)->text($text, $snapshot);
+        }
         $data = json_decode($text, true, 16, JSON_THROW_ON_ERROR);
         $data = Validator::make(is_array($data) ? $data : [], ['summary' => ['required', 'string', 'max:650'], 'reflection' => ['required', 'string', 'max:650']])->validate();
         foreach ($data as $value) {

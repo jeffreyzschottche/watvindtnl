@@ -63,13 +63,13 @@ class VoteReportController extends Controller
         abort_unless($this->payments->available(), 503, 'Rapportbetalingen zijn nog niet beschikbaar. Er wordt niets afgeschreven.');
         $order = ReportOrder::where('user_id', $request->user()->id)->where('request_key', $data['request_key'])->first();
         if (! $order) {
-            $snapshot = $this->snapshots->build($request->user());
+            $snapshot = $this->snapshots->build($request->user(), true);
             $settings = $this->settings->current();
             abort_if($snapshot['total'] < $settings['minimum_votes'], 422, 'Beantwoord eerst minimaal '.$settings['minimum_votes'].' stellingen.');
             abort_unless($snapshot['compass']['status'] === 'ready' && $snapshot['compass']['spectrum']['percentage'] !== null && ! $snapshot['compass']['spectrum']['provisional'], 422, 'Je kompas is nog in opbouw. Er zijn meer antwoorden op gecontroleerd gewogen stellingen nodig voordat je een volledig rapport kunt kopen.');
             $order = ReportOrder::firstOrCreate(['user_id' => $request->user()->id, 'request_key' => $data['request_key']],
                 ['id' => (string) Str::uuid(), 'status' => 'pending', 'snapshot' => $snapshot, 'snapshot_hash' => $this->snapshots->fingerprint($snapshot), 'generation_settings' => $settings,
-                    'ai_consent' => $data['ai_consent'], 'amount_cents' => 199, 'currency' => 'eur', 'consent_version' => 'report-v1']);
+                    'ai_consent' => $data['ai_consent'], 'amount_cents' => 199, 'currency' => 'eur', 'consent_version' => 'report-v3']);
         }
         if ($order->status === 'pending') {
             try {

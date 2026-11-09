@@ -26,10 +26,16 @@ class DevelopmentReportsTest extends TestCase
 
     private function fakeResponse(): void
     {
-        Http::fake(['api.openai.com/v1/responses' => Http::response([
-            'status' => 'completed', 'usage' => ['input_tokens' => 400, 'output_tokens' => 100],
-            'output' => [['type' => 'message', 'content' => [['type' => 'output_text', 'text' => json_encode(['summary' => 'Je antwoorden vormen een overzicht van de onderwerpen waarover je hebt gestemd.', 'reflection' => 'Bekijk de argumenten aan beide kanten om je keuzes terug te lezen.'])]]]],
-        ])]);
+        Http::fake(['api.openai.com/v1/responses' => function ($request) {
+            $votes = json_decode($request['input'], true)['evidence']['votes'];
+            $ids = array_column($votes, 'id');
+            $text = ['summary' => 'Je antwoorden vormen een overzicht van de onderwerpen waarover je hebt gestemd.', 'reflection' => 'Bekijk de argumenten aan beide kanten om je keuzes terug te lezen.',
+                'insights' => array_map(fn ($id) => ['heading' => 'Je vastgelegde keuze', 'body' => 'Dit antwoord laat je keuze bij deze stelling zien.', 'evidence_ids' => [$id]], array_slice($ids, 0, 3)),
+                'positions' => array_map(fn ($id) => ['statement_id' => $id, 'interpretation' => 'Je hebt bij deze stelling je eigen antwoord vastgelegd.'], array_slice($ids, 0, 4)), 'nuances' => [],
+                'questions' => $ids ? [['text' => 'Welke afweging vind je hierbij het belangrijkst?', 'evidence_ids' => [$ids[0]]]] : []];
+
+            return Http::response(['status' => 'completed', 'usage' => ['input_tokens' => 400, 'output_tokens' => 100], 'output' => [['content' => [['type' => 'output_text', 'text' => json_encode($text)]]]]]);
+        }]);
     }
 
     private function demo(): User
@@ -69,7 +75,7 @@ class DevelopmentReportsTest extends TestCase
         $user->update(['voted_issue_ids' => [$issue->id]]);
         $this->actingAs($user);
         $payload = ['request_key' => (string) Str::uuid()];
-        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'compass-v2.1')->assertJsonPath('snapshot.compass.version', 'compass-v2.1')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
+        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'insight-v3')->assertJsonPath('narrative.analysis_version', 3)->assertJsonPath('snapshot.compass.version', 'compass-v2.1')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
         $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('id', $id);
         $this->getJson('/api/me/reports/dev/'.$id)->assertOk()->assertJsonPath('snapshot.entries.0.title', 'Mijn echte neutrale testantwoord');
         $pdf = $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertOk()->assertHeader('Content-Type', 'application/pdf');
@@ -163,7 +169,7 @@ class DevelopmentReportsTest extends TestCase
         Http::assertSent(function ($request) {
             $properties = $request['text']['format']['schema']['properties'];
 
-            return $properties['summary']['pattern'] === '^[^0-9<>:]{1,650}$' && $properties['reflection']['pattern'] === '^[^0-9<>:]{1,650}$' && str_contains($request['instructions'], 'Gebruik nergens cijfers');
+            return $properties['summary']['pattern'] === '^[^0-9<>:]{1,420}$' && $properties['reflection']['pattern'] === '^[^0-9<>:]{1,240}$' && str_contains($request['instructions'], 'Gebruik nergens cijfers');
         });
     }
 }
