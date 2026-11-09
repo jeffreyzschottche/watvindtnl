@@ -72,3 +72,12 @@ ZschotCMS → WDNL → Stellingen / Rapporten → **Basiswegingen bestaande stel
 De seed bewaart aangepaste wegingen, slaat gewijzigde teksten over, is idempotent en audit alle wijzigingen. `verified_at`, motiekoppelingen, officiële partijposities, stemmen en gebruikers worden niet als onderdeel van deze seed gewijzigd. De editor laat onderbouwing, onderwerpen, gedeelde inhoudssleutel en historische context wijzigen. Publicatie met expliciete review blijft verplicht. Bronverificatie en inhoudelijke weging zijn afzonderlijke zaken.
 
 De kenmerken in de typekaart komen uit de sterkst uitslaande beschikbare dimensies met vaste, uitlegbare teksten. Het zijn geen standaardkenmerken die automatisch bij de archetypenaam worden geplakt. Een ontbrekende progressieve score kan dus geen kenmerk over vernieuwing opleveren; een lage groene score wordt niet als duurzaam kenmerk gepresenteerd.
+
+
+## V4: zestien typen en het A4-typewiel
+
+De actuele catalogus staat in `App\Services\Reports\CompassTypes::ALL`. De zestien profielpunten zijn redactionele presentatiekeuzes, geen psychologische classificatie of bewezen clusters. Elk profiel heeft aanvullende voorwaarden op beschikbare richtingsscores. Ontbrekende scores tellen niet mee in afstand en voldoen niet aan een profielvoorwaarde. Bij gelijke afstanden geldt de vaste catalogusvolgorde. De bestaande minimale dekkingsgrenzen en voorlopige/historische aanduiding blijven gelden.
+
+Alle zestien profielpunten zijn getest op bereikbaarheid. Een middenprofiel met alle vier scores vijftig selecteert De Betrokken Middenkoers. Alleen sociale/internationale antwoorden kunnen geen Vernieuwer opleveren: de vereiste progressieve score ontbreekt dan. De drie weergegeven eigenschappen blijven uit de daadwerkelijke beschikbare scores afgeleid. Het wiel toont alle zestien typen en licht één type uit, geen kansen/percentages. De aparte economische as blijft onafhankelijk berekend.
+
+Nieuwe rapporten tonen een eerste partijvergelijking vanaf twee unieke bevestigde moties per partij, met `provisional=true` onder tien moties en het aantal overeenkomsten/vergelijkingen. Historische en conflicterende keuzes worden expliciet behandeld. Geen bestaande partijscore is vanuit een model of het profieltype afgeleid. Zie REPORTS.md en de vastgelegde openbare bronrecords.

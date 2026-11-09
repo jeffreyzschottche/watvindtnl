@@ -22,7 +22,7 @@ class VoteSnapshot
         $entries = [];
         $counts = ['agree' => 0, 'disagree' => 0, 'neutral' => 0];
         $matches = [];
-        $seenMotions = [];
+        $motionGroups = [];
         foreach ($ids as $id) {
             $issue = $issues->get($id);
             if (! $issue) {
@@ -42,15 +42,33 @@ class VoteSnapshot
             $counts[$choice]++;
             $entries[] = ['id' => $id, 'slug' => $issue->slug, 'title' => $issue->title, 'choice' => $choice, 'content_hash' => hash('sha256', json_encode([$issue->title, $issue->description, $issue->more_info], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR))];
             $motion = $metadata->get($id)?->motion_id;
-            if (! $motion || ! $metadata->get($id)?->verified_at || isset($seenMotions[$motion]) || $choice === 'neutral') {
+            if ($motion && $metadata->get($id)?->verified_at) {
+                $motionGroups[$motion][] = ['choice' => $choice, 'stances' => (array) $issue->party_stances];
+            }
+        }
+        $verifiedMotions = 0;
+        foreach ($motionGroups as $records) {
+            if (count(array_unique(array_column($records, 'choice'))) !== 1 || $records[0]['choice'] === 'neutral') {
                 continue;
             }
-            $seenMotions[$motion] = true;
-            $stances = (array) $issue->party_stances;
+            $verifiedMotions++;
+            $choice = $records[0]['choice'];
+            $stances = $records[0]['stances'];
             $ambiguous = array_intersect((array) ($stances['agree'] ?? []), (array) ($stances['disagree'] ?? []));
             foreach (['agree', 'disagree'] as $side) {
                 foreach (array_unique(array_map('intval', (array) ($stances[$side] ?? []))) as $partyId) {
-                    if (in_array($partyId, $ambiguous) || in_array($partyId, array_map('intval', $stances['neutral'] ?? []), true)) {
+                    if (in_array($partyId, $ambiguous) || in_array($partyId, array_map('intval', $stances['neutral'] ?? []))) {
+                        continue;
+                    }
+                    // Different copies of one official motion must agree on the party's recorded choice.
+                    $consistent = true;
+                    foreach ($records as $r) {
+                        if (! in_array($partyId, array_map('intval', $r['stances'][$side] ?? []), true)) {
+                            $consistent = false;
+                            break;
+                        }
+                    }
+                    if (! $consistent) {
                         continue;
                     }
                     $matches[$partyId] ??= ['compared' => 0, 'matched' => 0];
@@ -62,16 +80,16 @@ class VoteSnapshot
         $parties = PoliticalParty::whereIn('id', array_keys($matches))->get()->keyBy('id');
         $ranked = [];
         foreach ($matches as $id => $result) {
-            if ($result['compared'] < 10 || ! $parties->has($id)) {
+            if ($result['compared'] < ($withAnalysisContext ? 2 : 10) || ! $parties->has($id)) {
                 continue;
             }
-            $ranked[] = ['name' => $parties[$id]->name, 'compared' => $result['compared'], 'matched' => $result['matched'], 'percentage' => round(100 * $result['matched'] / $result['compared'])];
+            $ranked[] = ['provisional' => $result['compared'] < 10, 'name' => $parties[$id]->name, 'compared' => $result['compared'], 'matched' => $result['matched'], 'percentage' => round(100 * $result['matched'] / $result['compared'])];
         }
         usort($ranked, fn ($a, $b) => ($b['percentage'] <=> $a['percentage']) ?: ($b['compared'] <=> $a['compared']) ?: strcmp($a['name'], $b['name']));
 
         $snapshot = ['methodology_version' => self::VERSION, 'total' => count($entries), 'counts' => $counts, 'entries' => $entries,
-            'party_matches' => array_slice($ranked, 0, 5), 'generated_at' => now()->toIso8601String(), 'compass' => app(CompassAnalysis::class)->build($entries, $metadata->all()),
-            'limits' => ['Partijovereenkomsten gebruiken alleen redactioneel gecontroleerde motiekoppelingen, vanaf tien vergelijkbare moties per partij.', 'De verhouding voor/tegen zegt op zichzelf niets over links/rechts. Thematische scores gebruiken uitsluitend redactioneel vastgelegde gewichten; types zijn een presentatie, geen psychologische diagnose.']];
+            'party_coverage' => ['verified_motions' => $verifiedMotions, 'minimum' => 10, 'early_minimum' => 2], 'party_matches' => array_slice($ranked, 0, 5), 'generated_at' => now()->toIso8601String(), 'compass' => app(CompassAnalysis::class)->build($entries, $metadata->all()),
+            'limits' => ['Partijovereenkomsten gebruiken alleen redactioneel gecontroleerde motiekoppelingen, vanaf twee vergelijkbare moties als voorlopige indicatie; vanaf tien wordt de vergelijking vollediger. Historische overeenkomsten zijn geen actuele partijstandpunten.', 'De verhouding voor/tegen zegt op zichzelf niets over links/rechts. Thematische scores gebruiken uitsluitend redactioneel vastgelegde gewichten; types zijn een presentatie, geen psychologische diagnose.']];
         if ($withAnalysisContext) {
             $snapshot['analysis_context'] = app(ReportContext::class)->build($entries, $issues, $metadata);
         }

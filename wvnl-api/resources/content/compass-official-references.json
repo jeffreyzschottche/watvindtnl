@@ -1,0 +1,378 @@
+{
+  "checked_on": "2026-11-09",
+  "source": "Tweede Kamer OData",
+  "motions": [
+    {
+      "external_id": "a1d4c534-1cea-4fda-bdf8-fff82548e254",
+      "number": "2008Z10035",
+      "title": "Motie Remkes en Halsema over een voorstel tot vermindering van de opbrengsten van de STER-reclame tot 0",
+      "source_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2008Z10035",
+      "odata_url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak(a1d4c534-1cea-4fda-bdf8-fff82548e254)",
+      "source_date": "2008-12-18",
+      "decision_id": "593c3fbd-2bf0-43cd-a3b7-9ee46a20b5ca",
+      "decision": "Verworpen",
+      "stances": [
+        {
+          "ActorFractie": "CDA",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "SP",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "D66",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "PVV",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Verdonk",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdA",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "PvdD",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "GroenLinks",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "VVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SGP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "ChristenUnie",
+          "Soort": "Tegen"
+        }
+      ]
+    },
+    {
+      "external_id": "b1ff3dda-58fd-4857-bc4d-fff975217eed",
+      "number": "2014Z18353",
+      "title": "Gewijzigde motie van de leden Van Veldhoven en Jan Vos (t.v.v. 33529, nr. 70) over vóór 2020 uitvoeren van preventieve maatregelen",
+      "source_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2014Z18353",
+      "odata_url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak(b1ff3dda-58fd-4857-bc4d-fff975217eed)",
+      "source_date": "2014-10-16",
+      "decision_id": "f9c6e07c-47ac-434a-858a-564efd65147b",
+      "decision": "Aangenomen.",
+      "stances": [
+        {
+          "ActorFractie": "CDA",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "50PLUS/Klein",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PVV",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "GroenLinks",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SGP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "VVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Van Vliet",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "GrBvK",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "50PLUS/Baay-Timmerman",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "D66",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "ChristenUnie",
+          "Soort": "Voor"
+        }
+      ]
+    },
+    {
+      "external_id": "d6c60a3c-7a8f-4be2-a967-fff7591918dd",
+      "number": "2019Z12641",
+      "title": "Motie van het lid Van Eijs c.s. over de AWTI om advies vragen over de middelen van sleuteltechnologieën",
+      "source_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2019Z12641",
+      "odata_url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak(d6c60a3c-7a8f-4be2-a967-fff7591918dd)",
+      "source_date": "2019-06-19",
+      "decision_id": "547f598c-319a-4310-9963-103bea6c7c5f",
+      "decision": "Aangenomen.",
+      "stances": [
+        {
+          "ActorFractie": "PvdA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PVV",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "CDA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "DENK",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "FVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "VVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "ChristenUnie",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SGP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdD",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "SP",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "D66",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "GroenLinks",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "50PLUS",
+          "Soort": "Voor"
+        }
+      ]
+    },
+    {
+      "external_id": "7ed58060-df88-42f1-84f8-fff996af9bb5",
+      "number": "2022Z23122",
+      "title": "Motie van het lid Sylvana Simons over aanmoedigen dat studieadviseurs kennis hebben van functiebeperkingen bij studenten",
+      "source_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2022Z23122",
+      "odata_url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak(7ed58060-df88-42f1-84f8-fff996af9bb5)",
+      "source_date": "2022-11-24",
+      "decision_id": "43f6176d-36e4-4e42-ae61-9bb5d753cef8",
+      "decision": "Aangenomen.",
+      "stances": [
+        {
+          "ActorFractie": "Gündoğan",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PVV",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "D66",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "VVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "BBB",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Fractie Den Haan",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "DENK",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "BIJ1",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "ChristenUnie",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SGP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Volt",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Omtzigt",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "FVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "JA21",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "CDA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "GroenLinks",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Groep Van Haga",
+          "Soort": "Voor"
+        }
+      ]
+    },
+    {
+      "external_id": "8d3a3461-f103-434e-b9b3-fffc645470ea",
+      "number": "2023Z00940",
+      "title": "Motie van de leden Tjeerd de Groot en Boucke over alle schepen vanaf 400 ton onder het EU ETS laten vallen",
+      "source_url": "https://www.tweedekamer.nl/kamerstukken/moties/detail?id=2023Z00940",
+      "odata_url": "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Zaak(8d3a3461-f103-434e-b9b3-fffc645470ea)",
+      "source_date": "2023-01-24",
+      "decision_id": "d8ba5fe1-a492-4a81-9148-f183a4a8c48a",
+      "decision": "Aangenomen.",
+      "stances": [
+        {
+          "ActorFractie": "CDA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Omtzigt",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "D66",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "BBB",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "BIJ1",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "JA21",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "SP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "FVD",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "Gündoğan",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Groep Van Haga",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "ChristenUnie",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdA",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PVV",
+          "Soort": "Tegen"
+        },
+        {
+          "ActorFractie": "GroenLinks",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "VVD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "SGP",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "DENK",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "PvdD",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Volt",
+          "Soort": "Voor"
+        },
+        {
+          "ActorFractie": "Fractie Den Haan",
+          "Soort": "Voor"
+        }
+      ]
+    }
+  ]
+}

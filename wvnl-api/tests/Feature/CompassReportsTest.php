@@ -100,6 +100,7 @@ class CompassReportsTest extends TestCase
     {
         [$u] = $this->fixtures();
         $s = app(VoteSnapshot::class)->build($u);
+        $s['compass']['version'] = 'compass-v2.1'; // Saved one-page V2 layout remains supported.
         $n = ['summary' => 'Je antwoorden leggen de nadruk op sociale betrokkenheid en vernieuwing.', 'reflection' => 'Lees ook de argumenten bij onderwerpen waarop je anders stemde.'];
         $html = view('reports.snapshot', ['snapshot' => $s, 'narrative' => $n])->render();
         $this->assertStringContainsString('Jouw Politieke Kompas', $html);

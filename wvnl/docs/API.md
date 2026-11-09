@@ -54,3 +54,10 @@ CMS statement GET/save: compass_context met canonical_key, rationale, topics, hi
 Nieuwe order-/devsnapshots bevatten `analysis_context` met version=3, votes (eigen keuze, titel en begrensde context), eligible_count, included_count, omitted_count en excluded_conflicts. Deze extra informatie is uitsluitend beschikbaar via geauthenticeerde eigenaarsrapporten; niet via het CMS of de publieke API. Nieuwe bestellingen registreren consent_version=report-v3.
 
 `narrative` bevat analysis_version=3, analysis_origin=ai|code, summary, reflection, insights[{heading,body,evidence_ids}], positions[{statement_id,interpretation}], nuances[{heading,body,evidence_ids}] en questions[{text,evidence_ids}]. Alle AI-verwijzingen moeten in de bewaarde context voorkomen. Nieuwe devpreviews hebben layout_version=insight-v3; oudere tijdelijke previews geven 409. Oude gekochte rapporten blijven ondersteund. Het PDF-endpoint levert dezelfde gegevens als twee A4’s; downloaden maakt geen nieuwe modelaanvraag.
+
+
+### compass-poster-v4
+
+`compass.version=compass-v4`, `type_catalogue` bevat de zestien presentatietypen. Een gekozen type bevat ook color/description; toelaatbaarheid volgt uit vaste regels in de servercatalogus. Nieuwe `narrative.analysis_version=4` bevat summary, highlights[{text,evidence_ids}], analysis_origin en prompt_version. Alle vier observaties zijn kort en volledig, met bestaande antwoordverwijzingen. Nieuwe devpreviews hebben layout_version=compass-poster-v4.
+
+`party_coverage` geeft verified_motions, minimum=10 en early_minimum=2. Nieuwe uitgebreide rapportsnapshots kunnen partijovereenkomsten vanaf twee unieke officiële moties tonen; bij minder dan tien hebben ze provisional=true. Elke partij behoudt matched/compared/percentage. Conflicterende eigen antwoorden op dezelfde motie tellen niet mee. Oude rapportformaten blijven als legacy contract ondersteund. De actuele PDF is één A4.

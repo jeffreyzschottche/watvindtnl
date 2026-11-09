@@ -36,11 +36,20 @@ export type CompassAnalysis = {
   type: {
     id: string;
     name: string;
+    color?: string;
+    description?: string;
     icon: string;
     traits: string[];
     provisional?: boolean;
     based_on_dimensions?: string[];
   } | null;
+  type_catalogue?: {
+    id: string;
+    name: string;
+    color: string;
+    icon: string;
+    description: string;
+  }[];
   dimensions: CompassDimension[];
   spectrum: CompassDimension;
   used_votes: number;
@@ -68,6 +77,7 @@ export type ReportNarrative = {
   reflection: string;
   analysis_version?: number;
   analysis_origin?: "ai" | "code";
+  highlights?: { text: string; evidence_ids: number[] }[];
   insights?: ReportInsight[];
   positions?: { statement_id: number; interpretation: string }[];
   nuances?: ReportInsight[];
@@ -92,11 +102,17 @@ export type ReportSnapshot = {
   total: number;
   counts: Record<ReportEntry["choice"], number>;
   entries: ReportEntry[];
+  party_coverage?: {
+    verified_motions: number;
+    minimum: number;
+    early_minimum: number;
+  };
   party_matches: {
     name: string;
     percentage: number;
     matched: number;
     compared: number;
+    provisional?: boolean;
   }[];
   methodology_version: string;
   generated_at: string;

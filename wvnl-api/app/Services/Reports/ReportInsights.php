@@ -10,6 +10,9 @@ class ReportInsights
 {
     public function schema(array $snapshot): array
     {
+        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+            return app(CompassNarrative::class)->schema($snapshot);
+        }
         $ids = array_column($snapshot['analysis_context']['votes'], 'id');
         $n = count($ids);
         $str = static fn ($length) => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,'.$length.'}$'];
@@ -26,6 +29,9 @@ class ReportInsights
 
     public function prompt(array $snapshot, int $maxInputBytes = 40000): array
     {
+        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+            return app(CompassNarrative::class)->prompt($snapshot, $maxInputBytes);
+        }
         $c = $snapshot['compass'];
         $facts = ['counts' => $snapshot['counts'], 'total' => $snapshot['total'], 'type' => $c['type'], 'dimensions' => $c['dimensions'], 'economic' => $c['spectrum'], 'evidence' => $snapshot['analysis_context']];
         $schema = $this->schema($snapshot);
@@ -53,6 +59,9 @@ class ReportInsights
 
     public function text(string $text, array $snapshot): array
     {
+        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+            return app(CompassNarrative::class)->text($text, $snapshot);
+        }
         $ids = array_column($snapshot['analysis_context']['votes'], 'id');
         $n = count($ids);
         $data = Validator::make(json_decode($text, true, 16, JSON_THROW_ON_ERROR) ?? [], [
@@ -90,6 +99,9 @@ class ReportInsights
 
     public function fallback(array $snapshot): array
     {
+        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+            return app(CompassNarrative::class)->fallback($snapshot);
+        }
         $votes = $snapshot['analysis_context']['votes'];
         $selected = array_values(array_unique(array_merge(
             array_column(array_filter($votes, fn ($v) => $v['choice'] !== 'agree'), 'id'), array_column($votes, 'id')

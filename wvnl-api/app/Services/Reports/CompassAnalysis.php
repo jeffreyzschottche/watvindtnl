@@ -7,7 +7,7 @@ use Illuminate\Support\Carbon;
 /** Fixed editorial mappings; provisional indications never invent missing dimensions or party positions. */
 class CompassAnalysis
 {
-    public const VERSION = 'compass-v2.1';
+    public const VERSION = 'compass-v4';
 
     public const MINIMUM = 5;
 
@@ -21,17 +21,7 @@ class CompassAnalysis
         'economic' => ['left' => 'Links', 'right' => 'Rechts', 'icon' => 'balance'],
     ];
 
-    public const TYPES = [
-        'sociale-vernieuwer' => ['name' => 'De Sociale Vernieuwer', 'icon' => 'people', 'traits' => ['Sociaal betrokken', 'Toekomstgericht', 'Gericht op duurzaamheid'], 'point' => [75, 75, 65, 65]],
-        'pragmaticus' => ['name' => 'De Pragmaticus', 'icon' => 'balance', 'traits' => ['Zoekt het midden', 'Weegt belangen af', 'Combineert perspectieven'], 'point' => [50, 50, 50, 50]],
-        'beschermer' => ['name' => 'De Beschermer', 'icon' => 'shield', 'traits' => ['Hecht aan zekerheid', 'Gericht op continuïteit', 'Sociaal betrokken'], 'point' => [75, 25, 35, 40]],
-        'traditionele-realist' => ['name' => 'De Traditionele Realist', 'icon' => 'building', 'traits' => ['Hecht aan traditie', 'Nationale oriëntatie', 'Individuele ruimte'], 'point' => [30, 20, 25, 25]],
-        'ondernemer' => ['name' => 'De Ondernemer', 'icon' => 'chart', 'traits' => ['Individuele ruimte', 'Gericht op groei', 'Internationale blik'], 'point' => [20, 50, 65, 20]],
-        'vrijdenker' => ['name' => 'De Vrijdenker', 'icon' => 'spark', 'traits' => ['Gericht op vernieuwing', 'Individuele ruimte', 'Open internationale blik'], 'point' => [25, 85, 75, 50]],
-        'nationale-verbinder' => ['name' => 'De Nationale Verbinder', 'icon' => 'people', 'traits' => ['Sociaal betrokken', 'Nationale oriëntatie', 'Zoekt samenhang'], 'point' => [80, 50, 15, 50]],
-        'groene-voorloper' => ['name' => 'De Groene Voorloper', 'icon' => 'leaf', 'traits' => ['Duurzaamheid voorop', 'Gericht op vernieuwing', 'Internationale blik'], 'point' => [55, 75, 65, 95]],
-        'idealist' => ['name' => 'De Idealist', 'icon' => 'flag', 'traits' => ['Gelijkheid voorop', 'Gericht op vernieuwing', 'Internationale solidariteit'], 'point' => [95, 95, 90, 70]],
-    ];
+    public const TYPES = CompassTypes::ALL;
 
     public function build(array $entries, array $metadata): array
     {
@@ -135,6 +125,17 @@ class CompassAnalysis
         if (count($available) >= 2 && count($used) >= 8) {
             $best = INF;
             foreach (self::TYPES as $id => $candidate) {
+                $eligible = true;
+                foreach ($candidate['requires'] as $key => [$min, $max]) {
+                    $value = $scores[$key]['percentage'];
+                    if ($value === null || $value < $min || $value > $max) {
+                        $eligible = false;
+                        break;
+                    }
+                }
+                if (! $eligible) {
+                    continue;
+                }
                 $distance = 0;
                 foreach ($available as $dimension) {
                     $index = array_search($dimension['id'], array_keys(self::DIMENSIONS), true);
@@ -142,7 +143,7 @@ class CompassAnalysis
                 }
                 if ($distance < $best) {
                     $best = $distance;
-                    $type = ['id' => $id, 'provisional' => ! $complete, 'based_on_dimensions' => array_column($available, 'id')] + array_diff_key($candidate, ['point' => true]);
+                    $type = ['id' => $id, 'provisional' => ! $complete, 'based_on_dimensions' => array_column($available, 'id')] + array_diff_key($candidate, ['point' => true, 'requires' => true]);
                 }
             }
         }
@@ -158,7 +159,7 @@ class CompassAnalysis
         }
         usort($topics, fn ($a, $b) => ($b['count'] <=> $a['count']) ?: strcmp($a['name'], $b['name']));
 
-        return ['version' => self::VERSION, 'type' => $type, 'dimensions' => array_values(array_slice($scores, 0, 4)), 'spectrum' => $scores['economic'], 'used_votes' => count($used), 'historical_votes' => count($historicalUsed), 'unique_answers' => count($groups), 'duplicate_answers' => $duplicates, 'conflicting_groups' => $conflicting, 'topics' => array_slice(array_values($topics), 0, 5), 'minimum_per_dimension' => self::MINIMUM, 'early_minimum_per_dimension' => self::EARLY_MINIMUM, 'evidence' => array_values($evidence), 'status' => $type ? ($complete ? 'ready' : 'provisional') : 'insufficient_data',
+        return ['version' => self::VERSION, 'type_catalogue' => CompassTypes::catalogue(), 'type' => $type, 'dimensions' => array_values(array_slice($scores, 0, 4)), 'spectrum' => $scores['economic'], 'used_votes' => count($used), 'historical_votes' => count($historicalUsed), 'unique_answers' => count($groups), 'duplicate_answers' => $duplicates, 'conflicting_groups' => $conflicting, 'topics' => array_slice(array_values($topics), 0, 5), 'minimum_per_dimension' => self::MINIMUM, 'early_minimum_per_dimension' => self::EARLY_MINIMUM, 'evidence' => array_values($evidence), 'status' => $type ? ($complete ? 'ready' : 'provisional') : 'insufficient_data',
             'highlights' => array_values(array_map(fn ($d) => $d['percentage'] >= 60 ? match ($d['id']) {
                 'social' => 'Je antwoorden leggen vaker de nadruk op gezamenlijke voorzieningen en sociale betrokkenheid.','progressive' => 'Je antwoorden leggen vaker de nadruk op vernieuwing en maatschappelijke verandering.','international' => 'Je antwoorden leggen vaker de nadruk op internationale samenwerking.','green' => 'Je antwoorden leggen vaker de nadruk op milieu en duurzaamheid.'
             } : ($d['percentage'] <= 40 ? match ($d['id']) {

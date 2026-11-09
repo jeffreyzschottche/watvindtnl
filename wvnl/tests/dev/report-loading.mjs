@@ -52,6 +52,8 @@ const report = (id) => ({
     compass,
   },
   narrative: {
+    analysis_version: 4,
+    highlights: [],
     summary:
       id === ids.next
         ? "Nieuw geselecteerd ontwikkelrapport."
@@ -171,7 +173,7 @@ try {
       (await page.getByText("Nieuw geselecteerd ontwikkelrapport.").count()) ===
       1,
   );
-  console.log("PASS purple button opens newly selected V2 report");
+  console.log("PASS purple button opens newly selected one-page V4 report");
   checks++;
   overviewFails = false;
   slowOld = true;

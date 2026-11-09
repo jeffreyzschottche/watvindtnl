@@ -1,0 +1,591 @@
+{
+  "snapshot": {
+    "demo": true,
+    "compass": {
+      "version": "compass-v4",
+      "type_catalogue": [
+        {
+          "id": "sociale-vernieuwer",
+          "name": "De Sociale Vernieuwer",
+          "icon": "people",
+          "color": "#008f87",
+          "description": "Je combineert steun voor gezamenlijke voorzieningen met maatschappelijke vernieuwing."
+        },
+        {
+          "id": "groene-vernieuwer",
+          "name": "De Groene Vernieuwer",
+          "icon": "leaf",
+          "color": "#237b55",
+          "description": "Je combineert maatschappelijke vernieuwing met een duidelijke nadruk op duurzaamheid."
+        },
+        {
+          "id": "internationale-verbinder",
+          "name": "De Internationale Verbinder",
+          "icon": "globe",
+          "color": "#087d92",
+          "description": "Je combineert gezamenlijke voorzieningen met samenwerking over landsgrenzen."
+        },
+        {
+          "id": "praktische-hervormer",
+          "name": "De Praktische Hervormer",
+          "icon": "balance",
+          "color": "#4969a8",
+          "description": "Je antwoorden sluiten aan bij vernieuwing, met gemengde keuzes op andere thema’s."
+        },
+        {
+          "id": "sociale-beschermer",
+          "name": "De Sociale Beschermer",
+          "icon": "shield",
+          "color": "#246783",
+          "description": "Je combineert sociale voorzieningen met behoud van bestaande maatschappelijke structuren."
+        },
+        {
+          "id": "zorgzame-behouder",
+          "name": "De Zorgzame Behouder",
+          "icon": "people",
+          "color": "#7f5884",
+          "description": "Je antwoorden verbinden gezamenlijke zorg en zekerheid met terughoudendheid bij verandering."
+        },
+        {
+          "id": "lokale-verbinder",
+          "name": "De Lokale Verbinder",
+          "icon": "people",
+          "color": "#587b3a",
+          "description": "Je combineert gezamenlijke voorzieningen met een nadruk op besluitvorming dichter bij huis."
+        },
+        {
+          "id": "nationale-beschermer",
+          "name": "De Nationale Beschermer",
+          "icon": "shield",
+          "color": "#526489",
+          "description": "Je antwoorden leggen nadruk op nationale besluitvorming en het behouden van bestaande structuren."
+        },
+        {
+          "id": "vrije-denker",
+          "name": "De Vrije Denker",
+          "icon": "spark",
+          "color": "#7156a1",
+          "description": "Je combineert individuele ruimte met steun voor maatschappelijke vernieuwing."
+        },
+        {
+          "id": "vrijheidsbewaker",
+          "name": "De Vrijheidsbewaker",
+          "icon": "flag",
+          "color": "#90623d",
+          "description": "Je antwoorden leggen in deze afwegingen relatief veel nadruk op individuele ruimte."
+        },
+        {
+          "id": "ondernemende-vernieuwer",
+          "name": "De Ondernemende Vernieuwer",
+          "icon": "chart",
+          "color": "#a85e36",
+          "description": "Je combineert individuele ruimte en vernieuwing met ruimte voor economische groei."
+        },
+        {
+          "id": "zelfstandige-bouwer",
+          "name": "De Zelfstandige Bouwer",
+          "icon": "building",
+          "color": "#78683b",
+          "description": "Je combineert individuele verantwoordelijkheid met een nadruk op nationale besluitvorming."
+        },
+        {
+          "id": "groene-pragmaticus",
+          "name": "De Groene Pragmaticus",
+          "icon": "leaf",
+          "color": "#4b824c",
+          "description": "Je legt nadruk op duurzaamheid, met gemengde keuzes op andere beschikbare thema’s."
+        },
+        {
+          "id": "traditionele-bouwer",
+          "name": "De Traditionele Bouwer",
+          "icon": "building",
+          "color": "#856174",
+          "description": "Je antwoorden sluiten aan bij behoud en continuïteit van bestaande maatschappelijke structuren."
+        },
+        {
+          "id": "internationale-ondernemer",
+          "name": "De Internationale Ondernemer",
+          "icon": "globe",
+          "color": "#347e8b",
+          "description": "Je combineert individuele ruimte en economische groei met internationale samenwerking."
+        },
+        {
+          "id": "betrokken-middenkoers",
+          "name": "De Betrokken Middenkoers",
+          "icon": "balance",
+          "color": "#677686",
+          "description": "Je antwoorden combineren op alle vier de thema’s elementen van beide kanten van de afweging."
+        }
+      ],
+      "type": {
+        "id": "sociale-vernieuwer",
+        "provisional": false,
+        "based_on_dimensions": [
+          "social",
+          "progressive",
+          "international",
+          "green"
+        ],
+        "name": "De Sociale Vernieuwer",
+        "icon": "people",
+        "color": "#008f87",
+        "description": "Je combineert steun voor gezamenlijke voorzieningen met maatschappelijke vernieuwing.",
+        "traits": [
+          "Sociale voorzieningen",
+          "Gericht op vernieuwing",
+          "Internationale samenwerking"
+        ]
+      },
+      "dimensions": [
+        {
+          "left": "Sociaal",
+          "right": "Individueel",
+          "icon": "people",
+          "id": "social",
+          "percentage": 80,
+          "opposite_percentage": 20,
+          "compared": 10,
+          "neutral": 0,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": { "min": 78, "max": 89 }
+        },
+        {
+          "left": "Progressief",
+          "right": "Behoudend",
+          "icon": "spark",
+          "id": "progressive",
+          "percentage": 80,
+          "opposite_percentage": 20,
+          "compared": 10,
+          "neutral": 0,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": { "min": 78, "max": 89 }
+        },
+        {
+          "left": "Internationaal",
+          "right": "Nationaal",
+          "icon": "globe",
+          "id": "international",
+          "percentage": 80,
+          "opposite_percentage": 20,
+          "compared": 10,
+          "neutral": 0,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": { "min": 78, "max": 89 }
+        },
+        {
+          "left": "Groen",
+          "right": "Economische groei",
+          "icon": "leaf",
+          "id": "green",
+          "percentage": 80,
+          "opposite_percentage": 20,
+          "compared": 10,
+          "neutral": 0,
+          "historical": 0,
+          "minimum": 5,
+          "early_minimum": 2,
+          "provisional": false,
+          "sensitivity": { "min": 78, "max": 89 }
+        }
+      ],
+      "spectrum": {
+        "left": "Links",
+        "right": "Rechts",
+        "icon": "balance",
+        "id": "economic",
+        "percentage": 80,
+        "opposite_percentage": 20,
+        "compared": 10,
+        "neutral": 0,
+        "historical": 0,
+        "minimum": 5,
+        "early_minimum": 2,
+        "provisional": false,
+        "sensitivity": { "min": 78, "max": 89 }
+      },
+      "used_votes": 10,
+      "historical_votes": 0,
+      "unique_answers": 10,
+      "duplicate_answers": 0,
+      "conflicting_groups": 0,
+      "topics": [],
+      "minimum_per_dimension": 5,
+      "early_minimum_per_dimension": 2,
+      "evidence": [
+        {
+          "issue_id": 1,
+          "canonical_key": "issue:1",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331546Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 2,
+          "canonical_key": "issue:2",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331755Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 3,
+          "canonical_key": "issue:3",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331760Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 4,
+          "canonical_key": "issue:4",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331763Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 5,
+          "canonical_key": "issue:5",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331766Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 6,
+          "canonical_key": "issue:6",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331770Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 7,
+          "canonical_key": "issue:7",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331773Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 8,
+          "canonical_key": "issue:8",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331776Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 9,
+          "canonical_key": "issue:9",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331779Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        },
+        {
+          "issue_id": 10,
+          "canonical_key": "issue:10",
+          "motion_id": null,
+          "weights": {
+            "social": 1,
+            "progressive": 1,
+            "international": 1,
+            "green": 1,
+            "economic": 1
+          },
+          "reviewed_at": "2026-11-09T20:15:35.331782Z",
+          "source_date": "2026-11-09",
+          "historical": false,
+          "rationale": null
+        }
+      ],
+      "status": "ready",
+      "highlights": [
+        "Je antwoorden leggen vaker de nadruk op gezamenlijke voorzieningen en sociale betrokkenheid.",
+        "Je antwoorden leggen vaker de nadruk op vernieuwing en maatschappelijke verandering.",
+        "Je antwoorden leggen vaker de nadruk op internationale samenwerking.",
+        "Je antwoorden leggen vaker de nadruk op milieu en duurzaamheid."
+      ]
+    },
+    "methodology_version": "compass-v4",
+    "total": 10,
+    "counts": { "agree": 8, "disagree": 2, "neutral": 0 },
+    "entries": [
+      {
+        "id": 1,
+        "slug": "voorbeeld-1",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 2,
+        "slug": "voorbeeld-2",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 3,
+        "slug": "voorbeeld-3",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 4,
+        "slug": "voorbeeld-4",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 5,
+        "slug": "voorbeeld-5",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 6,
+        "slug": "voorbeeld-6",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 7,
+        "slug": "voorbeeld-7",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 8,
+        "slug": "voorbeeld-8",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "agree"
+      },
+      {
+        "id": 9,
+        "slug": "voorbeeld-9",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "disagree"
+      },
+      {
+        "id": 10,
+        "slug": "voorbeeld-10",
+        "title": "Expliciet fictieve voorbeeldstelling",
+        "choice": "disagree"
+      }
+    ],
+    "generated_at": "2026-11-09T20:15:35+00:00",
+    "analysis_context": {
+      "version": 3,
+      "votes": [
+        {
+          "id": 1,
+          "slug": "voorbeeld-1",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 2,
+          "slug": "voorbeeld-2",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 3,
+          "slug": "voorbeeld-3",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 4,
+          "slug": "voorbeeld-4",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 5,
+          "slug": "voorbeeld-5",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 6,
+          "slug": "voorbeeld-6",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 7,
+          "slug": "voorbeeld-7",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 8,
+          "slug": "voorbeeld-8",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "agree"
+        },
+        {
+          "id": 9,
+          "slug": "voorbeeld-9",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "disagree"
+        },
+        {
+          "id": 10,
+          "slug": "voorbeeld-10",
+          "title": "Expliciet fictieve voorbeeldstelling",
+          "choice": "disagree"
+        }
+      ],
+      "included_count": 10,
+      "eligible_count": 10,
+      "omitted_count": 0,
+      "excluded_conflicts": 0
+    },
+    "party_matches": [
+      {
+        "name": "Fictieve voorbeeldpartij A",
+        "compared": 10,
+        "matched": 8,
+        "percentage": 80,
+        "provisional": false
+      },
+      {
+        "name": "Fictieve voorbeeldpartij B",
+        "compared": 10,
+        "matched": 7,
+        "percentage": 70,
+        "provisional": false
+      },
+      {
+        "name": "Fictieve voorbeeldpartij C",
+        "compared": 10,
+        "matched": 6,
+        "percentage": 60,
+        "provisional": false
+      },
+      {
+        "name": "Fictieve voorbeeldpartij D",
+        "compared": 10,
+        "matched": 5,
+        "percentage": 50,
+        "provisional": false
+      },
+      {
+        "name": "Fictieve voorbeeldpartij E",
+        "compared": 10,
+        "matched": 4,
+        "percentage": 40,
+        "provisional": false
+      }
+    ]
+  },
+  "narrative": {
+    "analysis_version": 4,
+    "analysis_origin": "code",
+    "reflection": "",
+    "summary": "Dit fictieve voorbeeld laat zien hoe jouw persoonlijke kompas eruit komt te zien. In je eigen rapport volgen het type, de scores en partijovereenkomsten uit jouw vastgelegde antwoorden.",
+    "highlights": [
+      {
+        "text": "Je eigen rapport beschrijft concrete patronen in de inhoud van je antwoorden.",
+        "evidence_ids": [1]
+      },
+      {
+        "text": "Je krijgt inzicht in de afweging tussen publieke voorzieningen en individuele ruimte.",
+        "evidence_ids": [2]
+      },
+      {
+        "text": "Je antwoorden worden met gecontroleerde officiële moties vergeleken.",
+        "evidence_ids": [3]
+      },
+      {
+        "text": "Je leest welke standpunten samen je politieke richting vormen.",
+        "evidence_ids": [4]
+      }
+    ]
+  }
+}

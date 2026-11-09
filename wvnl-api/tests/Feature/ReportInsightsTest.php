@@ -30,7 +30,10 @@ class ReportInsightsTest extends TestCase
         }
         $u->update(['voted_issue_ids' => $ids]);
 
-        return app(VoteSnapshot::class)->build($u, true);
+        $snapshot = app(VoteSnapshot::class)->build($u, true);
+        $snapshot['compass']['version'] = 'compass-v2.1'; // Keep regression coverage for saved V3 reports.
+
+        return $snapshot;
     }
 
     private function narrative(array $s): array

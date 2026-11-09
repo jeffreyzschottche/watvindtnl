@@ -71,7 +71,7 @@ class DevelopmentReport
                 $id = (string) Str::uuid();
                 $expires = now()->addHour();
                 $report = ['id' => $id, 'is_development' => true, 'expires_at' => $expires->toIso8601String(), 'status' => 'ready',
-                    'layout_version' => 'insight-v3', 'amount_cents' => 0, 'currency' => 'eur', 'created_at' => now()->toIso8601String(), 'ready_at' => now()->toIso8601String(),
+                    'layout_version' => 'compass-poster-v4', 'amount_cents' => 0, 'currency' => 'eur', 'created_at' => now()->toIso8601String(), 'ready_at' => now()->toIso8601String(),
                     'vote_count' => $snapshot['total'], 'checkout_url' => null, 'download_available' => true,
                     'snapshot' => $snapshot, 'narrative' => $text, 'narrative_source' => 'openai', 'generation_model' => $model, 'generation_provider' => 'openai',
                     'generation_usage' => ['input_tokens' => $result['usage']['input_tokens'], 'output_tokens' => $result['usage']['output_tokens'], 'estimated_cost_eur' => app(ReportSettings::class)->cost($s, $result['usage']['input_tokens'], $result['usage']['output_tokens'], false) / 1000000]];
@@ -98,7 +98,7 @@ class DevelopmentReport
         abort_unless(is_string($encrypted), 404, 'Dit tijdelijke devrapport is verlopen. Maak een nieuw devrapport.');
         $payload = json_decode(Crypt::decryptString($encrypted), true, flags: JSON_THROW_ON_ERROR);
         abort_unless(($payload['user_id'] ?? null) === (int) $user->id, 404);
-        abort_unless(($payload['report']['narrative']['analysis_version'] ?? null) === 3 && isset($payload['report']['snapshot']['compass']) && ($payload['report']['snapshot']['methodology_version'] ?? null) === CompassAnalysis::VERSION, 409, 'Dit is een oude devrapportversie. Maak een nieuw devrapport voor de nieuwe kompasopmaak.');
+        abort_unless(($payload['report']['narrative']['analysis_version'] ?? null) === 4 && isset($payload['report']['snapshot']['compass']) && ($payload['report']['snapshot']['methodology_version'] ?? null) === CompassAnalysis::VERSION, 409, 'Dit is een oude devrapportversie. Maak een nieuw devrapport voor de nieuwe kompasopmaak.');
 
         return $payload;
     }

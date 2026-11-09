@@ -42,7 +42,7 @@ async function generate() {
       },
       { signal: AbortSignal.timeout(60000) },
     );
-    if (!report.snapshot?.compass) {
+    if (!report.snapshot?.compass || report.narrative?.analysis_version !== 4) {
       throw new Error(
         "Je lokale API geeft nog de oude rapportversie terug. Herstart de backend om de nieuwe kompasopmaak te laden.",
       );
@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
     :class="{ 'dev-report--floating': floating }"
     aria-label="Tijdelijke ontwikkeltool"
   >
-    <span class="dev-report__badge">ALLEEN LOCAL DEV · KOMPAS V3</span>
+    <span class="dev-report__badge">ALLEEN LOCAL DEV · ÉÉN A4 · 16 TYPEN</span>
     <button
       class="dev-report__button"
       type="button"

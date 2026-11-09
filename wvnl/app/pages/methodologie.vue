@@ -112,9 +112,21 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
         verkoop blijft gesloten totdat de volledige vereiste dekking én de
         overige releasevoorwaarden zijn bereikt.
       </p>
-      <h2>Een persoonlijk stemrapport</h2>
+      <h2>Zestien politieke typen</h2>
       <p>
-        Het rapport is een vast overzicht van je vastgelegde antwoorden op de
+        Het type is de best aansluitende visuele samenvatting binnen zestien
+        redactioneel beschreven profielen. We vergelijken beschikbare
+        themascores met vaste profielpunten. Een type heeft ook voorwaarden: een
+        Vernieuwer vereist bijvoorbeeld een onderbouwde progressieve richting.
+        Een ontbrekend thema wordt niet als een voorkeur ingevuld. De namen zijn
+        geen psychologische diagnose. Het wiel toont de typen en licht jouw
+        indicatie uit; het is geen grafiek van kansen of typepercentages.
+      </p>
+      <h2>Een persoonlijk kompas op één A4</h2>
+      <p>
+        Het rapport is één downloadbare A4 met een typewiel, politieke waarden,
+        economische as, partijvergelijking en vier persoonlijke observaties. Het
+        is een vast overzicht van je vastgelegde antwoorden op de
         generatiedatum. Code telt de antwoorden, maakt de grafieken en vult de
         opmaak van het downloadbare PDF-rapport. Een inhoudelijke AI-toelichting
         is optioneel en verbindt concrete antwoorden aan thema’s en afwegingen.
@@ -133,11 +145,13 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
         terug. Neutraal geeft geen richting aan.
       </p>
       <p>
-        Partijovereenkomsten verschijnen alleen vanaf tien verschillende,
-        redactioneel gecontroleerde motiekoppelingen per partij. Ontbrekende,
-        afwezige en neutrale partijstemmen worden niet ingevuld. Een
-        persoonlijkheidslabel of politieke aspositie wordt niet zonder een
-        gecontroleerde berekeningsmethode toegekend.
+        Een eerste partijvergelijking verschijnt vanaf twee verschillende,
+        gecontroleerde officiële moties per partij, met het aantal
+        vergelijkingen en het label voorlopig. Vanaf tien moties wordt de
+        vergelijking vollediger. Historische partijstemmen zijn geen actuele
+        partijstandpunten. Ontbrekende, afwezige en neutrale partijstemmen
+        worden niet ingevuld. Een persoonlijkheidslabel of politieke aspositie
+        wordt niet zonder een gecontroleerde berekeningsmethode toegekend.
       </p>
       <p>
         Een updatevoorstel benoemt uitsluitend aantoonbare nieuwe antwoorden

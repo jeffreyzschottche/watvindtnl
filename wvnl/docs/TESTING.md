@@ -53,3 +53,16 @@ Afronding: 42 browserchecks geslaagd. Extra test controleert dat profielkenmerke
 - Openbaar voorbeeld opnieuw uit expliciet fictieve fixture opgebouwd en op twee A4’s gecontroleerd. Imagegen-art met transparante alpha gecontroleerd. Mobiele statische generatie en assetkopie naar beide native projecten geslaagd; signing, stores en fysieke WebViews niet getest.
 
 Vorm-/referentievalidatie is geen volledige semantische factcheck van AI-tekst. Redactionele kwaliteit, gevoelige-gegevensafspraken en betaal-/native-releasecontroles blijven nodig; verkoopgating is behouden.
+
+
+## Eén-A4-poster V4
+
+87 backendtests / 544 assertions geslaagd. Nieuwe checks: alle zestien typen uniek en bereikbaar, bijbehorende printassets aanwezig, geen vernieuwingsprofiel zonder progressieve data, echte unieke partijmoties en uitsluiting conflicterende antwoorden, voorlopige partijdekking, bestaande antwoord-ID’s in AI-observaties en één A4 met logo/typewiel/partijen/vier observaties. Bestaande privacy-/auth-/betalings-/V3-regressies blijven ondersteund.
+
+14 frontend-unitchecks, typecheck en build geslaagd; 46 Playwrightchecks op desktop/mobiel. De nieuwe test controleert de éénkaartcompositie, zeven gevraagde onderdelen, vier observaties, vijf partijkoppelingen, zestien catalogustypen, geladen logo/wiel, onderbouwing en 320/390/1440px zonder overflow. Zeven geïsoleerde devregressies blijven slagen.
+
+Live: de daadwerkelijke paarse knop genereert `compass-poster-v4` via het bestaande env-model Luna. Definitieve aanvraag 4.261 input-/165 outputtokens, berekend €0,000509 volgens ingestelde tarieven. Modeltekst en referenties gecontroleerd; een eerdere testzin bleek ondanks de oude tekenlimiet afgebroken, waarna schema en server complete eindinterpunctie verplichten en de prompt één kort voorbeeld per kenmerk vraagt. Geen verborgen tekstafkapping of fallback bij devgeneratie.
+
+Gedownloade PDF: pdfinfo bevestigt één A4 (595,28 × 841,89pt), circa 247 kB. Visueel beoordeeld: alle zes blokken, volledig logo, alle zestien wielsegmenten, volledige zinnen en footer op dezelfde pagina. De oorspronkelijke vectorrenderer verloor enkele segmenten; de gevalideerde printafbeeldingen voorkomen dat. Echte JSON/PDF/screenshots blijven privé onder /tmp, openbare voorbeelddata is fictief.
+
+Lokale verwijdering uitgevoerd op expliciet verzoek. Drie legacyrecords en 23 oude cache-items verwijderd, geen betaalorders aanwezig. Accounts en volledige stemhash voor/na identiek. Officiële bronseed is na correctie idempotent; laatste herhaling nul updates. Geen productiedatabase benaderd of gewijzigd.

@@ -50,3 +50,11 @@ De PDF gebruikt ingebedde DejaVu Sans via Dompdf; web gebruikt lokale Manrope. H
 - `public/illustrations/reports/compass-sculpture-v3.webp` (circa 100 KiB) voor web en `compass-sculpture-v3.png` (900px, circa 742 KiB) voor de PDF. Alpha behouden bij verkleining/conversie met sips/cwebp. De identieke PNG is lokaal onder `wvnl-api/resources/views/reports/art` opgeslagen.
 - Definitieve prompt, toolmodus, bronbestand en SHA-256-hashes: [design/compass-report-v3-assets.json](design/compass-report-v3-assets.json). De politieke inhoud en grafieken worden afzonderlijk met code en de eigen bewaarde antwoorden opgebouwd.
 - Het openbare voorbeeld-PDF is twee A4’s, zichtbaar als fictief gemarkeerd. Geen echte gebruikersdata in `public/`, native assets of Git.
+
+
+## Eén-A4-kompas V4
+
+- Het rapport gebruikt het bestaande WDNL-molenasset en de bestaande Manrope-woordnaam. `public/brand/wdnl-logo.png` is een scherpe export van diezelfde lockup, gemaakt met `scripts/design/export-report-logo.mjs`; geen nieuw AI-logo of partijlogo. Een identieke lokale kopie staat binnen Dompdfs chroot.
+- Zestientypenwielen: `public/report-art/wheel-v4-*.svg`. Bron: `CompassTypes::ALL`; `php scripts/design/export-compass-types.php` exporteert de definitie voor `python3 scripts/design/generate-poster-art.py`. Bestaande pictogrammen en het merkasset worden hergebruikt.
+- Dompdf tekende enkele SVG-segmenten onjuist. Daarom zijn dezelfde SVG-wielen via de bestaande browserrenderer omgezet naar lokale print-PNG’s met `node scripts/design/rasterize-poster-art.mjs`; deze staan uitsluitend onder de backendrapport-assets. Geen modelaanroep of gebruikersgegevens in de afbeeldingen.
+- De eerdere 3D-illustratie is uit de actuele rapportcompositie gehaald. De openbare voorbeeld-PDF is zichtbaar fictief en precies één A4. De echte rapporttekst, type, scores en partijovereenkomsten zijn geen onderdeel van de logo-/wielafbeeldingen.

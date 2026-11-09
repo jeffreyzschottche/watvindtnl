@@ -618,3 +618,69 @@ test("rich report ties AI insights to actual choices and remains readable on sma
     ).toBeLessThanOrEqual(width + 1);
   }
 });
+
+test("one-page compass poster uses the real logo, sixteen-type wheel and all requested report sections", async ({
+  page,
+}) => {
+  const { readFileSync } = await import("node:fs");
+  const poster = JSON.parse(
+    readFileSync(
+      new URL(
+        "../../scripts/design/compass-poster-example.json",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
+  await mock(page, {
+    ...saved,
+    snapshot: poster.snapshot,
+    narrative: poster.narrative,
+  });
+  await page.goto(`/kompas/rapport?order=${reportId}`);
+  const paper = page.getByRole("article", {
+    name: "Jouw persoonlijke stemrapport",
+  });
+  await expect(paper.locator(".poster-header")).toHaveCount(1);
+  await expect(page.locator(".insight-page")).toHaveCount(0);
+  for (const heading of [
+    "Jouw Politieke Kompas",
+    "Jouw politieke persoonlijkheid",
+    "Jouw positie op het politieke spectrum",
+    "Jouw scores op belangrijke thema’s",
+    "Partijen die bij je passen",
+    "Wat typeert jou?",
+    "Hoe dit rapport werkt",
+  ]) {
+    await expect(
+      paper.getByRole("heading", { name: heading, exact: true }),
+    ).toBeVisible();
+  }
+  await expect(paper.locator(".poster-highlights li")).toHaveCount(4);
+  await expect(paper.locator(".poster-party")).toHaveCount(5);
+  expect(poster.snapshot.compass.type_catalogue).toHaveLength(16);
+  const logo = paper.getByRole("img", {
+    name: "WatDenktNederland",
+    exact: true,
+  });
+  await expect(logo).toHaveAttribute("src", "/brand/wdnl-logo.png");
+  for (const selector of [".poster-logo", ".poster-wheel"]) {
+    expect(
+      await paper
+        .locator(selector)
+        .evaluate(
+          (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+        ),
+    ).toBe(true);
+  }
+  await page
+    .getByText("Onderbouwing van jouw rapport", { exact: true })
+    .click();
+  await expect(page.locator(".poster-evidence[open]")).toBeVisible();
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width + 1);
+  }
+});

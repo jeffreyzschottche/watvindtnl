@@ -9,6 +9,7 @@ class ReportPdf
 {
     public function render(array $snapshot, array $narrative): string
     {
+        $poster = ($snapshot['compass']['version'] ?? null) === 'compass-v4';
         $insights = ($narrative['analysis_version'] ?? null) === 3 && isset($snapshot['analysis_context']);
         $options = new Options;
         $options->set('isRemoteEnabled', false);
@@ -19,7 +20,7 @@ class ReportPdf
             $options->set('dpi', 104);
         }
         $options->set('chroot', resource_path('views/reports'));
-        $template = $insights ? 'reports.insight-v3' : (isset($snapshot['compass']) ? 'reports.snapshot' : 'reports.snapshot-v1');
+        $template = $poster ? 'reports.compass-poster' : ($insights ? 'reports.insight-v3' : (isset($snapshot['compass']) ? 'reports.snapshot' : 'reports.snapshot-v1'));
         $render = function (bool $dense) use ($options, $template, $snapshot, $narrative) {
             $pdf = new Dompdf($options);
             $pdf->setPaper('A4');
@@ -29,7 +30,7 @@ class ReportPdf
             return $pdf;
         };
         $pdf = $render(false);
-        if ($insights && $pdf->getCanvas()->get_page_count() > 2) {
+        if (($poster && $pdf->getCanvas()->get_page_count() > 1) || ($insights && $pdf->getCanvas()->get_page_count() > 2)) {
             $pdf = $render(true);
         }
         if ($pdf->getCanvas()->get_page_count() !== ($insights ? 2 : 1)) {

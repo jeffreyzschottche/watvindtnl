@@ -203,3 +203,14 @@ Nog nodig: overige inhoud wegen, originele bronnen/partijstemmen verifiëren, be
 - [x] Definitieve live controle: POST 200 via de paarse knop, V3-interface zichtbaar, drie inzichten/vier standpunten, echte PDF-download met twee A4’s, 320/390px zonder horizontale overflow en nul pageerrors. Luna: 4.987 input-/450 outputtokens, berekend €0,000724. Tijdelijke QA-login ingetrokken; geen stemmen of aankopen gewijzigd.
 - [x] Zeven geïsoleerde devregressies en mobiele statische generatie/Capacitor-copy voor iOS en Android geslaagd. Geen native binary of fysieke-devicecheck geclaimd.
 - Extern/release: echte betalingen, native aankoopconfiguratie, providercontracten/juridische beoordeling, redactionele bronkwaliteit en fysieke-devicechecks blijven buiten deze rapportverbetering.
+
+
+## Definitieve één-A4-kompasposter V4 — 9 november 2026
+
+- [x] Feedback uitgevoerd: één A4 in de opgegeven referentiecompositie, met daadwerkelijk WDNL-logo, zestientypenwiel, economische as, themabalken, volledige partijnamen en vier persoonlijke observaties. De tweepagina-opmaak wordt niet meer voor nieuwe rapporten gebruikt.
+- [x] Zestien expliciete, bereikbare profielen met centroid/voorwaarden/kleur/icoon. Ontbrekende progressieve gegevens leiden niet tot een Vernieuwer; de demo valt nu voorlopig onder De Internationale Verbinder. Geen nieuwe scores verzonnen.
+- [x] Echte officiële bronnen gecontroleerd. Vijf bronrecords, acht passende bestaande stellingkoppelingen, één afwijkende tekst veilig overgeslagen. Vier verschillende bruikbare moties voor de demo; vijf voorlopige partijvergelijkingen met teller/noemer. Na JSON-keyvolgordecorrectie is de seed herhaalbaar: nul wijzigingen bij herhaling. CMS-seedknop verwerkt dezelfde gecontroleerde bronnen.
+- [x] Op expliciet verzoek drie oude legacyrapporten en 23 preview-/generatiecache-items lokaal verwijderd; nul betaalorders aanwezig. Privé versleuteld herstelbestand; accounts en volledige stemhash behouden. Geen productie-opruiming.
+- [x] Nieuwe korte AI-tekst met echte context en verplichte bronverwijzingen; complete zinnen, geen geforceerd afgebroken woorden. Provider/model/budget blijven zoals ingesteld. Definitieve live-aanvraag: Luna, 4.261 input-/165 outputtokens, berekend €0,000509.
+- [x] Werkelijke paarse knop → V4-interface → echte download gecontroleerd. Eén A4, circa 247 kB; visueel bekeken. 320/390px zonder paginabrede overflow, nul pageerrors, testsessie ingetrokken.
+- [x] Backend 87 tests/544 assertions; frontend 14 unitchecks, typecheck/build, 46 browserchecks en zeven geïsoleerde devregressies geslaagd. Mobiele statische generatie en Capacitor-copy naar iOS/Android geslaagd; daarna de serverbuild hersteld. Geen signing, device- of store-release geclaimd.

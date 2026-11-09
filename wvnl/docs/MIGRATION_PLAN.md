@@ -57,3 +57,10 @@ Rollback bij voorkeur vorige code terugzetten en de extra nullable velden behoud
 ## Rapport V3 — 9 november 2026
 
 Geen schemawijziging of nieuwe seedactie. De bestaande versleutelde JSON-snapshot krijgt alleen bij nieuwe generaties extra begrensde analysecontext; historische orders, rapporten en stemmen blijven behouden. De bestaande APP_KEY is ook voor deze rapporten nodig. Beide renderers behouden oude snapshots. Tijdelijke devpreviews zonder V3-analyse krijgen 409 en kunnen opnieuw worden gegenereerd. Alleen de devcache en kortlevende QA-sessie zijn tijdens de live controle geschreven; geen betaalorders of stemmen. Zie REPORTS.md voor kosten, gegevensminimalisatie en terugrol.
+
+
+## Eén-A4-poster V4 en lokale opruiming
+
+Geen schemamigratie. Nieuwe snapshots krijgen compass-v4, een catalogus van zestien typen en een compacte vier-observatiesnarratief. Oude renderers blijven als codecompatibiliteit aanwezig; nieuwe devpreviews vereisen de actuele versie. De gebruiker heeft expliciet gevraagd alle oude lokale rapporten te verwijderen: drie legacy-kompasrecords en 23 preview-/generatiecache-items zijn verwijderd, nul betaalorders aanwezig. Accounts en volledige stemhash zijn ongewijzigd. Vooraf een versleuteld herstelbestand buiten Git gemaakt. Dit is geen opdracht of script voor productie-opruiming.
+
+Dezelfde lokale wijziging koppelt gecontroleerde officiële moties/partijstemmen aan acht bestaande ongewijzigde stellingen. Vijf publieke bronrecords, één afwijkende tekst overgeslagen. Onderliggende eigen stemmen en vraagteksten veranderen niet. De CMS-basiswegingenknop kan deze bronkoppelingen idempotent toepassen; iedere wijziging is geaudit. Productiesources eerst beoordelen; geen automatische DB-migratie nodig.

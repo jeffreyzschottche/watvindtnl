@@ -52,6 +52,8 @@ class CompassEditorialSeed
                 }
             }
 
+            $result['official_references'] = app(OfficialCompassReferences::class)->seed($actor);
+
             return $result;
         }, 3);
     }
