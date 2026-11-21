@@ -57,7 +57,7 @@ class StripeReports
                 if (! $id) {
                     return;
                 } // unrelated product webhook
-                $order = ReportOrder::where('id', $id)->lockForUpdate()->first();
+                $order = ReportOrder::purchases()->where('id', $id)->lockForUpdate()->first();
                 abort_unless($order, 400, 'Onbekende rapportorder.');
                 abort_unless($session->mode === 'payment' && (int) $session->amount_total === $order->amount_cents && $session->currency === $order->currency && $session->client_reference_id === $order->id, 400, 'Betaalgegevens komen niet overeen.');
                 abort_if($order->stripe_session_id && $order->stripe_session_id !== $session->id, 400, 'Verkeerde betaalsessie.');

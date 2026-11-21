@@ -10,7 +10,7 @@ class ReportInsights
 {
     public function schema(array $snapshot): array
     {
-        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+        if (in_array($snapshot['compass']['version'] ?? '', CompassAnalysis::POSTER_VERSIONS, true)) {
             return app(CompassNarrative::class)->schema($snapshot);
         }
         $ids = array_column($snapshot['analysis_context']['votes'], 'id');
@@ -29,7 +29,7 @@ class ReportInsights
 
     public function prompt(array $snapshot, int $maxInputBytes = 40000): array
     {
-        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+        if (in_array($snapshot['compass']['version'] ?? '', CompassAnalysis::POSTER_VERSIONS, true)) {
             return app(CompassNarrative::class)->prompt($snapshot, $maxInputBytes);
         }
         $c = $snapshot['compass'];
@@ -59,7 +59,7 @@ class ReportInsights
 
     public function text(string $text, array $snapshot): array
     {
-        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+        if (in_array($snapshot['compass']['version'] ?? '', CompassAnalysis::POSTER_VERSIONS, true)) {
             return app(CompassNarrative::class)->text($text, $snapshot);
         }
         $ids = array_column($snapshot['analysis_context']['votes'], 'id');
@@ -99,7 +99,7 @@ class ReportInsights
 
     public function fallback(array $snapshot): array
     {
-        if (($snapshot['compass']['version'] ?? '') === 'compass-v4') {
+        if (in_array($snapshot['compass']['version'] ?? '', CompassAnalysis::POSTER_VERSIONS, true)) {
             return app(CompassNarrative::class)->fallback($snapshot);
         }
         $votes = $snapshot['analysis_context']['votes'];

@@ -1,268 +1,249 @@
 <script setup lang="ts">
+import CompassExamples from "~/components/compass/CompassExamples.vue";
+import CompassProgress from "~/components/compass/CompassProgress.vue";
+import AppIcon from "~/components/ui/AppIcon.vue";
+import type { CompassExample, ReportProduct } from "~/types/voteReports";
+
 definePageMeta({ alias: "/kompas" });
-import MotionScene from "~/components/art/MotionScene.vue";
-import type { ReportProduct } from "~/types/voteReports";
+
+const auth = useAuthStore();
+const api = useApi();
+const showExamples = computed(() => !auth.isLoggedIn);
+const {
+  data: examples,
+  status: examplesStatus,
+  refresh: refreshExamples,
+} = useAsyncData(
+  "compass-examples",
+  async () =>
+    showExamples.value ? api.get<CompassExample[]>("/reports/examples") : [],
+  { lazy: true, watch: [showExamples] },
+);
 const product = ref<ReportProduct | null>(null);
 onMounted(async () => {
   try {
-    product.value = await useApi().get<ReportProduct>("/reports/product");
+    product.value = await api.get<ReportProduct>("/reports/product");
   } catch {
-    /* Product remains honestly unavailable. */
+    // The example gallery can still be used while product availability is unknown.
   }
 });
-import AppIcon from "~/components/ui/AppIcon.vue";
+
+const insights = [
+  {
+    icon: "compass",
+    title: "Je politieke type",
+    description:
+      "Zie welk type het best bij het patroon in je antwoorden past en welke themascores erbij horen.",
+  },
+  {
+    icon: "grid",
+    title: "Jouw afwegingen",
+    description:
+      "Ontdek op welke thema’s je keuzes een duidelijke richting hebben en waar je antwoorden gemengd zijn.",
+  },
+  {
+    icon: "shield",
+    title: "Historische stemovereenkomsten",
+    description:
+      "Vergelijk je keuzes met partijstemmen wanneer er voldoende gekoppelde officiële stemmingen zijn.",
+  },
+];
+
 useSeoMeta({
   title: "Jouw politieke kompas | WatDenktNederland",
   description:
-    "Leer de samenhang in je politieke standpunten kennen. Ontdek het persoonlijke kompas van WatDenktNederland.",
+    "Verken de zestien kompastypen en ontdek wat een persoonlijk stemrapport over je politieke keuzes laat zien.",
 });
 </script>
+
 <template>
   <div class="compass-page container">
-    <section class="compass-page__intro" data-reveal>
-      <p class="eyebrow">Jouw persoonlijke richting</p>
-      <h1>Leer jezelf<br /><span>beter kennen.</span></h1>
-      <p class="compass-page__lead">
-        Wat zeggen jouw keuzes samen? Je persoonlijke stemrapport bundelt je
-        antwoorden in een visueel A4-rapport met je politieke type, themascores
-        en toelichting.
-      </p>
-      <ul>
-        <li>
-          <AppIcon name="check" :size="18" /> Je politieke type en gewogen
-          themascores
-        </li>
-        <li>
-          <AppIcon name="check" :size="18" /> Partijovereenkomsten waar
-          voldoende brondata bestaat
-        </li>
-        <li>
-          <AppIcon name="check" :size="18" /> Een vast persoonlijk A4-rapport
-          als PDF
-        </li>
-      </ul>
-      <NuxtLink to="/profiel/mijn-kompas" class="button button-red"
-        >Bekijk jouw rapportmogelijkheden <AppIcon name="arrow" :size="18"
-      /></NuxtLink>
-      <p>
-        <a
-          href="/examples/WDNL-kompas-voorbeeld.pdf"
-          download
-          class="compass-page__example"
-          >Download voorbeeldrapport (PDF) ↗</a
-        ><br /><small class="compass-page__example-note"
-          >Opmaakvoorbeeld met fictieve antwoorden en partijen.</small
-        >
-      </p>
-      <p class="compass-page__status">
-        €1,99 per nieuw rapport. Een gekocht rapport blijft beschikbaar; later
-        opnieuw laten maken is een nieuwe aankoop.
-        {{
-          product?.checkout_available
-            ? ""
-            : "De verkoop wordt nog voorbereid; je kunt nu niet betalen."
-        }}
-      </p>
-    </section>
-    <aside class="compass-page__art" data-reveal>
-      <MotionScene kind="compass" priority />
-      <div class="compass-page__art-caption">
-        <span aria-hidden="true">✦</span
-        ><strong>Je eigen richting vinden.</strong
-        ><span>Dat begint bij jouw mening.</span>
+    <header class="compass-page__intro">
+      <div>
+        <h1>Jouw politieke kompas</h1>
+        <p v-if="showExamples">
+          Ontdek wat je antwoorden samen zeggen over je politieke keuzes.
+        </p>
       </div>
-    </aside>
-    <section class="compass-page__explain">
-      <h2>Je bent meer dan een percentage.</h2>
-      <p>
-        Een politiek profiel is een hulpmiddel om over je eigen keuzes na te
-        denken. Het is geen psychologische test of stemadvies. We leggen uit
-        welke antwoorden worden gebruikt en hoe beschikbare overeenkomsten
-        worden berekend. De verhouding voor/tegen is op zichzelf geen
-        links-rechtsscore.
-      </p>
-      <NuxtLink to="/methodologie">Lees meer over onze werkwijze →</NuxtLink>
+      <NuxtLink
+        v-if="showExamples"
+        to="/profiel/mijn-kompas"
+        class="button button-red"
+      >
+        Naar mijn kompas <AppIcon name="arrow" :size="18" />
+      </NuxtLink>
+    </header>
+
+    <template v-if="showExamples">
+      <CompassExamples v-if="examples?.length" :examples="examples" />
+      <div v-else class="compass-page__examples-status">
+        <template v-if="examplesStatus === 'error'">
+          <p>De voorbeeldtypen konden niet worden opgehaald.</p>
+          <button
+            type="button"
+            class="button button-secondary"
+            @click="refreshExamples()"
+          >
+            Opnieuw proberen
+          </button>
+          <a href="/examples/WDNL-kompas-voorbeeld.pdf"
+            >Bekijk het voorbeeldrapport (PDF)</a
+          >
+        </template>
+        <p v-else role="status">Voorbeeldrapporten worden geladen…</p>
+      </div>
+
+      <section
+        class="compass-page__learn"
+        aria-labelledby="compass-insights-title"
+      >
+        <h2 id="compass-insights-title">Wat haal je uit je rapport?</h2>
+        <div class="compass-page__insights">
+          <article v-for="insight in insights" :key="insight.title">
+            <span class="compass-page__icon"
+              ><AppIcon :name="insight.icon"
+            /></span>
+            <h3>{{ insight.title }}</h3>
+            <p>{{ insight.description }}</p>
+          </article>
+        </div>
+        <NuxtLink to="/methodologie" class="compass-page__method">
+          Zo worden de scores berekend <AppIcon name="arrow" :size="16" />
+        </NuxtLink>
+      </section>
+    </template>
+
+    <section class="compass-page__own" aria-labelledby="compass-own-title">
+      <div>
+        <h2 id="compass-own-title">Je persoonlijke rapport</h2>
+        <p>
+          Je krijgt je kompas als A4-pdf. Een gekocht rapport blijft
+          beschikbaar. Een nieuw rapport kost €1,99.
+        </p>
+        <p v-if="product?.checkout_available === false">
+          De verkoop wordt nog voorbereid.
+        </p>
+        <NuxtLink
+          :to="auth.isLoggedIn ? '/profiel/mijn-kompas' : '/spel'"
+          class="button button-secondary"
+        >
+          {{ auth.isLoggedIn ? "Bekijk mijn rapporten" : "Begin met stemmen" }}
+          <AppIcon name="arrow" :size="18" />
+        </NuxtLink>
+      </div>
+      <CompassProgress v-if="auth.isLoggedIn" variant="card" />
     </section>
   </div>
 </template>
+
 <style scoped>
 .compass-page {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 4rem;
-  padding-block: 65px;
-  align-items: center;
-}
-.compass-page h1 {
-  font-size: clamp(2.6rem, 5vw, 4rem);
-  margin: 0 0 1.4rem;
-  line-height: 1.07;
-}
-.compass-page h1 span {
-  color: #0057b8;
-}
-.compass-page__lead {
-  color: #63738a;
-  font-size: 1rem;
-  line-height: 1.9;
-  max-width: 46ch;
-}
-.compass-page ul {
-  display: grid;
-  gap: 0.8rem;
-  padding: 0;
-  list-style: none;
-  margin: 1.5rem 0 2rem;
-  font-size: 0.87rem;
-}
-.compass-page li {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-}
-.compass-page li svg {
-  color: #24743b;
-}
-.compass-page__example {
-  font-size: 0.85rem;
-  font-weight: 750;
-  color: #0057b8;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.compass-page__example-note {
-  color: #63738a;
-  font-size: 0.7rem;
-}
-.compass-page__status {
-  font-size: 0.75rem;
-  color: #63738a;
-  margin: 1rem 0 0;
-  max-width: 49ch;
-}
-.compass-page__card {
-  padding: 2.5rem;
-  text-align: center;
-  background: #fff;
-  border: 1px solid #dce3ee;
-  border-radius: 20px;
-  box-shadow: 0 12px 50px #0057b808;
-}
-.compass-page__icon {
-  color: #0057b8;
-  margin: 0 auto 1.5rem;
-  width: 130px;
-  height: 130px;
-  background: #edf3ff;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-}
-.compass-page__tag {
-  font-size: 0.62rem;
-  font-weight: 750;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #0057b8;
-}
-.compass-page__card h2 {
-  font-size: 1.65rem;
-  margin: 0.9rem 0;
-}
-.compass-page__card > p {
-  color: #63738a;
-  font-size: 0.83rem;
-}
-.compass-page__line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid #e5eaf1;
-  padding: 0.85rem 0;
-  font-size: 0.8rem;
-}
-.compass-page__line svg {
-  color: #0057b8;
-}
-.compass-page__explain {
-  grid-column: 1/-1;
-  max-width: 750px;
-  text-align: center;
-  margin: 1rem auto 0;
-}
-.compass-page__explain h2 {
-  font-size: 1.8rem;
-}
-.compass-page__explain p {
-  color: #63738a;
-  font-size: 0.92rem;
-}
-.compass-page__explain a {
-  font-size: 0.85rem;
-}
-@media (max-width: 720px) {
-  .compass-page {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-    padding-block: 40px;
-  }
-  .compass-page__card {
-    padding: 1.7rem;
-  }
-  .compass-page__explain {
-    grid-column: auto;
-  }
-}
-
-.compass-page {
-  gap: 3rem;
-}
-.compass-page h1 {
-  font-weight: 800;
-  font-size: clamp(2.6rem, 5.2vw, 4.8rem);
-  letter-spacing: -0.06em;
-  line-height: 1.07;
-}
-.compass-page__art {
-  min-width: 0;
-}
-.compass-page__art-caption {
-  display: grid;
-  justify-items: center;
-  gap: 0.3rem;
-  color: #526d90;
-  font-size: 0.7rem;
-  margin-top: 1rem;
-}
-.compass-page__art-caption > strong {
-  font-size: 0.95rem;
+  gap: clamp(2.3rem, 5vw, 4.25rem);
+  padding-block: clamp(2rem, 4vw, 3rem) 4rem;
   color: #001f4d;
 }
-.compass-page__art-caption > span:first-child {
-  color: #0057b8;
-  font-size: 24px;
+.compass-page__intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.1rem 2rem;
+  margin-bottom: -1rem;
 }
-.compass-page__explain {
+.compass-page h1 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(2.45rem, 5.6vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1.06;
+}
+.compass-page__intro p {
+  margin: 0;
+  color: #4e617b;
+  font-size: clamp(0.96rem, 2vw, 1.12rem);
+  line-height: 1.65;
+}
+.compass-page__examples-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 1.1rem;
+  padding: 1.25rem;
+  border: 1px solid #dce5ef;
+  border-radius: 1rem;
+  background: #fff;
+}
+.compass-page__examples-status p {
+  margin: 0;
+  color: #4e617b;
+}
+.compass-page__learn h2,
+.compass-page__own h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  letter-spacing: -0.04em;
+}
+.compass-page__insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.compass-page__insights article {
+  padding: 1.3rem;
+  border: 1px solid #dce5ef;
+  border-radius: 19px;
+  background: white;
+}
+.compass-page__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  color: #0057b8;
+  background: #edf3ff;
+}
+.compass-page__insights h3 {
+  margin: 0.85rem 0 0.45rem;
+  font-size: 1.05rem;
+}
+.compass-page__insights p,
+.compass-page__own p {
+  margin: 0;
+  color: #4e617b;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+.compass-page__method {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.25rem;
+  color: #0057b8;
+  font-size: 0.86rem;
+  font-weight: 750;
+  text-underline-offset: 3px;
+}
+.compass-page__own {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+  align-items: center;
+  gap: 1.5rem;
+  padding: clamp(1.3rem, 4vw, 2.25rem);
+  border: 1px solid #dce5ef;
   border-radius: 22px;
-  padding: 2rem;
-  border: 1px solid #dce7f5;
-  background: #f0f5fd;
-  box-shadow: 0 5px 0 #e5edf8;
+  background: #edf3fc;
+}
+.compass-page__own h2 {
+  margin-bottom: 0.6rem;
+}
+.compass-page__own .button {
+  margin-top: 1rem;
 }
 @media (max-width: 720px) {
-  .compass-page {
-    gap: 2rem;
-  }
-  .compass-page h1 {
-    font-size: 3rem;
-  }
-  .compass-page__art {
-    max-width: 380px;
-    width: 100%;
-    margin-inline: auto;
-  }
-  .compass-page__explain {
-    padding: 1.4rem;
+  .compass-page__insights {
+    grid-template-columns: 1fr;
   }
 }
 </style>

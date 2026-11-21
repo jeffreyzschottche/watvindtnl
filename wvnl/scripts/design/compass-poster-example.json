@@ -2,7 +2,12 @@
   "snapshot": {
     "demo": true,
     "compass": {
-      "version": "compass-v4",
+      "version": "compass-v4.1",
+      "score_adjustment": {
+        "version": "neutral-anchor-v1",
+        "neutral_anchor": 6,
+        "display_range": [1, 99]
+      },
       "type_catalogue": [
         {
           "id": "sociale-vernieuwer",
@@ -142,60 +147,76 @@
           "right": "Individueel",
           "icon": "people",
           "id": "social",
-          "percentage": 80,
-          "opposite_percentage": 20,
+          "observed_percentage": 80,
+          "percentage": 69,
+          "opposite_percentage": 31,
           "compared": 10,
           "neutral": 0,
           "historical": 0,
           "minimum": 5,
           "early_minimum": 2,
           "provisional": false,
-          "sensitivity": { "min": 78, "max": 89 }
+          "sensitivity": {
+            "min": 67,
+            "max": 73
+          }
         },
         {
           "left": "Progressief",
           "right": "Behoudend",
           "icon": "spark",
           "id": "progressive",
-          "percentage": 80,
-          "opposite_percentage": 20,
+          "observed_percentage": 80,
+          "percentage": 69,
+          "opposite_percentage": 31,
           "compared": 10,
           "neutral": 0,
           "historical": 0,
           "minimum": 5,
           "early_minimum": 2,
           "provisional": false,
-          "sensitivity": { "min": 78, "max": 89 }
+          "sensitivity": {
+            "min": 67,
+            "max": 73
+          }
         },
         {
           "left": "Internationaal",
           "right": "Nationaal",
           "icon": "globe",
           "id": "international",
-          "percentage": 80,
-          "opposite_percentage": 20,
+          "observed_percentage": 80,
+          "percentage": 69,
+          "opposite_percentage": 31,
           "compared": 10,
           "neutral": 0,
           "historical": 0,
           "minimum": 5,
           "early_minimum": 2,
           "provisional": false,
-          "sensitivity": { "min": 78, "max": 89 }
+          "sensitivity": {
+            "min": 67,
+            "max": 73
+          }
         },
         {
           "left": "Groen",
           "right": "Economische groei",
           "icon": "leaf",
           "id": "green",
-          "percentage": 80,
-          "opposite_percentage": 20,
+          "observed_percentage": 80,
+          "percentage": 69,
+          "opposite_percentage": 31,
           "compared": 10,
           "neutral": 0,
           "historical": 0,
           "minimum": 5,
           "early_minimum": 2,
           "provisional": false,
-          "sensitivity": { "min": 78, "max": 89 }
+          "sensitivity": {
+            "min": 67,
+            "max": 73
+          }
         }
       ],
       "spectrum": {
@@ -203,15 +224,19 @@
         "right": "Rechts",
         "icon": "balance",
         "id": "economic",
-        "percentage": 80,
-        "opposite_percentage": 20,
+        "observed_percentage": 80,
+        "percentage": 69,
+        "opposite_percentage": 31,
         "compared": 10,
         "neutral": 0,
         "historical": 0,
         "minimum": 5,
         "early_minimum": 2,
         "provisional": false,
-        "sensitivity": { "min": 78, "max": 89 }
+        "sensitivity": {
+          "min": 67,
+          "max": 73
+        }
       },
       "used_votes": 10,
       "historical_votes": 0,
@@ -233,7 +258,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331546Z",
+          "reviewed_at": "2026-11-09T21:32:14.901078Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -249,7 +274,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331755Z",
+          "reviewed_at": "2026-11-09T21:32:14.901411Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -265,7 +290,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331760Z",
+          "reviewed_at": "2026-11-09T21:32:14.901415Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -281,7 +306,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331763Z",
+          "reviewed_at": "2026-11-09T21:32:14.901419Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -297,7 +322,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331766Z",
+          "reviewed_at": "2026-11-09T21:32:14.901422Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -313,7 +338,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331770Z",
+          "reviewed_at": "2026-11-09T21:32:14.901426Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -329,7 +354,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331773Z",
+          "reviewed_at": "2026-11-09T21:32:14.901429Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -345,7 +370,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331776Z",
+          "reviewed_at": "2026-11-09T21:32:14.901432Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -361,7 +386,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331779Z",
+          "reviewed_at": "2026-11-09T21:32:14.901435Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -377,7 +402,7 @@
             "green": 1,
             "economic": 1
           },
-          "reviewed_at": "2026-11-09T20:15:35.331782Z",
+          "reviewed_at": "2026-11-09T21:32:14.901438Z",
           "source_date": "2026-11-09",
           "historical": false,
           "rationale": null
@@ -391,9 +416,13 @@
         "Je antwoorden leggen vaker de nadruk op milieu en duurzaamheid."
       ]
     },
-    "methodology_version": "compass-v4",
+    "methodology_version": "compass-v4.1",
     "total": 10,
-    "counts": { "agree": 8, "disagree": 2, "neutral": 0 },
+    "counts": {
+      "agree": 8,
+      "disagree": 2,
+      "neutral": 0
+    },
     "entries": [
       {
         "id": 1,
@@ -456,7 +485,7 @@
         "choice": "disagree"
       }
     ],
-    "generated_at": "2026-11-09T20:15:35+00:00",
+    "generated_at": "2026-11-09T21:32:14+00:00",
     "analysis_context": {
       "version": 3,
       "votes": [
@@ -532,6 +561,7 @@
         "compared": 10,
         "matched": 8,
         "percentage": 80,
+        "balanced_score": 69,
         "provisional": false
       },
       {
@@ -539,6 +569,7 @@
         "compared": 10,
         "matched": 7,
         "percentage": 70,
+        "balanced_score": 63,
         "provisional": false
       },
       {
@@ -546,6 +577,7 @@
         "compared": 10,
         "matched": 6,
         "percentage": 60,
+        "balanced_score": 56,
         "provisional": false
       },
       {
@@ -553,6 +585,7 @@
         "compared": 10,
         "matched": 5,
         "percentage": 50,
+        "balanced_score": 50,
         "provisional": false
       },
       {
@@ -560,6 +593,7 @@
         "compared": 10,
         "matched": 4,
         "percentage": 40,
+        "balanced_score": 44,
         "provisional": false
       }
     ]
@@ -571,20 +605,24 @@
     "summary": "Dit fictieve voorbeeld laat zien hoe jouw persoonlijke kompas eruit komt te zien. In je eigen rapport volgen het type, de scores en partijovereenkomsten uit jouw vastgelegde antwoorden.",
     "highlights": [
       {
-        "text": "Je eigen rapport beschrijft concrete patronen in de inhoud van je antwoorden.",
-        "evidence_ids": [1]
+        "text": "Je vindt de belangen van mensen belangrijker dan die van organisaties.",
+        "evidence_ids": [1, 2, 5]
       },
       {
-        "text": "Je krijgt inzicht in de afweging tussen publieke voorzieningen en individuele ruimte.",
-        "evidence_ids": [2]
+        "text": "Je kiest liever voor bescherming dan voor zo min mogelijk regels.",
+        "evidence_ids": [3, 6]
       },
       {
-        "text": "Je antwoorden worden met gecontroleerde officiële moties vergeleken.",
-        "evidence_ids": [3]
+        "text": "Je zoekt oplossingen liever samen met andere landen.",
+        "evidence_ids": [4, 7]
       },
       {
-        "text": "Je leest welke standpunten samen je politieke richting vormen.",
-        "evidence_ids": [4]
+        "text": "Je laat de lange termijn zwaarder wegen dan snel resultaat.",
+        "evidence_ids": [2, 8]
+      },
+      {
+        "text": "Je bent kritisch zodra een voorstel vooral meer bureaucratie oplevert.",
+        "evidence_ids": [9, 10]
       }
     ]
   }

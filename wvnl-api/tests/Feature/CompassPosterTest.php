@@ -79,9 +79,38 @@ class CompassPosterTest extends TestCase
         $s = app(VoteSnapshot::class)->build($u, true);
         $this->assertSame(2, $s['party_coverage']['verified_motions']);
         $this->assertSame(2, $s['party_matches'][0]['compared']);
-        $this->assertSame(100.0, $s['party_matches'][0]['percentage']);
+        $this->assertSame(100.0, $s['party_matches'][0]['percentage']); // Actual matches remain factual.
+        $this->assertSame(63, $s['party_matches'][0]['balanced_score']);
         $this->assertTrue($s['party_matches'][0]['provisional']);
         $this->assertSame([], app(VoteSnapshot::class)->build($u)['party_matches']);
+    }
+
+    public function test_party_ranking_does_not_favour_two_perfect_matches_over_broader_support(): void
+    {
+        $this->assertSame(':memory:', DB::connection()->getDatabaseName());
+        $u = User::factory()->create();
+        $sparse = PoliticalParty::create(['name' => 'Twee testmoties', 'abbreviation' => 'TWEE', 'slug' => 'twee']);
+        $broad = PoliticalParty::create(['name' => 'Acht testmoties', 'abbreviation' => 'ACHT', 'slug' => 'acht']);
+        $ids = [];
+        foreach (range(1, 8) as $n) {
+            $motion = DB::table('wdnl_motions')->insertGetId(['external_id' => 'rank-fixture-'.$n, 'number' => 'fixture-'.$n, 'title' => 'Testmotie', 'source_url' => 'https://example.test', 'source_date' => now()->toDateString(), 'created_at' => now(), 'updated_at' => now()]);
+            $stances = ['agree' => $n < 8 ? [$broad->id] : [], 'disagree' => $n === 8 ? [$broad->id] : []];
+            if ($n <= 2) {
+                $stances['agree'][] = $sparse->id;
+            }
+            $issue = Issue::create(['title' => 'Teststelling', 'slug' => 'rank-'.$n, 'votes' => ['agree' => [$u->id]], 'party_stances' => $stances]);
+            $ids[] = $issue->id;
+            DB::table('wdnl_statement_metadata')->insert(['issue_id' => $issue->id, 'motion_id' => $motion, 'verified_at' => now(), 'created_at' => now(), 'updated_at' => now()]);
+        }
+        $u->update(['voted_issue_ids' => $ids]);
+        $parties = app(VoteSnapshot::class)->build($u, true)['party_matches'];
+        $this->assertSame('Acht testmoties', $parties[0]['name']);
+        $this->assertSame(7, $parties[0]['matched']);
+        $this->assertSame(8, $parties[0]['compared']);
+        $this->assertSame(71, $parties[0]['balanced_score']);
+        $this->assertSame('Twee testmoties', $parties[1]['name']);
+        $this->assertSame(100.0, $parties[1]['percentage']);
+        $this->assertSame(63, $parties[1]['balanced_score']);
     }
 
     public function test_one_a4_includes_original_logo_sixteen_types_party_comparison_and_four_observations(): void
@@ -96,6 +125,24 @@ class CompassPosterTest extends TestCase
         $pdf = app(ReportPdf::class)->render($s, $n);
         $this->assertStringStartsWith('%PDF-', $pdf);
         $this->assertLessThan(500000, strlen($pdf));
+    }
+
+    public function test_saved_v4_reports_keep_original_scores_and_one_page_layout(): void
+    {
+        $fixture = json_decode(file_get_contents(base_path('../wvnl/scripts/design/compass-poster-example.json')), true, flags: JSON_THROW_ON_ERROR);
+        $s = $fixture['snapshot'];
+        $s['compass']['version'] = $s['methodology_version'] = 'compass-v4';
+        unset($s['compass']['score_adjustment']);
+        foreach ($s['party_matches'] as &$party) {
+            unset($party['balanced_score']);
+        }
+        unset($party);
+        $s['party_matches'][0]['percentage'] = 100;
+        $html = view('reports.compass-poster', ['snapshot' => $s, 'narrative' => $fixture['narrative']])->render();
+        $this->assertStringContainsString('100%', $html);
+        $this->assertStringNotContainsString('Matchscore op 100', $html);
+        $this->assertStringContainsString('Kompas 4.0', $html);
+        $this->assertStringStartsWith('%PDF-', app(ReportPdf::class)->render($s, $fixture['narrative']));
     }
 
     public function test_observations_require_existing_evidence_and_cannot_invent_scores(): void

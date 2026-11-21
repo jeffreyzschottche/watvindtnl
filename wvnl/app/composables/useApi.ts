@@ -41,6 +41,6 @@ export function useApi() {
     post: <T>(e: string, b?: any, options?: Pick<RequestInit, "signal">) =>
       request<T>("POST", e, b, options),
     patch: <T>(e: string, b?: any) => request<T>("PATCH", e, b),
-    del: <T>(e: string) => request<T>("DELETE", e),
+    del: <T>(e: string, b?: unknown) => request<T>("DELETE", e, b),
   };
 }

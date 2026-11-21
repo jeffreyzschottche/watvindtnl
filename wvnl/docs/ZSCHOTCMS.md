@@ -138,7 +138,14 @@ Omdat de CMS-map geen Git-repository heeft, is de cumulatieve releasepatch voor 
 
 ## Kompasinhoud
 
-De knop **Basiswegingen bestaande stellingen seeden** staat in Stellingen en Rapporten. De CMS-actie `seed_compass` roept `POST /api/cms/content/compass/seed` aan met bestaande content-writecredentials. Reactie: reviewed, unchanged, skipped_existing, skipped_changed, missing, catalogue. Geen LLM, gebruikers-/stemwijzigingen of officiële bronverificatie. Alleen de exact gefingerprintte basisformuleringen worden aangevuld.
+De knop **Basiswegingen bestaande stellingen seeden** staat in Stellingen en Rapporten. De CMS-actie `seed_compass` roept `POST /api/cms/content/compass/seed` aan met bestaande content-writecredentials. Reactie: reviewed, unchanged, skipped_existing, skipped_changed, missing, catalogue. Geen LLM, gebruikers-/stemwijzigingen of officiële bronverificatie. Alleen de exact gefingerprintte basisformuleringen worden aangevuld. Sinds kompas 4.2 zet dezelfde knop ook alle gewichten uit `wvnl-api/resources/content/compass-weights.json` neer (reactie `weights_file`: applied, already_reviewed, changed_text, missing).
+
+### Kompasvoorstellen (tabblad)
+
+- **Nieuwe voorstellen maken** (`generate_compass_proposals`, 1–50 per klik, max. €0,10): het rapportmodel stelt gewichten voor bij stellingen zonder weging voor hun huidige tekst.
+- **Automatisch:** een stelling die via zschotcms wordt opgeslagen zonder gekozen gewichten of onderbouwing krijgt na het antwoord vanzelf een voorstel (max. €0,02, alleen als AI aanstaat in de rapportinstellingen). Een stelling met eigen gewichten krijgt geen voorstel. Mislukt de aanvraag, dan pakt de knop hierboven haar later op.
+- **Beoordelen:** goedkeuren, aanpassen en goedkeuren, afwijzen, of alle open voorstellen met hoge/gemiddelde zekerheid in bulk (max. 250 per klik). Pas na goedkeuring telt een weging mee in rapporten.
+- **Meenemen naar live:** `Exporteren` downloadt alle goedgekeurde gewichten (`compass-weights-v1`); `Importeren` bij de live-koppeling zet ze neer. Of draai lokaal `php artisan compass:export`, commit `resources/content/compass-weights.json` en deploy: dan doet **Basiswegingen seeden** het voortaan overal. Rijen worden gematcht op slug en exacte tekst; bestaande beoordelingen en gewijzigde teksten worden nooit overschreven.
 
 De stellingeditor ondersteunt nu `compass_context` naast `compass_weights`: onderbouwing, gedeelde inhoudssleutel, onderwerpen en expliciete historische context. De backend zet reviewed_at en een actuele teksthash bij geautoriseerde publicatie met review. Een gedeelde sleutel mag alleen dezelfde inhoudelijke vraag/bronzaak groeperen. Tegenstrijdige keuzes op zulke dubbele vragen worden uit de analyse gehouden. Voor interpretatie en drempels: COMPASS_ALGORITHM.md.
 

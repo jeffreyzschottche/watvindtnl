@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReportOrder;
+use App\Services\Reports\DevelopmentReport;
+use App\Services\Reports\ReportPdf;
 use App\Services\Reports\ReportSettings;
 use App\Services\Reports\StripeReports;
 use App\Services\Reports\VoteSnapshot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Stripe\Exception\SignatureVerificationException;
 use Throwable;
@@ -26,34 +29,44 @@ class VoteReportController extends Controller
 
     private function own(Request $request, string $id): ReportOrder
     {
-        return ReportOrder::where('user_id', $request->user()->id)->where('id', $id)->firstOrFail();
+        return ReportOrder::purchases()->where('user_id', $request->user()->id)->findOrFail($id);
     }
 
-    private function serialize(ReportOrder $order, bool $detail = false): array
+    /** Light goal-gradient data for the app: how far the user's answers are from a complete compass. */
+    public function progress(Request $request): array
     {
-        $result = $order->only(['id', 'status', 'amount_cents', 'currency']);
-        $result += ['created_at' => $order->created_at?->toIso8601String(), 'ready_at' => $order->ready_at?->toIso8601String(),
-            'vote_count' => $order->snapshot['total'], 'checkout_url' => $order->status === 'pending' ? $order->checkout_url : null,
-            'download_available' => $order->status === 'ready'];
-        if ($detail && $order->status === 'ready') {
-            $result += ['snapshot' => $order->snapshot, 'narrative' => $order->narrative, 'narrative_source' => $order->narrative_source];
+        $compass = $this->snapshots->build($request->user())['compass'];
+        $themes = array_map(fn ($d) => ['id' => $d['id'], 'left' => $d['left'], 'right' => $d['right'], 'compared' => $d['compared'], 'minimum' => $d['minimum'], 'done' => min($d['compared'], $d['minimum'])],
+            [...$compass['dimensions'], $compass['spectrum']]);
+        $done = array_sum(array_column($themes, 'done'));
+        $target = array_sum(array_column($themes, 'minimum'));
+        $open = array_values(array_filter($themes, fn ($t) => $t['done'] < $t['minimum']));
+        usort($open, fn ($a, $b) => $a['done'] <=> $b['done']);
+
+        return ['done' => $done, 'target' => $target, 'needed' => $target - $done, 'used_votes' => $compass['used_votes'], 'status' => $compass['status'],
+            'type' => $compass['type'] ? ['name' => $compass['type']['name'], 'provisional' => $compass['type']['provisional']] : null,
+            'next_theme' => $open ? $open[0]['left'].' ↔ '.$open[0]['right'] : null, 'themes' => $themes];
+    }
+
+    public function index(Request $request, DevelopmentReport $development): array
+    {
+        $user = $request->user();
+        $snapshot = $this->snapshots->build($user);
+        $orders = ReportOrder::where('user_id', $user->id);
+        $previous = (clone $orders)->purchases()->where('status', 'ready')->latest('created_at')->first();
+        if (! $development->allowed($user)) {
+            $orders->purchases();
         }
-
-        return $result;
-    }
-
-    public function index(Request $request): array
-    {
-        $snapshot = $this->snapshots->build($request->user());
-        $previous = ReportOrder::where('user_id', $request->user()->id)->where('status', 'ready')->latest('created_at')->first();
+        $page = $orders->latest('created_at')->orderByDesc('id')->simplePaginate(30, ['id', 'status', 'is_development', 'amount_cents', 'currency', 'created_at', 'ready_at', 'snapshot', 'checkout_url']);
 
         return ['compass_progress' => ['ready' => $snapshot['compass']['status'] === 'ready' && $snapshot['compass']['spectrum']['percentage'] !== null && ! $snapshot['compass']['spectrum']['provisional'], 'used_votes' => $snapshot['compass']['used_votes'], 'dimensions' => array_map(fn ($d) => ['name' => $d['left'], 'compared' => $d['compared'], 'minimum' => $d['minimum']], [...$snapshot['compass']['dimensions'], $snapshot['compass']['spectrum']])], 'product' => $this->product(), 'vote_count' => $snapshot['total'], 'comparison' => $this->snapshots->comparison($snapshot, $previous, $this->settings->current()['renew_after_votes']),
-            'orders' => ReportOrder::where('user_id', $request->user()->id)->latest('created_at')->limit(30)->get(['id', 'status', 'amount_cents', 'currency', 'created_at', 'ready_at', 'snapshot', 'checkout_url'])->map(fn ($o) => $this->serialize($o))->all()];
+            'orders' => $page->getCollection()->map(fn (ReportOrder $order) => $order->reportData())->all(),
+            'orders_next_page' => $page->hasMorePages() ? $page->currentPage() + 1 : null];
     }
 
     public function show(Request $request, string $id): array
     {
-        return $this->serialize($this->own($request, $id), true);
+        return $this->own($request, $id)->reportData(true);
     }
 
     public function store(Request $request): array
@@ -71,24 +84,25 @@ class VoteReportController extends Controller
                 ['id' => (string) Str::uuid(), 'status' => 'pending', 'snapshot' => $snapshot, 'snapshot_hash' => $this->snapshots->fingerprint($snapshot), 'generation_settings' => $settings,
                     'ai_consent' => $data['ai_consent'], 'amount_cents' => 199, 'currency' => 'eur', 'consent_version' => 'report-v3']);
         }
+        abort_if($order->is_development, 409, 'Deze aanvraag hoort bij een devrapport.');
         if ($order->status === 'pending') {
             try {
-                $this->payments->checkout($order);
+                DB::transaction(fn () => $this->payments->checkout(ReportOrder::lockForUpdate()->findOrFail($order->id)));
             } catch (Throwable $e) {
                 // Stripe/network details stay out of public responses; the same request_key safely retries the same session.
                 abort(503, 'De betaalpagina is tijdelijk niet bereikbaar. Probeer het opnieuw; je rapportaanvraag blijft bewaard.');
             }
         }
 
-        return $this->serialize($order->fresh());
+        return $order->fresh()->reportData();
     }
 
-    public function download(Request $request, string $id)
+    public function download(Request $request, string $id, ReportPdf $pdf)
     {
         $order = $this->own($request, $id);
-        abort_unless($order->status === 'ready' && $order->pdf, 409, 'Het rapport is nog niet beschikbaar.');
+        abort_unless($order->status === 'ready', 409, 'Het rapport is nog niet beschikbaar.');
 
-        return response(base64_decode($order->pdf, true), 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'attachment; filename="WDNL-stemrapport.pdf"', 'Cache-Control' => 'private, no-store']);
+        return $pdf->download($order->snapshot, $order->narrative, 'WDNL-stemrapport.pdf', $order->pdf);
     }
 
     public function webhook(Request $request)

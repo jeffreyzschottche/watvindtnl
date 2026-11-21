@@ -6,7 +6,6 @@ use App\Jobs\GenerateVoteReport;
 use App\Models\Issue;
 use App\Models\ReportOrder;
 use App\Models\User;
-use App\Services\Reports\ReportPdf;
 use App\Services\Reports\ReportSettings;
 use App\Services\Reports\ReportWriter;
 use App\Services\Reports\StripeReports;
@@ -121,22 +120,48 @@ class VoteReportsTest extends TestCase
         $this->assertSame(31, $order->fresh()->snapshot['total']);
     }
 
-    public function test_code_only_generation_creates_a_private_single_page_pdf_and_is_idempotent(): void
+    public function test_code_only_report_stores_its_text_and_renders_a_private_pdf_on_download(): void
     {
         $u = $this->user();
         $order = $this->order($u, ['ai_enabled' => false]);
         $job = new GenerateVoteReport($order->id);
-        $job->handle(app(ReportWriter::class), app(ReportPdf::class));
+        $job->handle(app(ReportWriter::class));
         $order->refresh();
         $this->assertSame('ready', $order->status);
-        $this->assertStringStartsWith('%PDF-', base64_decode($order->pdf));
+        $this->assertNull($order->pdf);
         $this->assertStringNotContainsString('Teststelling', DB::table('wdnl_report_orders')->value('snapshot'));
         $this->assertStringNotContainsString('Dit rapport', DB::table('wdnl_report_orders')->value('narrative'));
-        $this->actingAs($u)->get('/api/me/reports/'.$order->id.'/pdf')->assertOk()->assertHeader('Content-Type', 'application/pdf');
+        $pdf = $this->actingAs($u)->get('/api/me/reports/'.$order->id.'/pdf')->assertOk()->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('%PDF-', $pdf->getContent());
+        $this->assertNull($order->fresh()->pdf);
         $this->getJson('/api/me/reports/'.$order->id)->assertOk()->assertJsonPath('snapshot.total', 12)->assertDontSee('generation_settings');
-        $job->handle(app(ReportWriter::class), app(ReportPdf::class));
+        $job->handle(app(ReportWriter::class));
         Http::assertNothingSent();
         $this->actingAs(User::factory()->create())->get('/api/me/reports/'.$order->id.'/pdf')->assertNotFound();
+    }
+
+    public function test_a_previously_stored_pdf_keeps_its_original_download(): void
+    {
+        $user = $this->user();
+        $order = $this->order($user);
+        $binary = '%PDF-legacy-fixture';
+        $order->update(['status' => 'ready', 'pdf' => base64_encode($binary), 'ready_at' => now()]);
+
+        $this->actingAs($user)->get('/api/me/reports/'.$order->id.'/pdf')->assertOk()->assertContent($binary);
+        Http::assertNothingSent();
+    }
+
+    public function test_report_history_exposes_older_saved_orders_on_the_next_page(): void
+    {
+        $user = $this->user(0);
+        $oldest = $this->order($user);
+        $oldest->update(['created_at' => now()->subDay()]);
+        for ($index = 0; $index < 30; $index++) {
+            $this->order($user);
+        }
+
+        $this->actingAs($user)->getJson('/api/me/reports')->assertOk()->assertJsonCount(30, 'orders')->assertJsonPath('orders_next_page', 2);
+        $this->getJson('/api/me/reports?page=2')->assertOk()->assertJsonCount(1, 'orders')->assertJsonPath('orders.0.id', $oldest->id)->assertJsonPath('orders_next_page', null);
     }
 
     public function test_luna_receives_only_minimized_data_and_actual_usage_is_recorded(): void

@@ -1,5 +1,5 @@
 <template>
-  <div class="site-wrapper">
+  <div class="site-wrapper" :class="{ 'has-app-tabs': showTabs }">
     <a href="#main-content" class="skip-link">Naar inhoud</a>
     <SiteNav />
     <main
@@ -17,6 +17,7 @@
 <script setup lang="ts">
 const main = ref<HTMLElement | null>(null);
 const { enabled } = usePageMotion(main);
+const { showTabs } = useAppShell();
 import SiteNav from "~/components/common/SiteNav.vue";
 import SiteFooter from "~/components/common/SiteFooter.vue";
 </script>

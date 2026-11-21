@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Issue;
 use App\Models\PoliticalParty;
+use App\Services\Reports\CompassProposals;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -188,6 +189,7 @@ class CmsContentService
             $weights = array_filter($weights, fn ($weight) => (int) $weight !== 0);
             $weights = array_map('intval', $weights);
             $context = $data['compass_context'] ?? ($before['compass_context'] ?? null);
+            $reviewed = $weights || trim((string) ($context['rationale'] ?? '')) !== '';
             $contextHash = hash('sha256', json_encode([$data['title'], $data['description'], $data['more_info'] ?? null], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
             if ($context) {
                 $context['text_hash'] = $contextHash;
@@ -218,13 +220,17 @@ class CmsContentService
                 'origin_kind' => $data['origin_kind'], 'source_name' => $data['source_name'], 'source_title' => $data['source_title'],
                 'compass_weights' => json_encode($weights, JSON_THROW_ON_ERROR),
                 'compass_context' => $context ? json_encode($context, JSON_THROW_ON_ERROR) : null,
-                'compass_reviewed_at' => now(),
+                // Only an actual choice counts as review; an untouched form leaves the statement open for a suggestion.
+                'compass_reviewed_at' => $reviewed ? now() : null,
                 'verified_at' => now(), 'revision' => ($before['revision'] ?? 0) + 1,
                 'created_at' => DB::table('wdnl_statement_metadata')->where('issue_id', $issue->id)->value('created_at') ?? now(),
                 'updated_at' => now(),
             ]);
             $after = $this->statement($issue->fresh());
             $this->audit('statement.save', $issue->slug, $before, $after, $actor);
+            if (! $reviewed) {
+                app(CompassProposals::class)->queue($issue->id);
+            }
 
             return $after;
         }, 3);

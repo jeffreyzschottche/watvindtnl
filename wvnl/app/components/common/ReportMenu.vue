@@ -172,6 +172,21 @@ async function handleSelect(reason: ReportReason) {
   padding: 0.3rem 0.75rem;
 }
 
+/* Phones: reporting an argument stays reachable (44px target) but no longer competes with the
+   argument itself (Von Restorff); it reads as a quiet text action. */
+@media (max-width: 720px) {
+  .report-menu--sm .report-menu__trigger {
+    justify-self: start;
+    background: transparent;
+    border-color: transparent;
+    padding-inline: 0;
+    color: #7a889c;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
 .report-menu__trigger:disabled {
   opacity: 0.7;
   cursor: not-allowed;

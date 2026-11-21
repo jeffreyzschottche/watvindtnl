@@ -656,8 +656,20 @@ test("one-page compass poster uses the real logo, sixteen-type wheel and all req
       paper.getByRole("heading", { name: heading, exact: true }),
     ).toBeVisible();
   }
-  await expect(paper.locator(".poster-highlights li")).toHaveCount(4);
+  await expect(paper.locator(".poster-highlights li")).toHaveCount(5);
   await expect(paper.locator(".poster-party")).toHaveCount(5);
+  await expect(
+    paper.getByText("Matchscore op 100 · voorzichtig bij weinig moties."),
+  ).toBeVisible();
+  await expect(paper.locator(".poster-party-percentage").first()).toHaveText(
+    String(poster.snapshot.party_matches[0].balanced_score),
+  );
+  await expect(paper.locator(".poster-party").first()).toContainText(
+    "8 van 10 moties",
+  );
+  await expect(paper.locator(".poster-method")).toContainText(
+    "scores dichter bij het midden",
+  );
   expect(poster.snapshot.compass.type_catalogue).toHaveLength(16);
   const logo = paper.getByRole("img", {
     name: "WatDenktNederland",
@@ -725,9 +737,18 @@ test("type wheel supports click and keyboard exploration while the personal resu
   const personalScores = await paper
     .locator(".poster-percentages")
     .allTextContents();
-  await paper
-    .getByRole("button", { name: "De Groene Vernieuwer bekijken", exact: true })
-    .click();
+  const greenSector = paper.getByRole("button", {
+    name: "De Groene Vernieuwer bekijken",
+    exact: true,
+  });
+  await expect(paper.locator("svg.poster-wheel title")).toHaveCount(0);
+  if (testInfo.project.name === "desktop") {
+    const restingFill = await greenSector.evaluate((element) => getComputedStyle(element).fill);
+    await greenSector.hover();
+    await expect(paper.locator(".type-wheel__hint")).toHaveText("De Groene Vernieuwer");
+    await expect(greenSector).not.toHaveCSS("fill", restingFill);
+  }
+  await greenSector.click();
   await expect(paper.locator(".type-explorer h4")).toHaveText(
     "De Groene Vernieuwer",
   );
@@ -746,18 +767,10 @@ test("type wheel supports click and keyboard exploration while the personal resu
   });
   await sector.focus();
   await page.keyboard.press("ArrowRight");
-  await expect(
-    paper.getByRole("button", {
-      name: "De Groene Vernieuwer bekijken",
-      exact: true,
-    }),
-  ).toBeFocused();
-  await expect(
-    paper.getByRole("button", {
-      name: "De Groene Vernieuwer bekijken",
-      exact: true,
-    }),
-  ).toHaveAttribute("aria-pressed", "true");
+  await expect(greenSector).toBeFocused();
+  await expect(greenSector).toHaveAttribute("aria-pressed", "true");
+  await expect(greenSector).toHaveCSS("outline-style", "none");
+  await expect(paper.locator(".type-wheel__sector:focus-visible + .type-wheel__sector-focus")).toHaveCSS("opacity", "1");
   await paper
     .getByRole("combobox", { name: "Bekijk een politiek type" })
     .selectOption("internationale-verbinder");

@@ -523,6 +523,128 @@ async function handleReport(reason: ReportReason) {
   text-align: center;
   color: #526277;
 }
+/* Phones, Laws of UX: the three choices sit together in the thumb zone and stay reachable above the
+   tab bar while reading (Fitts); tegen and voor keep equal size and weight, neutraal sits between them
+   (no nudging). Report and statement number move down next to Delen (proximity), the decorative
+   eyebrow goes (cognitive load). Accessible names stay the same; the subtitles become screen-reader text. */
+@media (max-width: 720px) {
+  .vote-card-v2.vote-card-v2 {
+    gap: 1.1rem;
+    padding: 1.15rem 1.1rem 1rem;
+    border-radius: 20px;
+  }
+  .vote-card-v2__eyebrow.vote-card-v2__eyebrow {
+    display: none;
+  }
+  .vote-card-v2__question {
+    text-align: left;
+  }
+  .vote-card-v2.vote-card-v2 h2 {
+    font-size: 1.4rem;
+    margin: 0 0 0.6rem;
+  }
+  .vote-card-v2__description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+  /* Secondary actions share one quiet row at the end: Delen left, Rapporteer right. */
+  .vote-card-v2.vote-card-v2 {
+    grid-template-columns: 1fr auto;
+  }
+  .vote-card-v2 > * {
+    grid-column: 1 / -1;
+  }
+  .vote-card-v2 > .vote-card-v2__share {
+    grid-column: 1;
+    order: 29;
+    justify-content: flex-start;
+  }
+  .vote-card-v2 > .vote-card-v2__meta {
+    grid-column: 2;
+    order: 30;
+  }
+  .vote-card-v2__badge.vote-card-v2__badge {
+    display: none;
+  }
+  /* Read first, then decide: background sits above the choices, so while the arguments are open the
+     choices stay pinned in the thumb zone instead of scrolling away. */
+  .vote-card-v2 > .vote-card-v2__background {
+    order: 2;
+    border-top: 0;
+    border-bottom: 1px solid #e3e9f1;
+    padding: 0 0 0.4rem;
+  }
+  .vote-card-v2 > .vote-card-v2__choices,
+  .vote-card-v2 > .vote-card-v2__login,
+  .vote-card-v2 > .vote-card-v2__results {
+    order: 3;
+  }
+  .vote-card-v2 > .vote-card-v2__status,
+  .vote-card-v2 > .vote-card-v2__text-button {
+    order: 4;
+  }
+  .vote-card-v2__choices {
+    position: sticky;
+    bottom: calc(var(--app-tabbar-h) + env(safe-area-inset-bottom) + 0.5rem);
+    z-index: 5;
+    grid-template-columns: 1fr 0.78fr 1fr;
+    gap: 0.5rem;
+    margin-inline: -0.45rem;
+    padding: 0.45rem;
+    border-radius: 18px;
+    background: #ffffffeb;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 22px #001f4d12;
+  }
+  .vote-choice.vote-choice {
+    min-height: 64px;
+    padding: 0.45rem 0.3rem;
+    gap: 0.15rem;
+    align-content: center;
+    border-radius: 14px;
+    box-shadow: 0 3px 0 #cfddf5;
+  }
+  .vote-choice.vote-choice--against {
+    box-shadow: 0 3px 0 #f0c7d1;
+  }
+  .vote-card-v2__choices .vote-choice.vote-choice--neutral {
+    grid-column: auto;
+    order: 1;
+    min-height: 64px;
+    box-shadow: 0 3px 0 #d8e0ec;
+  }
+  .vote-choice--for {
+    order: 2;
+  }
+  .vote-choice.vote-choice svg {
+    width: 24px;
+    height: 24px;
+  }
+  .vote-choice.vote-choice strong {
+    font-size: 1.05rem;
+  }
+  .vote-choice.vote-choice--neutral strong {
+    font-size: 0.9rem;
+  }
+  .vote-choice.vote-choice span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .vote-card-v2__results .vote-card-v2__primary {
+    position: sticky;
+    bottom: calc(var(--app-tabbar-h) + env(safe-area-inset-bottom) + 0.5rem);
+    z-index: 5;
+    min-height: 54px;
+  }
+  .vote-card-v2__numbers strong {
+    font-size: 1.5rem;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .vote-choice {
     transition: none;

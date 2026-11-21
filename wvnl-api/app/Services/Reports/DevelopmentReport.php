@@ -2,6 +2,7 @@
 
 namespace App\Services\Reports;
 
+use App\Models\ReportOrder;
 use App\Models\User;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Throwable;
 
-/** Expiring local report previews using OPENAI_MODEL and OPENAI_API_KEY. No payment bypass in production. */
+/** Local report generation with the OpenAI model and key configured for development. */
 class DevelopmentReport
 {
     public function allowed(?User $user): bool
@@ -28,7 +29,15 @@ class DevelopmentReport
         abort_unless($this->allowed($user), 404);
         $cacheKey = 'wdnl-dev-ai-request:'.$user->id.':'.$key;
 
-        return Cache::lock($cacheKey.':lock', 90)->block(1, function () use ($user, $cacheKey) {
+        return Cache::lock($cacheKey.':lock', 90)->block(1, function () use ($user, $key, $cacheKey) {
+            $request = ['user_id' => $user->id, 'request_key' => $key];
+            $saved = ReportOrder::where($request)->first();
+            if ($saved) {
+                abort_unless($saved->is_development, 409, 'Deze aanvraag hoort bij een aankoop.');
+
+                return $saved->reportData(true);
+            }
+
             $existing = Cache::get($cacheKey);
             if (is_array($existing)) {
                 if ($existing['state'] === 'ready') {
@@ -43,7 +52,8 @@ class DevelopmentReport
             abort_unless(in_array($model, [...config('wdnl_reports.models.openai'), 'gpt-4.1-mini'], true) && is_array($rates), 422, 'OPENAI_MODEL wordt nog niet ondersteund voor dit begrensde devrapport. Gebruik gpt-6-luna of gpt-4.1-mini.');
             $s = app(ReportSettings::class)->current();
             $s = array_replace($s, ['provider' => 'openai', 'model' => $model, 'input_usd_per_million' => $rates['input'], 'output_usd_per_million' => $rates['output']]);
-            $snapshot = app(VoteSnapshot::class)->build($user, true);
+            $snapshots = app(VoteSnapshot::class);
+            $snapshot = $snapshots->build($user, true);
             $snapshot['development'] = true;
             $snapshot['generation_model'] = $model;
             $narrator = app(ReportNarrator::class);
@@ -67,18 +77,27 @@ class DevelopmentReport
                 } catch (Throwable) {
                     throw new \RuntimeException('OpenAI gaf rapporttekst die niet aan het rapportformaat voldoet. Er is geen standaardtekst gebruikt.');
                 }
-                $pdf = app(ReportPdf::class)->render($snapshot, $text);
-                $id = (string) Str::uuid();
-                $expires = now()->addHour();
-                $report = ['id' => $id, 'is_development' => true, 'expires_at' => $expires->toIso8601String(), 'status' => 'ready',
-                    'layout_version' => 'compass-poster-v4', 'amount_cents' => 0, 'currency' => 'eur', 'created_at' => now()->toIso8601String(), 'ready_at' => now()->toIso8601String(),
-                    'vote_count' => $snapshot['total'], 'checkout_url' => null, 'download_available' => true,
-                    'snapshot' => $snapshot, 'narrative' => $text, 'narrative_source' => 'openai', 'generation_model' => $model, 'generation_provider' => 'openai',
-                    'generation_usage' => ['input_tokens' => $result['usage']['input_tokens'], 'output_tokens' => $result['usage']['output_tokens'], 'estimated_cost_eur' => app(ReportSettings::class)->cost($s, $result['usage']['input_tokens'], $result['usage']['output_tokens'], false) / 1000000]];
-                Cache::put('wdnl-dev-ai-report:'.$id, Crypt::encryptString(json_encode(['user_id' => (int) $user->id, 'report' => $report, 'pdf' => base64_encode($pdf)], JSON_THROW_ON_ERROR)), $expires);
-                Cache::put($cacheKey, ['state' => 'ready', 'id' => $id], $expires);
-
-                return $report;
+                $usage = $result['usage'];
+                $order = ReportOrder::firstOrCreate($request, [
+                    'id' => (string) Str::uuid(),
+                    'is_development' => true,
+                    'status' => 'ready',
+                    'amount_cents' => 0,
+                    'currency' => 'eur',
+                    'snapshot' => $snapshot,
+                    'snapshot_hash' => $snapshots->fingerprint($snapshot),
+                    'generation_settings' => $s + [
+                        'layout_version' => 'compass-poster-v4',
+                        'usage' => [
+                            'input_tokens' => $usage['input_tokens'],
+                            'output_tokens' => $usage['output_tokens'],
+                            'estimated_cost_eur' => app(ReportSettings::class)->cost($s, $usage['input_tokens'], $usage['output_tokens'], false) / 1000000,
+                        ],
+                    ],
+                    'narrative' => $text,
+                    'narrative_source' => 'openai',
+                    'ready_at' => now(),
+                ]);
             } catch (Throwable $e) {
                 $safe = $e instanceof \RuntimeException && ! $e instanceof ConnectionException ? $e->getMessage() : 'OpenAI is niet bereikbaar of de generatie is onderbroken. Er is geen standaardrapport gemaakt. API-gebruik kan al zijn berekend.';
                 // Only messages created above are allowed through; never expose a provider body or credential.
@@ -88,12 +107,23 @@ class DevelopmentReport
                 Cache::put($cacheKey, ['state' => 'failed', 'message' => $safe], now()->addHour());
                 abort(422, $safe);
             }
+
+            Cache::forget($cacheKey);
+            abort_unless($order->is_development, 409, 'Deze aanvraag hoort bij een aankoop.');
+
+            return $order->reportData(true);
         });
     }
 
     public function get(User $user, string $id): array
     {
         abort_unless($this->allowed($user), 404);
+        $order = ReportOrder::where('user_id', $user->id)->where('is_development', true)->find($id);
+        if ($order) {
+            return ['report' => $order->reportData(true)];
+        }
+
+        // Links issued before database storage use their original cache lifetime.
         $encrypted = Cache::get('wdnl-dev-ai-report:'.$id);
         abort_unless(is_string($encrypted), 404, 'Dit tijdelijke devrapport is verlopen. Maak een nieuw devrapport.');
         $payload = json_decode(Crypt::decryptString($encrypted), true, flags: JSON_THROW_ON_ERROR);

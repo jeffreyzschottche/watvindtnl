@@ -16,6 +16,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserIssueController;
 use App\Http\Controllers\VoteReportController;
+use App\Services\Reports\CompassTypes;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
@@ -27,6 +28,7 @@ Route::post('/contact', ContactController::class)->middleware('throttle:contact'
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::delete('/me', [UserController::class, 'destroy'])->middleware('throttle:account-deletion');
     Route::patch('/users/{user}', [UserController::class, 'update']);
     Route::patch('/users/{user}/password', [UserController::class, 'updatePassword']);
     Route::get('/issues/pending', [UserIssueController::class, 'index']);
@@ -35,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/me/reports/dev', [DevelopmentReportController::class, 'store'])->middleware('throttle:6,1');
     Route::get('/me/reports/dev/{id}', [DevelopmentReportController::class, 'show'])->whereUuid('id');
     Route::get('/me/reports/dev/{id}/pdf', [DevelopmentReportController::class, 'download'])->whereUuid('id');
+    Route::get('/me/compass-progress', [VoteReportController::class, 'progress']);
     Route::get('/me/reports', [VoteReportController::class, 'index']);
     Route::get('/me/reports/{id}', [VoteReportController::class, 'show']);
     Route::get('/me/reports/{id}/pdf', [VoteReportController::class, 'download'])->middleware('throttle:reports');
@@ -78,9 +81,16 @@ Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])
     Route::get('/statements', [ContentController::class, 'statements']);
     Route::get('/statements/{issue}', [ContentController::class, 'statement']);
     Route::get('/motions', [ContentController::class, 'motions']);
+    Route::get('/compass/proposals', [ContentController::class, 'compassProposals']);
+    Route::get('/compass/weights', [ContentController::class, 'exportCompassWeights']);
     Route::middleware('cms.content:write')->group(function () {
+        Route::post('/compass/proposals/generate', [ContentController::class, 'generateCompassProposals'])->middleware('throttle:cms-compass-proposals');
+        Route::post('/compass/proposals/approve', [ContentController::class, 'approveCompassProposals']);
+        Route::post('/compass/proposals/{id}/approve', [ContentController::class, 'approveCompassProposal'])->whereNumber('id');
+        Route::post('/compass/proposals/{id}/reject', [ContentController::class, 'rejectCompassProposal'])->whereNumber('id');
         Route::post('/parties/seed', [ContentController::class, 'seedParties']);
         Route::post('/compass/seed', [ContentController::class, 'seedCompass']);
+        Route::post('/compass/weights', [ContentController::class, 'importCompassWeights']);
         Route::post('/parties', [ContentController::class, 'saveParty']);
         Route::patch('/parties/{party}', [ContentController::class, 'saveParty']);
         Route::post('/statements', [ContentController::class, 'saveStatement']);
@@ -91,6 +101,7 @@ Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])
 });
 
 Route::get('/reports/product', [VoteReportController::class, 'product']);
+Route::get('/reports/examples', fn () => CompassTypes::examples());
 Route::post('/reports/stripe-webhook', [VoteReportController::class, 'webhook']);
 
 Route::prefix('cms/reports')->middleware(['cms.content:read,reports', 'throttle:admin'])->group(function () {

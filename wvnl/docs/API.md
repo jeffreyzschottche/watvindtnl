@@ -48,6 +48,18 @@ CMS statement GET/save: compass_context met canonical_key, rationale, topics, hi
 
 `POST /api/cms/content/compass/seed` vereist content-read én content-write en is geaudit/idempotent. Alleen exact bekende bronformuleringen worden meegenomen; een bestaande eigen weging of gewijzigde tekst blijft behouden. Gewone app- of alleen-lezentokens kunnen dit niet starten.
 
+Kompasvoorstellen (contenttoken; lezen voor GET, schrijven voor POST):
+
+- `GET /api/cms/content/compass/proposals?status=pending|approved|rejected|outdated&confidence=high|medium|low&page=` geeft voorstellen met stellingtitel, gewichten, onderwerpen en onderbouwing, plus tellingen, het aantal stellingen zonder weging en de totale modelkosten.
+- `POST /api/cms/content/compass/proposals/generate` met `{limit: 1–50}` laat het rapportmodel nieuwe voorstellen maken (maximaal €0,10 per aanroep, eigen rate-limit van 40 per uur).
+- `POST /api/cms/content/compass/proposals/{id}/approve` met optioneel `{weights: {social: -2…2, …}}` schrijft de beoordeelde weging. 409 als de tekst sindsdien is gewijzigd of al handmatig is gewogen; het voorstel wordt dan `outdated`.
+- `POST /api/cms/content/compass/proposals/{id}/reject`.
+- `GET /api/cms/content/compass/weights` exporteert alle beoordeelde gewichten (`compass-weights-v1`: slug, text_hash, weights, context). `POST` met dezelfde inhoud importeert ze; reactie applied, already_reviewed, changed_text, missing.
+- Een via `POST /statements` of `/import` opgeslagen stelling zonder gekozen gewichten krijgt na het antwoord automatisch een voorstel.
+- `POST /api/cms/content/compass/proposals/approve` met `{confidence: high|medium, limit≤250}` of `{ids: […]}` keurt in bulk goed en slaat gewijzigde stellingen over.
+
+`GET /api/issues/pending` zet maximaal twaalf gewogen stellingen vooraan die ontbrekende kompasthema's van de gebruiker aanvullen, in één vaste volgorde voor alle offsets.
+
 
 ### Rapportontwerp insight-v3
 
@@ -58,6 +70,13 @@ Nieuwe order-/devsnapshots bevatten `analysis_context` met version=3, votes (eig
 
 ### compass-poster-v4
 
-`compass.version=compass-v4`, `type_catalogue` bevat de zestien presentatietypen. Een gekozen type bevat ook color/description; toelaatbaarheid volgt uit vaste regels in de servercatalogus. Nieuwe `narrative.analysis_version=4` bevat summary, highlights[{text,evidence_ids}], analysis_origin en prompt_version. Alle vier observaties zijn kort en volledig, met bestaande antwoordverwijzingen. Nieuwe devpreviews hebben layout_version=compass-poster-v4.
+`compass.version=compass-v4.1`, `type_catalogue` bevat de zestien presentatietypen. Een gekozen type bevat ook color/description; toelaatbaarheid volgt uit vaste regels in de servercatalogus. Nieuwe `narrative.analysis_version=4` bevat summary, highlights[{text,evidence_ids}], analysis_origin en prompt_version. Alle vier observaties zijn kort en volledig, met bestaande antwoordverwijzingen. Nieuwe devpreviews hebben layout_version=compass-poster-v4.
 
 `party_coverage` geeft verified_motions, minimum=10 en early_minimum=2. Nieuwe uitgebreide rapportsnapshots kunnen partijovereenkomsten vanaf twee unieke officiële moties tonen; bij minder dan tien hebben ze provisional=true. Elke partij behoudt matched/compared/percentage. Conflicterende eigen antwoorden op dezelfde motie tellen niet mee. Oude rapportformaten blijven als legacy contract ondersteund. De actuele PDF is één A4.
+
+
+### Voorzichtige scores (V4.1)
+
+`compass.score_adjustment` bevat `{version: "neutral-anchor-v1", neutral_anchor: 6, display_range: [1,99]}`. Een dimensie bevat naast de afgezwakte `percentage` en complementaire `opposite_percentage` de oorspronkelijke nullable `observed_percentage`. Formule en afronding staan in COMPASS_ALGORITHM.md. N is het aantal verschillende bruikbare niet-neutrale antwoorden, geen som van gewichten. Geen score bij minder dan twee antwoorden.
+
+Partijen behouden het feitelijke `percentage`, `matched` en `compared`. Het nieuwe `balanced_score` is de afgezwakte indicator op 100; nieuwe rangschikking en UI/PDF gebruiken dit veld en noemen het expliciet een matchscore. `party_coverage.score_adjustment` beschrijft dezelfde regel. Oude snapshots zonder deze velden behouden hun oorspronkelijke cijfers. Nieuwe previews hebben methodology_version=compass-v4.1; narrative.analysis_version en layout_version blijven 4/compass-poster-v4 (één A4).

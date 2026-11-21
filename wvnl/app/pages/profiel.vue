@@ -3,6 +3,11 @@ definePageMeta({ middleware: "auth" });
 import AdSlot from "~/components/common/AdSlot.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 const auth = useAuthStore();
+const router = useRouter();
+const deleteDialog = ref<HTMLDialogElement | null>(null);
+const currentPassword = ref("");
+const deleteError = ref("");
+const deleting = ref(false);
 const name = computed(() => auth.user?.username || auth.user?.name || "Welkom");
 const since = computed(() => {
   const value = auth.user?.created_at;
@@ -13,9 +18,52 @@ const since = computed(() => {
       }).format(new Date(value))
     : null;
 });
+const motion = useMotionPreferences();
+const infoLinks = [
+  { to: "/over-ons", label: "Over ons", icon: "home" },
+  { to: "/faq", label: "Veelgestelde vragen", icon: "chat" },
+  { to: "/methodologie", label: "Hoe werken de uitslagen?", icon: "compass" },
+  { to: "/contact", label: "Contact", icon: "mail" },
+  { to: "/voorwaarden", label: "Voorwaarden", icon: "shield" },
+];
 async function logout() {
   await auth.logout();
-  await navigateTo("/inloggen");
+  await router.replace("/inloggen");
+}
+function resetDeleteForm() {
+  currentPassword.value = "";
+  deleteError.value = "";
+}
+async function deleteAccount() {
+  if (deleting.value) return;
+  deleteError.value = "";
+  deleting.value = true;
+  try {
+    await auth.deleteAccount(currentPassword.value);
+    deleteDialog.value?.close();
+    await router.replace({
+      path: "/inloggen",
+      query: { account: "verwijderd" },
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "statusCode" in error &&
+      error.statusCode === 422
+    ) {
+      deleteError.value = "Controleer je huidige wachtwoord.";
+    } else {
+      deleteError.value =
+        error instanceof Error
+          ? error.message
+          : "Verwijderen is mislukt. Probeer het opnieuw.";
+    }
+  } finally {
+    deleting.value = false;
+  }
+}
+function cancelDelete(event: Event) {
+  if (deleting.value) event.preventDefault();
 }
 useSeoMeta({
   title: "Mijn profiel | WatDenktNederland",
@@ -30,9 +78,6 @@ useSeoMeta({
         <h1>Mijn profiel</h1>
         <p>Je mening, je inzichten en je account. Alles bij elkaar.</p>
       </div>
-      <button type="button" class="profile-home__logout" @click="logout">
-        Uitloggen →
-      </button>
     </header>
     <div class="profile-home__identity" data-reveal>
       <span class="profile-home__avatar">{{
@@ -81,11 +126,149 @@ useSeoMeta({
           ><small>Lees hoe je gegevens worden verwerkt</small></span
         ><AppIcon name="chevron" :size="17"
       /></NuxtLink>
+      <button
+        type="button"
+        class="profile-home__row-button profile-home__row-button--danger"
+        @click="deleteDialog?.showModal()"
+      >
+        <AppIcon name="trash" /><span
+          ><strong>Account verwijderen</strong></span
+        >
+        <AppIcon name="chevron" :size="17" />
+      </button>
+      <button
+        type="button"
+        class="profile-home__row-button profile-home__row-button--mobile"
+        @click="logout"
+      >
+        <AppIcon name="logout" /><span><strong>Uitloggen</strong></span>
+      </button>
+    </div>
+    <!-- Phones: the web footer is hidden in the app, so its links live here (Jakob: apps keep these under the profile). -->
+    <h2 class="profile-home__subheading profile-home__mobile-only">
+      Meer over WDNL
+    </h2>
+    <div class="profile-home__settings profile-home__mobile-only">
+      <NuxtLink v-for="link in infoLinks" :key="link.to" :to="link.to"
+        ><AppIcon :name="link.icon" /><span
+          ><strong>{{ link.label }}</strong></span
+        ><AppIcon name="chevron" :size="17"
+      /></NuxtLink>
+      <button
+        type="button"
+        class="profile-home__row-button"
+        :aria-pressed="motion.enabled.value"
+        :disabled="motion.reducedBySystem.value"
+        @click="motion.toggle"
+      >
+        <AppIcon name="spark" /><span
+          ><strong>Animaties</strong
+          ><small>{{
+            motion.reducedBySystem.value
+              ? "Minder beweging staat aan op je toestel"
+              : motion.enabled.value
+                ? "Aan · tik om uit te zetten"
+                : "Uit · tik om aan te zetten"
+          }}</small></span
+        >
+      </button>
     </div>
     <AdSlot class="profile-home__ad" placement="profiel-overzicht" compact />
+    <Teleport to="body">
+      <dialog
+        ref="deleteDialog"
+        class="profile-delete"
+        aria-labelledby="profile-delete-title"
+        aria-describedby="profile-delete-description"
+        @close="resetDeleteForm"
+        @cancel="cancelDelete"
+      >
+        <h2 id="profile-delete-title">Je account verwijderen?</h2>
+        <p id="profile-delete-description">
+          Je account, stemmen en opgeslagen rapporten worden definitief
+          verwijderd.
+        </p>
+        <form :aria-busy="deleting" @submit.prevent="deleteAccount">
+          <label for="profile-delete-password">Huidig wachtwoord</label>
+          <input
+            id="profile-delete-password"
+            v-model="currentPassword"
+            name="current_password"
+            type="password"
+            autocomplete="current-password"
+            :disabled="deleting"
+            required
+          />
+          <p v-if="deleteError" class="profile-delete__error" role="alert">
+            {{ deleteError }}
+          </p>
+          <div class="profile-delete__actions">
+            <button
+              type="button"
+              class="button button-secondary"
+              :disabled="deleting"
+              autofocus
+              @click="deleteDialog?.close()"
+            >
+              Annuleren
+            </button>
+            <button
+              type="submit"
+              class="button button-danger"
+              :disabled="deleting"
+            >
+              {{
+                deleting ? "Bezig met verwijderen…" : "Definitief verwijderen"
+              }}
+            </button>
+          </div>
+        </form>
+      </dialog>
+    </Teleport>
   </section>
 </template>
 <style scoped>
+.profile-home__mobile-only {
+  display: none;
+}
+.profile-home__row-button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.1rem 1.4rem;
+  border: 0;
+  border-top: 1px solid #e8edf4;
+  background: none;
+  color: #001f4d;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.profile-home__row-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.profile-home__row-button:hover:not(:disabled) {
+  background: #fafcff;
+}
+.profile-home__row-button--danger {
+  color: #be0025;
+}
+.profile-home__row-button--mobile {
+  display: none;
+}
+@media (max-width: 720px) {
+  .profile-home__mobile-only {
+    display: block;
+  }
+  h2.profile-home__mobile-only {
+    margin-top: 2rem;
+  }
+  .profile-home__row-button--mobile {
+    display: flex;
+  }
+}
 .profile-home__ad {
   margin-top: 2rem;
 }
@@ -107,15 +290,6 @@ useSeoMeta({
 .profile-home__header p:last-child {
   font-size: 0.88rem;
   color: #63738a;
-}
-.profile-home__logout {
-  white-space: nowrap;
-  flex-shrink: 0;
-  border: 0;
-  background: none;
-  color: #63738a;
-  font-size: 0.75rem;
-  min-height: 44px;
 }
 .profile-home__identity {
   display: flex;
@@ -299,5 +473,57 @@ useSeoMeta({
   border: 1px solid #dce7f6;
   box-shadow: 3px 4px 0 #dae6f7;
   transform: rotate(-7deg);
+}
+.profile-delete {
+  width: min(480px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: clamp(1.35rem, 5vw, 2rem);
+  border: 1px solid #dce3ee;
+  border-radius: 24px;
+  background: #fff;
+  color: #001f4d;
+  box-shadow: 0 24px 70px #001f4d33;
+}
+.profile-delete::backdrop {
+  background: #00172f8f;
+}
+.profile-delete h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.45rem;
+}
+.profile-delete p {
+  color: #526277;
+  line-height: 1.6;
+  margin: 0 0 1.25rem;
+}
+.profile-delete form {
+  display: grid;
+  gap: 0.55rem;
+}
+.profile-delete label {
+  font-weight: 750;
+}
+.profile-delete input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #b9c8de;
+  border-radius: 10px;
+  font: inherit;
+}
+.profile-delete .profile-delete__error {
+  color: #af0024;
+  margin: 0;
+}
+.profile-delete__actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.profile-delete__actions .button {
+  min-height: 44px;
+  font-size: 0.84rem;
 }
 </style>

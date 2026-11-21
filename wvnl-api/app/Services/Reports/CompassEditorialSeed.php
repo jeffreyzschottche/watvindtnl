@@ -10,6 +10,15 @@ class CompassEditorialSeed
 {
     public function run(?int $actor = null): array
     {
+        $result = $this->catalogue($actor);
+        // Weights approved elsewhere (exported to resources/content) arrive with the same seed click.
+        $result['weights_file'] = app(CompassWeightsFile::class)->seedFromFile($actor);
+
+        return $result;
+    }
+
+    private function catalogue(?int $actor): array
+    {
         return DB::transaction(function () use ($actor) {
             $result = ['reviewed' => 0, 'unchanged' => 0, 'skipped_existing' => 0, 'skipped_changed' => 0, 'missing' => 0, 'catalogue' => CompassEditorialCatalogue::VERSION];
             $hashes = json_decode(file_get_contents(resource_path('content/compass-review-hashes.json')), true, flags: JSON_THROW_ON_ERROR);

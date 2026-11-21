@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
     v-if="isDevelopment && allowed"
     class="dev-report"
     :class="{ 'dev-report--floating': floating }"
-    aria-label="Tijdelijke ontwikkeltool"
+    aria-label="Lokale ontwikkeltool"
   >
     <span class="dev-report__badge">ALLEEN LOCAL DEV · ÉÉN A4 · 16 TYPEN</span>
     <button
@@ -91,9 +91,8 @@ onBeforeUnmount(() => {
       }}</span>
     </button>
     <p>
-      OpenAI-model: <strong>{{ model }}</strong> uit je backend-.env. Gebruikt
-      je bestaande OPENAI_API_KEY. Het rapport verloopt na één uur; de knop
-      verdwijnt in de productiebuild.
+      OpenAI-model: <strong>{{ model }}</strong
+      >. Je rapport verschijnt bij je eerdere aanvragen.
     </p>
     <p v-if="error" role="alert">{{ error }}</p>
   </aside>

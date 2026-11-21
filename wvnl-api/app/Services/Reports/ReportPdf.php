@@ -4,12 +4,28 @@ namespace App\Services\Reports;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Http\Response;
 
 class ReportPdf
 {
+    public function download(array $snapshot, ?array $narrative, string $filename, ?string $stored = null): Response
+    {
+        $pdf = $stored !== null ? base64_decode($stored, true) : false;
+        if (! $pdf) {
+            abort_if($narrative === null, 409, 'Het rapport is nog niet beschikbaar.');
+            $pdf = $this->render($snapshot, $narrative);
+        }
+
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Cache-Control' => 'private, no-store',
+        ]);
+    }
+
     public function render(array $snapshot, array $narrative): string
     {
-        $poster = ($snapshot['compass']['version'] ?? null) === 'compass-v4';
+        $poster = in_array($snapshot['compass']['version'] ?? '', CompassAnalysis::POSTER_VERSIONS, true);
         $insights = ($narrative['analysis_version'] ?? null) === 3 && isset($snapshot['analysis_context']);
         $options = new Options;
         $options->set('isRemoteEnabled', false);

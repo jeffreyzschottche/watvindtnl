@@ -191,17 +191,31 @@ test("system reduced motion suppresses confetti while voting remains functional"
     page.getByRole("heading", { name: "Zo denken de deelnemers" }),
   ).toBeVisible();
   await expect(page.getByTestId("vote-confetti")).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: "Minder beweging actief" }),
-  ).toBeDisabled();
+  if (test.info().project.name === "mobile") {
+    // In the phone app the footer is hidden; the motion setting lives under Profiel.
+    await page.goto("/profiel");
+    await expect(
+      page.getByRole("button", { name: /Animaties Minder beweging/ }),
+    ).toBeDisabled();
+  } else {
+    await expect(
+      page.getByRole("button", { name: "Minder beweging actief" }),
+    ).toBeDisabled();
+  }
 });
 
 test("motion opt out is shared with the vote card and survives a reload", async ({
   page,
 }) => {
   await setup(page);
-  await page.goto("/spel");
-  await page.getByRole("button", { name: "Animaties uitzetten" }).click();
+  if (test.info().project.name === "mobile") {
+    await page.goto("/profiel");
+    await page.getByRole("button", { name: /Animaties Aan/ }).click();
+    await page.goto("/spel");
+  } else {
+    await page.goto("/spel");
+    await page.getByRole("button", { name: "Animaties uitzetten" }).click();
+  }
   await expect(page.locator("#main-content")).toHaveAttribute(
     "data-motion",
     "off",
@@ -243,4 +257,37 @@ test("neutral is saved as its own choice and the result waits for manual next", 
   expect(votes).toHaveLength(1);
   await page.getByRole("button", { name: "Volgende stelling" }).click();
   await expect(title).not.toHaveText(original!);
+});
+
+test("phone app keeps all three choices in the thumb zone, also while reading arguments", async ({
+  page,
+}) => {
+  test.skip(test.info().project.name !== "mobile", "phone layout only");
+  await setup(page);
+  await page.goto("/spel");
+  const tabbar = page.getByRole("navigation", { name: "Appnavigatie" });
+  const against = page.getByRole("button", { name: "Tegen Ik ben het oneens" });
+  const neutral = page.getByRole("button", {
+    name: "Neutraal Maakt me niet uit / geen voorkeur",
+  });
+  const agree = page.getByRole("button", { name: "Voor Ik ben het eens" });
+  await expect(agree).toBeVisible();
+  const [a, n, f, tab] = await Promise.all(
+    [against, neutral, agree, tabbar].map((l) => l.boundingBox()),
+  );
+  // One row, equal size for tegen and voor, neutraal in between, all above the tab bar.
+  expect(Math.abs(a!.y - f!.y)).toBeLessThan(2);
+  expect(Math.abs(a!.width - f!.width)).toBeLessThan(2);
+  expect(a!.x).toBeLessThan(n!.x);
+  expect(n!.x).toBeLessThan(f!.x);
+  expect(a!.height).toBeGreaterThanOrEqual(56);
+  expect(f!.y + f!.height).toBeLessThanOrEqual(tab!.y);
+  // Apps have one menu and no web footer.
+  await expect(page.getByRole("button", { name: "Menu openen" })).toBeHidden();
+  await expect(page.locator(".site-footer")).toBeHidden();
+  await page.locator(".vote-card-v2__background summary").click();
+  await page.mouse.wheel(0, 1200);
+  await expect(agree).toBeInViewport();
+  const pinned = await agree.boundingBox();
+  expect(pinned!.y + pinned!.height).toBeLessThanOrEqual(tab!.y);
 });

@@ -73,3 +73,17 @@ Lokale verwijdering uitgevoerd op expliciet verzoek. Drie legacyrecords en 23 ou
 14 frontend-unitchecks, typecheck en productiebuild geslaagd; 50 Playwrightchecks op desktop/mobiel en zeven geïsoleerde devregressies. Nieuw: segmentklik, toetsenbordfocus/pijltjestoetsen, dropdown, vorige/volgende en reset. De persoonlijke typekop en scores veranderen niet tijdens verkenning, er ontstaan geen API-POSTs. De antwoordmix gebruikt de echte bewaarde tellingen (ook nulwaarden). De tests controleren gelijke boven-/onderkolomhoogtes en 1440/390/320px zonder overflow.
 
 Reduced-motion en de gedeelde opt-out worden afzonderlijk gecontroleerd: inhoud en typebediening blijven beschikbaar, zonder tijdelijke GSAP-transforms. Een eerste testvergelijking begon vóór het asynchrone rapport geladen was; de test wacht nu op de vier aanwezige themascores. Geen willekeurige sleep of automatische retry toegevoegd. Screenshots met expliciet fictieve rapportdata visueel bekeken; echte gebruikersdata/modelcalls zijn niet gebruikt. PDF-rendercode is niet gewijzigd; pdfinfo op de bestaande download bevestigt één A4.
+
+
+## Evenwichtige scores
+
+Backend 93 tests/1.292 assertions geslaagd, waaronder `BalancedScoresTest` (63/70/81 bij 2/4/10 gelijkgerichte antwoorden, symmetrie bij omgekeerde antwoorden, nooit 0 of 100) en een partijrangschikkingstest (twee perfecte matches eindigen niet boven brede overeenstemming). Frontend `npm run check` (typecheck/build), 50 Playwrightchecks op desktop/mobiel en zeven geïsoleerde devregressies geslaagd. Live devrapport van het demo-account gecontroleerd: één A4, gecorrigeerde scores.
+
+
+## Kompas 4.2
+
+Backend 100 tests/1.335 assertions, waaronder `CompassProposalsTest`: ongeldige modelitems worden weggegooid, kostenlimiet stopt vóór een aanvraag, goedkeuring schrijft alleen beoordeelde gewichten (geen `verified_at`), gewijzigde tekst wordt `outdated` en niet toegepast (eerst gevonden bug: de 409 draaide die markering terug), oude stellingtekst telt volledig, en de vraagvolgorde zet ontbrekende thema's vooraan zonder items over te slaan bij paginering. zschotcms: WDNL-backendtests en `nuxt typecheck` geslaagd. Frontend `npm run check`, 50 Playwrightchecks en zeven devregressies geslaagd. Voorbeeld-PDF opnieuw gegenereerd: één A4, band zichtbaar.
+
+## Waardenkenmerken
+
+Backend 108 tests/1.364 assertions, waaronder `CompassTraitsTest` (vijf geldige kenmerken, minimaal twee bewijsantwoorden bij voldoende data, afwijzing van herhaalde stellingtitel, afgekapte zin, ontbrekend "Je" en cijfers, terugval met waardenzinnen en sterkste thema eerst). Frontend `npm run check`, 50 Playwrightchecks (nu vijf kenmerken op de poster) en zeven devregressies geslaagd. Voorbeeld-PDF: één A4, visueel gecontroleerd.

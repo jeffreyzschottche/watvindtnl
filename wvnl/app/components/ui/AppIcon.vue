@@ -16,6 +16,10 @@ const paths: Record<string, string> = {
   lock: "M5 10h14v11H5z M8 10V6a4 4 0 1 1 8 0v4",
   mail: "M3 5h18v14H3z m0 1 9 7 9-7",
   chevron: "m9 5 7 7-7 7",
+  logout: "M10 4H4v16h6m4-13 5 5-5 5m-5-5h10",
+  trash: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13m-8 4v5m4-5v5",
+  spark:
+    "M12 3v4m0 10v4M3 12h4m10 0h4M6 6l2.5 2.5m7 7L18 18M6 18l2.5-2.5m7-7L18 6",
 };
 </script>
 <template>

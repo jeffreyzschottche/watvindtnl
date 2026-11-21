@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ReportTypeWheel from "./ReportTypeWheel.vue";
-import type { VoteReport } from "~/types/voteReports";
+import type { CompassDimension, VoteReport } from "~/types/voteReports";
 const props = defineProps<{ report: VoteReport }>();
 const root = ref<HTMLElement | null>(null);
 const { enabled: reportMotionEnabled } = useReportMotion(
@@ -19,6 +19,13 @@ const date = computed(() =>
 const highlights = computed(() => props.report.narrative?.highlights || []);
 const axis = computed(() => compass.value.spectrum);
 const label = { agree: "Voor", disagree: "Tegen", neutral: "Neutraal" };
+// How far one answer more or less could move a score; shown as a lighter band, never as extra data.
+function band(d: CompassDimension) {
+  if (d.percentage === null || !d.sensitivity) return null;
+  const low = Math.min(d.sensitivity.min, d.percentage);
+  const high = Math.max(d.sensitivity.max, d.percentage);
+  return high > low ? { low, high } : null;
+}
 const answerMix = computed(() =>
   (["agree", "disagree", "neutral"] as const).map((choice) => ({
     choice,
@@ -39,7 +46,7 @@ const answerMix = computed(() =>
     aria-label="Jouw persoonlijke stemrapport"
   >
     <p v-if="report.is_development" class="poster-notice">
-      Tijdelijk devrapport · geen aankoop
+      Devrapport · geen aankoop
     </p>
     <header class="poster-header">
       <img
@@ -169,11 +176,24 @@ const answerMix = computed(() =>
                   role="img"
                   :aria-label="`${dimension.percentage}% ${dimension.left}, ${dimension.opposite_percentage}% ${dimension.right}${dimension.provisional ? ', voorlopig' : ''}`"
                 >
-                  <div class="poster-track">
+                  <div class="poster-track poster-track--band">
                     <span
                       data-report-bar
                       :style="{ width: `${dimension.percentage}%` }"
                     />
+                    <template v-if="band(dimension)">
+                      <i
+                        class="poster-band poster-band--low"
+                        :style="{
+                          left: `${band(dimension)!.low}%`,
+                          width: `${dimension.percentage - band(dimension)!.low}%`,
+                        }" /><i
+                        class="poster-band poster-band--high"
+                        :style="{
+                          left: `${dimension.percentage}%`,
+                          width: `${band(dimension)!.high - dimension.percentage}%`,
+                        }"
+                    /></template>
                   </div>
                   <div class="poster-between poster-percentages">
                     <strong>{{ dimension.percentage }}%</strong
@@ -182,10 +202,12 @@ const answerMix = computed(() =>
                 </div>
                 <p class="poster-caption">
                   {{ dimension.compared }} antwoorden<span
-                    v-if="dimension.provisional"
+                    v-if="band(dimension)"
                   >
-                    · voorlopig</span
-                  >
+                    · bandbreedte {{ band(dimension)!.low }}–{{
+                      band(dimension)!.high
+                    }}%</span
+                  ><span v-if="dimension.provisional"> · voorlopig</span>
                 </p></template
               ><template v-else
                 ><div class="poster-track" />
@@ -204,7 +226,11 @@ const answerMix = computed(() =>
         <h3>Partijen die bij je passen</h3>
         <span class="poster-accent" />
         <p class="poster-caption">
-          Overeenkomst bij officieel gekoppelde moties.
+          {{
+            compass.score_adjustment
+              ? "Matchscore op 100 · voorzichtig bij weinig moties."
+              : "Overeenkomst bij officieel gekoppelde moties."
+          }}
         </p>
         <div
           v-for="party in snapshot.party_matches.slice(0, 5)"
@@ -216,7 +242,9 @@ const answerMix = computed(() =>
             <div class="poster-track">
               <span
                 data-report-bar
-                :style="{ width: `${party.percentage}%` }"
+                :style="{
+                  width: `${party.balanced_score ?? party.percentage}%`,
+                }"
               />
             </div>
             <p class="poster-caption">
@@ -227,8 +255,15 @@ const answerMix = computed(() =>
               >
             </p>
           </div>
-          <strong class="poster-party-percentage"
-            >{{ party.percentage }}%</strong
+          <strong
+            class="poster-party-percentage"
+            :aria-label="
+              party.balanced_score !== undefined
+                ? `Matchscore ${party.balanced_score} op 100; ${party.matched} van ${party.compared} moties gelijk gestemd`
+                : undefined
+            "
+            >{{ party.balanced_score ?? party.percentage
+            }}{{ party.balanced_score === undefined ? "%" : "" }}</strong
           >
         </div>
         <template v-if="!snapshot.party_matches.length"
@@ -262,7 +297,13 @@ const answerMix = computed(() =>
               data-report-point
             >
               <span class="poster-check" aria-hidden="true">✓</span>
-              <p>{{ highlight.text }}</p>
+              <p>
+                {{ highlight.text }}
+                <small v-if="highlight.evidence_ids.length > 1"
+                  >Blijkt uit {{ highlight.evidence_ids.length }} van je
+                  antwoorden</small
+                >
+              </p>
             </li>
           </ul>
         </section>
@@ -281,6 +322,10 @@ const answerMix = computed(() =>
                   ? "de toelichting is zonder AI gemaakt."
                   : "AI duidt je antwoorden."
               }}
+              <template v-if="compass.score_adjustment">
+                Bij weinig antwoorden blijven scores dichter bij het midden. Dit
+                maakt je keuzes niet gematigder.
+              </template>
               Kleine aantallen zijn voorlopig. Het type is een samenvatting,
               geen diagnose.
             </p>
@@ -325,7 +370,8 @@ const answerMix = computed(() =>
         neutraal · {{ compass.duplicate_answers || 0 }} dubbelen eenmaal geteld
       </p>
       <p>
-        {{ date }}<br />Kompas 4.0 ·
+        {{ date }}<br />Kompas
+        {{ compass.version.replace(/^compass-v/, "").replace(/^4$/, "4.0") }} ·
         {{ type?.provisional ? "voorlopig" : "persoonlijk" }}
       </p>
       <p><strong>WatDenktNederland</strong><br />watdenktnl.nl</p>
@@ -580,6 +626,21 @@ const answerMix = computed(() =>
   margin: 0.4rem 0 0.2rem;
   overflow: hidden;
 }
+.poster-track--band {
+  position: relative;
+}
+.poster-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.poster-band--low {
+  background: rgb(255 255 255 / 0.45);
+}
+.poster-band--high {
+  background: var(--type-color);
+  opacity: 0.32;
+}
 .poster-track > span {
   display: block;
   height: 100%;
@@ -654,6 +715,12 @@ const answerMix = computed(() =>
 }
 .poster-highlights li:last-child {
   margin-bottom: 0;
+}
+.poster-highlights small {
+  display: block;
+  font-size: 0.66rem;
+  color: #627587;
+  line-height: 1.3;
 }
 .poster-highlights p {
   font-size: 0.85rem;

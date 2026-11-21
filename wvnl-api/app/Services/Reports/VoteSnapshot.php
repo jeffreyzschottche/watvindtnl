@@ -83,12 +83,12 @@ class VoteSnapshot
             if ($result['compared'] < ($withAnalysisContext ? 2 : 10) || ! $parties->has($id)) {
                 continue;
             }
-            $ranked[] = ['provisional' => $result['compared'] < 10, 'name' => $parties[$id]->name, 'compared' => $result['compared'], 'matched' => $result['matched'], 'percentage' => round(100 * $result['matched'] / $result['compared'])];
+            $ranked[] = ['provisional' => $result['compared'] < 10, 'name' => $parties[$id]->name, 'compared' => $result['compared'], 'matched' => $result['matched'], 'percentage' => round(100 * $result['matched'] / $result['compared']), 'balanced_score' => BalancedScore::value(100 * $result['matched'] / $result['compared'], $result['compared'])];
         }
-        usort($ranked, fn ($a, $b) => ($b['percentage'] <=> $a['percentage']) ?: ($b['compared'] <=> $a['compared']) ?: strcmp($a['name'], $b['name']));
+        usort($ranked, fn ($a, $b) => ($b['balanced_score'] <=> $a['balanced_score']) ?: ($b['compared'] <=> $a['compared']) ?: strcmp($a['name'], $b['name']));
 
         $snapshot = ['methodology_version' => self::VERSION, 'total' => count($entries), 'counts' => $counts, 'entries' => $entries,
-            'party_coverage' => ['verified_motions' => $verifiedMotions, 'minimum' => 10, 'early_minimum' => 2], 'party_matches' => array_slice($ranked, 0, 5), 'generated_at' => now()->toIso8601String(), 'compass' => app(CompassAnalysis::class)->build($entries, $metadata->all()),
+            'party_coverage' => ['score_adjustment' => BalancedScore::metadata(), 'verified_motions' => $verifiedMotions, 'minimum' => 10, 'early_minimum' => 2], 'party_matches' => array_slice($ranked, 0, 5), 'generated_at' => now()->toIso8601String(), 'compass' => app(CompassAnalysis::class)->build($entries, $metadata->all()),
             'limits' => ['Partijovereenkomsten gebruiken alleen redactioneel gecontroleerde motiekoppelingen, vanaf twee vergelijkbare moties als voorlopige indicatie; vanaf tien wordt de vergelijking vollediger. Historische overeenkomsten zijn geen actuele partijstandpunten.', 'De verhouding voor/tegen zegt op zichzelf niets over links/rechts. Thematische scores gebruiken uitsluitend redactioneel vastgelegde gewichten; types zijn een presentatie, geen psychologische diagnose.']];
         if ($withAnalysisContext) {
             $snapshot['analysis_context'] = app(ReportContext::class)->build($entries, $issues, $metadata);

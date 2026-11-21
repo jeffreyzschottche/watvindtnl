@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Issue;
+use App\Models\ReportOrder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -63,7 +64,7 @@ class DevelopmentReportsTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_demo_uses_env_model_and_key_with_real_pdf_and_one_call_per_request_key(): void
+    public function test_dev_report_is_persistent_with_one_model_call_and_an_on_demand_pdf(): void
     {
         $this->app->instance('env', 'local');
         $this->fakeResponse();
@@ -72,19 +73,30 @@ class DevelopmentReportsTest extends TestCase
         $user->update(['voted_issue_ids' => [$issue->id]]);
         $this->actingAs($user);
         $payload = ['request_key' => (string) Str::uuid()];
-        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'compass-poster-v4')->assertJsonPath('narrative.analysis_version', 4)->assertJsonPath('snapshot.compass.version', 'compass-v4')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
+        $id = $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('layout_version', 'compass-poster-v4')->assertJsonPath('narrative.analysis_version', 4)->assertJsonPath('snapshot.compass.version', 'compass-v4.2')->assertJsonPath('is_development', true)->assertJsonPath('amount_cents', 0)->assertJsonPath('narrative_source', 'openai')->assertJsonPath('generation_model', 'gpt-4.1-mini')->assertJsonPath('generation_usage.input_tokens', 400)->assertJsonPath('snapshot.counts.neutral', 1)->json('id');
         $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('id', $id);
         $this->getJson('/api/me/reports/dev/'.$id)->assertOk()->assertJsonPath('snapshot.entries.0.title', 'Mijn echte neutrale testantwoord');
         $pdf = $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertOk()->assertHeader('Content-Type', 'application/pdf');
         $this->assertStringStartsWith('%PDF-', $pdf->getContent());
-        $this->assertStringNotContainsString('Mijn echte neutrale', Cache::get('wdnl-dev-ai-report:'.$id));
-        $this->assertDatabaseCount('wdnl_report_orders', 0);
+        $saved = ReportOrder::findOrFail($id);
+        $this->assertTrue($saved->is_development);
+        $this->assertNull($saved->pdf);
+        $this->assertSame('gpt-4.1-mini', $saved->generation_settings['model']);
+        $this->assertStringNotContainsString('Mijn echte neutrale', $saved->getRawOriginal('snapshot'));
+        $this->assertStringNotContainsString('Je antwoorden vormen', $saved->getRawOriginal('narrative'));
+        $this->assertNull(Cache::get('wdnl-dev-ai-report:'.$id));
+        $this->assertDatabaseCount('wdnl_report_orders', 1);
         $this->assertDatabaseCount('wdnl_report_attempts', 0);
         $this->assertDatabaseCount('wdnl_report_payment_events', 0);
-        Http::assertSentCount(1);
+        $this->getJson('/api/me/reports')->assertOk()->assertJsonPath('orders.0.id', $id)->assertJsonPath('orders.0.is_development', true)->assertJsonPath('comparison.previous_report_at', null);
         Http::assertSent(fn ($request) => $request['model'] === 'gpt-4.1-mini' && $request->hasHeader('Authorization', 'Bearer test-only-key') && ! isset($request['reasoning']) && $request['store'] === false && ! str_contains($request['input'], 'appdemo@mail.com'));
         $this->travel(61)->minutes();
-        $this->getJson('/api/me/reports/dev/'.$id)->assertNotFound();
+        config(['wdnl_reports.openai_key' => '']);
+        $this->getJson('/api/me/reports/dev/'.$id)->assertOk()->assertJsonPath('id', $id)->assertJsonMissingPath('expires_at');
+        $this->postJson('/api/me/reports/dev', $payload)->assertOk()->assertJsonPath('id', $id);
+        $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertOk();
+        $this->assertNull($saved->fresh()->pdf);
+        Http::assertSentCount(1);
     }
 
     public function test_a_local_dev_preview_cannot_be_retrieved_after_switching_to_production_or_by_another_user(): void
@@ -93,11 +105,15 @@ class DevelopmentReportsTest extends TestCase
         $this->fakeResponse();
         $this->actingAs($this->demo());
         $id = $this->postJson('/api/me/reports/dev', ['request_key' => (string) Str::uuid()])->assertOk()->json('id');
+        $this->getJson('/api/me/reports/'.$id)->assertNotFound();
+        $this->get('/api/me/reports/'.$id.'/pdf')->assertNotFound();
         $this->actingAs(User::factory()->create());
         $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertNotFound();
+        $this->getJson('/api/me/reports')->assertOk()->assertJsonCount(0, 'orders');
         $this->actingAs(User::where('email', 'appdemo@mail.com')->first());
         $this->app->instance('env', 'production');
         $this->get('/api/me/reports/dev/'.$id.'/pdf')->assertNotFound();
+        $this->getJson('/api/me/reports')->assertOk()->assertJsonCount(0, 'orders');
     }
 
     public function test_env_model_overrides_cms_model_and_luna_uses_no_reasoning(): void
@@ -166,7 +182,7 @@ class DevelopmentReportsTest extends TestCase
         Http::assertSent(function ($request) {
             $properties = $request['text']['format']['schema']['properties'];
 
-            return $properties['summary']['pattern'] === '^[^0-9<>:]{1,349}[.!?]$' && $properties['highlights']['items']['properties']['text']['pattern'] === '^[^0-9<>:]{1,119}[.!?]$' && str_contains($request['instructions'], 'Gebruik nergens cijfers');
+            return $properties['summary']['pattern'] === '^[^0-9<>:]{1,349}[.!?]$' && $properties['highlights']['items']['properties']['text']['pattern'] === '^Je [^0-9<>:]{6,108}[^\\s,;][.!?]$' && str_contains($request['instructions'], 'Gebruik nergens cijfers');
         });
     }
 }

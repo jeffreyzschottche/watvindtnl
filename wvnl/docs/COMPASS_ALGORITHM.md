@@ -1,6 +1,6 @@
-# Politiek kompas — compass-v2.1
+# Politiek kompas — compass-v4.2
 
-Nieuwe rapporten gebruiken `CompassAnalysis` en `VoteSnapshot`, niet de historische LLM-score uit `PoliticalCompassService`. De LLM schrijft uitsluitend twee korte toelichtingen bij al berekende feiten. Geen scores, partijstanden of politieke types worden door het model bepaald.
+Nieuwe rapporten gebruiken `CompassAnalysis` en `VoteSnapshot`, niet de historische LLM-score uit `PoliticalCompassService`. De LLM schrijft een korte samenvatting en vier observaties bij al berekende feiten. De actuele zestien typen staan in `CompassTypes`; de oude typetabel hieronder beschrijft het eerdere V2-formaat. Geen scores, partijstanden of politieke types worden door het model bepaald.
 
 ## Redactionele invoer
 
@@ -26,7 +26,9 @@ CMS-validatie accepteert uitsluitend de vijf sleutels en gehele waarden −2…2
 
 ## Berekening en dekking
 
-Voor dimensie d: `score = round(50 × (1 + Σ(w × choice) / Σ(abs(w))))`, `choice = +1` voor VOOR, `−1` voor TEGEN. De andere pool is `100 − score`. Neutraal blijft in de antwoordtelling, zonder richting. Geen score uit nul of één bruikbare vraag.
+Voor dimensie d: `observed = 50 × (1 + Σ(w × choice) / Σ(abs(w)))`, `choice = +1` voor VOOR, `−1` voor TEGEN. Vanaf V4.1: `adjusted = 50 + (observed − 50) × n / (n + 6)`, met n het aantal unieke bruikbare niet-neutrale antwoorden op deze dimensie. `BalancedScore` rondt de afwijking van 50 symmetrisch af, met maximaal 49 punten afwijking (weergave 1–99). De andere pool is exact `100 − score`. Neutraal blijft in de antwoordtelling, zonder richting. Geen score uit nul of één bruikbare vraag; ontbrekende data wordt geen 50.
+
+De zes neutrale ankerantwoorden zijn een redactionele productkeuze, geen echte toegevoegde stemmen en geen gekalibreerd statistisch model. Twee gelijkgerichte antwoorden geven 63/37, vier 70/30, tien 81/19. Gewicht ±2 beïnvloedt de richting maar verdubbelt niet de dekking. De oorspronkelijke richting blijft als `observed_percentage` bewaard; methode en anker staan in `score_adjustment`. Een voorzichtige score bewijst geen voorkeur voor het politieke midden. Absolute zekerheid wordt niet getoond, ook niet door afronding bij grote aantallen. De methode valideert niet automatisch de redactionele gewichten.
 
 Vanaf twee verschillende bruikbare vragen verschijnt een **voorlopige** richting. Een vollediger profiel vereist vijf actuele vragen per thema en tien gewogen vragen totaal. Historische, afzonderlijk gewogen vragen kunnen meetellen als indicatie; ze maken het profiel altijd voorlopig. De economische as heeft dezelfde dekkingseisen voor verkoop.
 
@@ -38,9 +40,9 @@ De score-snapshot bevat gebruikte IDs, canonieke sleutels, gewichten, onderbouwi
 
 Een eerste type vereist acht gewogen vragen en twee beschikbare thema’s. Alleen beschikbare dimensies bepalen de afstand tot de profielpunten; er wordt geen fictieve middenpositie voor onbekende dimensies gebruikt. Een volledig type vereist alle vier de thema’s met actuele dekking; kopen vereist daarnaast een niet-voorlopige economische as. De API blokkeert daarvoor order/checkout; de devpreview toont wel de bestaande indicatie. Eerder gekochte snapshots blijven toegankelijk.
 
-Gevoeligheid is het minimum/maximum bij één antwoord weglaten. Dit is geen statistisch betrouwbaarheidsinterval of representativiteitsclaim.
+Gevoeligheid is het minimum/maximum van dezelfde afgezwakte score bij één antwoord weglaten, mits minstens twee bruikbare antwoorden overblijven. Dit is geen statistisch betrouwbaarheidsinterval of representativiteitsclaim.
 
-## Types
+## Historische V2-types
 
 Het type is het dichtstbijzijnde onderstaande presentatieprofiel, met de kleinste som van gekwadrateerde verschillen over de beschikbare gelijkwaardige themascores. Bij ontbrekende thema’s is het type altijd voorlopig. Bij een exact gelijkspel wint de eerste profielrij. De economische as bepaalt het type niet.
 
@@ -60,7 +62,7 @@ Dit zijn expliciete redactionele productkeuzes, geen wetenschappelijk gevalideer
 
 ## Partijen en historische rapporten
 
-Partijmatch: alleen officieel herleidbare, gecontroleerde motiekoppelingen; geen LLM-invulling, gebruikersvoorkeur of logo. Neutraal/afwezig/ambigue partijkeuzes uitgesloten. Minimaal tien verschillende vergelijkbare moties per partij. Percentage = overeenkomsten / vergeleken moties. Sorteer aflopend op percentage en coverage, dan op naam; maximaal vijf volledige partijnamen. Dit is overeenkomst in stemgedrag, geen stemadvies.
+Partijmatch: alleen officieel herleidbare, gecontroleerde motiekoppelingen; geen LLM-invulling, gebruikersvoorkeur of logo. Neutraal/afwezig/ambigue partijkeuzes uitgesloten. Vanaf twee unieke moties een voorlopige indicatie; vanaf tien een vollediger vergelijking. `percentage` blijft het feitelijke percentage overeenkomsten (`matched / compared`). Vanaf V4.1 is de getoonde **matchscore op 100** het aparte veld `balanced_score`, met dezelfde afzwakking en n = vergeleken unieke moties. Vier van vier overeenkomsten blijft feitelijk 100%, maar geeft indicator 70. UI/PDF tonen de indicator met de werkelijke aantallen en een expliciete legenda, niet als letterlijk matchpercentage. Sorteer aflopend op indicator, dan coverage, dan naam; maximaal vijf volledige partijnamen. Dit is overeenkomst in stemgedrag, geen stemadvies.
 
 Snapshot, optionele AI-tekst en PDF blijven versleuteld en eigenaarsgebonden. Web en PDF lezen dezelfde vaste snapshot. Bestaande `vote-overview-v1`-rapporten behouden hun data, opgeslagen PDF en oorspronkelijke weergave via `LegacyReportSheet` / `snapshot-v1`. Een nieuw rapport is een afzonderlijke aankoop van €1,99; geen lifetime-herberekeningen.
 
@@ -81,3 +83,21 @@ De actuele catalogus staat in `App\Services\Reports\CompassTypes::ALL`. De zesti
 Alle zestien profielpunten zijn getest op bereikbaarheid. Een middenprofiel met alle vier scores vijftig selecteert De Betrokken Middenkoers. Alleen sociale/internationale antwoorden kunnen geen Vernieuwer opleveren: de vereiste progressieve score ontbreekt dan. De drie weergegeven eigenschappen blijven uit de daadwerkelijke beschikbare scores afgeleid. Het wiel toont alle zestien typen en licht één type uit, geen kansen/percentages. De aparte economische as blijft onafhankelijk berekend.
 
 Nieuwe rapporten tonen een eerste partijvergelijking vanaf twee unieke bevestigde moties per partij, met `provisional=true` onder tien moties en het aantal overeenkomsten/vergelijkingen. Historische en conflicterende keuzes worden expliciet behandeld. Geen bestaande partijscore is vanuit een model of het profieltype afgeleid. Zie REPORTS.md en de vastgelegde openbare bronrecords.
+
+
+## V4.1: voorzichtige scores bij beperkte dekking
+
+Voor de typeafstand worden zowel de oorspronkelijke themarichting als het kandidaatprofielpunt met dezelfde factor n/(n+6) naar het midden gebracht. Zo beïnvloeden beperkt gedekte dimensies het type minder sterk en blijven alle zestien typen bereikbaar. Richtingsvoorwaarden en tekstuele kenmerken volgen de oorspronkelijke keuzes; beperkte dekking wordt niet als inhoudelijke gematigdheid geïnterpreteerd. De sterktevolgorde van kenmerken volgt de afgezwakte scores.
+
+Bestaande gekochte snapshots/PDF’s blijven ongewijzigd. Nieuwe devpreviews vereisen methodeversie 4.1; een oudere gecachte preview vraagt om opnieuw genereren. Stemmen, gewichten, officiële partijposities en aankooprechten worden niet gewijzigd.
+
+
+## V4.2: meer gewogen stellingen, eerlijkere voorlopigheid
+
+- **Gewichtsvoorstellen.** `CompassProposals` laat het rapportmodel (provider/model uit de rapportinstellingen) per batch van 20–25 stellingen gewichten, onderwerpen, zekerheid en een korte onderbouwing voorstellen. Ongeldige items worden weggegooid, niet gerepareerd. Voorstellen staan in `wdnl_compass_proposals` met status `pending` en tellen pas mee na goedkeuring in zschotcms (los, aangepast of in bulk per zekerheid). Goedkeuring schrijft `compass_weights`, `compass_reviewed_at` en `compass_context.basis = statement_wording` met de tekst-hash; een daarna gewijzigde of al handmatig gewogen stelling wordt `outdated` en nooit overschreven. `verified_at` en partijstemmen blijven onaangeroerd. Kosten per run staan in `wdnl_compass_proposal_runs`; terminal: `php artisan compass:propose --limit=… --max-eur=…` (met `--dry-run` voor een schatting), CMS: maximaal 50 per klik en €0,10.
+- **Voorlopigheid.** Een themascore is alleen nog voorlopig bij minder dan vijf antwoorden. Historische context maakt een score niet meer voorlopig: een gewicht beschrijft de beantwoorde tekst, dus het antwoord is een actuele mening. Om dezelfde reden geldt de grens van 730 dagen niet voor `basis = statement_wording`. Voor partijvergelijkingen blijft historische context een beperking.
+- **Bandbreedte.** De web- en PDF-poster tonen het bestaande `sensitivity`-bereik (score bij weglaten van telkens één antwoord) als lichtere band op de themabalk.
+- **Vraagvolgorde.** `CompassQuestionPriority` zet bij `/issues/pending` maximaal twaalf gewogen stellingen vooraan die thema's met minder dan zes antwoorden aanvullen. Eén vaste volgorde voor alle offsets, zodat paginering niets overslaat.
+
+- **Automatische voorstellen bij CMS-opslag.** `CmsContentService::saveStatement` zet `compass_reviewed_at` alleen bij gekozen gewichten of een onderbouwing; anders blijft de stelling open en zet `CompassProposals::queue` één batch klaar die na het antwoord draait (`app()->terminating`). Kandidaten zijn tekst-bewust: een voorstel of beoordeling van een oudere formulering telt niet voor de huidige.
+- **Draagbare gewichten.** `CompassWeightsFile` exporteert beoordeelde gewichten voor de huidige tekst (slug + tekst-hash) en past ze toe via CMS-import of via de seed uit `resources/content/compass-weights.json` (`php artisan compass:export`).

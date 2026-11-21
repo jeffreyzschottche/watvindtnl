@@ -9,6 +9,7 @@ const props = defineProps<{
 }>();
 const root = ref<HTMLElement | null>(null);
 const selectedId = ref(props.type?.id || props.catalogue[0]?.id || "pending");
+const hoveredType = ref("");
 const selected = computed(() =>
   props.catalogue.find((item) => item.id === selectedId.value),
 );
@@ -55,12 +56,15 @@ function iconPosition(index: number) {
     y: 300 + 130 * Math.sin(angle) - 13.5,
   };
 }
-function sector(index: number) {
-  const start = ((-101.25 + index * 22.5) * Math.PI) / 180;
-  const end = start + (22.5 * Math.PI) / 180;
+function sector(index: number, inset = false) {
+  const trim = inset ? 3 : 0;
+  const start = ((-101.25 + index * 22.5 + trim) * Math.PI) / 180;
+  const end = ((-78.75 + index * 22.5 - trim) * Math.PI) / 180;
+  const inner = inset ? 75 : 69;
+  const outer = inset ? 174 : 180;
   const point = (radius: number, angle: number) =>
     `${(310 + radius * Math.cos(angle)).toFixed(2)},${(300 + radius * Math.sin(angle)).toFixed(2)}`;
-  return `M${point(69, start)}L${point(180, start)}A180,180 0 0 1 ${point(180, end)}L${point(69, end)}A69,69 0 0 0 ${point(69, start)}Z`;
+  return `M${point(inner, start)}L${point(outer, start)}A${outer},${outer} 0 0 1 ${point(outer, end)}L${point(inner, end)}A${inner},${inner} 0 0 0 ${point(inner, start)}Z`;
 }
 
 watch([() => props.type?.id, () => props.catalogue], () => {
@@ -126,11 +130,11 @@ onBeforeUnmount(() => {
         role="group"
         aria-label="Politieke typen verkennen"
       >
-        <title>
-          Zestien politieke typen ·
-          {{ selected?.name || type?.name || "ontdek de typen" }}
-        </title>
-        <g v-for="(item, index) in catalogue" :key="item.id">
+        <g
+          v-for="(item, index) in catalogue"
+          :key="item.id"
+          :style="{ '--sector-color': item.color }"
+        >
           <path
             :d="sector(index)"
             class="type-wheel__sector"
@@ -148,9 +152,18 @@ onBeforeUnmount(() => {
             :data-sector-index="index"
             @click="select(item.id)"
             @keydown="onKey($event, index)"
-          >
-            <title>{{ item.name }}</title>
-          </path>
+            @pointerenter="
+              (event) => {
+                if (event.pointerType === 'mouse') hoveredType = item.name;
+              }
+            "
+            @pointerleave="hoveredType = ''"
+          />
+          <path
+            :d="sector(index, true)"
+            class="type-wheel__sector-focus"
+            aria-hidden="true"
+          />
           <image
             :href="`/report-art/${item.icon}-white.svg`"
             :x="iconPosition(index).x"
@@ -186,7 +199,9 @@ onBeforeUnmount(() => {
       />
     </div>
     <template v-if="catalogue.length">
-      <p class="type-wheel__hint">Klik op het wiel of blader door de typen.</p>
+      <p class="type-wheel__hint">
+        {{ hoveredType || "Klik op het wiel of blader door de typen." }}
+      </p>
       <div class="type-wheel__navigation">
         <button
           type="button"
@@ -269,11 +284,33 @@ onBeforeUnmount(() => {
   stroke-width: 3;
   cursor: pointer;
 }
-.type-wheel__sector:hover,
-.type-wheel__sector:focus-visible {
-  stroke: var(--preview-color);
-  stroke-width: 5;
+.poster-wheel .type-wheel__sector:focus {
   outline: none;
+}
+.type-wheel__sector-focus {
+  fill: none;
+  stroke: #001f4d;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  pointer-events: none;
+}
+.type-wheel__sector[aria-pressed="true"] + .type-wheel__sector-focus {
+  stroke: white;
+}
+.type-wheel__sector:focus-visible + .type-wheel__sector-focus {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .type-wheel__sector[aria-pressed="false"]:hover {
+    fill: color-mix(in srgb, var(--sector-color) 65%, #d8e4eb);
+  }
+}
+@media (forced-colors: active) {
+  .type-wheel__sector:focus-visible + .type-wheel__sector-focus {
+    stroke: Highlight;
+    forced-color-adjust: none;
+  }
 }
 .type-wheel__hint {
   text-align: center;

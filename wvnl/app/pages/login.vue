@@ -29,6 +29,15 @@ const banner = ref<Banner | null>(null);
 watch(
   () => route.query,
   (query) => {
+    if (query.account === "verwijderd") {
+      banner.value = {
+        title: "Je account is verwijderd",
+        message: "Je bent uitgelogd op al je apparaten.",
+        variant: "success",
+      };
+      return;
+    }
+
     const verify = query.verify;
     if (verify === "sent") {
       banner.value = {

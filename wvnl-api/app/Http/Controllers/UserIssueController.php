@@ -6,6 +6,7 @@ use App\Models\Issue;
 use App\Models\NewsArticle;
 use App\Models\PoliticalParty;
 use App\Models\User;
+use App\Services\Reports\CompassQuestionPriority;
 use App\Support\IssueResults;
 use App\Support\ReportReasons;
 use App\Support\StatementSource;
@@ -26,6 +27,7 @@ class UserIssueController extends Controller
 
         $limit = max(1, min($limit, 200));
         $offset = max(0, $offset);
+        $priority = app(CompassQuestionPriority::class)->ids($voted);
 
         $issues = Issue::with([
             'arguments' => function ($query) {
@@ -42,7 +44,13 @@ class UserIssueController extends Controller
                 });
             })
             ->when(! empty($voted), fn ($query) => $query->whereNotIn('id', $voted))
+            ->when($priority, function ($query) use ($priority) {
+                // One stable order for every offset: compass gaps first, then newest. Paging never skips items.
+                $cases = implode(' ', array_map(fn ($id, $i) => 'WHEN '.(int) $id.' THEN '.$i, $priority, array_keys($priority)));
+                $query->orderByRaw('CASE id '.$cases.' ELSE '.count($priority).' END');
+            })
             ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->skip($offset)
             ->take($limit)
             ->get();

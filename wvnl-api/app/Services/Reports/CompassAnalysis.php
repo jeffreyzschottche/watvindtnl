@@ -7,7 +7,10 @@ use Illuminate\Support\Carbon;
 /** Fixed editorial mappings; provisional indications never invent missing dimensions or party positions. */
 class CompassAnalysis
 {
-    public const VERSION = 'compass-v4';
+    public const VERSION = 'compass-v4.2';
+
+    /** Saved one-page poster reports keep rendering with the method they were made with. */
+    public const POSTER_VERSIONS = ['compass-v4', 'compass-v4.1', self::VERSION];
 
     public const MINIMUM = 5;
 
@@ -83,7 +86,9 @@ class CompassAnalysis
                     continue;
                 }$historic = ($context['historical'] ?? false) === true;
                 $date = $m->source_date ?: $review;
-                if (Carbon::parse($date)->lt(now()->subDays(730)) && ! $historic) {
+                // Weights describe the wording the user answered, so their answer is a current opinion whatever the motion's age.
+                $wording = ($context['basis'] ?? null) === 'statement_wording';
+                if (! $wording && ! $historic && Carbon::parse($date)->lt(now()->subDays(730))) {
                     continue;
                 }
                 $mapping = is_string($m->compass_weights) ? json_decode($m->compass_weights, true) : $m->compass_weights;
@@ -108,16 +113,17 @@ class CompassAnalysis
                 }
                 $evidence[$source] = ['issue_id' => $entry['id'], 'canonical_key' => $source, 'motion_id' => $m->motion_id, 'weights' => $mapping, 'reviewed_at' => $review, 'source_date' => $m->source_date, 'historical' => $historic, 'rationale' => $context['rationale'] ?? null];
             }
-            $percentage = $count >= self::EARLY_MINIMUM ? (int) round(50 * (1 + $sum / $weight)) : null;
+            $observed = $count >= self::EARLY_MINIMUM ? 50 * (1 + $sum / $weight) : null;
+            $percentage = $observed === null ? null : BalancedScore::value($observed, $count);
             $sensitivity = [];
             if ($percentage !== null) {
                 foreach ($contributions as [$v,$w]) {
-                    if ($weight > $w) {
-                        $sensitivity[] = (int) round(50 * (1 + ($sum - $v) / ($weight - $w)));
+                    if ($count - 1 >= self::EARLY_MINIMUM && $weight > $w) {
+                        $sensitivity[] = BalancedScore::value(50 * (1 + ($sum - $v) / ($weight - $w)), $count - 1);
                     }
                 }
             }
-            $scores[$key] = $labels + ['id' => $key, 'percentage' => $percentage, 'opposite_percentage' => $percentage === null ? null : 100 - $percentage, 'compared' => $count, 'neutral' => $neutral, 'historical' => $historical, 'minimum' => self::MINIMUM, 'early_minimum' => self::EARLY_MINIMUM, 'provisional' => $percentage !== null && ($count < self::MINIMUM || $historical > 0), 'sensitivity' => $sensitivity ? ['min' => min($sensitivity), 'max' => max($sensitivity)] : null];
+            $scores[$key] = $labels + ['id' => $key, 'observed_percentage' => $observed, 'percentage' => $percentage, 'opposite_percentage' => $percentage === null ? null : 100 - $percentage, 'compared' => $count, 'neutral' => $neutral, 'historical' => $historical, 'minimum' => self::MINIMUM, 'early_minimum' => self::EARLY_MINIMUM, 'provisional' => $percentage !== null && $count < self::MINIMUM, 'sensitivity' => $sensitivity ? ['min' => min($sensitivity), 'max' => max($sensitivity)] : null];
         }
         $available = array_filter(array_slice($scores, 0, 4), fn ($d) => $d['percentage'] !== null);
         $complete = count($available) === 4 && count($used) >= 10 && count(array_filter($available, fn ($d) => $d['provisional'])) === 0;
@@ -127,7 +133,7 @@ class CompassAnalysis
             foreach (self::TYPES as $id => $candidate) {
                 $eligible = true;
                 foreach ($candidate['requires'] as $key => [$min, $max]) {
-                    $value = $scores[$key]['percentage'];
+                    $value = $scores[$key]['observed_percentage'];
                     if ($value === null || $value < $min || $value > $max) {
                         $eligible = false;
                         break;
@@ -139,7 +145,9 @@ class CompassAnalysis
                 $distance = 0;
                 foreach ($available as $dimension) {
                     $index = array_search($dimension['id'], array_keys(self::DIMENSIONS), true);
-                    $distance += ($dimension['percentage'] - $candidate['point'][$index]) ** 2;
+                    // Compare both the observed direction and type point on the same tempered scale.
+                    // Sparse coverage reduces an axis's influence; it does not prove centrism.
+                    $distance += (($dimension['observed_percentage'] - $candidate['point'][$index]) * BalancedScore::strength($dimension['compared'])) ** 2;
                 }
                 if ($distance < $best) {
                     $best = $distance;
@@ -151,18 +159,18 @@ class CompassAnalysis
             $strongest = array_values($available);
             usort($strongest, fn ($a, $b) => (abs($b['percentage'] - 50) <=> abs($a['percentage'] - 50)) ?: (array_search($a['id'], array_keys(self::DIMENSIONS), true) <=> array_search($b['id'], array_keys(self::DIMENSIONS), true)));
             $type['traits'] = array_map(fn ($d) => match ($d['id']) {
-                'social' => $d['percentage'] >= 60 ? 'Sociale voorzieningen' : ($d['percentage'] <= 40 ? 'Individuele ruimte' : 'Afgewogen sociale keuzes'),
-                'progressive' => $d['percentage'] >= 60 ? 'Gericht op vernieuwing' : ($d['percentage'] <= 40 ? 'Gericht op behoud' : 'Behoud en vernieuwing'),
-                'international' => $d['percentage'] >= 60 ? 'Internationale samenwerking' : ($d['percentage'] <= 40 ? 'Nationale besluitvorming' : 'Gemengde internationale keuzes'),
-                'green' => $d['percentage'] >= 60 ? 'Duurzaamheid' : ($d['percentage'] <= 40 ? 'Ruimte voor economische groei' : 'Groen en groei afgewogen'),
+                'social' => $d['observed_percentage'] >= 60 ? 'Sociale voorzieningen' : ($d['observed_percentage'] <= 40 ? 'Individuele ruimte' : 'Afgewogen sociale keuzes'),
+                'progressive' => $d['observed_percentage'] >= 60 ? 'Gericht op vernieuwing' : ($d['observed_percentage'] <= 40 ? 'Gericht op behoud' : 'Behoud en vernieuwing'),
+                'international' => $d['observed_percentage'] >= 60 ? 'Internationale samenwerking' : ($d['observed_percentage'] <= 40 ? 'Nationale besluitvorming' : 'Gemengde internationale keuzes'),
+                'green' => $d['observed_percentage'] >= 60 ? 'Duurzaamheid' : ($d['observed_percentage'] <= 40 ? 'Ruimte voor economische groei' : 'Groen en groei afgewogen'),
             }, array_slice($strongest, 0, 3));
         }
         usort($topics, fn ($a, $b) => ($b['count'] <=> $a['count']) ?: strcmp($a['name'], $b['name']));
 
-        return ['version' => self::VERSION, 'type_catalogue' => CompassTypes::catalogue(), 'type' => $type, 'dimensions' => array_values(array_slice($scores, 0, 4)), 'spectrum' => $scores['economic'], 'used_votes' => count($used), 'historical_votes' => count($historicalUsed), 'unique_answers' => count($groups), 'duplicate_answers' => $duplicates, 'conflicting_groups' => $conflicting, 'topics' => array_slice(array_values($topics), 0, 5), 'minimum_per_dimension' => self::MINIMUM, 'early_minimum_per_dimension' => self::EARLY_MINIMUM, 'evidence' => array_values($evidence), 'status' => $type ? ($complete ? 'ready' : 'provisional') : 'insufficient_data',
-            'highlights' => array_values(array_map(fn ($d) => $d['percentage'] >= 60 ? match ($d['id']) {
+        return ['version' => self::VERSION, 'score_adjustment' => BalancedScore::metadata(), 'type_catalogue' => CompassTypes::catalogue(), 'type' => $type, 'dimensions' => array_values(array_slice($scores, 0, 4)), 'spectrum' => $scores['economic'], 'used_votes' => count($used), 'historical_votes' => count($historicalUsed), 'unique_answers' => count($groups), 'duplicate_answers' => $duplicates, 'conflicting_groups' => $conflicting, 'topics' => array_slice(array_values($topics), 0, 5), 'minimum_per_dimension' => self::MINIMUM, 'early_minimum_per_dimension' => self::EARLY_MINIMUM, 'evidence' => array_values($evidence), 'status' => $type ? ($complete ? 'ready' : 'provisional') : 'insufficient_data',
+            'highlights' => array_values(array_map(fn ($d) => $d['observed_percentage'] >= 60 ? match ($d['id']) {
                 'social' => 'Je antwoorden leggen vaker de nadruk op gezamenlijke voorzieningen en sociale betrokkenheid.','progressive' => 'Je antwoorden leggen vaker de nadruk op vernieuwing en maatschappelijke verandering.','international' => 'Je antwoorden leggen vaker de nadruk op internationale samenwerking.','green' => 'Je antwoorden leggen vaker de nadruk op milieu en duurzaamheid.'
-            } : ($d['percentage'] <= 40 ? match ($d['id']) {
+            } : ($d['observed_percentage'] <= 40 ? match ($d['id']) {
                 'social' => 'Je antwoorden leggen vaker de nadruk op individuele verantwoordelijkheid en keuzevrijheid.','progressive' => 'Je antwoorden leggen vaker de nadruk op behoud en bestaande tradities.','international' => 'Je antwoorden leggen vaker de nadruk op nationale besluitvorming.','green' => 'Je antwoorden leggen vaker de nadruk op economische groei in deze afwegingen.'
             } : 'Je antwoorden combineren beide kanten van de afweging '.mb_strtolower($d['left']).' / '.mb_strtolower($d['right']).'.'), $available))];
     }

@@ -33,4 +33,22 @@ class CompassTypes
 
         return $rows;
     }
+
+    public static function examples(): array
+    {
+        $dimensions = array_values(array_slice(CompassAnalysis::DIMENSIONS, 0, 4));
+
+        return array_map(static function (array $type) use ($dimensions) {
+            $point = self::ALL[$type['id']]['point'];
+
+            return $type + ['dimensions' => array_map(
+                static fn (array $labels, int $score) => [
+                    'left' => $labels['left'],
+                    'right' => $labels['right'],
+                    'percentage' => BalancedScore::value($score, 12),
+                ],
+                $dimensions, $point,
+            )];
+        }, self::catalogue());
+    }
 }

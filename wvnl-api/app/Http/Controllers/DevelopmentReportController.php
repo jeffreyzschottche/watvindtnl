@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\Reports\DevelopmentReport;
+use App\Services\Reports\ReportPdf;
 use Illuminate\Http\Request;
 
 class DevelopmentReportController extends Controller
@@ -27,10 +28,11 @@ class DevelopmentReportController extends Controller
         return $this->reports->get($request->user(), $id)['report'];
     }
 
-    public function download(Request $request, string $id)
+    public function download(Request $request, string $id, ReportPdf $pdf)
     {
         $payload = $this->reports->get($request->user(), $id);
+        $report = $payload['report'];
 
-        return response(base64_decode($payload['pdf'], true), 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'attachment; filename="WDNL-DEV-stemrapport.pdf"', 'Cache-Control' => 'private, no-store']);
+        return $pdf->download($report['snapshot'], $report['narrative'], 'WDNL-DEV-stemrapport.pdf', $payload['pdf'] ?? null);
     }
 }

@@ -81,28 +81,69 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
         onderbouwing in de gebruikte content terugvinden.
       </p>
       <p>
+        Voor veel stellingen stelt een taalmodel eerst een weging met korte
+        onderbouwing voor. Zo'n voorstel telt pas mee nadat de redactie het
+        heeft gecontroleerd en goedgekeurd of aangepast. Het model berekent
+        nooit je score, type of partijovereenkomst; dat doet vaste code.
+      </p>
+      <p>
+        Een weging beschrijft de tekst die je beantwoordt. Daarom telt je
+        antwoord op een oudere stelling als je huidige mening en maakt de
+        leeftijd van de motie je profiel niet voorlopig. Alleen bij
+        partijvergelijkingen blijft de datum belangrijk: een oude partijstem is
+        geen actueel partijstandpunt.
+      </p>
+      <p>
+        In het spel tonen we eerst stellingen over thema's waarop je nog weinig
+        antwoorden hebt. Zo krijgt elk thema sneller genoeg onderbouwing. De
+        inhoud van de stellingen verandert daar niet door.
+      </p>
+      <p>
         Voor telt als plus één, tegen als min één; een positief of negatief
-        redactioneel gewicht bepaalt de richting. De score is vijftig maal één
-        plus de gewogen gemiddelde richting. Neutraal blijft in de
+        redactioneel gewicht bepaalt de richting. Eerst berekenen we vijftig
+        maal één plus de gewogen gemiddelde richting. Neutraal blijft in de
         antwoordtelling, zonder richting. Dubbelen bij dezelfde vraag of motie
         tellen één keer. Bij tegenstrijdige antwoorden op dubbele versies
         sluiten we die vraag uit.
       </p>
       <p>
+        Vanaf kompasversie 4.1 zwakken we die richting af bij weinig gegevens.
+        De getoonde score is 50 + (oorspronkelijke score − 50) × n / (n + 6).
+        Hierbij is n het aantal verschillende bruikbare, niet-neutrale
+        antwoorden op dat thema; een zwaardere weging levert geen extra
+        antwoorden op. Twee gelijkgerichte antwoorden geven zo 63/37 in plaats
+        van 100/0; tien geven 81/19. Meer onderbouwing maakt een sterkere
+        richting mogelijk. We ronden symmetrisch af en reserveren 0 en 100 voor
+        absolute zekerheid, die dit kompas niet kan bieden. De getoonde scores
+        liggen daarom tussen 1 en 99. Deze afzwakking met zes neutrale
+        ankerantwoorden is een transparante productkeuze, geen wetenschappelijk
+        gekalibreerde kans of betrouwbaarheidsmaat. Er worden geen stemmen
+        toegevoegd. Ontbrekende gegevens blijven ontbreken; een voorzichtige
+        score bewijst geen voorkeur voor het politieke midden. Bestaande
+        rapporten behouden hun methode.
+      </p>
+      <p>
         Vanaf twee verschillende bruikbare antwoorden per thema tonen we een
         voorlopige richtingsscore. Een vollediger profiel vraagt minimaal vijf
-        actuele antwoorden per thema en tien gewogen vragen in totaal.
-        Historische vragen kunnen na afzonderlijke inhoudelijke weging een
-        eerste indicatie geven; ze maken het profiel altijd voorlopig en zeggen
-        niets over actuele partijstandpunten.
+        antwoorden per thema en tien gewogen vragen in totaal.
+      </p>
+      <p>
+        Naast elke themascore staat een bandbreedte. Die laat zien hoe ver de
+        score verschuift als we telkens één van je antwoorden weglaten. Een
+        smalle band betekent dat je score op veel antwoorden steunt; een brede
+        band dat enkele antwoorden de doorslag geven. Het is een eerlijke
+        indicatie van gevoeligheid, geen statistische foutmarge.
       </p>
       <p>
         Een voorlopig politiek type gebruikt minimaal acht gewogen vragen en
         minstens twee beschikbare thema’s. De code kiest het dichtstbijzijnde
-        vaste presentatieprofiel op uitsluitend de beschikbare dimensies.
-        Ontbrekende scores worden niet ingevuld. Het type is geen psychologische
-        diagnose of wetenschappelijk gevalideerde indeling. De economische as
-        volgt uit eigen wegingen, nooit uit hoeveel keer je voor of tegen stemt.
+        vaste presentatieprofiel op uitsluitend de beschikbare dimensies. We
+        zwakken de profielpunten op dezelfde manier af en beoordelen de
+        richtingseisen op je oorspronkelijke keuzes. Zo wegen weinig onderbouwde
+        thema’s minder zwaar zonder een middenvoorkeur te verzinnen. Ontbrekende
+        scores worden niet ingevuld. Het type is geen psychologische diagnose of
+        wetenschappelijk gevalideerde indeling. De economische as volgt uit
+        eigen wegingen, nooit uit hoeveel keer je voor of tegen stemt.
       </p>
       <p>
         De gevoeligheidsrange laat zien hoe de score verandert wanneer één
@@ -152,6 +193,15 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
         partijstandpunten. Ontbrekende, afwezige en neutrale partijstemmen
         worden niet ingevuld. Een persoonlijkheidslabel of politieke aspositie
         wordt niet zonder een gecontroleerde berekeningsmethode toegekend.
+      </p>
+      <p>
+        De partijrangschikking gebruikt vanaf versie 4.1 een matchscore op 100,
+        met dezelfde afzwakking naar 50 bij weinig vergelijkbare moties. Vier
+        van vier gelijke stemmen leveren bijvoorbeeld een matchscore van 70 op.
+        Die score is een voorzichtige indicator, niet het letterlijke percentage
+        gelijke stemmen. Het werkelijke aantal, zoals vier van vier, blijft
+        zichtbaar. Bij gelijke scores krijgt de vergelijking met meer moties
+        voorrang. Er worden geen partijstandpunten bij bedacht.
       </p>
       <p>
         Een updatevoorstel benoemt uitsluitend aantoonbare nieuwe antwoorden

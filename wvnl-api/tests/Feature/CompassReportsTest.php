@@ -40,14 +40,14 @@ class CompassReportsTest extends TestCase
         $c = $snapshot['compass'];
         $this->assertSame('ready', $c['status']);
         $this->assertSame('De Sociale Vernieuwer', $c['type']['name']);
-        $this->assertSame(80, $c['dimensions'][0]['percentage']);
-        $this->assertSame(20, $c['dimensions'][0]['opposite_percentage']);
+        $this->assertSame(69, $c['dimensions'][0]['percentage']);
+        $this->assertSame(31, $c['dimensions'][0]['opposite_percentage']);
         $this->assertSame(10, $c['used_votes']);
         $this->assertSame($c, $service->build($u)['compass']);
         $this->assertCount(10, $c['evidence']);
         $issue = Issue::findOrFail($ids[0]);
         $issue->update(['votes' => ['agree' => [], 'disagree' => [$u->id], 'neutral' => []]]);
-        $this->assertSame(70, $service->build($u)['compass']['dimensions'][0]['percentage']);
+        $this->assertSame(63, $service->build($u)['compass']['dimensions'][0]['percentage']);
         Http::assertNothingSent();
     }
 
@@ -64,7 +64,7 @@ class CompassReportsTest extends TestCase
         $this->assertSame(1, $snapshot['counts']['neutral']);
         $this->assertSame(1, $d['neutral']);
         $this->assertSame(5, $d['compared']);
-        $this->assertSame(60, $d['percentage']);
+        $this->assertSame(55, $d['percentage']);
         $this->assertNull($snapshot['compass']['type']);
     }
 
@@ -72,7 +72,7 @@ class CompassReportsTest extends TestCase
     {
         [$u,$ids] = $this->fixtures(4);
         $snapshot = app(VoteSnapshot::class)->build($u);
-        $this->assertSame(100, $snapshot['compass']['dimensions'][0]['percentage']);
+        $this->assertSame(70, $snapshot['compass']['dimensions'][0]['percentage']);
         $this->assertTrue($snapshot['compass']['dimensions'][0]['provisional']);
         DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->update(['compass_weights' => null]);
         $this->assertNull(app(VoteSnapshot::class)->build($u)['compass']['dimensions'][0]['percentage']);
@@ -121,9 +121,9 @@ class CompassReportsTest extends TestCase
     {
         [$u, $ids] = $this->fixtures();
         DB::table('wdnl_statement_metadata')->whereIn('issue_id', array_slice($ids, 0, 4))->update(['compass_weights' => json_encode(['social' => 2])]);
-        $this->assertSame(86, app(VoteSnapshot::class)->build($u)['compass']['dimensions'][0]['percentage']);
+        $this->assertSame(72, app(VoteSnapshot::class)->build($u)['compass']['dimensions'][0]['percentage']);
         DB::table('wdnl_statement_metadata')->whereIn('issue_id', array_slice($ids, 0, 4))->update(['compass_weights' => json_encode(['social' => -2])]);
-        $this->assertSame(29, app(VoteSnapshot::class)->build($u)['compass']['dimensions'][0]['percentage']);
+        $this->assertSame(37, app(VoteSnapshot::class)->build($u)['compass']['dimensions'][0]['percentage']);
     }
 
     public function test_same_motion_across_different_dimensions_does_not_inflate_type_coverage(): void
@@ -140,7 +140,7 @@ class CompassReportsTest extends TestCase
         }
         $compass = app(CompassAnalysis::class)->build($entries, $metadata);
         $this->assertSame(5, $compass['used_votes']);
-        $this->assertSame(100, $compass['dimensions'][0]['percentage']);
+        $this->assertSame(73, $compass['dimensions'][0]['percentage']);
         $this->assertNull($compass['type']);
     }
 }

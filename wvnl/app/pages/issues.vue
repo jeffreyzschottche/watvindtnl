@@ -9,6 +9,11 @@
           {{ auth.user?.voted_issue_ids?.length ?? 0 }} stellingen beantwoord
           door jou</span
         >
+        <CompassProgress
+          v-if="auth.isLoggedIn"
+          class="issues-page__progress"
+          variant="compact"
+        />
       </header>
 
       <DevReportButton floating />
@@ -85,6 +90,7 @@ import DemoAdDialog from "~/components/common/DemoAdDialog.vue";
 import AdSlot from "~/components/common/AdSlot.vue";
 import IssueDetailModal from "~/components/issues/IssueDetailModal.vue";
 import IssueVoteCard from "~/components/issues/IssueVoteCard.vue";
+import CompassProgress from "~/components/compass/CompassProgress.vue";
 import { useIssues } from "~/composables/useIssues";
 import { useAuthStore } from "~/stores/auth";
 import { useNotificationStore } from "~/stores/notifications";
@@ -391,6 +397,30 @@ async function handleShare(
   font-size: 0.72rem;
   padding: 0.45rem 0.85rem;
   margin-top: 0.75rem;
+}
+.issues-page__progress {
+  margin-top: 1rem;
+}
+/* Phones: the question gets the screen (cognitive load), progress toward a complete compass stays
+   visible in one slim row (goal-gradient), the intro copy steps back. */
+@media (max-width: 720px) {
+  .issues-page {
+    padding: 1rem 16px 2rem;
+  }
+  .issues-page__container {
+    gap: 1rem;
+  }
+  .issues-page__header h1 {
+    font-size: 1.35rem;
+    margin: 0;
+  }
+  .issues-page__header p,
+  .issues-page__personal-count {
+    display: none;
+  }
+  .issues-page__progress {
+    margin-top: 0.7rem;
+  }
 }
 .issues-page__empty-art {
   display: block;

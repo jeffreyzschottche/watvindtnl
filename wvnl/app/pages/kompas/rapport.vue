@@ -12,6 +12,8 @@ const report = ref<VoteReport | null>(null);
 const loading = ref(true);
 const reportLoading = ref(false);
 const overviewError = ref("");
+const historyLoading = ref(false);
+const historyError = ref("");
 const pending = ref(false);
 const error = ref("");
 const politicalConsent = ref(false);
@@ -43,12 +45,17 @@ const date = (value: string) =>
   new Intl.DateTimeFormat("nl-NL", { dateStyle: "medium" }).format(
     new Date(value),
   );
+function visibleOrders(orders: VoteReport[]) {
+  return import.meta.dev
+    ? orders
+    : orders.filter((order) => !order.is_development);
+}
 function reportMessage(cause: unknown, development: boolean): string {
   const status = (cause as { statusCode?: number } | null)?.statusCode;
   if (status === 401)
     return "Je sessie is verlopen. Log opnieuw in om je rapport te bekijken.";
   if (development && status === 404)
-    return "Dit tijdelijke devrapport is verlopen of niet beschikbaar. Maak met de paarse knop een nieuw rapport.";
+    return "Dit devrapport is niet beschikbaar. Een oudere tijdelijke preview kan zijn verlopen.";
   if (development && status === 409)
     return "Dit is een oude devrapportversie. Maak met de paarse knop een nieuw rapport voor de nieuwe kompasopmaak.";
   if (status === 429)
@@ -87,12 +94,36 @@ async function fetchReport(id: string, development: boolean, request: number) {
     if (!disposed && request === detailRequest) reportLoading.value = false;
   }
 }
-async function openReport(id: string) {
+async function openReport(id: string, development = false) {
   clearTimeout(timer);
+  polls = 0;
   const request = ++detailRequest;
   error.value = "";
   report.value = null;
-  await fetchReport(id, false, request);
+  await fetchReport(id, development, request);
+}
+async function loadOlderReports() {
+  const current = overview.value;
+  const nextPage = current?.orders_next_page;
+  if (!current || !nextPage || historyLoading.value) return;
+  historyError.value = "";
+  historyLoading.value = true;
+  try {
+    const result = await api.get<ReportOverview>(
+      `/me/reports?page=${nextPage}`,
+    );
+    if (disposed || overview.value !== current) return;
+    const seen = new Set(current.orders.map((order) => order.id));
+    current.orders.push(
+      ...visibleOrders(result.orders).filter((order) => !seen.has(order.id)),
+    );
+    current.orders_next_page = result.orders_next_page;
+  } catch {
+    if (!disposed && overview.value === current)
+      historyError.value = "Oudere aanvragen konden niet worden geladen.";
+  } finally {
+    historyLoading.value = false;
+  }
 }
 async function load() {
   clearTimeout(timer);
@@ -102,6 +133,7 @@ async function load() {
   reportLoading.value = false;
   error.value = "";
   overviewError.value = "";
+  historyError.value = "";
   overview.value = null;
   report.value = null;
   const development =
@@ -115,10 +147,12 @@ async function load() {
     try {
       const result = await api.get<ReportOverview>("/me/reports");
       if (disposed || request !== detailRequest) return;
+      result.orders = visibleOrders(result.orders);
       overview.value = result;
       if (!id) {
         const latest = result.orders.find((order) => order.status === "ready");
-        if (latest) await fetchReport(latest.id, false, request);
+        if (latest)
+          await fetchReport(latest.id, !!latest.is_development, request);
       }
     } catch (cause) {
       if (!disposed && request === detailRequest) {
@@ -258,7 +292,9 @@ useSeoMeta({
         <section id="nieuw-rapport" class="reports-page__purchase">
           <h2>
             {{
-              overview.orders.some((o) => o.status === "ready")
+              overview.orders.some(
+                (o) => o.status === "ready" && !o.is_development,
+              )
                 ? "Een nieuw rapport maken"
                 : "Jouw eerste stemrapport"
             }}
@@ -361,25 +397,35 @@ useSeoMeta({
         <section class="reports-page__history">
           <h2>Je eerdere aanvragen</h2>
           <p v-if="!overview.orders.length" class="reports-page__hint">
-            Je hebt nog geen rapport gekocht.
+            Je hebt nog geen rapport aangevraagd.
           </p>
           <button
             v-for="order in overview.orders"
             :key="order.id"
             class="reports-page__order"
             type="button"
-            @click="
-              polls = 0;
-              openReport(order.id);
-            "
+            @click="openReport(order.id, order.is_development)"
           >
             <span
               ><strong>{{ date(order.created_at) }}</strong
               ><small
-                >{{ order.vote_count }} antwoorden ·
+                >{{ order.is_development ? "Devrapport · " : ""
+                }}{{ order.vote_count }} antwoorden ·
                 {{ statusLabels[order.status] }}</small
               ></span
             ><span aria-hidden="true">→</span>
+          </button>
+          <p v-if="historyError" class="form-error" role="alert">
+            {{ historyError }}
+          </p>
+          <button
+            v-if="overview.orders_next_page"
+            type="button"
+            class="button button-secondary"
+            :disabled="historyLoading"
+            @click="loadOlderReports"
+          >
+            {{ historyLoading ? "Aanvragen laden…" : "Toon oudere aanvragen" }}
           </button>
         </section>
       </div>
@@ -419,8 +465,10 @@ useSeoMeta({
         </button>
       </div>
       <p v-if="report.is_development" class="reports-page__hint">
-        Lokaal devrapport · OpenAI-model: {{ report.generation_model }} ·
-        vervalt na één uur. Geen rapportaankoop; wel API-tokenkosten.
+        Lokaal devrapport · OpenAI-model: {{ report.generation_model }}.
+        <span v-if="report.expires_at"
+          >Deze oudere preview vervalt na één uur.</span
+        >
         <span v-if="report.generation_usage"
           >{{ report.generation_usage.input_tokens }} inputtokens /
           {{ report.generation_usage.output_tokens }} outputtokens · berekend
@@ -434,10 +482,7 @@ useSeoMeta({
       ><button
         v-if="['paid', 'generating', 'pending'].includes(report.status)"
         class="button button-secondary"
-        @click="
-          polls = 0;
-          openReport(report.id);
-        "
+        @click="openReport(report.id, report.is_development)"
       >
         Status vernieuwen
       </button>

@@ -15,6 +15,11 @@ export type ReportEntry = {
   title: string;
   choice: "agree" | "disagree" | "neutral";
 };
+export type ScoreAdjustment = {
+  version: string;
+  neutral_anchor: number;
+  display_range: [number, number];
+};
 export type CompassDimension = {
   id: string;
   left: string;
@@ -24,14 +29,26 @@ export type CompassDimension = {
   historical?: number;
   early_minimum?: number;
   percentage: number | null;
+  observed_percentage?: number | null;
   opposite_percentage: number | null;
   compared: number;
   neutral: number;
   minimum: number;
   sensitivity: { min: number; max: number } | null;
 };
+type CompassTypeSummary = {
+  id: string;
+  name: string;
+  color: string;
+  icon: string;
+  description: string;
+};
+export type CompassExample = CompassTypeSummary & {
+  dimensions: { left: string; right: string; percentage: number }[];
+};
 export type CompassAnalysis = {
   version: string;
+  score_adjustment?: ScoreAdjustment;
   status: "ready" | "provisional" | "insufficient_data";
   type: {
     id: string;
@@ -43,13 +60,7 @@ export type CompassAnalysis = {
     provisional?: boolean;
     based_on_dimensions?: string[];
   } | null;
-  type_catalogue?: {
-    id: string;
-    name: string;
-    color: string;
-    icon: string;
-    description: string;
-  }[];
+  type_catalogue?: CompassTypeSummary[];
   dimensions: CompassDimension[];
   spectrum: CompassDimension;
   used_votes: number;
@@ -103,6 +114,7 @@ export type ReportSnapshot = {
   counts: Record<ReportEntry["choice"], number>;
   entries: ReportEntry[];
   party_coverage?: {
+    score_adjustment?: ScoreAdjustment;
     verified_motions: number;
     minimum: number;
     early_minimum: number;
@@ -110,6 +122,7 @@ export type ReportSnapshot = {
   party_matches: {
     name: string;
     percentage: number;
+    balanced_score?: number;
     matched: number;
     compared: number;
     provisional?: boolean;
@@ -163,4 +176,5 @@ export type ReportOverview = {
     message: string | null;
   };
   orders: VoteReport[];
+  orders_next_page?: number | null;
 };

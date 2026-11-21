@@ -8,6 +8,9 @@ use App\Models\PoliticalParty;
 use App\Services\CmsContentService;
 use App\Services\CmsMotionSource;
 use App\Services\Reports\CompassEditorialSeed;
+use App\Services\Reports\CompassProposalReview;
+use App\Services\Reports\CompassProposals;
+use App\Services\Reports\CompassWeightsFile;
 use App\Support\PoliticalPartyCatalogue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -56,6 +59,54 @@ class ContentController extends Controller
     public function seedCompass(Request $request)
     {
         return response()->json(app(CompassEditorialSeed::class)->run($request->attributes->get('cms_token_id')));
+    }
+
+    public function compassProposals(Request $request, CompassProposalReview $review)
+    {
+        return response()->json($review->list($request->only(['status', 'confidence', 'page'])));
+    }
+
+    /** One click in zschotcms: a small, cost-capped batch with the model from the report settings. */
+    public function generateCompassProposals(Request $request, CompassProposals $proposals)
+    {
+        $data = $request->validate(['limit' => ['required', 'integer', 'min:1', 'max:50']]);
+        $lock = Cache::lock('wdnl:cms:compass-proposals', 300);
+        abort_unless($lock->get(), 409, 'Er worden al kompasvoorstellen gemaakt.');
+        set_time_limit(150); // about fifteen seconds per model batch
+        try {
+            return response()->json($proposals->run($data['limit'], 25, 0.10));
+        } catch (\RuntimeException $e) {
+            abort(422, $e->getMessage());
+        } finally {
+            $lock->release();
+        }
+    }
+
+    public function approveCompassProposal(Request $request, CompassProposalReview $review, int $id)
+    {
+        $weights = $request->input('weights');
+
+        return response()->json($review->approve($id, is_array($weights) ? $weights : null, $request->attributes->get('cms_token_id')));
+    }
+
+    public function approveCompassProposals(Request $request, CompassProposalReview $review)
+    {
+        return response()->json($review->approveMany($request->only(['ids', 'confidence', 'limit']), $request->attributes->get('cms_token_id')));
+    }
+
+    public function rejectCompassProposal(Request $request, CompassProposalReview $review, int $id)
+    {
+        return response()->json($review->reject($id, $request->attributes->get('cms_token_id')));
+    }
+
+    public function exportCompassWeights(CompassWeightsFile $file)
+    {
+        return response()->json($file->export());
+    }
+
+    public function importCompassWeights(Request $request, CompassWeightsFile $file)
+    {
+        return response()->json($file->apply($request->only(['version', 'rows']), $request->attributes->get('cms_token_id')));
     }
 
     public function seedParties(Request $request)

@@ -48,3 +48,19 @@ We vermijden het letterlijk toepassen van iedere wet: bijvoorbeeld een kunstmati
 Browsertests gebruiken expliciete fixtures en controleren desktop/mobiel, witte header, nieuwe kleuren, geen horizontale overflow, zoeken, detailroute, profiel, login en bestaande stemflow. Screenshots zijn QA-artifacts, geen productiegegevens. Daarnaast is de draaiende localhost:3000-homepage met echte read-only API-data gecontroleerd: drie echte stellingen en geen pageerrors.
 
 Deze ontwerpstap voltooit niet alle V2-onderdelen. Server-side rendering/SEO, consentledger, privacy-acties, deterministisch kompas, betalingen, native signing/builds en CMP blijven de open mijlpalen uit MIGRATION_PLAN.md. Privacy-informatielinks zijn geen claims van functionele export/verwijdering.
+
+## Mobiele app-redesign volgens Laws of UX — 10 november 2026
+
+Geldt alleen voor telefoons (≤ 720 px) in app-modus: ingelogd en met de tabbalk zichtbaar (`useAppShell`). Desktop en uitgelogde pagina's zijn ongewijzigd.
+
+| Probleem vóór | Principe | Nu |
+| --- | --- | --- |
+| Tegen/Voor half achter de tabbalk, Neutraal onder de vouw | Fitts's Law | Drie keuzes op één rij in de duimzone (min. 64 px hoog), boven de tabbalk. Tegen en Voor even groot, Neutraal ertussen, dus geen sturing. |
+| Bij openklappen van argumenten scrolden de knoppen weg | Fitts's Law | Op mobiel staan de argumenten vóór de keuzes; de keuzes blijven tijdens het lezen vast onderin (`position: sticky`). "Volgende stelling" ook. |
+| Bijna de helft van het scherm ging op aan kop, uitleg en teller | Cognitive Load, Serial Position | Compacte kop van 56 px, kleinere paginatitel, uitleg en teller verborgen; de stelling staat links uitgelijnd en krijgt de ruimte. |
+| Geen zicht op wanneer het kompas compleet is | Goal-Gradient, Zeigarnik | Balk "Jouw kompas · 52% · nog 12 antwoorden" boven elke stelling (`GET /me/compass-progress`), ververst na iedere stem. Op `/kompas` een kaart met voortgang per thema, het voorlopige type en "Verder stemmen". |
+| Hamburgermenu én tabbalk | Hick's Law, Jakob's Law | In de app alleen de tabbalk; de actieve tab krijgt een duidelijk vlak. |
+| Website-footer onder elk app-scherm | Jakob's Law | Footer verborgen in de app; info-links, animatie-instelling en uitloggen staan onder Profiel → "Meer over WDNL". |
+| Stellingnummer en Rapporteer bovenaan, grote Rapporteer-knop onder elk argument | Von Restorff, Proximity | Delen en Rapporteer samen op één rustige rij onderaan; rapporteren bij argumenten is een stille tekstactie (tikdoel blijft 44 px). |
+
+Toegankelijke namen van de stemknoppen zijn gelijk gebleven (ondertitels worden schermlezertekst). Browsertest `phone app keeps all three choices in the thumb zone…` controleert rij, gelijke maten, positie boven de tabbalk, geen hamburger/footer en vastgezette keuzes bij open argumenten. De voortgangsbalk is een hint: zolang er weinig goedgekeurde kompasgewichten zijn, kan hij stilvallen omdat er geen gewogen stellingen meer over zijn voor een thema.

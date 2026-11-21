@@ -3,12 +3,51 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 const auth = useAuthStore();
 const route = useRoute();
+const router = useRouter();
 const open = ref(false);
+const profileOpen = ref(false);
+const profileMenu = ref<HTMLElement | null>(null);
+const profileToggle = ref<HTMLButtonElement | null>(null);
+const profileMenuId = useId();
 watch(
   () => route.fullPath,
   () => {
     open.value = false;
+    profileOpen.value = false;
   },
+);
+function showProfileOnHover(event: PointerEvent) {
+  if (event.pointerType === "mouse") profileOpen.value = true;
+}
+function leaveProfileOnHover(event: PointerEvent) {
+  if (
+    event.pointerType === "mouse" &&
+    !profileMenu.value?.contains(document.activeElement)
+  ) {
+    profileOpen.value = false;
+  }
+}
+function closeProfileOutside(event: FocusEvent | PointerEvent) {
+  const target =
+    event.type === "focusout"
+      ? (event as FocusEvent).relatedTarget
+      : event.target;
+  if (!(target instanceof Node) || !profileMenu.value?.contains(target))
+    profileOpen.value = false;
+}
+function dismissProfile() {
+  if (!profileOpen.value) return;
+  profileOpen.value = false;
+  profileToggle.value?.focus();
+}
+async function logout() {
+  profileOpen.value = false;
+  await auth.logout();
+  await router.replace("/inloggen");
+}
+onMounted(() => document.addEventListener("pointerdown", closeProfileOutside));
+onBeforeUnmount(() =>
+  document.removeEventListener("pointerdown", closeProfileOutside),
 );
 const links = [
   { to: "/stellingen", label: "Stellingen" },
@@ -35,15 +74,10 @@ function activeTab(to: string) {
     );
   return route.path === to || route.path.startsWith(to + "/");
 }
-const showTabs = computed(
-  () =>
-    auth.isLoggedIn &&
-    route.path !== "/" &&
-    !["/inloggen", "/login", "/registreren", "/register"].includes(route.path),
-);
+const { showTabs } = useAppShell();
 </script>
 <template>
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--app': showTabs }">
     <div class="container nav-container">
       <NuxtLink to="/" aria-label="WatDenktNederland — home" class="brand"
         ><BrandLogo
@@ -58,17 +92,51 @@ const showTabs = computed(
         >
       </nav>
       <div class="desktop-auth">
-        <NuxtLink
-          :to="auth.isLoggedIn ? '/profiel' : '/inloggen'"
-          class="nav-login"
-          ><AppIcon v-if="auth.isLoggedIn" name="user" :size="17" />{{
-            auth.isLoggedIn ? "Mijn profiel" : "Inloggen"
-          }}</NuxtLink
+        <div
+          v-if="auth.isLoggedIn"
+          ref="profileMenu"
+          class="nav-profile"
+          @pointerenter="showProfileOnHover"
+          @pointerleave="leaveProfileOnHover"
+          @focusout="closeProfileOutside"
+          @keydown.esc="dismissProfile"
         >
+          <NuxtLink
+            to="/profiel"
+            class="nav-login"
+            @click="profileOpen = false"
+          >
+            <AppIcon name="user" :size="17" /> Mijn profiel
+          </NuxtLink>
+          <button
+            ref="profileToggle"
+            class="nav-profile__toggle"
+            type="button"
+            aria-label="Profielmenu"
+            :aria-expanded="profileOpen"
+            :aria-controls="profileMenuId"
+            @click="profileOpen = !profileOpen"
+          >
+            <AppIcon name="chevron" :size="13" />
+          </button>
+          <div
+            v-show="profileOpen"
+            :id="profileMenuId"
+            class="nav-profile__dropdown"
+          >
+            <div class="nav-profile__panel">
+              <button type="button" @click="logout">
+                <AppIcon name="logout" :size="18" /> Uitloggen
+              </button>
+            </div>
+          </div>
+        </div>
+        <NuxtLink v-else to="/inloggen" class="nav-login">Inloggen</NuxtLink>
         <NuxtLink to="/spel" class="button button-red nav-cta"
           >Begin met stemmen <AppIcon name="arrow" :size="16"
         /></NuxtLink>
       </div>
+      <!-- In the app the tab bar is the only menu (Hick); info pages live under Profiel. -->
       <button
         class="mobile-menu-toggle"
         type="button"
@@ -111,6 +179,44 @@ const showTabs = computed(
   </nav>
 </template>
 <style scoped>
+/* Laws of UX, mobile app mode: one navigation (Hick, Jakob), a compact header so the task gets
+   the screen (cognitive load), large thumb-zone tabs with a clear active state (Fitts, Von Restorff). */
+@media (max-width: 720px) {
+  .site-header--app .nav-container {
+    min-height: 56px;
+  }
+  .site-header--app .mobile-menu-toggle {
+    display: none;
+  }
+  .site-header--app :deep(.wdnl-logo img) {
+    width: 29px;
+    height: 33px;
+  }
+  .site-header--app :deep(.wdnl-logo__name) {
+    font-size: 1.02rem;
+  }
+  .app-tabbar.app-tabbar {
+    height: calc(var(--app-tabbar-h) + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+    padding: 0.45rem 0.6rem max(0.45rem, env(safe-area-inset-bottom));
+    align-items: stretch;
+  }
+  .app-tabbar.app-tabbar a {
+    align-content: center;
+    min-height: 48px;
+    border-radius: 14px;
+    font-size: 0.68rem;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  .app-tabbar.app-tabbar .tab-active {
+    background: #edf3ff;
+  }
+  .app-tabbar.app-tabbar .tab-active::before {
+    display: none;
+  }
+}
 .site-header {
   background: #fff;
   border-bottom: 1px solid #e5eaf1;
@@ -153,6 +259,66 @@ const showTabs = computed(
 }
 .desktop-auth {
   gap: 1.4rem;
+}
+.nav-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: #4b5a71;
+}
+.nav-profile__toggle {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.nav-profile__toggle svg {
+  transform: rotate(90deg);
+}
+.nav-profile__toggle:hover,
+.nav-profile__toggle[aria-expanded="true"] {
+  color: #0057b8;
+}
+.nav-profile__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  padding-top: 0.45rem;
+  min-width: 170px;
+}
+.nav-profile__panel {
+  padding: 0.35rem;
+  background: #fff;
+  border: 1px solid #dce3ee;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px #001f4d20;
+}
+.nav-profile__panel button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  padding: 0.45rem 0.7rem;
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  color: #001f4d;
+  background: transparent;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.nav-profile__panel button:hover,
+.nav-profile__panel button:focus-visible {
+  background: #edf3ff;
+  color: #0057b8;
 }
 .nav-cta {
   font-size: 0.8rem;

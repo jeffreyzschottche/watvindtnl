@@ -85,9 +85,11 @@ try {
   let generationFailure = false;
   let overviewFails = false;
   let slowOld = false;
+  let olderOrders = [];
   let generated = ids.next;
   await page.route("**/api/**", async (route) => {
-    const path = new URL(route.request().url()).pathname;
+    const url = new URL(route.request().url());
+    const path = url.pathname;
     const headers = {
       "Access-Control-Allow-Origin": "http://localhost:3000",
       "Access-Control-Allow-Headers": "*",
@@ -110,7 +112,9 @@ try {
       return send(
         overviewFails
           ? { message: "Explicit overview outage fixture" }
-          : overview,
+          : url.searchParams.get("page") === "2"
+            ? { ...overview, orders: olderOrders, orders_next_page: null }
+            : overview,
         overviewFails ? 503 : 200,
       );
     if (path === "/api/me/reports/dev") {
@@ -127,6 +131,12 @@ try {
       return send(result);
     }
     if (path.startsWith("/api/me/reports/dev/")) {
+      if (path.endsWith("/pdf"))
+        return route.fulfill({
+          headers,
+          contentType: "application/pdf",
+          body: "%PDF-history-fixture",
+        });
       const id = path.split("/").at(-1);
       if (id === ids.expired)
         return send({ message: "Preview expired fixture" }, 404);
@@ -250,6 +260,27 @@ try {
     "PASS generation service error is visible instead of generic input validation",
   );
   checks++;
+
+  overview.orders = [{ ...report(ids.next), vote_count: 12 }];
+  overview.orders_next_page = 2;
+  olderOrders = [{ ...report(ids.fresh), vote_count: 10 }];
+  await page.goto("http://localhost:3000/kompas/rapport");
+  await page.getByText("Nieuw geselecteerd ontwikkelrapport.").waitFor();
+  await page.getByRole("button", { name: "Toon oudere aanvragen" }).click();
+  await page
+    .getByRole("button", { name: /Devrapport · 10 antwoorden/ })
+    .click();
+  await page.getByText("Eerder geselecteerd ontwikkelrapport.").waitFor();
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: /Download PDF/ }).click(),
+  ]);
+  assert.equal(download.suggestedFilename(), "WDNL-DEV-stemrapport.pdf");
+  console.log(
+    "PASS saved dev reports reopen and download from request history",
+  );
+  checks++;
+
   assert.deepEqual(errors, []);
   console.log(
     `${checks} local dev regressions passed; all API traffic intercepted.`,

@@ -39,6 +39,11 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function deleteAccount(currentPassword: string) {
+    await useApi().del("/me", { current_password: currentPassword });
+    clearSession();
+  }
+
   /** Herstel sessie uit cookie → haalt /me op als token bestaat */
   async function restore(api = useApi()) {
     const saved = useCookie<string>("token").value;
@@ -62,6 +67,7 @@ export const useAuthStore = defineStore("auth", () => {
     isPremium,
     setSession,
     logout,
+    deleteAccount,
     restore,
     updateUser,
   };

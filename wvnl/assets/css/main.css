@@ -606,3 +606,19 @@ p {
 html[data-wdnl-motion="off"] {
   scroll-behavior: auto;
 }
+
+/* App mode on phones (logged in, tab bar visible). Apps have no web footer (Jakob); content keeps
+   clear of the fixed tab bar, and the info links move to Profiel. */
+:root {
+  --app-tabbar-h: 66px;
+}
+@media (max-width: 720px) {
+  .has-app-tabs .site-footer {
+    display: none;
+  }
+  .has-app-tabs .site-main {
+    padding-bottom: calc(
+      var(--app-tabbar-h) + env(safe-area-inset-bottom) + 1.25rem
+    );
+  }
+}

@@ -85,7 +85,7 @@ class ReportSettings
     {
         $q = DB::table('wdnl_report_attempts');
         $micros = (int) (clone $q)->sum(DB::raw('COALESCE(cost_eur_micros, reserved_eur_micros)'));
-        $completed = DB::table('wdnl_report_orders')->whereNotNull('ready_at')->count();
+        $completed = DB::table('wdnl_report_orders')->where('is_development', false)->whereNotNull('ready_at')->count();
 
         return ['completed_reports' => $completed, 'attempts' => $q->count(), 'unknown_usage_attempts' => (clone $q)->whereNull('cost_eur_micros')->count(),
             'input_tokens' => (int) (clone $q)->sum('input_tokens'), 'output_tokens' => (int) (clone $q)->sum('output_tokens'),

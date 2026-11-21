@@ -224,3 +224,33 @@ Nog nodig: overige inhoud wegen, originele bronnen/partijstemmen verifiëren, be
 - [x] 14 frontend-unitchecks, typecheck/build, 50 browserchecks en zeven devregressies geslaagd. Klikken/toetsenbord, onveranderde uitslag, echte antwoordverdeling, gelijke kolomhoogtes, drie viewportbreedtes en beide bewegingsvoorkeuren gecontroleerd. Desktop-/mobiele fixture-screenshots visueel bekeken.
 - [x] Backend, stemgegevens, rapportberekening en PDF-generator blijven onaangeroerd. De bestaande PDF is opnieuw op precies één A4 gecontroleerd. Geen modelaanvraag of echte aankoop uitgevoerd.
 - [x] Mobiele statische generatie en Capacitor-copy naar iOS/Android geslaagd; daarna de webserverbuild hersteld. Geen native signing, device- of store-release geclaimd.
+
+
+## Evenwichtiger kompasuitslag — 9 november 2026
+
+- [x] Feedback uitgevoerd: weinig antwoorden leiden niet meer tot 100%. `BalancedScore` trekt de waargenomen score richting 50 met een neutraal anker van zes antwoorden (`neutral-anchor-v1`); de weergave blijft binnen 1–99%. Twee gelijkgerichte antwoorden geven 63/37, vier geven 70/30, tien geven 81/19.
+- [x] Partijmatches gebruiken dezelfde correctie: twee uit twee overeenkomsten wegen niet meer zwaarder dan zeven uit acht. De echte teller/noemer blijft zichtbaar naast de score, zodat de berekening controleerbaar blijft.
+- [x] Ontbrekende gegevens blijven leeg; een voorzichtige score wordt niet uitgelegd als voorkeur voor het midden. Opgeslagen V4-rapporten behouden hun oorspronkelijke scores.
+- [x] Methodologiepagina, API-, rapport- en algoritmedocumentatie bijgewerkt; voorbeeld-PDF opnieuw gegenereerd (één A4).
+- [x] Demo-account via de paarse knop: economische as 63% links / 37% rechts, hoogste partijmatch 70/100 bij vier uit vier moties.
+
+
+## Kompas 4.2: meer gewogen stellingen en eerlijkere uitslag — 9 november 2026
+
+- [x] Oorzaak vastgesteld: van 4.598 stellingen hadden er 18 een kompasweging en 8 een gecontroleerde motiekoppeling. Daardoor bleef bijna elk rapport leeg of voorlopig.
+- [x] Gewichtsvoorstellen via het ingestelde rapportmodel (`compass:propose` en de knop in zschotcms), met kostenlimiet, logging per run en strikte validatie. Niets telt mee zonder goedkeuring; goedkeuren kan los, aangepast of in bulk per zekerheid. Gewijzigde of handmatig gewogen stellingen worden nooit overschreven.
+- [x] Proef met 40 stellingen: 40 geldige voorstellen voor €0,0025, inhoudelijk gecontroleerd. Een volledige run over 4.580 stellingen wordt geschat op circa €0,37 en is nog niet uitgevoerd.
+- [x] Nieuw tabblad Kompasvoorstellen in zschotcms (genereren, beoordelen, aanpassen, afwijzen, bulk).
+- [x] Historische context maakt themascores niet meer voorlopig; leeftijdsgrens geldt niet voor gewichten op de stellingtekst. Partijvergelijkingen houden hun historische beperking.
+- [x] `/spel` toont eerst stellingen die ontbrekende thema's aanvullen, zonder dat paginering stellingen overslaat.
+- [x] Bandbreedte op de themabalken in web en PDF; methodologiepagina en algoritmedocumentatie bijgewerkt; kompasversie 4.2, opgeslagen 4.0/4.1-rapporten blijven ongewijzigd.
+- Lokaal: `migrate` voerde ook de openstaande migratie `add_secret_url_pw_to_users_table` uit (alleen een lege, nullable kolom).
+
+## "Wat typeert jou?": vijf waardenkenmerken — 9 november 2026
+
+- [x] Feedback: de punten noemden losse moties ("Je steunt een EU-gezant…") en één zin was halverwege afgekapt ("kleinere sche,?").
+- [x] Nu vijf kenmerken die een waarde of afweging beschrijven, bijvoorbeeld "Je vindt de belangen van mensen belangrijker dan die van organisaties". Geen motie, organisatie of maatregel in de tekst; de antwoorden waarop een kenmerk rust staan eronder bij "Onderbouwing".
+- [x] Vanaf zes antwoorden met een richting moet elk kenmerk op minimaal twee antwoorden rusten. De server weigert kenmerken die een stellingtitel herhalen, niet met "Je" beginnen, cijfers bevatten of op een komma eindigen; dan volgt de terugval zonder AI.
+- [x] Terugval zonder AI geeft ook waardenzinnen, berekend uit de sterkste thema's, het voor/tegen-patroon en neutrale antwoorden.
+- [x] Live met demo-account (gpt-6-luna): geldige output, 4.466 input-/221 outputtokens, €0,00056. Niets opgeslagen.
+- [x] PDF past met vijf kenmerken op één A4; webrapport toont per kenmerk op hoeveel antwoorden het rust.

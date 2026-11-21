@@ -32,7 +32,7 @@ class CompassEditorialSeedTest extends TestCase
         $this->postJson('/api/cms/content/compass/seed')->assertOk()->assertJsonPath('reviewed', 0);
     }
 
-    public function test_early_historical_scores_are_explicitly_provisional_and_deduplicate_conflicting_answers(): void
+    public function test_historical_wording_counts_like_any_answer_and_conflicting_answers_are_deduplicated(): void
     {
         $entries = [];
         $metadata = [];
@@ -41,9 +41,10 @@ class CompassEditorialSeedTest extends TestCase
             $metadata[$i] = (object) ['motion_id' => null, 'verified_at' => null, 'compass_reviewed_at' => now()->toDateTimeString(), 'source_date' => '2015-01-01', 'compass_weights' => json_encode(['social' => 1, 'progressive' => 1, 'international' => 1, 'green' => 1, 'economic' => 1]), 'compass_context' => json_encode(['canonical_key' => 'test-'.$i, 'historical' => true, 'topics' => ['Expliciet testthema']])];
         }
         $compass = app(CompassAnalysis::class)->build($entries, $metadata);
-        $this->assertSame('provisional', $compass['status']);
-        $this->assertTrue($compass['type']['provisional']);
-        $this->assertSame(100, $compass['dimensions'][0]['percentage']);
+        // An answer to old wording is a current opinion; only the number of answers makes a score provisional.
+        $this->assertSame('ready', $compass['status']);
+        $this->assertFalse($compass['type']['provisional']);
+        $this->assertSame(81, $compass['dimensions'][0]['percentage']);
         $this->assertSame(10, $compass['historical_votes']);
         $this->assertSame(10, $compass['topics'][0]['count']);
         $entries[] = ['id' => 11, 'choice' => 'disagree'];
