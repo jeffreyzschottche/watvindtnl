@@ -18,7 +18,9 @@ class CmsMotionSource
         $response = Http::acceptJson()->timeout(12)->connectTimeout(4)
             ->withOptions(['allow_redirects' => false])
             ->get(self::BASE.'/Zaak', [
-                '$filter' => "Verwijderd eq false and Soort eq 'Motie' and GestartOp le ".now()->utc()->format('Y-m-d\TH:i:s\Z'),
+                // Only motions with recorded votes: without them a statement cannot be compared with parties.
+                '$filter' => "Verwijderd eq false and Soort eq 'Motie' and GestartOp le ".now()->utc()->format('Y-m-d\TH:i:s\Z')
+                    .' and Besluit/any(b: b/Verwijderd eq false and b/Stemming/any(s: s/Verwijderd eq false))',
                 '$select' => 'Id,Nummer,Onderwerp,GestartOp',
                 '$orderby' => 'GestartOp desc,Nummer desc,Id desc', '$top' => $limit, '$skip' => $offset,
             ]);

@@ -185,6 +185,7 @@ class CmsContentTest extends TestCase
         $this->postJson('/api/cms/content/motions/sync', ['limit' => 5])->assertOk()->assertJsonPath('created', 1);
         $this->postJson('/api/cms/content/motions/sync', ['limit' => 5])->assertOk()->assertJsonPath('created', 0);
         Http::assertSent(fn ($r) => str_contains($r->url(), '%24top=5') && str_contains($r->url(), 'GestartOp'));
+        Http::assertSent(fn ($r) => str_contains(urldecode($r->url()), 'Besluit/any(b: b/Verwijderd eq false and b/Stemming/any(')); // only voted motions
         $this->assertDatabaseHas('wdnl_motions', ['external_id' => $id, 'number' => '2026Z00123', 'source_url' => CmsMotionSource::BASE.'/Zaak('.$id.')']);
         $this->assertDatabaseCount('issues', 0);
         $this->postJson('/api/cms/content/motions/sync', ['limit' => 26])->assertUnprocessable();
