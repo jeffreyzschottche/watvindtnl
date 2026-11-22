@@ -52,7 +52,7 @@ class CmsMotionSource
         $response = Http::acceptJson()->timeout(8)->connectTimeout(4)
             ->withOptions(['allow_redirects' => false])->get($url, [
                 '$select' => 'Id,Soort,Verwijderd,Nummer,Onderwerp,GestartOp',
-                '$expand' => 'Besluit($filter=Verwijderd eq false;$select=BesluitTekst;$expand=Stemming($filter=Verwijderd eq false;$select=Soort,ActorNaam,ActorFractie)),Document($filter=Verwijderd eq false and Soort eq \'Motie\';$select=Id;$orderby=Datum desc;$top=1)',
+                '$expand' => 'Besluit($filter=Verwijderd eq false;$select=BesluitTekst;$expand=Stemming($filter=Verwijderd eq false;$select=Soort,ActorNaam,ActorFractie)),Document($filter=Verwijderd eq false and (Soort eq \'Motie\' or Soort eq \'Motie (gewijzigd/nader)\');$select=Id;$orderby=Datum desc;$top=1)',
             ]);
         $zaak = $response->json();
         if (! $response->successful() || ($zaak['Id'] ?? null) !== $id || ($zaak['Soort'] ?? null) !== 'Motie' || ($zaak['Verwijderd'] ?? true) !== false) {

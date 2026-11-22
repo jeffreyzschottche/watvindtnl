@@ -25,7 +25,7 @@ class CmsMotionStatements
         private MotionVotes $votes,
     ) {}
 
-    public function prepare(int $limit, int $actor): array
+    public function prepare(int $limit, ?int $actor): array
     {
         $this->openAiKey();
         $candidates = [];
@@ -76,7 +76,7 @@ class CmsMotionStatements
         return json_decode($payload, true, 32, JSON_THROW_ON_ERROR);
     }
 
-    public function generate(int $motionId, int $actor): array
+    public function generate(int $motionId, ?int $actor): array
     {
         $lock = Cache::lock('wdnl:motion-statement:'.$motionId, 90);
         abort_unless($lock->get(), 409, 'Er wordt al een concept gemaakt voor deze motie.');
