@@ -29,17 +29,51 @@ class StripeReports
         $stripe = new StripeClient(config('wdnl_reports.stripe_secret'));
         $session = $stripe->checkout->sessions->create(array_filter([
             'mode' => 'payment', 'client_reference_id' => $order->id, 'metadata' => ['wdnl_report_order' => $order->id],
-            'payment_method_configuration' => config('wdnl_reports.stripe_payment_method_configuration'), 'locale' => 'nl',
-            'payment_intent_data' => ['metadata' => ['wdnl_report_order' => $order->id]],
-            'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'eur', 'unit_amount' => 199, 'product_data' => ['name' => 'WDNL persoonlijk stemrapport', 'description' => 'Eén vast A4-rapport. Een nieuw rapport is een nieuwe aankoop.']]]],
+            'payment_method_configuration' => config('wdnl_reports.stripe_payment_method_configuration'), 'locale' => 'nl', 'submit_type' => 'pay',
+            'payment_intent_data' => ['metadata' => ['wdnl_report_order' => $order->id], 'description' => 'Wat Denkt Nederland – persoonlijk stemrapport'],
+            'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'eur', 'unit_amount' => 199, 'product_data' => $this->productData($order, $base)]]],
+            'branding_settings' => $this->branding($base),
+            'custom_text' => ['submit' => ['message' => 'Je betaalt eenmalig € 1,99, geen abonnement. Na de betaling verschijnt je rapport vanzelf onder Mijn stemrapporten op watdenktnl.nl, waar je de PDF altijd opnieuw kunt downloaden.']],
             'success_url' => $base.'/kompas/rapport?order='.$order->id,
             'cancel_url' => $base.'/kompas/rapport?order='.$order->id.'&betaling=geannuleerd',
-        ], fn ($value) => $value !== null), ['idempotency_key' => 'wdnl-report-checkout-v2-'.$order->id]); // v2: earlier keys replay a stored 400
+        ], fn ($value) => $value !== null), ['idempotency_key' => 'wdnl-report-checkout-v3-'.$order->id]); // bump when params change: Stripe rejects a reused key with new params
         $url = (string) $session->url;
         abort_unless(parse_url($url, PHP_URL_SCHEME) === 'https' && parse_url($url, PHP_URL_HOST) === 'checkout.stripe.com', 502, 'Onverwachte betaalverwijzing.');
         $order->update(['stripe_session_id' => $session->id, 'checkout_url' => $url]);
 
         return $url;
+    }
+
+    private function productData(ReportOrder $order, string $base): array
+    {
+        $answers = (int) ($order->snapshot['total'] ?? 0);
+
+        return array_filter([
+            'name' => 'Persoonlijk stemrapport – Wat Denkt Nederland',
+            'description' => ($answers > 0 ? 'Jouw politieke kompas op basis van '.$answers.' antwoorden' : 'Jouw politieke kompas')
+                .': typekaart, gewogen themascores, economische as en partijovereenkomsten. Eén vast A4-rapport als PDF.',
+            'images' => $this->publicAssets($base) ? [$base.'/illustrations/reports/compass-sculpture-v3.png'] : null,
+        ]);
+    }
+
+    /** Checkout branding per session, so the shared Stripe account (other products) keeps its own look. */
+    private function branding(string $base): array
+    {
+        return array_filter([
+            'display_name' => 'Wat Denkt Nederland',
+            'logo' => $this->publicAssets($base) ? ['type' => 'url', 'url' => $base.'/brand/wdnl-logo.png'] : null,
+            'icon' => $this->publicAssets($base) ? ['type' => 'url', 'url' => $base.'/brand/wdnl-icon.png'] : null,
+            'background_color' => '#f5f7fa',
+            'button_color' => '#e1062e',
+            'border_style' => 'rounded',
+            'font_family' => 'inter',
+        ]);
+    }
+
+    /** Stripe fetches images itself, so only public https sites (not localhost) can supply them. */
+    private function publicAssets(string $base): bool
+    {
+        return parse_url($base, PHP_URL_SCHEME) === 'https';
     }
 
     public function webhook(string $raw, string $signature): void
