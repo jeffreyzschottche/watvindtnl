@@ -22,3 +22,11 @@ De eerdere plaatsing alleen ná een stem is uitgebreid. Lokale `.env`: `DEMO_ADS
 - `DEMO_ADS=0` schakelt de advertentieplekken en de demo-pauze uit. Live advertenties hebben een aparte configuratie voor provider en toestemming.
 
 De lokale demo is geen geïmplementeerde AdMob SDK of gecertificeerde CMP. Browserregressies controleren zichtbaarheid vóór stemmen, openen/sluiten, de vijfde handmatige overgang en ontbreken van advertentie-/analyticsnetwerkverzoeken.
+
+## Live AdSense — 22 november 2026
+
+- Automatische advertenties staan uit in AdSense; alleen handmatige plaatsingen.
+- Displayblok `wdnl-responsief` (slot `4921284951`, client `ca-pub-2932017576194299`) staat in `nuxt.config.ts`.
+- Live advertenties tonen alleen op plaatsingen in `LIVE_AD_PLACEMENTS` (`app/utils/ads.ts`), nu alleen `home-tussen-secties`. Voeg plaatsingen toe nadat accepteren/weigeren/intrekken op het live domein is getest.
+- Toestemming loopt via Googles gepubliceerde EU-bericht "WDNL toestemming EU" (Nederlands, met knop Geen toestemming geven). Het bericht laadt automatisch met de AdSense-tag.
+- Productiebuilds hebben live ads standaard aan; uitzetten met `NUXT_PUBLIC_ADS_ENABLED=false`. `DEMO_ADS=1` gaat altijd voor.

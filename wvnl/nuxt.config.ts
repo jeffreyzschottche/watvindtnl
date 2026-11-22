@@ -4,7 +4,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       demoAds: process.env.DEMO_ADS === "1", // Local labelled placeholders; independent of live ads.
-      adsEnabled: process.env.ADS_ENABLED === "1",
+      // Live AdSense defaults to on in production builds; override with NUXT_PUBLIC_ADS_ENABLED=false.
+      adsEnabled: process.env.ADS_ENABLED
+        ? process.env.ADS_ENABLED === "1"
+        : process.env.NODE_ENV === "production",
+      adsenseClient: "ca-pub-2932017576194299",
+      adsenseSlot: "4921284951", // Display unit "wdnl-responsief"
       apiBase:
         process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",
     },

@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import DemoAdDialog from "~/components/common/DemoAdDialog.vue";
+import AdSenseUnit from "~/components/common/AdSenseUnit.vue";
 import GoogleTestAd from "~/components/common/GoogleTestAd.vue";
-import { adMode } from "~/utils/ads";
-withDefaults(defineProps<{ placement?: string; compact?: boolean }>(), {
-  placement: "in-content",
-  compact: false,
-});
+import { adMode, isLivePlacement } from "~/utils/ads";
+const props = withDefaults(
+  defineProps<{ placement?: string; compact?: boolean }>(),
+  { placement: "in-content", compact: false },
+);
 const config = useRuntimeConfig();
+const client = String(config.public.adsenseClient || "");
+const slot = String(config.public.adsenseSlot || "");
 const mode = computed(() =>
-  adMode(config.public.demoAds, config.public.adsEnabled, false),
+  adMode(config.public.demoAds, config.public.adsEnabled, !!client && !!slot),
 );
 const open = ref(false);
 const googleTest = useGoogleTestAds();
 </script>
 <template>
+  <AdSenseUnit
+    v-if="mode === 'live' && isLivePlacement(props.placement)"
+    :client="client"
+    :ad-slot="slot"
+  />
   <aside
-    v-if="mode === 'demo'"
+    v-else-if="mode === 'demo'"
     class="wdnl-demo-placement"
     :class="{ 'wdnl-demo-placement--compact': compact }"
     :data-placement="placement"

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Capacitor } from "@capacitor/core";
 import DevReportButton from "~/components/reports/DevReportButton.vue";
 import ReportSheet from "~/components/reports/ReportSheet.vue";
 import type { ReportOverview, VoteReport } from "~/types/voteReports";
@@ -19,7 +18,6 @@ const error = ref("");
 const politicalConsent = ref(false);
 const aiConsent = ref(false);
 const requestKey = ref("");
-const isNative = ref(false);
 let timer: ReturnType<typeof setTimeout> | undefined;
 let disposed = false;
 let polls = 0;
@@ -29,8 +27,7 @@ const canBuy = computed(
     !!overview.value &&
     overview.value.vote_count >= overview.value.product.minimum_votes &&
     overview.value.product.checkout_available &&
-    overview.value.compass_progress?.ready !== false &&
-    !isNative.value,
+    overview.value.compass_progress?.ready !== false,
 );
 const statusLabels: Record<VoteReport["status"], string> = {
   pending: "Wacht op betaling",
@@ -231,7 +228,6 @@ async function download() {
   }
 }
 onMounted(() => {
-  isNative.value = Capacitor.isNativePlatform();
   void load();
 });
 onBeforeUnmount(() => {
@@ -344,10 +340,6 @@ useSeoMeta({
             </ul>
             <NuxtLink to="/spel">Verder met stemmen →</NuxtLink>
           </div>
-          <p v-else-if="isNative" class="reports-page__hint">
-            Nieuwe rapporten kopen in de app is nog niet beschikbaar. Eerder
-            gekochte rapporten kun je hier wel bekijken.
-          </p>
           <p
             v-else-if="!overview.product.checkout_available"
             class="reports-page__hint"

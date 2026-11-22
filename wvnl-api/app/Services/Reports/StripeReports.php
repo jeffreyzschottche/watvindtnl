@@ -29,6 +29,7 @@ class StripeReports
         $stripe = new StripeClient(config('wdnl_reports.stripe_secret'));
         $session = $stripe->checkout->sessions->create([
             'mode' => 'payment', 'client_reference_id' => $order->id, 'metadata' => ['wdnl_report_order' => $order->id],
+            'payment_method_types' => config('wdnl_reports.stripe_payment_methods') ?: ['ideal'], 'locale' => 'nl',
             'payment_intent_data' => ['metadata' => ['wdnl_report_order' => $order->id]],
             'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'eur', 'unit_amount' => 199, 'product_data' => ['name' => 'WDNL persoonlijk stemrapport', 'description' => 'Eén vast A4-rapport. Een nieuw rapport is een nieuwe aankoop.']]]],
             'success_url' => $base.'/kompas/rapport?order='.$order->id,

@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__ . '/../routes/api.php'
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Coolify's proxy is the only way in; trust it so rate limits see the visitor's IP.
+        $middleware->trustProxies(at: env('TRUSTED_PROXIES', '*'));
         $middleware->api(prepend: [\App\Http\Middleware\ApiSecurityHeaders::class], append: ['throttle:api']);
         $middleware->alias([
             'cms.content' => \App\Http\Middleware\EnsureCmsContentToken::class,

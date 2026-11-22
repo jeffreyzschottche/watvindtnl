@@ -12,14 +12,9 @@
     "test": "vitest run",
     "check": "npm run test && npm run typecheck && npm run build",
     "test:e2e": "playwright test",
-    "build:mobile": "nuxt generate && cap copy",
     "test:dev-reports": "node tests/dev/report-loading.mjs"
   },
   "dependencies": {
-    "@capacitor/android": "7.6.10",
-    "@capacitor/cli": "7.6.10",
-    "@capacitor/core": "7.6.10",
-    "@capacitor/ios": "7.6.10",
     "@pinia/nuxt": "^0.11.2",
     "gsap": "3.15.1",
     "nuxt": "4.6.4",

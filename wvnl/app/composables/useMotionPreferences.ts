@@ -1,4 +1,4 @@
-/** One preference for the website and its Capacitor iOS/Android clients. */
+/** One motion preference for the whole website. */
 export function useMotionPreferences() {
   const reducedBySystem = useState("wdnl-reduced-motion", () => false);
   const optedIn = useCookie<boolean>("wdnl_motion", {
