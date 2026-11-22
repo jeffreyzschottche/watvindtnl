@@ -230,20 +230,31 @@ class CmsContentTest extends TestCase
         $this->assertNotContains($cda->id, $draft['party_stances']['disagree']);
         $this->assertDatabaseCount('issues', 1);
         $this->assertDatabaseCount('wdnl_motion_statement_drafts', 10);
-        Http::assertSentCount(31);
+        Http::assertSentCount(41); // per draft: source, PDF, statement and direction check
         Http::assertSent(fn ($r) => $r->url() === 'https://api.openai.com/v1/responses'
             && $r['text']['format']['strict'] === true
-            && json_decode($r['input'], true)['motietekst'] === 'Verzoekt de regering het voorstel uit te voeren.'
+            && (json_decode($r['input'], true)['motietekst'] ?? null) === 'Verzoekt de regering het voorstel uit te voeren.'
             && ! str_contains($r['input'], 'VVD'));
 
         $this->postJson($path)->assertOk()->assertJsonPath('created', false);
-        Http::assertSentCount(31);
+        Http::assertSentCount(41); // per draft: source, PDF, statement and direction check
         $this->postJson('/api/cms/content/statements', $draft)->assertUnprocessable()->assertJsonValidationErrors('reviewed');
         $this->postJson('/api/cms/content/statements', $draft + ['reviewed' => true])->assertOk();
         $this->getJson($path)->assertNotFound();
         $this->assertDatabaseCount('issues', 2);
         $this->assertDatabaseCount('wdnl_motion_statement_drafts', 9);
         $this->postJson('/api/cms/content/motions/prepare-statements', ['limit' => 10])->assertOk()->assertJsonPath('motions', []);
+    }
+
+    public function test_a_draft_that_points_the_other_way_than_the_motion_is_rejected(): void
+    {
+        $this->token();
+        $rows = [['Id' => '12345678-1234-1234-1234-000000000001', 'Nummer' => '2026Z00001', 'Onderwerp' => 'Officiële motie', 'GestartOp' => '2026-01-01T00:00:00+01:00']];
+        $this->fakeMotionAi($rows, '32345678-1234-1234-1234-123456789abc', []);
+        $this->motionCheck = ['match' => 0, 'direction' => 'opposite', 'confidence' => 'high'];
+        $motion = $this->postJson('/api/cms/content/motions/prepare-statements', ['limit' => 1])->assertOk()->json('motions.0');
+        $this->postJson('/api/cms/content/motions/'.$motion['id'].'/statement-draft')->assertUnprocessable()->assertJsonValidationErrors('richting');
+        $this->assertDatabaseCount('wdnl_motion_statement_drafts', 0);
     }
 
     public function test_invalid_ai_content_leaves_the_motion_available_for_a_retry(): void
@@ -262,6 +273,8 @@ class CmsContentTest extends TestCase
         $this->assertDatabaseCount('wdnl_motion_statement_drafts', 0);
         $this->postJson($prepare, $payload)->assertOk()->assertJsonPath('motions.0.id', $motion['id']);
     }
+
+    private array $motionCheck = ['match' => 0, 'direction' => 'same', 'confidence' => 'high'];
 
     private function fakeMotionAi(array $rows, string $documentId, array $votes, ?array $pro = null): void
     {
@@ -283,6 +296,9 @@ class CmsContentTest extends TestCase
                 return Http::response('%PDF-fixture', 200, ['Content-Type' => 'application/pdf']);
             }
             if ($url === 'https://api.openai.com/v1/responses') {
+                if ($request['text']['format']['name'] === 'motion_statement_check') {
+                    return Http::response(['status' => 'completed', 'output' => [['content' => [['type' => 'output_text', 'text' => json_encode($this->motionCheck)]]]]]);
+                }
                 $output = ['title' => 'De regering moet het voorstel uitvoeren', 'description' => 'De motie vraagt uitvoering van het voorstel.',
                     'more_info' => 'Achtergrond bij de motie.', 'pro' => $pro ?? ['Voor A', 'Voor B', 'Voor C', 'Voor D'],
                     'con' => ['Tegen A', 'Tegen B', 'Tegen C', 'Tegen D']];

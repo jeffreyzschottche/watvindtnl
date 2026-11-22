@@ -181,7 +181,7 @@ class ContentController extends Controller
         }, 3));
     }
 
-    public function syncMotions(Request $request, CmsMotionSource $source)
+    public function syncMotions(Request $request, CmsMotionSource $source, CmsMotionStatements $statements)
     {
         $data = $request->validate(['limit' => ['required', 'integer', 'min:1', 'max:25']]);
         $lock = Cache::lock('wdnl:cms:motion-sync', 30);
@@ -189,14 +189,17 @@ class ContentController extends Controller
         try {
             $rows = $source->recent($data['limit']);
 
-            return response()->json(DB::transaction(function () use ($rows, $request) {
+            $result = DB::transaction(function () use ($rows, $request) {
                 $before = DB::table('wdnl_motions')->count();
                 foreach ($rows as $row) {
                     $this->content->saveMotion($row, $request->attributes->get('cms_token_id'), sourceSync: true);
                 }
 
                 return ['fetched' => count($rows), 'created' => DB::table('wdnl_motions')->count() - $before];
-            }));
+            });
+            $statements->refreshVotes($request->attributes->get('cms_token_id'));
+
+            return response()->json($result);
         } finally {
             $lock->release();
         }

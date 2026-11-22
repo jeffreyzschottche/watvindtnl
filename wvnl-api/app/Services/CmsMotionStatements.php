@@ -21,6 +21,8 @@ class CmsMotionStatements
         private CmsContentService $content,
         private MotionImportService $motionImport,
         private ReportNarrator $ai,
+        private MotionStatementCheck $check,
+        private MotionVotes $votes,
     ) {}
 
     public function prepare(int $limit, int $actor): array
@@ -51,7 +53,19 @@ class CmsMotionStatements
             }
         }
 
+        $this->refreshVotes($actor);
+
         return array_values($candidates);
+    }
+
+    /** Each sync also fills in party votes for linked motions that have been voted on since. */
+    public function refreshVotes(?int $actor = null): void
+    {
+        try {
+            $this->votes->refreshLinked(10, $actor);
+        } catch (\Throwable $e) {
+            report($e); // never blocks the sync itself
+        }
     }
 
     public function draft(int $motionId): array
@@ -81,6 +95,10 @@ class CmsMotionStatements
                 throw ValidationException::withMessages(['bron' => 'De officiële motietekst kon niet worden gelezen.']);
             }
             $output = $this->writeStatement($source, $key);
+            // Agreeing must mean voting for the motion, or every party match on it is inverted. One retry, then stop.
+            if (! $this->pointsSameWay($output, $motion, $source) && ! $this->pointsSameWay($output = $this->writeStatement($source, $key), $motion, $source)) {
+                throw ValidationException::withMessages(['richting' => 'Het AI-concept wijst niet dezelfde kant op als de motie: eens moet gelijkstaan aan vóór stemmen. Probeer het opnieuw.']);
+            }
             $arguments = [];
             foreach (['pro', 'con'] as $side) {
                 $arguments[$side] = array_map(fn ($body) => ['body' => $body, 'sources' => [$source['document_url']]], $output[$side]);
@@ -123,6 +141,20 @@ class CmsMotionStatements
         // Legacy imports do not have a motion_id, but add the official case number to the slug.
         return Issue::where('url', $url)->orWhere('slug', $numberSlug)
             ->orWhere('slug', 'like', '%-'.$numberSlug)->exists();
+    }
+
+    private function pointsSameWay(array $output, object $motion, array $source): bool
+    {
+        try {
+            $verdict = $this->check->judge(
+                ['title' => $output['title'], 'description' => $output['description'], 'more_info' => $output['more_info']],
+                [['number' => $motion->number, 'subject' => $motion->title, 'date' => $motion->source_date, 'text' => $source['text']]],
+            );
+        } catch (RuntimeException) {
+            throw ValidationException::withMessages(['OpenAI' => 'De richtingscontrole van het concept is niet gelukt. Probeer het opnieuw.']);
+        }
+
+        return MotionStatementCheck::accepted($verdict);
     }
 
     private function openAiKey(): string

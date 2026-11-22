@@ -10,5 +10,7 @@ return [
     'openai' => [
         'endpoint' => env('OPENAI_CHAT_COMPLETIONS_URL', 'https://api.openai.com/v1/chat/completions'),
         'model' => env('MOTION_OPENAI_MODEL') ?: (env('OPENAI_MODEL') ?: 'gpt-4.1-mini'),
+        // Linking a statement to its motion and checking its direction needs a careful model: a wrong link inverts party matches.
+        'check_model' => env('MOTION_CHECK_MODEL', 'gpt-6.1-terra'),
     ],
 ];

@@ -59,9 +59,12 @@ useSeoMeta({ title: "Hoe werken de uitslagen? | WatDenktNederland" });
       </p>
       <h2>Partijen en het politieke kompas</h2>
       <p>
-        Partijverwijzingen bij oudere stellingen worden nog gecontroleerd op
-        herkomst. Nieuwe partijovereenkomsten gebruiken alleen gecontroleerde
-        motiekoppelingen. Het politieke kompas gebruikt vaste, redactioneel
+        Partijovereenkomsten gebruiken alleen stellingen die aan hun officiële
+        motie zijn gekoppeld, met de partijstemmen uit de open data van de
+        Tweede Kamer. Bij oudere stellingen wordt die motie automatisch
+        teruggezocht; een AI-controle bevestigt dat het om hetzelfde verzoek
+        gaat en dat eens hetzelfde betekent als vóór stemmen. Bij twijfel telt
+        de stelling niet mee voor partijen. Het politieke kompas gebruikt vaste, redactioneel
         beheerde gewichten. De politieke types zijn een visuele samenvatting van
         je antwoorden, geen wetenschappelijk gevalideerde persoonlijkheidstest.
       </p>
