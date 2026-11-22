@@ -627,6 +627,12 @@ PROMPT;
 
         $exact = $this->partyIndex[mb_strtoupper($key, 'UTF-8')] ?? null;
         if ($exact) return $exact;
+        // Single members and split-off groups vote as "Keijzer" but sit in the Kamer as "Lid Keijzer".
+        foreach (['LID ', 'GROEP '] as $prefix) {
+            if ($id = $this->partyIndex[$prefix.mb_strtoupper($key, 'UTF-8')] ?? null) {
+                return $id;
+            }
+        }
         $abbr = self::PARTY_SYNONYMS[$key] ?? null;
         if (!$abbr) {
             return null;

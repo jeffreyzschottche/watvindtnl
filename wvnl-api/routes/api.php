@@ -91,6 +91,7 @@ Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])
         Route::post('/compass/proposals/{id}/approve', [ContentController::class, 'approveCompassProposal'])->whereNumber('id');
         Route::post('/compass/proposals/{id}/reject', [ContentController::class, 'rejectCompassProposal'])->whereNumber('id');
         Route::post('/parties/seed', [ContentController::class, 'seedParties']);
+        Route::post('/parties/sync', [ContentController::class, 'syncParties'])->middleware('throttle:cms-motion-sync');
         Route::post('/compass/seed', [ContentController::class, 'seedCompass']);
         Route::post('/compass/weights', [ContentController::class, 'importCompassWeights']);
         Route::post('/parties', [ContentController::class, 'saveParty']);

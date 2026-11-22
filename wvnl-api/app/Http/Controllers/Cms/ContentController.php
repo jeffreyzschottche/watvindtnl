@@ -8,6 +8,7 @@ use App\Models\PoliticalParty;
 use App\Services\CmsContentService;
 use App\Services\CmsMotionSource;
 use App\Services\CmsMotionStatements;
+use App\Services\CmsPartySync;
 use App\Services\Reports\CompassEditorialSeed;
 use App\Services\Reports\CompassProposalReview;
 use App\Services\Reports\CompassProposals;
@@ -129,6 +130,17 @@ class ContentController extends Controller
     public function importCompassWeights(Request $request, CompassWeightsFile $file)
     {
         return response()->json($file->apply($request->only(['version', 'rows']), $request->attributes->get('cms_token_id')));
+    }
+
+    public function syncParties(Request $request, CmsPartySync $sync)
+    {
+        $lock = Cache::lock('wdnl:cms:party-sync', 120);
+        abort_unless($lock->get(), 409, 'De partijen worden al gesynchroniseerd.');
+        try {
+            return response()->json($sync->sync($request->attributes->get('cms_token_id')));
+        } finally {
+            $lock->release();
+        }
     }
 
     public function seedParties(Request $request)
