@@ -46,7 +46,7 @@ class StripeReports
     {
         abort_unless(config('wdnl_reports.stripe_webhook_secret') && config('wdnl_reports.stripe_secret'), 503);
         $event = Webhook::constructEvent($raw, $signature, config('wdnl_reports.stripe_webhook_secret'), 300);
-        $live = str_starts_with((string) config('wdnl_reports.stripe_secret'), 'sk_live_');
+        $live = (bool) preg_match('/^(sk|rk)_live_/', (string) config('wdnl_reports.stripe_secret'));
         abort_unless((bool) $event->livemode === $live, 400, 'Verkeerde betaalomgeving.');
         DB::transaction(function () use ($event) {
             if (! DB::table('wdnl_report_payment_events')->insertOrIgnore(['id' => $event->id, 'type' => $event->type, 'created_at' => now()])) {
