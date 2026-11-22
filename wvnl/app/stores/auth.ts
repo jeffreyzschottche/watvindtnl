@@ -1,6 +1,10 @@
 // ~/stores/auth.ts
 import { defineStore } from "pinia";
-import { useCookie } from "#imports";
+import {
+  clearSessionCookie,
+  readSessionCookie,
+  writeSessionCookie,
+} from "~/utils/sessionCookie";
 import type { User } from "~/types/User";
 import { apiFetch } from "~/services/apiFetch";
 import { useApi } from "~/composables/useApi";
@@ -19,13 +23,13 @@ export const useAuthStore = defineStore("auth", () => {
   ) {
     token.value = newToken;
     user.value = newUser;
-    useCookie("token", { maxAge, sameSite: "strict", secure: !import.meta.dev }).value = newToken; // client cookie (niet HttpOnly)
+    writeSessionCookie(newToken, maxAge); // client cookie (niet HttpOnly), gedeeld door watdenktnl.nl en www.
   }
 
   function clearSession() {
     token.value = null;
     user.value = null;
-    useCookie("token").value = null;
+    clearSessionCookie();
   }
 
   async function logout() {
@@ -46,11 +50,13 @@ export const useAuthStore = defineStore("auth", () => {
 
   /** Herstel sessie uit cookie → haalt /me op als token bestaat */
   async function restore(api = useApi()) {
-    const saved = useCookie<string>("token").value;
+    const saved = readSessionCookie();
     if (!saved) return;
     try {
       token.value = saved;
       user.value = await api.get<User>("/me");
+      // Moves older host-only cookies to the shared domain cookie.
+      writeSessionCookie(saved, 60 * 60 * 24 * 14);
     } catch {
       clearSession();
     }
