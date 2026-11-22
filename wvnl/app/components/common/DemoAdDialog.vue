@@ -1,16 +1,31 @@
 <script setup lang="ts">
+import AdSenseUnit from "~/components/common/AdSenseUnit.vue";
 import GoogleTestAd from "~/components/common/GoogleTestAd.vue";
+import { adMode, isLivePlacement } from "~/utils/ads";
 
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 const dialog = ref<HTMLDialogElement | null>(null);
 const titleId = useId();
 const googleTest = useGoogleTestAds();
+const config = useRuntimeConfig();
+const live = computed(
+  () =>
+    adMode(
+      config.public.demoAds,
+      config.public.adsEnabled,
+      !!config.public.adsenseClient && !!config.public.adsenseSlot,
+    ) === "live" && isLivePlacement("spel-pauze"),
+);
+// The AdSense unit mounts only once the dialog is visible, so it has a width to fill.
+const shown = ref(false);
 async function sync() {
   await nextTick();
-  if (props.open && dialog.value && !dialog.value.open)
+  if (props.open && dialog.value && !dialog.value.open) {
     dialog.value.showModal();
-  else if (!props.open && dialog.value?.open) dialog.value.close();
+    shown.value = true;
+  } else if (!props.open && dialog.value?.open) dialog.value.close();
+  if (!props.open) shown.value = false;
 }
 watch(() => props.open, sync);
 onMounted(sync);
@@ -26,18 +41,30 @@ onBeforeUnmount(() => dialog.value?.close());
     >
       <header>
         <span>{{
-          googleTest ? "Advertentie · Google-test" : "Advertentie · demo"
+          live
+            ? "Even een pauze"
+            : googleTest
+              ? "Advertentie · Google-test"
+              : "Advertentie · demo"
         }}</span
         ><button
           type="button"
-          aria-label="Demo-advertentie sluiten"
+          :aria-label="live ? 'Advertentie sluiten' : 'Demo-advertentie sluiten'"
           autofocus
           @click="dialog?.close()"
         >
           ✕
         </button>
       </header>
-      <template v-if="googleTest">
+      <template v-if="live">
+        <h2 :id="titleId" class="sr-only">Pauze met een advertentie</h2>
+        <AdSenseUnit
+          v-if="shown"
+          :client="String(config.public.adsenseClient)"
+          :ad-slot="String(config.public.adsenseSlot)"
+        />
+      </template>
+      <template v-else-if="googleTest">
         <h2 :id="titleId" class="sr-only">
           Pauze met een Google-testadvertentie
         </h2>

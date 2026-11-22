@@ -1,4 +1,5 @@
-/** Demo pauses only follow an explicit Next after a confirmed vote. No political data is retained. */
+import { adMode, isLivePlacement } from "~/utils/ads";
+/** Ad pauses (demo or live) only follow an explicit Next after a confirmed vote. No political data is retained. */
 export function useAdBreak() {
   const config = useRuntimeConfig();
   const counter = useState("wdnl-demo-ad-count", () => 0);
@@ -8,8 +9,13 @@ export function useAdBreak() {
   function next(answered: boolean, action: () => void) {
     if (open.value) return;
     if (answered) counter.value++;
+    const mode = adMode(
+      config.public.demoAds,
+      config.public.adsEnabled,
+      !!config.public.adsenseClient && !!config.public.adsenseSlot,
+    );
     if (
-      config.public.demoAds &&
+      (mode === "demo" || (mode === "live" && isLivePlacement("spel-pauze"))) &&
       answered &&
       counter.value >= 5 &&
       Date.now() - last.value >= 120000

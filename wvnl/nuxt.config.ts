@@ -9,6 +9,10 @@ export default defineNuxtConfig({
         ? process.env.ADS_ENABLED === "1"
         : process.env.NODE_ENV === "production",
       adsenseClient: "ca-pub-2932017576194299",
+      // Public OAuth client ID for "Doorgaan met Google" (not a secret).
+      googleClientId:
+        process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID ||
+        "573350916613-39cf2ifuv41uqsombrp4rvucu0k25f09.apps.googleusercontent.com",
       adsenseSlot: "4921284951", // Display unit "wdnl-responsief"
       apiBase:
         process.env.NUXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",

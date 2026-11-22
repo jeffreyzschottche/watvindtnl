@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:registration');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/auth/google', [AuthController::class, 'google'])->middleware('throttle:google-login');
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->middleware('throttle:password-reset');
 Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:password-reset');
 Route::post('/contact', ContactController::class)->middleware('throttle:contact');

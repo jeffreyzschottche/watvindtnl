@@ -37,12 +37,8 @@
         @share="(platform) => handleShare(activeIssue, platform)"
       />
 
-      <p v-if="error && activeIssue" class="issues-page__inline-error">
-        {{ error }}
-      </p>
-
       <div
-        v-else-if="!activeIssue && !loading && !error"
+        v-if="!activeIssue && !loading && !error"
         class="issues-page__state issues-page__state--success"
       >
         <img
@@ -58,7 +54,7 @@
           Vernieuw
         </button>
       </div>
-      <AdSlot v-if="!loading && activeIssue" placement="spel-onder-stelling" />
+      <AdSlot v-if="!loading" placement="spel-onder-stelling" />
       <DemoAdDialog :open="adBreak.open.value" @close="adBreak.close" />
     </div>
     <IssueDetailModal
@@ -135,6 +131,11 @@ const adBreak = useAdBreak();
 const { isLoggedIn, user, token } = storeToRefs(auth);
 
 const notifications = useNotificationStore();
+// Errors during voting (e.g. too many attempts) appear as a toast at the top, not below the card.
+watch(error, (message) => {
+  if (message && activeIssue.value)
+    notifications.addNotification({ message, type: "error", timeout: 5000 });
+});
 const { shareIssue } = useIssueSharing();
 
 const modalIssue = ref<IssueWithArguments | null>(null);

@@ -42,10 +42,19 @@ export function useAuth() {
     store.setSession(token, user);
   }
 
+  async function loginWithGoogle(credential: string) {
+    const { token, user } = await api.post<{ token: string; user: User }>(
+      "/auth/google",
+      { credential }
+    );
+    store.setSession(token, user);
+  }
+
   return {
     ...storeToRefs(store), // token, user, isLoggedIn, isPremium
     register,
     login,
+    loginWithGoogle,
     requestPasswordReset: (email: string) =>
       api.post<{ message: string }>("/forgot-password", { email }),
     resetPassword: (payload: {

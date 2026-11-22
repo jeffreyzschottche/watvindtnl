@@ -12,6 +12,8 @@
       <p>Maak een account en stem mee.</p>
     </header>
 
+    <GoogleSignIn />
+
     <fieldset class="form-fieldset">
       <legend>Persoonlijke gegevens</legend>
       <label>
@@ -162,6 +164,7 @@
 </template>
 
 <script setup lang="ts">
+import GoogleSignIn from "~/components/auth/GoogleSignIn.vue";
 import { useAuth } from "~/composables/useAuth";
 import { AGE_CATEGORIES, type AgeCategory } from "~/types/User";
 import { translateErrorMessage } from "~/utils/translateErrorMessage";

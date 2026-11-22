@@ -3,8 +3,14 @@ export function adMode(demo: boolean, enabled: boolean, providerReady: boolean):
   return enabled && providerReady ? "live" : "off";
 }
 
-/** Live ads start on the homepage only; add placements here once consent is verified on the live site. */
-export const LIVE_AD_PLACEMENTS = ["home-tussen-secties"] as const;
+/** Placements that show a live AdSense unit. Never on auth, payment, report or privacy pages. */
+export const LIVE_AD_PLACEMENTS = [
+  "home-tussen-secties",
+  "spel-onder-stelling",
+  "spel-pauze",
+  "overzicht",
+  "profiel-overzicht",
+] as const;
 export function isLivePlacement(placement: string): boolean {
   return (LIVE_AD_PLACEMENTS as readonly string[]).includes(placement);
 }

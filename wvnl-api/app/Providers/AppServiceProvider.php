@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinutes(15, $limit('login'))->by('account:'.$key($r)),
             Limit::perMinutes(15, 50)->by('ip:'.hash('sha256', (string) $r->ip())),
         ]);
+        RateLimiter::for('google-login', fn ($r) => Limit::perMinutes(15, 30)->by('ip:'.hash('sha256', (string) $r->ip())));
         foreach (['registration', 'password-reset', 'contact'] as $name) {
             RateLimiter::for($name, fn ($r) => [
                 Limit::perHour($limit($name))->by('ip:'.hash('sha256', (string) $r->ip())),

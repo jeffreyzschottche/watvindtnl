@@ -12,6 +12,8 @@
       <p>Log in en ontdek wat jij ervan vindt.</p>
     </header>
 
+    <GoogleSignIn />
+
     <label>
       <span>E-mailadres</span>
       <input
@@ -65,6 +67,7 @@
 </template>
 
 <script setup lang="ts">
+import GoogleSignIn from "~/components/auth/GoogleSignIn.vue";
 import ForgotPasswordModal from "~/components/auth/ForgotPasswordModal.vue";
 import { translateErrorMessage } from "~/utils/translateErrorMessage";
 

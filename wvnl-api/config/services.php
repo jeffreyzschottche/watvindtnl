@@ -39,6 +39,11 @@ return [
         'recipient' => env('MAIL_CONTACT_RECIPIENT', env('MAIL_FROM_ADDRESS')),
     ],
 
+    // Public OAuth client ID for "Inloggen met Google" (not a secret).
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID', '573350916613-39cf2ifuv41uqsombrp4rvucu0k25f09.apps.googleusercontent.com'),
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'organization' => env('OPENAI_ORG'),
