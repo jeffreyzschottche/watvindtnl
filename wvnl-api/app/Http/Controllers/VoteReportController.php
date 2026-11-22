@@ -96,7 +96,8 @@ class VoteReportController extends Controller
             try {
                 DB::transaction(fn () => $this->payments->checkout(ReportOrder::lockForUpdate()->findOrFail($order->id)));
             } catch (Throwable $e) {
-                // Stripe/network details stay out of public responses; the same request_key safely retries the same session.
+                // Stripe/network details stay out of public responses (but are logged); the same request_key safely retries the same session.
+                report($e);
                 abort(503, 'De betaalpagina is tijdelijk niet bereikbaar. Probeer het opnieuw; je rapportaanvraag blijft bewaard.');
             }
         }

@@ -27,14 +27,14 @@ class StripeReports
         $local = in_array($parts['host'] ?? '', ['localhost', '127.0.0.1'], true);
         abort_unless(($parts['scheme'] ?? '') === 'https' || (($parts['scheme'] ?? '') === 'http' && $local), 503, 'De betaalomgeving is nog niet ingesteld.');
         $stripe = new StripeClient(config('wdnl_reports.stripe_secret'));
-        $session = $stripe->checkout->sessions->create([
+        $session = $stripe->checkout->sessions->create(array_filter([
             'mode' => 'payment', 'client_reference_id' => $order->id, 'metadata' => ['wdnl_report_order' => $order->id],
-            'payment_method_types' => config('wdnl_reports.stripe_payment_methods') ?: ['ideal'], 'locale' => 'nl',
+            'payment_method_configuration' => config('wdnl_reports.stripe_payment_method_configuration'), 'locale' => 'nl',
             'payment_intent_data' => ['metadata' => ['wdnl_report_order' => $order->id]],
             'line_items' => [['quantity' => 1, 'price_data' => ['currency' => 'eur', 'unit_amount' => 199, 'product_data' => ['name' => 'WDNL persoonlijk stemrapport', 'description' => 'Eén vast A4-rapport. Een nieuw rapport is een nieuwe aankoop.']]]],
             'success_url' => $base.'/kompas/rapport?order='.$order->id,
             'cancel_url' => $base.'/kompas/rapport?order='.$order->id.'&betaling=geannuleerd',
-        ], ['idempotency_key' => 'wdnl-report-'.$order->id]);
+        ], fn ($value) => $value !== null), ['idempotency_key' => 'wdnl-report-checkout-v2-'.$order->id]); // v2: earlier keys replay a stored 400
         $url = (string) $session->url;
         abort_unless(parse_url($url, PHP_URL_SCHEME) === 'https' && parse_url($url, PHP_URL_HOST) === 'checkout.stripe.com', 502, 'Onverwachte betaalverwijzing.');
         $order->update(['stripe_session_id' => $session->id, 'checkout_url' => $url]);

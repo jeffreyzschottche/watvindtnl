@@ -8,8 +8,9 @@ return [
     'deepseek_key' => env('DEEPSEEK_API_KEY'),
     'stripe_secret' => env('STRIPE_SECRET_KEY'),
     'stripe_webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
-    // Only bank payments: iDEAL (iDEAL | Wero) by default. Never cards, Klarna or other methods.
-    'stripe_payment_methods' => array_values(array_filter(array_map('trim', explode(',', (string) env('STRIPE_PAYMENT_METHODS', 'ideal'))))),
+    // Stripe API 2026-10-28+ no longer accepts payment_method_types on Checkout: methods are managed in the
+    // Dashboard (Settings → Payment methods). Optionally pin a specific configuration (pmc_...) that only enables iDEAL.
+    'stripe_payment_method_configuration' => env('STRIPE_PAYMENT_METHOD_CONFIGURATION') ?: null,
     'web_url' => env('WDNL_WEB_URL', 'http://localhost:3000'),
     // Payments remain closed until deployment, mail/refund procedures and privacy review are complete.
     'sales_enabled' => (bool) env('WDNL_REPORT_SALES_ENABLED', false),

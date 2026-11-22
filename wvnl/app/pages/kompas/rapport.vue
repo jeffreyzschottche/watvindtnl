@@ -187,10 +187,17 @@ async function buy() {
       window.location.assign(url.href);
     } else await openReport(order.id);
   } catch (e) {
+    // The API sends specific Dutch reasons (409/422/503); only a bare 500 falls back to the generic text.
+    const { statusCode, rawMessage } = (e ?? {}) as {
+      statusCode?: number;
+      rawMessage?: string | null;
+    };
     error.value =
-      e instanceof Error
-        ? e.message
-        : "Betalen kon niet worden gestart. Er is geen rapport ontgrendeld.";
+      statusCode && statusCode !== 500 && rawMessage
+        ? rawMessage
+        : e instanceof Error
+          ? e.message
+          : "Betalen kon niet worden gestart. Er is geen rapport ontgrendeld.";
   } finally {
     pending.value = false;
   }
