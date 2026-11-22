@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CompassExamples from "~/components/compass/CompassExamples.vue";
 import CompassProgress from "~/components/compass/CompassProgress.vue";
+import CompassStatusBanner from "~/components/compass/CompassStatusBanner.vue";
 import AppIcon from "~/components/ui/AppIcon.vue";
 import type { CompassExample, ReportProduct } from "~/types/voteReports";
 
@@ -73,6 +74,8 @@ useSeoMeta({
         Naar mijn kompas <AppIcon name="arrow" :size="18" />
       </NuxtLink>
     </header>
+
+    <CompassStatusBanner v-if="auth.isLoggedIn" />
 
     <template v-if="showExamples">
       <section

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CompassStatusBanner from "~/components/compass/CompassStatusBanner.vue";
 import DevReportButton from "~/components/reports/DevReportButton.vue";
 import ReportSheet from "~/components/reports/ReportSheet.vue";
 import type { ReportOverview, VoteReport } from "~/types/voteReports";
@@ -257,6 +258,7 @@ useSeoMeta({
         >€ 1,99 <small>per nieuw rapport</small></span
       >
     </header>
+    <CompassStatusBanner hide-when-complete />
     <DevReportButton />
     <p v-if="loading" role="status">Je rapporten worden geladen…</p>
     <p v-if="error" role="alert" class="form-error">{{ error }}</p>
