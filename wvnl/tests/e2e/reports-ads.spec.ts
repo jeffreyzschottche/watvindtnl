@@ -160,6 +160,43 @@ async function mock(page: Page, selected: Record<string, unknown> = saved) {
   });
   return { votes, purchases, trackers };
 }
+test("the compass shows saved votes and opens checkout only when the report is ready", async ({
+  page,
+}) => {
+  await mock(page);
+  let reportReady = false;
+  await page.route("**/api/me/compass-progress", (route) =>
+    route.fulfill({
+      headers: {
+        "Access-Control-Allow-Origin": "http://localhost:3010",
+        "Access-Control-Allow-Headers": "*",
+      },
+      json: {
+        done: reportReady ? 25 : 0,
+        target: 25,
+        needed: reportReady ? 0 : 25,
+        vote_count: 68,
+        used_votes: reportReady ? 12 : 0,
+        remaining_votes: 0,
+        remaining_weighted_votes: reportReady ? 0 : 10,
+        report_ready: reportReady,
+        checkout_available: true,
+        themes: ["Sociaal", "Progressief", "Internationaal", "Groen", "Links"].map(
+          (left) => ({ id: left, left, minimum: 5, done: reportReady ? 5 : 0 }),
+        ),
+      },
+    }),
+  );
+
+  await page.goto("/kompas");
+  await expect(page.getByRole("heading", { name: "Nog 5 thema’s aanvullen" })).toBeVisible();
+  await expect(page.getByText("68 opgeslagen stemmen · 0 meegeteld voor je kompas")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Koop mijn rapport/ })).toHaveCount(0);
+
+  reportReady = true;
+  await page.reload();
+  await expect(page.getByRole("link", { name: "Koop mijn rapport · €1,99" })).toHaveAttribute("href", "/kompas/rapport");
+});
 test("demo placement is visible before voting, clickable and immediately closable", async ({
   page,
 }) => {

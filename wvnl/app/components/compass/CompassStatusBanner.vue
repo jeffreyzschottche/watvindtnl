@@ -1,19 +1,12 @@
 <script setup lang="ts">
-/** Big, unmissable status: how many answers are still needed before the compass report can be bought. */
 import AppIcon from "~/components/ui/AppIcon.vue";
 
 const props = withDefaults(defineProps<{ hideWhenComplete?: boolean }>(), {
   hideWhenComplete: false,
 });
-const { data, refresh } = useCompassProgress();
+const { data, complete, percent, themesRemaining, votesRemaining, refresh } =
+  useCompassProgress();
 onMounted(refresh);
-
-const complete = computed(() => !!data.value && data.value.needed === 0);
-const percent = computed(() =>
-  data.value
-    ? Math.min(100, Math.round((100 * data.value.done) / Math.max(1, data.value.target)))
-    : 0,
-);
 </script>
 
 <template>
@@ -23,43 +16,54 @@ const percent = computed(() =>
     :class="{ 'compass-banner--complete': complete }"
     aria-labelledby="compass-banner-title"
   >
-    <div v-if="!complete" class="compass-banner__count" aria-hidden="true">
-      <strong>{{ data.needed }}</strong>
-      <span>{{ data.needed === 1 ? "vraag" : "vragen" }}</span>
+    <div v-if="themesRemaining" class="compass-banner__count" aria-hidden="true">
+      <strong>{{ themesRemaining }}</strong>
+      <span>{{ themesRemaining === 1 ? "thema" : "thema’s" }}</span>
     </div>
     <div v-else class="compass-banner__count compass-banner__count--done" aria-hidden="true">
-      <AppIcon name="check" :size="44" />
+      <AppIcon :name="complete ? 'check' : 'compass'" :size="44" />
     </div>
 
     <div class="compass-banner__copy">
       <h2 id="compass-banner-title">
-        <template v-if="!complete">
-          Nog {{ data.needed }} {{ data.needed === 1 ? "vraag" : "vragen" }} tot
-          je politieke kompas
+        <template v-if="complete">Je politieke kompas is klaar</template>
+        <template v-else-if="themesRemaining">
+          Nog {{ themesRemaining }} {{ themesRemaining === 1 ? "thema" : "thema’s" }} aanvullen
         </template>
-        <template v-else>Je politieke kompas is klaar</template>
+        <template v-else>Je politieke kompas is in opbouw</template>
       </h2>
-      <p v-if="!complete">
-        Beantwoord nog {{ data.needed }}
-        {{ data.needed === 1 ? "stelling" : "stellingen" }}. Daarna kun je je
-        persoonlijke kompasrapport kopen voor €1,99.
+      <p v-if="themesRemaining">
+        Voor elk thema zijn {{ data.themes[0]?.minimum }} voor- of tegenstemmen
+        op kompasstellingen nodig. Eén stem kan voor meerdere thema’s meetellen.
       </p>
-      <p v-else>
+      <p v-else-if="votesRemaining">
+        Beantwoord nog minstens {{ votesRemaining }}
+        {{ data.remaining_weighted_votes ? "kompasstellingen" : "stellingen" }}
+        om je rapport vrij te spelen.
+      </p>
+      <p v-else-if="!complete">
+        Je themascores zijn gevuld. Stem verder om een politiek type te bepalen.
+      </p>
+      <p v-else-if="data.checkout_available">
         Je hebt genoeg stellingen beantwoord. Koop nu je persoonlijke
         kompasrapport voor €1,99 en betaal met iDEAL | Wero.
       </p>
+      <p v-else>Je rapport is tijdelijk nog niet te koop.</p>
       <div
         class="compass-banner__track"
         role="progressbar"
         :aria-valuenow="percent"
         aria-valuemin="0"
         aria-valuemax="100"
-        :aria-label="`Kompas ${percent}% compleet`"
+        aria-label="Dekking van de kompasthema’s"
       >
         <span :style="{ width: `${percent}%` }" />
       </div>
       <p class="compass-banner__meta">
-        {{ data.done }} van {{ data.target }} antwoorden · {{ percent }}%
+        <template v-if="data.vote_count !== undefined">
+          {{ data.vote_count }} opgeslagen stemmen ·
+        </template>
+        {{ data.used_votes }} meegeteld voor je kompas
       </p>
     </div>
 
@@ -67,7 +71,7 @@ const percent = computed(() =>
       :to="complete ? '/kompas/rapport' : '/spel'"
       class="compass-banner__cta"
     >
-      {{ complete ? "Koop mijn rapport · €1,99" : "Verder stemmen" }}
+      {{ complete ? (data.checkout_available ? "Koop mijn rapport · €1,99" : "Bekijk mijn rapporten") : "Verder stemmen" }}
       <AppIcon name="arrow" :size="18" />
     </NuxtLink>
   </section>

@@ -15,19 +15,19 @@ class VoteSnapshot
 
     public function build(User $user, bool $withAnalysisContext = false): array
     {
-        $ids = array_values(array_unique(array_map('intval', (array) $user->voted_issue_ids)));
-        abort_if(count($ids) > 20000, 422, 'Dit account vereist een grotere achtergrondexport.');
-        $issues = Issue::whereIn('id', $ids)->get(['id', 'slug', 'title', 'votes', 'party_stances', 'description', 'more_info'])->keyBy('id');
-        $metadata = DB::table('wdnl_statement_metadata')->whereIn('issue_id', $ids)->get()->keyBy('issue_id');
+        $issues = Issue::votedBy((int) $user->id)->orderBy('id')->limit(20001)
+            ->get(['id', 'slug', 'title', 'votes', 'party_stances', 'description', 'more_info']);
+        abort_if($issues->count() > 20000, 422, 'Dit account vereist een grotere achtergrondexport.');
+
+        // Preserve the original order for indexed votes and append recovered votes in issue order.
+        $positions = array_flip(array_values(array_unique(array_map('intval', (array) $user->voted_issue_ids))));
+        $issues = $issues->sortBy(fn (Issue $issue) => $positions[$issue->id] ?? PHP_INT_MAX)->keyBy('id');
+        $metadata = DB::table('wdnl_statement_metadata')->whereIntegerInRaw('issue_id', $issues->keys()->all())->get()->keyBy('issue_id');
         $entries = [];
         $counts = ['agree' => 0, 'disagree' => 0, 'neutral' => 0];
         $matches = [];
         $motionGroups = [];
-        foreach ($ids as $id) {
-            $issue = $issues->get($id);
-            if (! $issue) {
-                continue;
-            }
+        foreach ($issues as $id => $issue) {
             $choices = [];
             foreach (array_keys($counts) as $side) {
                 if (in_array((int) $user->id, array_map('intval', (array) ($issue->votes[$side] ?? [])), true)) {

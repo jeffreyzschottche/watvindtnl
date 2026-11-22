@@ -281,6 +281,30 @@ class VoteReportsTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_legacy_votes_missing_from_the_account_index_count_toward_the_report(): void
+    {
+        $user = $this->user();
+        [$indexed, $asString, $ambiguous] = $user->voted_issue_ids;
+        $user->update(['voted_issue_ids' => [$indexed, 999999]]);
+        Issue::findOrFail($asString)->update(['votes' => ['agree' => [(string) $user->id]]]);
+        Issue::findOrFail($ambiguous)->update(['votes' => ['agree' => [$user->id], 'disagree' => [$user->id]]]);
+
+        $this->actingAs($user)->getJson('/api/me/votes')->assertOk()->assertJsonCount(12);
+        $this->getJson('/api/me/compass-progress')->assertOk()
+            ->assertJsonPath('vote_count', 11)->assertJsonPath('used_votes', 11)->assertJsonPath('report_ready', true);
+        $this->getJson('/api/me/reports')->assertOk()->assertJsonPath('vote_count', 11)
+            ->assertJsonPath('compass_progress.ready', true);
+    }
+
+    public function test_full_theme_coverage_is_not_enough_without_the_required_number_of_votes(): void
+    {
+        $user = $this->user(5);
+
+        $this->actingAs($user)->getJson('/api/me/compass-progress')->assertOk()
+            ->assertJsonPath('needed', 0)->assertJsonPath('remaining_votes', 5)
+            ->assertJsonPath('remaining_weighted_votes', 5)->assertJsonPath('report_ready', false);
+    }
+
     public function test_provisional_economic_axis_cannot_be_sold_as_a_full_report(): void
     {
         $u = $this->user();

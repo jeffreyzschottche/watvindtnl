@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -27,6 +28,16 @@ class Issue extends Model
         'votes' => 'array',
         'published_at' => 'datetime',
     ];
+
+    public function scopeVotedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where(function (Builder $votes) use ($userId) {
+            foreach (['agree', 'disagree', 'neutral'] as $choice) {
+                $votes->orWhereJsonContains('votes->'.$choice, $userId)
+                    ->orWhereJsonContains('votes->'.$choice, (string) $userId);
+            }
+        });
+    }
 
     public function contentMetadata(): HasOne
     {

@@ -198,6 +198,7 @@ class CompassProposalsTest extends TestCase
     public function test_approved_weights_travel_by_export_and_the_seed_without_overwriting_reviews_or_changed_text(): void
     {
         [$a, $b, $c] = $this->issues(3);
+        Issue::findOrFail($a)->update(['slug' => 'beperking-van-commerciële-bijlesbureaus-door-gemeenten']);
         foreach ([$a, $b] as $id) {
             DB::table('wdnl_compass_proposals')->insert(['issue_id' => $id, 'text_hash' => CompassProposals::textHash(Issue::find($id)), 'weights' => json_encode(['international' => -1]), 'topics' => json_encode(['Migratie & integratie']), 'rationale' => 'Strengere grensregels.', 'confidence' => 'high', 'status' => 'pending', 'provider' => 'openai', 'model' => 'gpt-6-luna', 'created_at' => now(), 'updated_at' => now()]);
         }
@@ -209,6 +210,11 @@ class CompassProposalsTest extends TestCase
 
         // A fresh environment with the same content: nothing weighed yet.
         DB::table('wdnl_statement_metadata')->delete();
+        $invalid = ['version' => $export['version'], 'rows' => array_fill(0, 200, $export['rows'][0])];
+        $invalid['rows'][] = array_replace($export['rows'][0], ['slug' => 'ongeldig/pad']);
+        $this->postJson('/api/cms/content/compass/weights', $invalid)->assertUnprocessable()->assertJsonValidationErrors('rows.200.slug');
+        $this->assertDatabaseCount('wdnl_statement_metadata', 0);
+
         Issue::find($b)->update(['title' => 'Live anders geformuleerd']);
         DB::table('wdnl_statement_metadata')->insert(['issue_id' => $c, 'compass_reviewed_at' => now(), 'compass_weights' => json_encode(['green' => 2]), 'created_at' => now(), 'updated_at' => now()]);
         $export['rows'][] = ['slug' => 'voorstel-3', 'text_hash' => CompassProposals::textHash(Issue::find($c)), 'weights' => ['green' => -2], 'context' => ['rationale' => 'Zou een eigen weging overschrijven.']];

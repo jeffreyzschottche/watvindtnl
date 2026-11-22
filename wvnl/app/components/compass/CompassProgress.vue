@@ -4,19 +4,18 @@ const props = withDefaults(defineProps<{ variant?: "compact" | "card" }>(), {
   variant: "compact",
 });
 const auth = useAuthStore();
-const { data, refresh } = useCompassProgress();
-const percent = computed(() =>
-  data.value
-    ? Math.round((100 * data.value.done) / Math.max(1, data.value.target))
-    : 0,
-);
-const complete = computed(() => !!data.value && data.value.needed === 0);
+const { data, complete, percent, themesRemaining, votesRemaining, refresh } =
+  useCompassProgress();
 const message = computed(() => {
   const d = data.value;
   if (!d) return "";
   if (complete.value)
     return "Je kompas is compleet. Elke stem maakt het scherper.";
-  return `Nog ${d.needed} ${d.needed === 1 ? "antwoord" : "antwoorden"} tot een volledig kompas`;
+  if (themesRemaining.value)
+    return `Nog ${themesRemaining.value} ${themesRemaining.value === 1 ? "thema" : "thema’s"} aanvullen`;
+  if (votesRemaining.value)
+    return `Nog minstens ${votesRemaining.value} ${votesRemaining.value === 1 ? "antwoord" : "antwoorden"} nodig`;
+  return "Je themascores zijn gevuld. Stem verder voor je politieke type.";
 });
 onMounted(refresh);
 // Refresh after every saved vote; the count lives on the user record.
@@ -33,7 +32,7 @@ watch(
     v-if="data && props.variant === 'compact'"
     to="/kompas"
     class="compass-progress compass-progress--compact"
-    :aria-label="`Jouw kompas: ${percent}% compleet. ${message}`"
+    :aria-label="`Dekking van de kompasthema’s ${percent}%. ${message}`"
   >
     <span class="compass-progress__icon" aria-hidden="true"
       ><AppIcon name="compass" :size="18"
@@ -70,7 +69,7 @@ watch(
       :aria-valuenow="percent"
       aria-valuemin="0"
       aria-valuemax="100"
-      aria-label="Kompas compleet"
+      aria-label="Dekking van de kompasthema’s"
     >
       <span :style="{ width: `${percent}%` }" />
     </div>

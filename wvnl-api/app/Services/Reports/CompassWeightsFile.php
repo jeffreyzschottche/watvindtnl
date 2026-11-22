@@ -58,16 +58,24 @@ class CompassWeightsFile
     {
         $data = Validator::make($payload, [
             'version' => ['required', 'in:'.self::VERSION], 'rows' => ['present', 'array', 'max:20000'],
-            'rows.*.slug' => ['required', 'string', 'max:180', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+        ])->validate();
+        $rowRules = [
+            'rows.*.slug' => ['required', 'string', 'max:180', 'regex:/\A[\p{L}\p{M}0-9]+(?:-[\p{L}\p{M}0-9]+)*\z/u'],
             'rows.*.text_hash' => ['required', 'string', 'regex:/^[a-f0-9]{64}$/'],
             'rows.*.weights' => ['present', 'array:'.implode(',', CompassProposals::DIMENSIONS)], 'rows.*.weights.*' => ['integer', 'between:-2,2'],
             'rows.*.context' => ['required', 'array:canonical_key,rationale,topics,historical,catalogue,basis'],
             'rows.*.context.rationale' => ['required', 'string', 'max:2000'], 'rows.*.context.topics' => ['sometimes', 'array', 'max:4'], 'rows.*.context.topics.*' => ['string', 'max:80'],
             'rows.*.context.canonical_key' => ['nullable', 'string', 'max:180', 'regex:/^[a-zA-Z0-9:_-]+$/'], 'rows.*.context.historical' => ['sometimes', 'boolean'],
             'rows.*.context.catalogue' => ['nullable', 'string', 'max:100'], 'rows.*.context.basis' => ['nullable', 'string', 'max:100'],
-        ])->validate();
+        ];
+        // Validate the entire import before writing. Smaller groups keep wildcard validation bounded.
+        $chunks = [];
+        foreach (array_chunk($data['rows'], 200, preserve_keys: true) as $chunk) {
+            $chunks[] = Validator::make(['rows' => $chunk], $rowRules)->validate()['rows'];
+        }
+
         $result = ['applied' => 0, 'already_reviewed' => 0, 'changed_text' => 0, 'missing' => 0];
-        foreach (array_chunk($data['rows'], 200) as $chunk) {
+        foreach ($chunks as $chunk) {
             DB::transaction(function () use ($chunk, $actor, &$result) {
                 $issues = Issue::whereIn('slug', array_column($chunk, 'slug'))->lockForUpdate()->get(['id', 'slug', 'title', 'description', 'more_info'])->keyBy('slug');
                 $metas = DB::table('wdnl_statement_metadata')->whereIn('issue_id', $issues->pluck('id'))->lockForUpdate()->get()->keyBy('issue_id');

@@ -69,12 +69,8 @@ class UserIssueController extends Controller
         $userId = (int) $request->user()->id;
 
         $issues = Issue::query()
+            ->votedBy($userId)
             ->select(['id', 'title', 'slug', 'description', 'votes', 'created_at', 'updated_at'])
-            ->where(function ($query) use ($userId) {
-                $query->whereJsonContains('votes->agree', $userId)
-                    ->orWhereJsonContains('votes->disagree', $userId)
-                    ->orWhereJsonContains('votes->neutral', $userId);
-            })
             ->orderByDesc('updated_at')
             ->get();
 

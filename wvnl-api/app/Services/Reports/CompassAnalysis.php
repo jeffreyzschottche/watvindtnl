@@ -14,6 +14,8 @@ class CompassAnalysis
 
     public const MINIMUM = 5;
 
+    public const MINIMUM_USED_VOTES = 10;
+
     public const EARLY_MINIMUM = 2;
 
     public const DIMENSIONS = [
@@ -126,7 +128,7 @@ class CompassAnalysis
             $scores[$key] = $labels + ['id' => $key, 'observed_percentage' => $observed, 'percentage' => $percentage, 'opposite_percentage' => $percentage === null ? null : 100 - $percentage, 'compared' => $count, 'neutral' => $neutral, 'historical' => $historical, 'minimum' => self::MINIMUM, 'early_minimum' => self::EARLY_MINIMUM, 'provisional' => $percentage !== null && $count < self::MINIMUM, 'sensitivity' => $sensitivity ? ['min' => min($sensitivity), 'max' => max($sensitivity)] : null];
         }
         $available = array_filter(array_slice($scores, 0, 4), fn ($d) => $d['percentage'] !== null);
-        $complete = count($available) === 4 && count($used) >= 10 && count(array_filter($available, fn ($d) => $d['provisional'])) === 0;
+        $complete = count($available) === 4 && count($used) >= self::MINIMUM_USED_VOTES && count(array_filter($available, fn ($d) => $d['provisional'])) === 0;
         $type = null;
         if (count($available) >= 2 && count($used) >= 8) {
             $best = INF;
