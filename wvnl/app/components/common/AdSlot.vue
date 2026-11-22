@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DemoAdDialog from "~/components/common/DemoAdDialog.vue";
+import GoogleTestAd from "~/components/common/GoogleTestAd.vue";
 import { adMode } from "~/utils/ads";
 withDefaults(defineProps<{ placement?: string; compact?: boolean }>(), {
   placement: "in-content",
@@ -10,6 +11,7 @@ const mode = computed(() =>
   adMode(config.public.demoAds, config.public.adsEnabled, false),
 );
 const open = ref(false);
+const googleTest = useGoogleTestAds();
 </script>
 <template>
   <aside
@@ -20,14 +22,23 @@ const open = ref(false);
     aria-label="Advertentieplaatsing (demo)"
   >
     <div class="wdnl-demo-placement__label">
-      <span>Advertentie · demo</span><span aria-hidden="true">AD</span>
+      <span>{{
+        googleTest ? "Advertentie · Google-test" : "Advertentie · demo"
+      }}</span
+      ><span aria-hidden="true">AD</span>
     </div>
-    <div class="wdnl-demo-placement__content">
-      <span class="wdnl-demo-placement__art" aria-hidden="true">✦</span>
-      <div>
-        <strong>Hier krijgt een adverteerder de ruimte.</strong>
-        <p>Een voorbeeldplaatsing, zonder tracking.</p>
-      </div>
+    <div
+      class="wdnl-demo-placement__content"
+      :class="{ 'wdnl-demo-placement__content--google': googleTest }"
+    >
+      <GoogleTestAd v-if="googleTest" />
+      <template v-else>
+        <span class="wdnl-demo-placement__art" aria-hidden="true">✦</span>
+        <div>
+          <strong>Hier krijgt een adverteerder de ruimte.</strong>
+          <p>Een voorbeeldplaatsing, zonder tracking.</p>
+        </div>
+      </template>
       <button type="button" @click="open = true">
         Bekijk voorbeeld <span aria-hidden="true">↗</span>
       </button>
@@ -68,6 +79,12 @@ const open = ref(false);
 .wdnl-demo-placement__content > div {
   flex: 1;
   min-width: 0;
+}
+.wdnl-demo-placement__content--google {
+  flex-direction: column;
+}
+.wdnl-demo-placement__content--google > div {
+  flex: none;
 }
 .wdnl-demo-placement__art {
   font-size: 32px;
@@ -115,6 +132,9 @@ const open = ref(false);
   }
   .wdnl-demo-placement__content > div {
     flex-basis: 100%;
+  }
+  .wdnl-demo-placement__content--google > div {
+    flex-basis: auto;
   }
 }
 </style>

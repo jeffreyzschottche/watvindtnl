@@ -9,6 +9,6 @@ return [
     'request_delay_microseconds' => (int) env('MOTION_REQUEST_DELAY', 150000),
     'openai' => [
         'endpoint' => env('OPENAI_CHAT_COMPLETIONS_URL', 'https://api.openai.com/v1/chat/completions'),
-        'model' => env('MOTION_OPENAI_MODEL', env('OPENAI_MODEL', 'gpt-4.1-mini')),
+        'model' => env('MOTION_OPENAI_MODEL') ?: (env('OPENAI_MODEL') ?: 'gpt-4.1-mini'),
     ],
 ];

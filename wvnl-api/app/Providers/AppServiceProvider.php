@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('cms-motion-sync', fn ($r) => Limit::perHour(10)->by((string) $r->attributes->get('cms_token_id')));
+        RateLimiter::for('cms-motion-statements', fn ($r) => Limit::perHour(60)->by((string) $r->attributes->get('cms_token_id')));
         RateLimiter::for('cms-compass-proposals', fn ($r) => Limit::perHour(40)->by((string) $r->attributes->get('cms_token_id')));
         $key = static fn ($request) => hash('sha256', mb_strtolower(trim((string) $request->input('email'))).'|'.$request->ip());
         $identity = static fn ($request) => (string) ($request->user('sanctum')?->id ?? hash('sha256', (string) $request->ip()));

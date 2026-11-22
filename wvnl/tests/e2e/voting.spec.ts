@@ -198,24 +198,22 @@ test("system reduced motion suppresses confetti while voting remains functional"
       page.getByRole("button", { name: /Animaties Minder beweging/ }),
     ).toBeDisabled();
   } else {
-    await expect(
-      page.getByRole("button", { name: "Minder beweging actief" }),
-    ).toBeDisabled();
+    await expect(page.locator("#main-content")).toHaveAttribute(
+      "data-motion",
+      "off",
+    );
   }
 });
 
 test("motion opt out is shared with the vote card and survives a reload", async ({
   page,
 }) => {
+  // The motion setting only lives under Profiel on phones; desktop follows the system preference.
+  test.skip(test.info().project.name !== "mobile", "Mobile-only setting");
   await setup(page);
-  if (test.info().project.name === "mobile") {
-    await page.goto("/profiel");
-    await page.getByRole("button", { name: /Animaties Aan/ }).click();
-    await page.goto("/spel");
-  } else {
-    await page.goto("/spel");
-    await page.getByRole("button", { name: "Animaties uitzetten" }).click();
-  }
+  await page.goto("/profiel");
+  await page.getByRole("button", { name: /Animaties Aan/ }).click();
+  await page.goto("/spel");
   await expect(page.locator("#main-content")).toHaveAttribute(
     "data-motion",
     "off",

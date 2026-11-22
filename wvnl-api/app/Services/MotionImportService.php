@@ -551,7 +551,14 @@ PROMPT;
         return is_array($decoded) ? $decoded : null;
     }
 
-    private function buildPartyStances(array $zaak): array
+    public function officialPartyStances(array $zaak): array
+    {
+        $this->hydratePartyIndex();
+
+        return $this->buildPartyStances($zaak, explicitOnly: true);
+    }
+
+    private function buildPartyStances(array $zaak, bool $explicitOnly = false): array
     {
         $result = [
             'agree' => [],
@@ -581,7 +588,7 @@ PROMPT;
                     $result['agree'][] = $partyId;
                 } elseif ($soort === 'tegen') {
                     $result['disagree'][] = $partyId;
-                } else {
+                } elseif (! $explicitOnly || in_array($soort, ['onthouden', 'onthouding', 'neutraal'], true)) {
                     $result['neutral'][] = $partyId;
                 }
             }
@@ -591,6 +598,13 @@ PROMPT;
             $result[$key] = array_values(array_unique(array_map('intval', $list)));
         }
 
+        if ($explicitOnly) {
+            $ambiguous = array_merge(
+                array_intersect($result['agree'], $result['disagree']),
+                array_intersect($result['neutral'], array_merge($result['agree'], $result['disagree']))
+            );
+            $result = array_map(fn ($ids) => array_values(array_diff($ids, $ambiguous)), $result);
+        }
         $result['neutral'] = array_values(array_diff($result['neutral'], $result['agree'], $result['disagree']));
         $result['disagree'] = array_values(array_diff($result['disagree'], $result['agree']));
 

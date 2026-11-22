@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import GoogleTestAd from "~/components/common/GoogleTestAd.vue";
+
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 const dialog = ref<HTMLDialogElement | null>(null);
 const titleId = useId();
+const googleTest = useGoogleTestAds();
 async function sync() {
   await nextTick();
   if (props.open && dialog.value && !dialog.value.open)
@@ -22,7 +25,9 @@ onBeforeUnmount(() => dialog.value?.close());
       @close="emit('close')"
     >
       <header>
-        <span>Advertentie · demo</span
+        <span>{{
+          googleTest ? "Advertentie · Google-test" : "Advertentie · demo"
+        }}</span
         ><button
           type="button"
           aria-label="Demo-advertentie sluiten"
@@ -32,12 +37,20 @@ onBeforeUnmount(() => dialog.value?.close());
           ✕
         </button>
       </header>
-      <div class="demo-ad-dialog__art" aria-hidden="true">✦</div>
-      <h2 :id="titleId">Een kleine pauze.<br />Daarna weer jouw mening.</h2>
-      <p>
-        Dit is een voorbeeld van een advertentieplek. Er wordt geen echte
-        advertentie geladen en niets bijgehouden.
-      </p>
+      <template v-if="googleTest">
+        <h2 :id="titleId" class="sr-only">
+          Pauze met een Google-testadvertentie
+        </h2>
+        <GoogleTestAd v-if="open" />
+      </template>
+      <template v-else>
+        <div class="demo-ad-dialog__art" aria-hidden="true">✦</div>
+        <h2 :id="titleId">Een kleine pauze.<br />Daarna weer jouw mening.</h2>
+        <p>
+          Dit is een voorbeeld van een advertentieplek. Er wordt geen echte
+          advertentie geladen en niets bijgehouden.
+        </p>
+      </template>
       <button
         class="button button-secondary"
         type="button"
@@ -69,6 +82,7 @@ onBeforeUnmount(() => dialog.value?.close());
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  margin-bottom: 0.5rem;
   color: #526277;
   font-size: 0.7rem;
 }

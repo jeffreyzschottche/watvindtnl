@@ -26,7 +26,7 @@ class ReportNarrator
         $http = Http::withToken($key)->acceptJson()->timeout(35)->connectTimeout(8)->withOptions(['allow_redirects' => false]);
         if ($s['provider'] === 'openai') {
             $body = ['model' => $s['model'], 'store' => false, 'instructions' => $prompt['instructions'], 'input' => $prompt['input'], 'max_output_tokens' => (int) $s['max_output_tokens'],
-                'text' => ['format' => ['type' => 'json_schema', 'name' => 'report_text', 'strict' => true, 'schema' => $prompt['schema'] ?? ['type' => 'object', 'additionalProperties' => false, 'properties' => ['summary' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$'], 'reflection' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$']], 'required' => ['summary', 'reflection']]]]];
+                'text' => ['format' => ['type' => 'json_schema', 'name' => $prompt['schema_name'] ?? 'report_text', 'strict' => true, 'schema' => $prompt['schema'] ?? ['type' => 'object', 'additionalProperties' => false, 'properties' => ['summary' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$'], 'reflection' => ['type' => 'string', 'pattern' => '^[^0-9<>:]{1,650}$']], 'required' => ['summary', 'reflection']]]]];
             // GPT-4.1 is non-reasoning and rejects reasoning settings; GPT-6 supports them.
             if (str_starts_with($s['model'], 'gpt-6')) {
                 $body['reasoning'] = ['effort' => in_array($s['model'], ['gpt-6-astra', 'gpt-6.1-sol'], true) ? 'low' : 'none'];

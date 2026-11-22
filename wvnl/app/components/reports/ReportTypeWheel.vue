@@ -6,7 +6,9 @@ const props = defineProps<{
   type: CompassAnalysis["type"];
   catalogue: NonNullable<CompassAnalysis["type_catalogue"]>;
   animate: boolean;
+  example?: boolean;
 }>();
+const emit = defineEmits<{ selectType: [id: string] }>();
 const root = ref<HTMLElement | null>(null);
 const selectedId = ref(props.type?.id || props.catalogue[0]?.id || "pending");
 const hoveredType = ref("");
@@ -19,7 +21,10 @@ let version = 0;
 let disposed = false;
 
 function select(id: string) {
-  if (props.catalogue.some((item) => item.id === id)) selectedId.value = id;
+  if (props.catalogue.some((item) => item.id === id)) {
+    selectedId.value = id;
+    if (props.example) emit("selectType", id);
+  }
 }
 function step(direction: number) {
   const length = props.catalogue.length;
@@ -200,9 +205,14 @@ onBeforeUnmount(() => {
     </div>
     <template v-if="catalogue.length">
       <p class="type-wheel__hint">
-        {{ hoveredType || "Klik op het wiel of blader door de typen." }}
+        {{
+          hoveredType ||
+          (example
+            ? "Klik op het wiel voor een ander voorbeeld."
+            : "Klik op het wiel of blader door de typen.")
+        }}
       </p>
-      <div class="type-wheel__navigation">
+      <div v-if="!example" class="type-wheel__navigation">
         <button
           type="button"
           aria-label="Vorig type bekijken"
@@ -229,7 +239,11 @@ onBeforeUnmount(() => {
           →
         </button>
       </div>
-      <div class="type-explorer" :data-preview-type="selectedId">
+      <div
+        v-if="!example"
+        class="type-explorer"
+        :data-preview-type="selectedId"
+      >
         <div class="type-explorer__copy" aria-live="polite" aria-atomic="true">
           <span class="type-explorer__badge">{{
             isOwn

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { enabled, reducedBySystem, toggle } = useMotionPreferences();
 import BrandLogo from "~/components/brand/BrandLogo.vue";
 </script>
 <template>
@@ -9,7 +8,10 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
         <NuxtLink to="/" aria-label="WatDenktNederland — home"
           ><BrandLogo
         /></NuxtLink>
-        <p>Eén vraag. Twee kanten.<br />Ontdek hoe jij erover denkt.</p>
+        <p>
+          Eén vraag. Meerdere meningen.<br />Ontdek hoe jij en de rest van de
+          stemmers erover denken.
+        </p>
       </div>
       <div>
         <h2>Ontdek WDNL</h2>
@@ -30,21 +32,6 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
         <NuxtLink to="/privacy">Privacy</NuxtLink
         ><NuxtLink to="/voorwaarden">Voorwaarden</NuxtLink>
       </nav>
-      <button
-        type="button"
-        class="footer-motion"
-        :aria-pressed="enabled"
-        :disabled="reducedBySystem"
-        @click="toggle"
-      >
-        {{
-          reducedBySystem
-            ? "Minder beweging actief"
-            : enabled
-              ? "Animaties uitzetten"
-              : "Animaties aanzetten"
-        }}
-      </button>
       <span class="footer-flag" aria-label="Gemaakt voor Nederland"
         ><i /><i /><i
       /></span>
@@ -100,23 +87,6 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
   color: #68758a;
   font-weight: 450;
 }
-.footer-motion {
-  border: 1px solid #dce3ee;
-  border-radius: 20px;
-  background: #fff;
-  padding: 0.55rem 0.8rem;
-  color: #526277;
-  font: inherit;
-  cursor: pointer;
-  min-height: 40px;
-}
-.footer-motion:disabled {
-  cursor: default;
-}
-.footer-motion:focus-visible {
-  outline: 3px solid #0057b8;
-  outline-offset: 3px;
-}
 .footer-flag {
   width: 22px;
   display: grid;
@@ -148,23 +118,6 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
   }
   .footer-bottom nav {
     margin-left: 0;
-  }
-  .footer-motion {
-    border: 1px solid #dce3ee;
-    border-radius: 20px;
-    background: #fff;
-    padding: 0.55rem 0.8rem;
-    color: #526277;
-    font: inherit;
-    cursor: pointer;
-    min-height: 40px;
-  }
-  .footer-motion:disabled {
-    cursor: default;
-  }
-  .footer-motion:focus-visible {
-    outline: 3px solid #0057b8;
-    outline-offset: 3px;
   }
   .footer-flag {
     margin-left: auto;

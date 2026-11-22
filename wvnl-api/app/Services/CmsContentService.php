@@ -101,7 +101,7 @@ class CmsContentService
         });
     }
 
-    public function saveStatement(array $payload, ?int $actor = null): array
+    public function validateStatement(array $payload, bool $publishing = false): array
     {
         $payload['origin_kind'] ??= ! empty($payload['motion_id']) ? 'motion' : 'editorial';
         $data = Validator::make($payload, [
@@ -116,7 +116,7 @@ class CmsContentService
             'source_date' => ['required_with:url', 'nullable', 'date_format:Y-m-d', 'before_or_equal:today'],
             'motion_id' => ['required_if:origin_kind,motion', 'nullable', 'integer', 'exists:wdnl_motions,id'],
             'revision' => ['nullable', 'integer', 'min:0'],
-            'reviewed' => ['required', 'accepted'],
+            'reviewed' => $publishing ? ['required', 'accepted'] : ['prohibited'],
             'compass_weights' => ['sometimes', 'array:social,progressive,international,green,economic'],
             'compass_weights.*' => ['integer', 'between:-2,2'],
             'compass_context' => ['sometimes', 'nullable', 'array:canonical_key,rationale,topics,historical,catalogue,basis,text_hash'],
@@ -178,12 +178,25 @@ class CmsContentService
             throw ValidationException::withMessages(['motion_id' => ['Koppel officiële partijstemmen aan een bronmotie.']]);
         }
 
-        return DB::transaction(function () use ($data, $stances, $actor) {
+        $data['party_stances'] = $stances;
+
+        return $data;
+    }
+
+    public function saveStatement(array $payload, ?int $actor = null): array
+    {
+        $data = $this->validateStatement($payload, publishing: true);
+
+        return DB::transaction(function () use ($data, $actor) {
+            $motionId = $data['motion_id'] ?? null;
+            if ($motionId) {
+                DB::table('wdnl_motions')->where('id', $motionId)->lockForUpdate()->first();
+            }
             $issue = Issue::where('slug', $data['slug'])->lockForUpdate()->first();
             $before = $issue ? $this->statement($issue) : null;
             $attributes = [
                 'slug' => $data['slug'], 'title' => $data['title'], 'description' => $data['description'],
-                'more_info' => $data['more_info'] ?? null, 'url' => $data['url'], 'party_stances' => $stances,
+                'more_info' => $data['more_info'] ?? null, 'url' => $data['url'], 'party_stances' => $data['party_stances'],
             ];
             $weights = $data['compass_weights'] ?? ($before['compass_weights'] ?? []);
             $weights = array_filter($weights, fn ($weight) => (int) $weight !== 0);
@@ -226,6 +239,9 @@ class CmsContentService
                 'created_at' => DB::table('wdnl_statement_metadata')->where('issue_id', $issue->id)->value('created_at') ?? now(),
                 'updated_at' => now(),
             ]);
+            if ($motionId) {
+                DB::table('wdnl_motion_statement_drafts')->where('motion_id', $motionId)->delete();
+            }
             $after = $this->statement($issue->fresh());
             $this->audit('statement.save', $issue->slug, $before, $after, $actor);
             if (! $reviewed) {

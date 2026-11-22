@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import ReportTypeWheel from "./ReportTypeWheel.vue";
 import type { CompassDimension, VoteReport } from "~/types/voteReports";
-const props = defineProps<{ report: VoteReport }>();
+const props = defineProps<{ report: VoteReport; example?: boolean }>();
+const emit = defineEmits<{ selectType: [id: string] }>();
 const root = ref<HTMLElement | null>(null);
 const { enabled: reportMotionEnabled } = useReportMotion(
   root,
@@ -43,7 +44,11 @@ const answerMix = computed(() =>
     class="compass-poster"
     :data-report-motion="reportMotionEnabled ? 'on' : 'off'"
     :style="{ '--type-color': color }"
-    aria-label="Jouw persoonlijke stemrapport"
+    :aria-label="
+      example
+        ? 'Voorbeeldrapport · fictieve antwoorden'
+        : 'Jouw persoonlijke stemrapport'
+    "
   >
     <p v-if="report.is_development" class="poster-notice">
       Devrapport · geen aankoop
@@ -58,7 +63,13 @@ const answerMix = computed(() =>
       />
       <div>
         <h2>Jouw Politieke Kompas</h2>
-        <p>Persoonlijk rapport op basis van jouw stemgedrag</p>
+        <p>
+          {{
+            example
+              ? "Voorbeeldrapport · fictieve antwoorden"
+              : "Persoonlijk rapport op basis van jouw stemgedrag"
+          }}
+        </p>
         <span class="poster-accent" />
       </div>
     </header>
@@ -76,7 +87,9 @@ const answerMix = computed(() =>
         />
       </div>
       <div class="poster-hero-copy">
-        <h3>{{ type?.name || "Jouw kompas in opbouw" }}</h3>
+        <h3 :aria-live="example ? 'polite' : undefined">
+          {{ type?.name || "Jouw kompas in opbouw" }}
+        </h3>
         <p>{{ report.narrative?.summary }}</p>
       </div>
       <div class="poster-traits">
@@ -114,6 +127,8 @@ const answerMix = computed(() =>
           :type="type"
           :catalogue="compass.type_catalogue || []"
           :animate="reportMotionEnabled"
+          :example="example"
+          @select-type="example && emit('selectType', $event)"
         />
       </section>
       <div class="poster-scores">
@@ -372,12 +387,18 @@ const answerMix = computed(() =>
       <p>
         {{ date }}<br />Kompas
         {{ compass.version.replace(/^compass-v/, "").replace(/^4$/, "4.0") }} ·
-        {{ type?.provisional ? "voorlopig" : "persoonlijk" }}
+        {{
+          example
+            ? "voorbeeld"
+            : type?.provisional
+              ? "voorlopig"
+              : "persoonlijk"
+        }}
       </p>
       <p><strong>WatDenktNederland</strong><br />watdenktnl.nl</p>
     </footer>
   </article>
-  <details v-if="highlights.length" class="poster-evidence">
+  <details v-if="!example && highlights.length" class="poster-evidence">
     <summary>Onderbouwing van jouw rapport</summary>
     <section v-for="(highlight, index) in highlights" :key="index">
       <h3>{{ highlight.text }}</h3>

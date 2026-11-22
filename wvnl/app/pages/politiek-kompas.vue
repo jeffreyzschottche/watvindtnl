@@ -75,6 +75,58 @@ useSeoMeta({
     </header>
 
     <template v-if="showExamples">
+      <section
+        class="compass-page__explainer"
+        aria-labelledby="compass-explainer-title"
+      >
+        <div class="compass-page__explainer-copy">
+          <h2 id="compass-explainer-title">Van je stem naar je rapport</h2>
+          <p>Je politieke keuzes in één persoonlijk overzicht.</p>
+          <ol class="compass-page__steps" role="list">
+            <li>
+              <span class="compass-page__icon"><AppIcon name="chat" /></span>
+              <div>
+                <h3>Stem op stellingen</h3>
+                <p>
+                  Geef aan of je vóór, tegen of neutraal bent. Een deel van de
+                  stellingen komt uit moties van de Tweede Kamer.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="compass-page__icon"><AppIcon name="compass" /></span>
+              <div>
+                <h3>Ontdek je keuzes per thema</h3>
+                <p>
+                  We brengen je keuzes per thema in kaart. Zo zie je welke
+                  richting je kiest en waar je antwoorden gemengd zijn.
+                </p>
+              </div>
+            </li>
+            <li>
+              <span class="compass-page__icon"><AppIcon name="grid" /></span>
+              <div>
+                <h3>Vergelijk je stemmen met partijen</h3>
+                <p>
+                  We vergelijken je antwoorden met officiële partijstemmen op
+                  dezelfde moties. Bij voldoende stemmingen zie je met welke
+                  partijen je het vaakst overeenkomt.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div class="compass-page__explainer-photo">
+          <img
+            src="/illustrations/kompas-sterrenhemel.webp"
+            alt="Silhouet van een persoon onder de Melkweg."
+            width="1440"
+            height="960"
+            decoding="async"
+          />
+        </div>
+      </section>
+
       <CompassExamples v-if="examples?.length" :examples="examples" />
       <div v-else class="compass-page__examples-status">
         <template v-if="examplesStatus === 'error'">
@@ -86,9 +138,6 @@ useSeoMeta({
           >
             Opnieuw proberen
           </button>
-          <a href="/examples/WDNL-kompas-voorbeeld.pdf"
-            >Bekijk het voorbeeldrapport (PDF)</a
-          >
         </template>
         <p v-else role="status">Voorbeeldrapporten worden geladen…</p>
       </div>
@@ -163,6 +212,62 @@ useSeoMeta({
   color: #4e617b;
   font-size: clamp(0.96rem, 2vw, 1.12rem);
   line-height: 1.65;
+}
+.compass-page__explainer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid #dce5ef;
+  border-radius: 24px;
+  background: #fff;
+}
+.compass-page__explainer-copy {
+  align-self: center;
+  padding: clamp(1.4rem, 3.5vw, 2.6rem);
+}
+.compass-page__explainer h2 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+.compass-page__explainer p {
+  margin: 0;
+  color: #4e617b;
+  line-height: 1.6;
+}
+.compass-page__steps {
+  display: grid;
+  gap: 1rem;
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+.compass-page__steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+}
+.compass-page__steps h3 {
+  margin: 0 0 0.2rem;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.compass-page__steps p {
+  font-size: 0.9rem;
+}
+.compass-page__explainer-photo {
+  position: relative;
+  min-height: 300px;
+  background: #edf3fc;
+}
+.compass-page__explainer-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .compass-page__examples-status {
   display: flex;
@@ -242,6 +347,13 @@ useSeoMeta({
   margin-top: 1rem;
 }
 @media (max-width: 720px) {
+  .compass-page__explainer {
+    grid-template-columns: 1fr;
+  }
+  .compass-page__explainer-photo {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
   .compass-page__insights {
     grid-template-columns: 1fr;
   }

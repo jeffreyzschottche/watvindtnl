@@ -45,6 +45,7 @@ WORKDIR /var/www/html
 RUN apk add --no-cache \
         nginx \
         supervisor \
+        poppler-utils \
         curl \
         libzip-dev \
         icu-dev \

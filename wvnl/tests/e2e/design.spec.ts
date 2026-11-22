@@ -136,13 +136,14 @@ async function noOverflow(page: Page) {
   ).toBe(true);
 }
 
-test("homepage has the new identity, clear navigation and real content slots", async ({
+test("homepage gives voting priority and groups the result, topics and compass links", async ({
   page,
 }, info) => {
   await mockApi(page);
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Nederland heefteen mening.Jij ook.",
+    "Wat zou jij stemmen?",
   );
   await expect(
     page.getByRole("link", { name: "WatDenktNederland — home" }).first(),
@@ -150,6 +151,60 @@ test("homepage has the new identity, clear navigation and real content slots", a
   await expect(
     page.getByRole("heading", { name: fixtures[0]!.title }),
   ).toBeVisible();
+  await expect(
+    page.locator('.hero [data-scene="neighbourhood"] img'),
+  ).toHaveAttribute("src", "/illustrations/dutch-island-v2.webp");
+  await expect(
+    page.locator('.compass [data-scene="compass"] img'),
+  ).toHaveAttribute("src", "/illustrations/compass-v2.webp");
+  await expect(page.locator(".share__art")).toHaveAttribute(
+    "src",
+    "/illustrations/dutch-neighbours-v1.jpg",
+  );
+  const hero = page.getByRole("region", { name: "Wat zou jij stemmen?" });
+  await expect(
+    hero.getByRole("link", { name: "Begin met stemmen" }),
+  ).toHaveAttribute("href", "/spel");
+  await expect(
+    hero.getByRole("link", { name: "Hoe werkt het?" }),
+  ).toHaveAttribute("href", "#hoe-het-werkt");
+  const results = page.getByRole("region", {
+    name: "Van motie naar uitslag",
+  });
+  await expect(
+    results.getByRole("heading", {
+      name: "Bekijk de stemmen in de Tweede Kamer",
+    }),
+  ).toBeVisible();
+  await expect(results.getByText("52%", { exact: true })).toBeVisible();
+  await expect(results.getByText("Fictieve voorbeelduitslag")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Zoek een stelling om te delen" }),
+  ).toHaveAttribute("href", "/stellingen");
+  await expect(
+    page.getByRole("link", { name: "Bekijk het politieke kompas" }),
+  ).toHaveAttribute("href", "/kompas");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Kies een onderwerp" })
+      .getByRole("link", { name: "Klimaat" }),
+  ).toHaveAttribute("href", "/stellingen?zoeken=klimaat");
+  for (const image of await page
+    .locator(
+      'img[src^="/images/home/"], [data-scene] img, .share__art',
+    )
+    .all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        image.evaluate((element: HTMLImageElement) => element.naturalWidth),
+      )
+      .toBeGreaterThan(0);
+  }
+  await expect(page.locator('img[src^="/images/home/"]')).toHaveCount(6);
+  await expect(
+    page.locator('.topics img[src^="/images/home/"]'),
+  ).toHaveCount(4);
   expect(
     await page
       .locator(".site-header")
@@ -327,21 +382,20 @@ test("logout is available beneath the desktop profile link and on the mobile pro
   await expect(page).toHaveURL(/\/inloggen$/);
 });
 
-test("3D art uses a local font, responds to a mouse and can be paused", async ({
+test("homepage uses the local font and shared animation preference", async ({
   page,
-}, info) => {
+}) => {
   await mockApi(page);
   await page.goto("/");
-  const scene = page.locator('.hero [data-scene="neighbourhood"]');
-  await expect(scene).toHaveAttribute("data-animated", "true");
-  const artwork = scene.locator("img");
-  await expect(artwork).toHaveAttribute(
-    "src",
-    "/illustrations/dutch-island-v2.webp",
+  await expect(page.locator("#main-content")).toHaveAttribute(
+    "data-motion",
+    "on",
   );
-  await expect
-    .poll(() => artwork.evaluate((el) => (el as HTMLImageElement).naturalWidth))
-    .toBeGreaterThan(0);
+  const scenes = page.locator("[data-scene]");
+  await expect(scenes).toHaveCount(2);
+  await expect(page.locator('[data-scene][data-animated="true"]')).toHaveCount(
+    2,
+  );
   const fontLoaded = await page.evaluate(async () => {
     await document.fonts.ready;
     return [...document.fonts].some(
@@ -349,53 +403,105 @@ test("3D art uses a local font, responds to a mouse and can be paused", async ({
     );
   });
   expect(fontLoaded).toBe(true);
-  if (info.project.name === "desktop") {
-    const box = (await scene.boundingBox())!;
-    await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.3);
-    await expect
-      .poll(() =>
-        scene
-          .locator("[data-parallax]")
-          .evaluate((el) => getComputedStyle(el).transform),
-      )
-      .toContain("matrix3d");
-  }
-  await scene.getByRole("button", { name: "Animatie pauzeren" }).click();
-  await expect(scene).toHaveAttribute("data-animated", "false");
-  await expect(page.locator("#main-content")).toHaveAttribute(
-    "data-motion",
-    "off",
-  );
-  await expect(page.locator("html")).toHaveAttribute("data-wdnl-motion", "off");
+  await expect(
+    page.getByRole("button", { name: "Animatie pauzeren" }),
+  ).toHaveCount(0);
+  await expect(page.getByText("Er valt meer te ontdekken")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Animaties uitzetten" }),
+  ).toHaveCount(0);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await noOverflow(page);
 });
 
-test("compass examples switch illustrations and scores with reduced motion", async ({
+test("compass examples change the full report with reduced motion", async ({
   page,
 }) => {
   await mockApi(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/kompas");
-  const example = page.locator(".report-examples");
+  const explainer = page.getByRole("region", {
+    name: "Van je stem naar je rapport",
+  });
   await expect(
-    example.getByRole("heading", { name: "De Groene Vernieuwer" }),
+    explainer.getByRole("heading", {
+      name: "Vergelijk je stemmen met partijen",
+    }),
   ).toBeVisible();
-  await expect(example.locator("img")).toHaveAttribute(
+  const photo = explainer.getByRole("img");
+  await expect
+    .poll(() =>
+      photo.evaluate((element: HTMLImageElement) => element.naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  const example = page.locator(".compass-page__explainer + .report-examples");
+  const report = example.getByRole("article", {
+    name: "Voorbeeldrapport · fictieve antwoorden",
+  });
+  await expect(
+    report.getByRole("heading", { name: "De Groene Vernieuwer" }),
+  ).toBeVisible();
+  await expect(report).toHaveAttribute("data-report-motion", "off");
+  await expect(
+    report.getByRole("img", {
+      name: "Economisch beleid: 61% links, 39% rechts",
+    }),
+  ).toBeVisible();
+  await expect(report.locator(".poster-type-icon img")).toHaveAttribute(
     "src",
     "/report-art/leaf-white.svg",
   );
+  for (const heading of [
+    "Jouw politieke persoonlijkheid",
+    "Partijen die bij je passen",
+    "Hoe dit rapport werkt",
+  ]) {
+    await expect(report.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(
+    example.getByRole("link", { name: /voorbeeld.*pdf/i }),
+  ).toHaveCount(0);
+  const aligned = await example
+    .locator(".report-examples__controls")
+    .evaluate((el) => {
+      const controls = el.getBoundingClientRect();
+      const section = el.closest(".report-examples")!.getBoundingClientRect();
+      const select = el.querySelector("select")!.getBoundingClientRect();
+      const chevron = el
+        .querySelector(".report-examples__select svg")!
+        .getBoundingClientRect();
+      return (
+        Math.abs(
+          controls.left +
+            controls.width / 2 -
+            (section.left + section.width / 2),
+        ) < 1 &&
+        Math.abs(
+          select.top + select.height / 2 - (chevron.top + chevron.height / 2),
+        ) < 1
+      );
+    });
+  expect(aligned).toBe(true);
   await example.getByRole("button", { name: "Volgend voorbeeldtype" }).click();
   await expect(
-    example.getByRole("heading", { name: "De Internationale Verbinder" }),
+    report.getByRole("heading", { name: "De Internationale Verbinder" }),
   ).toBeVisible();
-  await expect(example.locator("img")).toHaveAttribute(
+  await expect(report.locator(".poster-type-icon img")).toHaveAttribute(
     "src",
     "/report-art/globe-white.svg",
   );
-  await expect(example.getByText(/Internationaal\s*77%/)).toBeVisible();
-  await example.getByRole("combobox").selectOption("groene-vernieuwer");
-  await expect(example.getByText(/Groen\s*77%/)).toBeVisible();
+  await expect(
+    report.getByRole("img", { name: /77% Internationaal/ }),
+  ).toBeVisible();
+  await expect(
+    report.getByRole("img", {
+      name: "Economisch beleid: 58% links, 42% rechts",
+    }),
+  ).toBeVisible();
+  await example
+    .getByRole("combobox", { name: "Kies een voorbeeldtype" })
+    .selectOption("groene-vernieuwer");
+  await expect(report.getByRole("img", { name: /77% Groen/ })).toBeVisible();
   await noOverflow(page);
 });
 
@@ -416,6 +522,9 @@ test("signed-in compass shows personal progress without loading public examples"
     page.getByRole("link", { name: "Bekijk mijn rapporten" }),
   ).toBeVisible();
   await expect(page.locator(".report-examples")).toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: "Van je stem naar je rapport" }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Wat haal je uit je rapport?" }),
   ).toHaveCount(0);

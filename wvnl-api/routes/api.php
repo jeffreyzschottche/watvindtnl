@@ -81,6 +81,7 @@ Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])
     Route::get('/statements', [ContentController::class, 'statements']);
     Route::get('/statements/{issue}', [ContentController::class, 'statement']);
     Route::get('/motions', [ContentController::class, 'motions']);
+    Route::get('/motions/{motionId}/statement-draft', [ContentController::class, 'motionStatementDraft'])->whereNumber('motionId');
     Route::get('/compass/proposals', [ContentController::class, 'compassProposals']);
     Route::get('/compass/weights', [ContentController::class, 'exportCompassWeights']);
     Route::middleware('cms.content:write')->group(function () {
@@ -97,6 +98,8 @@ Route::prefix('cms/content')->middleware(['cms.content:read', 'throttle:admin'])
         Route::post('/motions', [ContentController::class, 'saveMotion']);
         Route::post('/import', [ContentController::class, 'import']);
         Route::post('/motions/sync', [ContentController::class, 'syncMotions'])->middleware('throttle:cms-motion-sync');
+        Route::post('/motions/prepare-statements', [ContentController::class, 'prepareMotionStatements'])->middleware('throttle:cms-motion-sync');
+        Route::post('/motions/{motionId}/statement-draft', [ContentController::class, 'generateMotionStatement'])->whereNumber('motionId')->middleware('throttle:cms-motion-statements');
     });
 });
 

@@ -7,6 +7,7 @@ use App\Models\Issue;
 use App\Models\PoliticalParty;
 use App\Services\CmsContentService;
 use App\Services\CmsMotionSource;
+use App\Services\CmsMotionStatements;
 use App\Services\Reports\CompassEditorialSeed;
 use App\Services\Reports\CompassProposalReview;
 use App\Services\Reports\CompassProposals;
@@ -46,9 +47,30 @@ class ContentController extends Controller
 
     public function motions(Request $request)
     {
-        $data = $request->validate(['search' => ['nullable', 'string', 'max:120'], 'page' => ['nullable', 'integer', 'min:1', 'max:100000']]);
+        $data = $request->validate(['search' => ['nullable', 'string', 'max:120'], 'page' => ['nullable', 'integer', 'min:1', 'max:100000'], 'drafts' => ['sometimes', 'boolean']]);
+        $page = DB::table('wdnl_motions')->leftJoin('wdnl_motion_statement_drafts as drafts', 'wdnl_motions.id', '=', 'drafts.motion_id')
+            ->when($data['search'] ?? null, fn ($q, $s) => $q->where(fn ($q) => $q->where('title', 'like', '%'.$s.'%')->orWhere('number', 'like', '%'.$s.'%')))
+            ->when($data['drafts'] ?? false, fn ($q) => $q->whereNotNull('drafts.motion_id'))
+            ->orderByDesc('source_date')->orderByDesc('wdnl_motions.id')->paginate(20, ['wdnl_motions.*', 'drafts.motion_id as statement_draft_id']);
 
-        return response()->json(DB::table('wdnl_motions')->when($data['search'] ?? null, fn ($q, $s) => $q->where(fn ($q) => $q->where('title', 'like', '%'.$s.'%')->orWhere('number', 'like', '%'.$s.'%')))->orderByDesc('source_date')->orderByDesc('id')->paginate(20));
+        return response()->json($page);
+    }
+
+    public function prepareMotionStatements(Request $request, CmsMotionStatements $statements)
+    {
+        $data = $request->validate(['limit' => ['required', 'integer', 'min:1', 'max:10']]);
+
+        return response()->json(['motions' => $statements->prepare($data['limit'], $request->attributes->get('cms_token_id'))]);
+    }
+
+    public function generateMotionStatement(Request $request, CmsMotionStatements $statements, int $motionId)
+    {
+        return response()->json($statements->generate($motionId, $request->attributes->get('cms_token_id')));
+    }
+
+    public function motionStatementDraft(CmsMotionStatements $statements, int $motionId)
+    {
+        return response()->json($statements->draft($motionId));
     }
 
     public function saveParty(Request $request, ?PoliticalParty $party = null)

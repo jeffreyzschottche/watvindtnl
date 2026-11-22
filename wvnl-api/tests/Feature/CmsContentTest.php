@@ -9,6 +9,7 @@ use App\Services\CmsMotionSource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Process;
 use Tests\TestCase;
 
 class CmsContentTest extends TestCase
@@ -196,6 +197,101 @@ class CmsContentTest extends TestCase
         $this->postJson('/api/cms/content/motions/sync', ['limit' => 5])->assertUnprocessable();
         $this->postJson('/api/cms/content/motions/sync', ['limit' => 5])->assertUnprocessable();
         $this->assertDatabaseCount('wdnl_motions', 0);
+    }
+
+    public function test_cms_creates_ten_validated_ai_drafts_from_unused_motions_and_can_publish_one(): void
+    {
+        $this->token();
+        $vvd = PoliticalParty::create(['slug' => 'vvd', 'abbreviation' => 'VVD', 'name' => 'VVD']);
+        $cda = PoliticalParty::create(['slug' => 'cda', 'abbreviation' => 'CDA', 'name' => 'CDA']);
+        $this->postJson('/api/cms/content/statements', $this->statementPayload('bestaande-motie-2026z00001'))->assertOk();
+        $rows = array_map(fn ($i) => [
+            'Id' => sprintf('12345678-1234-1234-1234-%012d', $i), 'Nummer' => sprintf('2026Z%05d', $i),
+            'Onderwerp' => 'Officiële motie '.$i, 'GestartOp' => '2026-01-01T00:00:00+01:00',
+        ], range(1, 11));
+        $documentId = '32345678-1234-1234-1234-123456789abc';
+        $documentUrl = CmsMotionSource::BASE.'/Document('.$documentId.')/resource';
+        $this->fakeMotionAi($rows, $documentId, [
+            ['Soort' => 'Voor', 'ActorFractie' => 'VVD'],
+            ['Soort' => 'Niet deelgenomen', 'ActorFractie' => 'CDA'],
+        ]);
+
+        $prepared = $this->postJson('/api/cms/content/motions/prepare-statements', ['limit' => 10])
+            ->assertOk()->assertJsonCount(10, 'motions')->assertJsonPath('motions.0.number', '2026Z00002')->json('motions');
+        foreach ($prepared as $motion) {
+            $this->postJson('/api/cms/content/motions/'.$motion['id'].'/statement-draft')->assertOk()->assertJsonPath('created', true);
+        }
+        $this->getJson('/api/cms/content/motions?drafts=1')->assertOk()->assertJsonPath('total', 10);
+        $path = '/api/cms/content/motions/'.$prepared[0]['id'].'/statement-draft';
+        $draft = $this->getJson($path)->assertOk()->assertJsonPath('url', $documentUrl)
+            ->assertJsonPath('party_stances.agree', [$vvd->id])->assertJsonPath('party_stances.neutral', [])
+            ->assertJsonCount(4, 'arguments.pro')->assertJsonCount(4, 'arguments.con')
+            ->assertJsonPath('arguments.pro.0.sources.0', $documentUrl)->assertJsonMissingPath('reviewed')->json();
+        $this->assertNotContains($cda->id, $draft['party_stances']['disagree']);
+        $this->assertDatabaseCount('issues', 1);
+        $this->assertDatabaseCount('wdnl_motion_statement_drafts', 10);
+        Http::assertSentCount(31);
+        Http::assertSent(fn ($r) => $r->url() === 'https://api.openai.com/v1/responses'
+            && $r['text']['format']['strict'] === true
+            && json_decode($r['input'], true)['motietekst'] === 'Verzoekt de regering het voorstel uit te voeren.'
+            && ! str_contains($r['input'], 'VVD'));
+
+        $this->postJson($path)->assertOk()->assertJsonPath('created', false);
+        Http::assertSentCount(31);
+        $this->postJson('/api/cms/content/statements', $draft)->assertUnprocessable()->assertJsonValidationErrors('reviewed');
+        $this->postJson('/api/cms/content/statements', $draft + ['reviewed' => true])->assertOk();
+        $this->getJson($path)->assertNotFound();
+        $this->assertDatabaseCount('issues', 2);
+        $this->assertDatabaseCount('wdnl_motion_statement_drafts', 9);
+        $this->postJson('/api/cms/content/motions/prepare-statements', ['limit' => 10])->assertOk()->assertJsonPath('motions', []);
+    }
+
+    public function test_invalid_ai_content_leaves_the_motion_available_for_a_retry(): void
+    {
+        $this->token();
+        $this->fakeMotionAi([[
+            'Id' => '12345678-1234-1234-1234-123456789abc', 'Nummer' => '2026Z00123',
+            'Onderwerp' => 'Officiële motie', 'GestartOp' => '2026-01-01T00:00:00+01:00',
+        ]], '32345678-1234-1234-1234-123456789abc', [], pro: ['Maar één argument.']);
+
+        $payload = ['limit' => 10];
+        $prepare = '/api/cms/content/motions/prepare-statements';
+        $motion = $this->postJson($prepare, $payload)->assertOk()->json('motions.0');
+        $this->postJson('/api/cms/content/motions/'.$motion['id'].'/statement-draft')->assertUnprocessable()->assertJsonValidationErrors('arguments.pro');
+        $this->assertDatabaseCount('issues', 0);
+        $this->assertDatabaseCount('wdnl_motion_statement_drafts', 0);
+        $this->postJson($prepare, $payload)->assertOk()->assertJsonPath('motions.0.id', $motion['id']);
+    }
+
+    private function fakeMotionAi(array $rows, string $documentId, array $votes, ?array $pro = null): void
+    {
+        config(['services.openai.key' => 'fixture-openai-key']);
+        Http::preventStrayRequests();
+        Process::fake(fn () => Process::result(output: 'Verzoekt de regering het voorstel uit te voeren.'));
+        Http::fake(function ($request) use ($rows, $documentId, $votes, $pro) {
+            $url = $request->url();
+            if (str_starts_with($url, CmsMotionSource::BASE.'/Zaak?')) {
+                return Http::response(['value' => $rows]);
+            }
+            foreach ($rows as $row) {
+                if (str_starts_with($url, CmsMotionSource::BASE.'/Zaak('.$row['Id'].')?')) {
+                    return Http::response($row + ['Soort' => 'Motie', 'Verwijderd' => false,
+                        'Besluit' => [['Stemming' => $votes]], 'Document' => [['Id' => $documentId]]]);
+                }
+            }
+            if ($url === CmsMotionSource::BASE.'/Document('.$documentId.')/resource') {
+                return Http::response('%PDF-fixture', 200, ['Content-Type' => 'application/pdf']);
+            }
+            if ($url === 'https://api.openai.com/v1/responses') {
+                $output = ['title' => 'De regering moet het voorstel uitvoeren', 'description' => 'De motie vraagt uitvoering van het voorstel.',
+                    'more_info' => 'Achtergrond bij de motie.', 'pro' => $pro ?? ['Voor A', 'Voor B', 'Voor C', 'Voor D'],
+                    'con' => ['Tegen A', 'Tegen B', 'Tegen C', 'Tegen D']];
+
+                return Http::response(['status' => 'completed', 'output' => [['content' => [['type' => 'output_text', 'text' => json_encode($output)]]]]]);
+            }
+
+            return null;
+        });
     }
 
     public function test_party_votes_need_motion_and_cannot_place_same_party_in_two_groups(): void
