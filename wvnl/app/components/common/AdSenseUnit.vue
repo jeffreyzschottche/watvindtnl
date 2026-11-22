@@ -4,18 +4,11 @@
  * loads with the same tag and decides which ads may be shown; we never pass
  * votes, statements or other political data to the ad request.
  */
+import { loadAdSense } from "~/utils/adConsent";
 const props = defineProps<{ client: string; adSlot: string }>();
-const SCRIPT_ID = "wdnl-adsense";
 
 onMounted(() => {
-  if (!document.getElementById(SCRIPT_ID)) {
-    const script = document.createElement("script");
-    script.id = SCRIPT_ID;
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(props.client)}`;
-    document.head.appendChild(script);
-  }
+  loadAdSense(props.client);
   try {
     const w = window as unknown as { adsbygoogle?: unknown[] };
     (w.adsbygoogle = w.adsbygoogle || []).push({});

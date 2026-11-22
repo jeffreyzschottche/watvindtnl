@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import BrandLogo from "~/components/brand/BrandLogo.vue";
+import { adMode } from "~/utils/ads";
+import { openAdConsent } from "~/utils/adConsent";
+const config = useRuntimeConfig();
+const adClient = String(config.public.adsenseClient || "");
+// Withdrawing consent must be as easy as giving it, on every page.
+const liveAds =
+  adMode(
+    config.public.demoAds,
+    config.public.adsEnabled,
+    !!adClient && !!config.public.adsenseSlot,
+  ) === "live";
 </script>
 <template>
   <footer class="site-footer">
@@ -30,7 +41,15 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
       <span>© {{ new Date().getFullYear() }} WatDenktNederland</span>
       <nav aria-label="Juridische informatie">
         <NuxtLink to="/privacy">Privacy</NuxtLink
-        ><NuxtLink to="/voorwaarden">Voorwaarden</NuxtLink>
+        ><NuxtLink to="/voorwaarden">Voorwaarden</NuxtLink
+        ><button
+          v-if="liveAds"
+          type="button"
+          class="footer-consent"
+          @click="openAdConsent(adClient)"
+        >
+          Cookie-instellingen
+        </button>
       </nav>
       <span class="footer-flag" aria-label="Gemaakt voor Nederland"
         ><i /><i /><i
@@ -68,6 +87,18 @@ import BrandLogo from "~/components/brand/BrandLogo.vue";
   font-size: 0.8rem;
   margin-top: 0.8rem;
   font-weight: 450;
+}
+.footer-consent {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: #68758a;
+  font-weight: 450;
+  cursor: pointer;
+}
+.footer-consent:hover {
+  text-decoration: underline;
 }
 .footer-bottom {
   display: flex;
