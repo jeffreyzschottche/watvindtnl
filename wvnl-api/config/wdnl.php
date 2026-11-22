@@ -9,7 +9,9 @@ return [
         'password-reset' => (int) env('RATE_RESET_PER_HOUR', 3),
         'contact' => (int) env('RATE_CONTACT_PER_HOUR', 3),
         'voting' => (int) env('RATE_VOTES_PER_MINUTE', 20),
-        'reports' => (int) env('RATE_REPORTS_PER_HOUR', 2),
+        'reports' => (int) env('RATE_REPORTS_PER_HOUR', 10),
+        // Separate bucket: downloading a bought report must never be blocked by checkout attempts.
+        'report-downloads' => (int) env('RATE_REPORT_DOWNLOADS_PER_HOUR', 30),
         'admin' => (int) env('RATE_ADMIN_PER_MINUTE', 60),
     ],
 ];

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Stripe\Exception\SignatureVerificationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class VoteReportController extends Controller
@@ -115,7 +116,14 @@ class VoteReportController extends Controller
         $order = $this->own($request, $id);
         abort_unless($order->status === 'ready', 409, 'Het rapport is nog niet beschikbaar.');
 
-        return $pdf->download($order->snapshot, $order->narrative, 'WDNL-stemrapport.pdf', $order->pdf);
+        try {
+            return $pdf->download($order->snapshot, $order->narrative, 'WatDenktNederland-stemrapport.pdf', $order->pdf);
+        } catch (HttpException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            report($e); // e.g. a layout that no longer fits one A4
+            abort(503, 'De PDF kon nu niet worden gemaakt. Je rapport blijft bewaard; probeer het later opnieuw.');
+        }
     }
 
     public function webhook(Request $request)

@@ -218,15 +218,27 @@ async function download() {
         signal: AbortSignal.timeout(20000),
       },
     );
-    if (!response.ok)
-      throw new Error("Download niet beschikbaar. Probeer het opnieuw.");
+    if (!response.ok) {
+      const body = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+      throw new Error(
+        response.status === 401
+          ? "Je sessie is verlopen. Log opnieuw in om je rapport te downloaden."
+          : response.status === 429
+            ? "Je hebt het rapport vaak achter elkaar gedownload. Wacht even en probeer het opnieuw."
+            : response.status === 409 || response.status === 503
+              ? body?.message || "De PDF is nu niet beschikbaar. Probeer het later opnieuw."
+              : "Download niet gelukt. Probeer het opnieuw.",
+      );
+    }
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = report.value.is_development
       ? "WDNL-DEV-stemrapport.pdf"
-      : "WDNL-stemrapport.pdf";
+      : "WatDenktNederland-stemrapport.pdf";
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (e) {

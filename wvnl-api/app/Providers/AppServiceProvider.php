@@ -42,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('voting', fn ($r) => Limit::perMinute($limit('voting'))->by($identity($r)));
         RateLimiter::for('account-deletion', fn ($r) => Limit::perMinute(6)->by($identity($r)));
         RateLimiter::for('reports', fn ($r) => Limit::perHour($limit('reports'))->by($identity($r)));
+        RateLimiter::for('report-downloads', fn ($r) => Limit::perHour($limit('report-downloads'))->by($identity($r)));
         RateLimiter::for('admin', fn ($r) => Limit::perMinute($limit('admin'))->by($identity($r)));
     }
 }

@@ -366,21 +366,19 @@ td {
   height: 5pt;
   background: {{ $color }};
 }
-.band-track {
+/* Bandbreedte: a thin bracket under the bar instead of tinted bar segments. */
+.range {
   position: relative;
+  height: 4pt;
+  margin-top: 1pt;
 }
-.band {
+.range-mark {
   position: absolute;
   top: 0;
-  height: 5pt;
-}
-.band-lo {
-  background: #ffffff;
-  opacity: 0.45;
-}
-.band-hi {
-  background: {{ $color }};
-  opacity: 0.32;
+  height: 2.5pt;
+  border: 0.9pt solid {{ $color }};
+  border-top: 0;
+  opacity: 0.55;
 }
 .hero table {
   table-layout: fixed;
@@ -486,7 +484,7 @@ td {
 <div class="hero"><table><tr><td class="hero-icon"><div><img src="{{ $art(($type['icon']??'balance').'-white') }}" alt=""></div></td><td class="hero-copy"><h2>{{ $type['name']??'Jouw kompas in opbouw' }}</h2><p>{{ $narrative['summary'] }}</p></td><td class="traits"><div class="pill">{{ ($type['provisional']??true)?'Voorlopig type':'Jouw politieke type' }}</div>@foreach($type['traits']??[$snapshot['total'].' eigen antwoorden',$c['used_votes'].' gewogen stellingen','Jouw persoonlijke richting'] as $trait)<div class="trait"><img src="{{ $art($type['icon']??'balance') }}" alt="">{{ $trait }}</div>@endforeach</td></tr></table></div>
 <section class="card personality"><h3>Jouw politieke persoonlijkheid</h3><div class="accent"></div><img class="wheel" src="{{ $wheel }}" alt="Zestien politieke typen"><p class="wheel-caption">{{ $type['name']??'Meer gewogen antwoorden nodig voor een type' }}{{ ($type['provisional']??false)?' · voorlopige indicatie':'' }}</p></section>
 <section class="card axis-card"><h3>Jouw positie op het politieke spectrum</h3><div class="accent"></div>@if($c['spectrum']['percentage']!==null)<div class="spectrum"><img src="{{ $art('spectrum') }}" alt=""><span class="you" style="left:{{ 100-$c['spectrum']['percentage'] }}%">Jij</span><span class="marker" style="left:{{ 100-$c['spectrum']['percentage'] }}%"></span></div><table class="axis-labels"><tr><td>Links {{ $c['spectrum']['percentage'] }}%</td><td class="right">{{ $c['spectrum']['opposite_percentage'] }}% Rechts</td></tr></table><p class="caption">Economisch beleid · {{ $c['spectrum']['compared'] }} antwoorden{{ $c['spectrum']['provisional']?' · voorlopig':'' }}</p>@else<p class="empty">Nog geen economische aspositie · {{ $c['spectrum']['compared'] }} gewogen antwoorden.</p>@endif</section>
-<section class="card themes-card"><h3>Jouw scores op belangrijke thema’s</h3><div class="accent"></div>@foreach($c['dimensions'] as $d)<div class="score"><table><tr><td class="theme-icon"><img src="{{ $art($d['icon']) }}" alt=""></td><td><table class="labels"><tr><td>{{ $d['left'] }}</td><td class="right">{{ $d['right'] }}</td></tr></table>@php($lo=$d['sensitivity']?min($d['sensitivity']['min'],$d['percentage']):null)@php($hi=$d['sensitivity']?max($d['sensitivity']['max'],$d['percentage']):null)<div class="track band-track">@if($d['percentage']!==null)<div class="fill" style="width:{{ $d['percentage'] }}%"></div>@if($lo!==null && $hi>$lo)<div class="band band-lo" style="left:{{ $lo }}%;width:{{ $d['percentage']-$lo }}%"></div><div class="band band-hi" style="left:{{ $d['percentage'] }}%;width:{{ $hi-$d['percentage'] }}%"></div>@endif @endif</div>@if($d['percentage']!==null)<table class="figures"><tr><td>{{ $d['percentage'] }}%</td><td class="right">{{ $d['opposite_percentage'] }}%</td></tr></table><p class="score-meta score-meta--known">{{ $d['compared'] }} antwoorden{{ $lo!==null && $hi>$lo ? ' · bandbreedte '.$lo.'–'.$hi.'%' : '' }}{{ $d['provisional']?' · voorlopig':'' }}</p>@else<p class="score-meta">Nog geen score · {{ $d['compared'] }}/{{ $d['early_minimum']??2 }} antwoorden</p>@endif</td></tr></table></div>@endforeach</section>
+<section class="card themes-card"><h3>Jouw scores op belangrijke thema’s</h3><div class="accent"></div>@foreach($c['dimensions'] as $d)<div class="score"><table><tr><td class="theme-icon"><img src="{{ $art($d['icon']) }}" alt=""></td><td><table class="labels"><tr><td>{{ $d['left'] }}</td><td class="right">{{ $d['right'] }}</td></tr></table>@php($lo=$d['sensitivity']?min($d['sensitivity']['min'],$d['percentage']):null)@php($hi=$d['sensitivity']?max($d['sensitivity']['max'],$d['percentage']):null)<div class="track">@if($d['percentage']!==null)<div class="fill" style="width:{{ $d['percentage'] }}%"></div>@endif</div>@if($d['percentage']!==null && $lo!==null && $hi>$lo)<div class="range"><div class="range-mark" style="left:{{ $lo }}%;width:{{ $hi-$lo }}%"></div></div>@endif @if($d['percentage']!==null)<table class="figures"><tr><td>{{ $d['percentage'] }}%</td><td class="right">{{ $d['opposite_percentage'] }}%</td></tr></table><p class="score-meta score-meta--known">{{ $d['compared'] }} antwoorden{{ $lo!==null && $hi>$lo ? ' · bandbreedte '.$lo.'–'.$hi.'%' : '' }}{{ $d['provisional']?' · voorlopig':'' }}</p>@else<p class="score-meta">Nog geen score · {{ $d['compared'] }}/{{ $d['early_minimum']??2 }} antwoorden</p>@endif</td></tr></table></div>@endforeach</section>
 <section class="card parties-card"><h3>Partijen die bij je passen</h3><div class="accent"></div><p class="caption">{{ isset($c['score_adjustment'])?'Matchscore op 100 · voorzichtig bij weinig moties.':'Overeenkomst bij officieel gekoppelde moties.' }}</p>@forelse(array_slice($snapshot['party_matches'],0,5) as $p)<div class="party"><table><tr><td><div class="party-name">{{ $p['name'] }}</div><div class="track"><div class="fill" style="width:{{ $p['balanced_score']??$p['percentage'] }}%"></div></div><small>{{ $p['matched'] }} van {{ $p['compared'] }} moties{{ ($p['provisional']??false)?' · eerste indicatie':'' }}</small></td><td class="party-score">{{ $p['balanced_score']??$p['percentage'] }}{{ isset($p['balanced_score'])?'':'%' }}</td></tr></table></div>@empty<p class="empty-stat">{{ $snapshot['party_coverage']['verified_motions']??0 }} <span style="font-size:9pt;font-weight:normal">vergelijkbare officiële moties</span></p><p class="empty">Er zijn nog te weinig gecontroleerde partijstemmen gekoppeld aan jouw antwoorden om partijen te rangschikken.</p><p class="caption" style="margin-top:9pt">De stemmen blijven bewaard. Een vergelijking wordt mogelijk zodra meer officiële stemmingen zijn gecontroleerd.</p>@endforelse<p class="caption" style="margin-top:8pt">{{ !empty($snapshot['party_matches'][0]['provisional'])?'Voorlopige historische vergelijking · geen stemadvies.':'Overeenkomst bij officiële moties · geen stemadvies.' }}</p></section>
 <section class="card traits-card"><h3>Wat typeert jou?</h3><div class="accent"></div>@forelse($notes  as $note)<table class="highlight"><tr><td class="tick">✓</td><td>{{ $note['text'] }}</td></tr></table>@empty @foreach(array_slice($c['highlights'],0,5) as $text)<table class="highlight"><tr><td class="tick">✓</td><td>{{ $text }}</td></tr></table>@endforeach @endforelse</section>
 <section class="card method"><h3>i &nbsp; Hoe dit rapport werkt</h3><p>Gebaseerd op {{ $snapshot['total'] }} eigen antwoorden. Scores en type volgen uit vaste gewichten; {{ ($narrative['analysis_origin']??'ai')==='ai'?'AI duidt je keuzes.':'de toelichting is zonder AI gemaakt.' }} {{ $c['historical_votes']??0 }} gewogen antwoorden zijn historisch. {{ isset($c['score_adjustment'])?'Weinig antwoorden? Scores blijven dichter bij het midden.':'Kleine aantallen geven een voorlopige richting.' }} Neutraal geeft geen richting. Het type is een visuele samenvatting, geen diagnose.</p><p style="margin-top:3pt"><a style="color:#0057b8" href="https://watdenktnl.nl/methodologie">Methode en beperkingen ↗</a></p></section>

@@ -191,24 +191,23 @@ const answerMix = computed(() =>
                   role="img"
                   :aria-label="`${dimension.percentage}% ${dimension.left}, ${dimension.opposite_percentage}% ${dimension.right}${dimension.provisional ? ', voorlopig' : ''}`"
                 >
-                  <div class="poster-track poster-track--band">
+                  <div class="poster-track">
                     <span
                       data-report-bar
                       :style="{ width: `${dimension.percentage}%` }"
                     />
-                    <template v-if="band(dimension)">
-                      <i
-                        class="poster-band poster-band--low"
-                        :style="{
-                          left: `${band(dimension)!.low}%`,
-                          width: `${dimension.percentage - band(dimension)!.low}%`,
-                        }" /><i
-                        class="poster-band poster-band--high"
-                        :style="{
-                          left: `${dimension.percentage}%`,
-                          width: `${band(dimension)!.high - dimension.percentage}%`,
-                        }"
-                    /></template>
+                  </div>
+                  <div
+                    v-if="band(dimension)"
+                    class="poster-range"
+                    aria-hidden="true"
+                  >
+                    <i
+                      :style="{
+                        left: `${band(dimension)!.low}%`,
+                        width: `${band(dimension)!.high - band(dimension)!.low}%`,
+                      }"
+                    />
                   </div>
                   <div class="poster-between poster-percentages">
                     <strong>{{ dimension.percentage }}%</strong
@@ -647,20 +646,20 @@ const answerMix = computed(() =>
   margin: 0.4rem 0 0.2rem;
   overflow: hidden;
 }
-.poster-track--band {
+/* Bandbreedte: a thin bracket under the bar instead of tinted bar segments. */
+.poster-range {
   position: relative;
+  height: 5px;
+  margin: -0.1rem 0 0.2rem;
 }
-.poster-band {
+.poster-range i {
   position: absolute;
   top: 0;
-  bottom: 0;
-}
-.poster-band--low {
-  background: rgb(255 255 255 / 0.45);
-}
-.poster-band--high {
-  background: var(--type-color);
-  opacity: 0.32;
+  height: 4px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--type-color);
+  border-top: 0;
+  opacity: 0.55;
 }
 .poster-track > span {
   display: block;

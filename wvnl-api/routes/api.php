@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/compass-progress', [VoteReportController::class, 'progress']);
     Route::get('/me/reports', [VoteReportController::class, 'index']);
     Route::get('/me/reports/{id}', [VoteReportController::class, 'show']);
-    Route::get('/me/reports/{id}/pdf', [VoteReportController::class, 'download'])->middleware('throttle:reports');
+    Route::get('/me/reports/{id}/pdf', [VoteReportController::class, 'download'])->middleware('throttle:report-downloads');
     Route::post('/me/reports/orders', [VoteReportController::class, 'store'])->middleware('throttle:reports');
     Route::get('/me/political-compass', [PoliticalCompassController::class, 'show']);
     Route::post('/me/political-compass', [PoliticalCompassController::class, 'store'])->middleware('throttle:reports');
