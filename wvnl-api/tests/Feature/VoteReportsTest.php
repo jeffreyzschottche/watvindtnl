@@ -120,6 +120,24 @@ class VoteReportsTest extends TestCase
         $this->assertSame(31, $order->fresh()->snapshot['total']);
     }
 
+    public function test_owner_command_makes_a_free_new_report_and_keeps_the_bought_one(): void
+    {
+        $u = $this->user();
+        $this->artisan('reports:refresh', ['user' => $u->email, '--yes' => true])->assertFailed(); // nothing bought yet
+
+        $bought = $this->order($u, ['ai_enabled' => false]);
+        $bought->update(['ai_consent' => false]);
+        (new GenerateVoteReport($bought->id))->handle(app(ReportWriter::class));
+        $extra = Issue::create(['slug' => 'fixture-extra', 'title' => 'Nieuw antwoord', 'description' => 'Na de aankoop', 'votes' => ['agree' => [$u->id], 'disagree' => [], 'neutral' => []], 'party_stances' => []]);
+        $u->update(['voted_issue_ids' => [...$u->voted_issue_ids, $extra->id]]);
+
+        $this->artisan('reports:refresh', ['user' => $u->email, '--yes' => true])->assertSuccessful();
+        $new = ReportOrder::where('user_id', $u->id)->where('id', '!=', $bought->id)->sole();
+        $this->assertSame(['ready', 0, 13, false], [$new->status, $new->amount_cents, $new->snapshot['total'], $new->ai_consent]);
+        $this->assertSame(['ready', 12], [$bought->fresh()->status, $bought->fresh()->snapshot['total']]);
+        $this->actingAs($u)->getJson('/api/me/reports')->assertOk()->assertJsonCount(2, 'orders');
+    }
+
     public function test_code_only_report_stores_its_text_and_renders_a_private_pdf_on_download(): void
     {
         $u = $this->user();
