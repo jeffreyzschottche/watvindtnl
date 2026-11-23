@@ -16,7 +16,7 @@ class ResetPasswordNotification extends BaseResetPassword
         ]);
 
         return (new MailMessage)
-            ->subject('Reset je WDNL-wachtwoord')
+            ->subject('Stel een nieuw wachtwoord in voor WatDenktNederland')
             ->view('emails.password-reset', [
                 'name' => $notifiable->name,
                 'resetUrl' => $resetUrl,

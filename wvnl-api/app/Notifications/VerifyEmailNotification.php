@@ -12,7 +12,7 @@ class VerifyEmailNotification extends BaseVerifyEmail
         $verificationUrl = $this->verificationUrl($notifiable);
 
         return (new MailMessage)
-            ->subject('Bevestig je WDNL-account')
+            ->subject('Bevestig je account bij WatDenktNederland')
             ->view('emails.verify-email', [
                 'name' => $notifiable->name,
                 'verificationUrl' => $verificationUrl,
