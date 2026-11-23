@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +24,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // The Resend key may cover several sites: this app only ever sends as its own domain (MAIL_FROM_ADDRESS).
+        Event::listen(MessageSending::class, function (MessageSending $event) {
+            $allowed = strtolower((string) str((string) config('mail.from.address'))->after('@'));
+            foreach ($event->message->getFrom() as $from) {
+                if ($allowed === '' || strtolower((string) str($from->getAddress())->after('@')) !== $allowed) {
+                    Log::warning('Mail blocked: sender is outside the app domain.', ['domain' => str($from->getAddress())->after('@')->value()]);
+
+                    return false;
+                }
+            }
+        });
         RateLimiter::for('cms-motion-sync', fn ($r) => Limit::perHour(10)->by((string) $r->attributes->get('cms_token_id')));
         RateLimiter::for('cms-motion-statements', fn ($r) => Limit::perHour(60)->by((string) $r->attributes->get('cms_token_id')));
         RateLimiter::for('cms-compass-proposals', fn ($r) => Limit::perHour(40)->by((string) $r->attributes->get('cms_token_id')));
